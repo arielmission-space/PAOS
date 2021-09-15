@@ -14,11 +14,16 @@ def save_recursively_to_hdf5(dictionary, outgroup):
         if isinstance(data, dict):
             sub_outgroup = outgroup.create_group(key)
             save_recursively_to_hdf5(data, sub_outgroup)
-        elif isinstance(data, (str, float, tuple)):
-            outgroup.create_dataset(key, data=data)            
+        elif isinstance(data, (str, int, float, tuple)):
+            outgroup.create_dataset(key, data=data)
         elif isinstance(data, np.ndarray):
             outgroup.create_dataset(key, data=data,
-                                    shape=data.shape, dtype=data.dtype)
+                                    shape=data.shape,
+                                    dtype=data.dtype)
+        elif isinstance(data, list):
+            asciiList = [n.encode("ascii", "ignore") for n in data]
+            outgroup.create_dataset(key, data=asciiList,
+                                    shape=(len(asciiList), 1), dtype='S10')
         elif data is None:
             continue
         else:
@@ -26,6 +31,8 @@ def save_recursively_to_hdf5(dictionary, outgroup):
             raise NameError('data type not supported')
 
 def save_info(file_name, out):
+
+    """Inspired by a similar function from ExoRad2."""
 
     attrs = {'file_name': file_name,
              'file_time': datetime.datetime.now().isoformat(),
