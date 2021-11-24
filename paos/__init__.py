@@ -1,9 +1,7 @@
-import os.path
-from datetime import date
 from .__version__ import __version__
 
-from .paos_config import __url__, __author__, __description__, __branch__, __commit__
-
+from .paos_config import __pkg_name__, __author__, __url__, \
+    __license__, __copyright__, __description__, __branch__, __commit__
 
 from .paos_wfo import WFO
 from .paos_abcd import ABCD

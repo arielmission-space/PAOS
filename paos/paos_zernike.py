@@ -2,6 +2,7 @@ import numpy as np
 from math import factorial as fac
 from scipy.special import eval_jacobi as jacobi
 
+
 class Zernike:
     """
     Generates Zernike polynomials 
@@ -19,85 +20,82 @@ class Zernike:
         (ordering='noll'), or Fringe ordering (ordering='fringe'), or Standard (Born&Wolf) ordering (ordering='standard')
     normalize : bool
         Set to True generates ortho-normal polynomials. Set to False generates orthogonal polynomials
-        as described in Laksminarayan & Fleck, Journal of Modern Optics (2011). The radial polynomial 
-        is estimated using the Jacobi polynomial expression as in their Equation in Equation 14.
+        as described in `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_.
+        The radial polynomial is estimated using the Jacobi polynomial expression as in their Equation in Equation 14.
+
         
     Returns
     -------
-    out : an instance of Zernike.
+    out : masked array
+        An instance of Zernike.
     
     Example
-    _______
-    
-    import numpy as np
-    from matplotlib import pyplot as plt
-    
-    x = np.linspace(-1.0, 1.0, 1024)
-    xx, yy = np.meshgrid(x, x)
-    rho = np.sqrt(xx**2 + yy**2)
-    phi = np.arctan2(yy, xx)
-    
-    zernike = Zernike(36, rho, phi, ordering='noll', normalize=True)
-    
-    zer = zernike() # zer contains a list of polynomials, noll-ordered
-    
-    # Plot the defocus zernike polynomial
-    plt.imshow(zer[3])
-    plt.show()
-    
-    # Plot the defocus zernike polynomial
-    plt.imshow(zernike(3))
-    plt.show()
-    
+    -------
+    >>> import numpy as np
+    >>> from matplotlib import pyplot as plt
+    >>> x = np.linspace(-1.0, 1.0, 1024)
+    >>> xx, yy = np.meshgrid(x, x)
+    >>> rho = np.sqrt(xx**2 + yy**2)
+    >>> phi = np.arctan2(yy, xx)
+    >>> zernike = Zernike(36, rho, phi, ordering='noll', normalize=True)
+    >>> zer = zernike() # zer contains a list of polynomials, noll-ordered
+
+    >>> # Plot the defocus zernike polynomial
+    >>> plt.imshow(zer[3])
+    >>> plt.show()
+
+    >>> # Plot the defocus zernike polynomial
+    >>> plt.imshow(zernike(3))
+    >>> plt.show()
+
     Note
     ----
     In the example, the polar angle is counted counter-clockwise positive from the 
-    x axis. To have a polar angle that is clockwise positive from the y axis (as in figure 2 of DOI: 10.1080/09500340.2011.633763) use
-    phi = 0.5*np.pi - np.arctan2(yy, xx)
-    
+    x axis. To have a polar angle that is clockwise positive from the y axis
+    (as in figure 2 of `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_) use
 
-    
+    >>> phi = 0.5*np.pi - np.arctan2(yy, xx)
 
     """
-    def __init__(self, N, rho, phi, ordering='ansi', normalize = False):
-        
-        
+
+    def __init__(self, N, rho, phi, ordering='ansi', normalize=False):
+
         assert ordering in ('ansi', 'noll', 'fringe', 'standard'), 'Unrecognised ordering scheme.'
         assert N > 0, 'N shall be a positive integer'
-        
+
         self.ordering = ordering
         self.N = N
         self.m, self.n = self.j2mn(N, ordering)
-        
+
         if normalize:
-            self.norm = [np.sqrt(n+1) if m == 0 else np.sqrt(2.0*(n+1)) for m, n in zip(self.m, self.n)] 
+            self.norm = [np.sqrt(n + 1) if m == 0 else np.sqrt(2.0 * (n + 1)) for m, n in zip(self.m, self.n)]
         else:
-            self.norm = np.ones(self.N, dtype = np.float)
-            
+            self.norm = np.ones(self.N, dtype=np.float)
+
         mask = rho > 1.0
         if isinstance(rho, np.ma.MaskedArray):
             rho.mask |= mask
         else:
             rho = np.ma.MaskedArray(data=rho, mask=mask, fill_value=0.0)
-            
+
         Z = {}
-        for n in range(max(self.n)+1):
+        for n in range(max(self.n) + 1):
             Z[n] = {}
             for m in range(-n, 1, 2):
-                Z[n][m] = data=self.__ZradJacobi__(m, n, rho) 
+                Z[n][m] = data = self.__ZradJacobi__(m, n, rho)
                 Z[n][-m] = Z[n][m].view()
-                
+
         self.Zrad = [Z[n][m].view() for m, n in zip(self.m, self.n)]
-        
+
         Z = {0: np.ones_like(phi)}
-        for m in range(1, self.m.max()+1):
-            Z[m]  = np.cos(m*phi)
-            Z[-m] = np.sin(m*phi)
+        for m in range(1, self.m.max() + 1):
+            Z[m] = np.cos(m * phi)
+            Z[-m] = np.sin(m * phi)
         self.Zphi = [Z[m].view() for m in self.m]
-        
-        self.Z = np.ma.MaskedArray([self.norm[k]*self.Zrad[k]*self.Zphi[k] for k in range(self.N)], fill_value=0.0)
-        
-    def __call__(self, j = None):
+
+        self.Z = np.ma.MaskedArray([self.norm[k] * self.Zrad[k] * self.Zphi[k] for k in range(self.N)], fill_value=0.0)
+
+    def __call__(self, j=None):
         """
         Parameters
         ----------
@@ -116,33 +114,33 @@ class Zernike:
             return self.Z
         else:
             return self.Z[j]
-    
+
     @staticmethod
     def j2mn(N, ordering):
-        '''
+        """
         Convert index j into azimuthal number, m, and radial number, n
         for the first N Zernikes
-        
+
         Parameters
         ----------
         N: integer
             Number of polynomials (starting from Piston)
         ordering: string
             can take values 'ansi', 'noll', 'fringe'
-        
+
         Returns
         -------
         m, n: array
-        
-        '''
+
+        """
         j = np.arange(N, dtype=int)
-        
+
         if ordering == 'ansi':
-            n = np.ceil((-3.0+np.sqrt(9.0+8.0*j))/2.0).astype(int)
-            m =  2*j - n*(n+2)
-        elif ordering=='standard':
-            n = np.ceil((-3.0+np.sqrt(9.0+8.0*j))/2.0).astype(int)
-            m = -2*j + n*(n+2)            
+            n = np.ceil((-3.0 + np.sqrt(9.0 + 8.0 * j)) / 2.0).astype(int)
+            m = 2 * j - n * (n + 2)
+        elif ordering == 'standard':
+            n = np.ceil((-3.0 + np.sqrt(9.0 + 8.0 * j)) / 2.0).astype(int)
+            m = -2 * j + n * (n + 2)
         elif ordering == 'noll':
             index = j + 1
             n = ((0.5 * (np.sqrt(8 * index - 7) - 3)) + 1).astype(int)
@@ -151,13 +149,13 @@ class Zernike:
             idx = n % 2 == 0
             m[idx] = (index[idx] - cn[idx] + 1) // 2 * 2
             m[~idx] = (index[~idx] - cn[~idx]) // 2 * 2 + 1
-            m = (-1)**(index%2)*m 
+            m = (-1) ** (index % 2) * m
         elif ordering == 'fringe':
-            index = j+1
+            index = j + 1
             m_n = 2 * (np.ceil(np.sqrt(index)) - 1)
-            g_s = (m_n / 2)**2 + 1
-            n = m_n / 2 + np.floor((index - g_s) / 2) 
-            m = (m_n - n) * (1 - np.mod(index-g_s, 2) * 2)
+            g_s = (m_n / 2) ** 2 + 1
+            n = m_n / 2 + np.floor((index - g_s) / 2)
+            m = (m_n - n) * (1 - np.mod(index - g_s, 2) * 2)
             return m.astype(int), n.astype(int)
         else:
             raise NameError("Ordering not supported.")
@@ -165,15 +163,15 @@ class Zernike:
         return m, n
 
     def mn2j(self, m, n, ordering):
-        '''
-        Convert radial and azimuthal numbers, respectively n and m, into index j 
-        '''
+        """
+        Convert radial and azimuthal numbers, respectively n and m, into index j
+        """
         if ordering == 'ansi':
-            return (self.n*(self.n+2) + self.m)//2
-        elif ordering=='standard':
-            return (self.n*(self.n+2) - self.m)//2            
+            return (self.n * (self.n + 2) + self.m) // 2
+        elif ordering == 'standard':
+            return (self.n * (self.n + 2) - self.m) // 2
         elif ordering == 'fringe':
-            a = (1 + (n + np.abs(m))/2)**2
+            a = (1 + (n + np.abs(m)) / 2) ** 2
             b = 2 * np.abs(m)
             c = (1 + np.sign(m)) / 2
             return (a - b - c).astype(int) + 1
@@ -181,26 +179,27 @@ class Zernike:
             raise NameError("Noll ordering not supported.")
         else:
             raise NameError("Ordering not supported.")
-        
-    def __ZradJacobi__(self, m, n, rho):
-        '''
-            Computes the radial Zernike polinomial
+
+    @staticmethod
+    def __ZradJacobi__(m, n, rho):
+        """
+            Computes the radial Zernike polynomial
 
             Parameters
             ----------
             m : integer
               azimuthal number
-            n : integer 
+            n : integer
               radian number
-            rho : array like 
+            rho : array like
               Pupil semi-diameter normalised radial coordinates
 
             Returns
             -------
-            R_mn : array like 
-              the radial Zernike polinomial with shape identical to rho
+            R_mn : array like
+              the radial Zernike polynomial with shape identical to rho
 
-        '''
+        """
 
         m = np.abs(m)
 
@@ -208,74 +207,69 @@ class Zernike:
             raise ValueError('Invalid parameter: n={:d} should be > 0'.format(n))
         if (m > n):
             raise ValueError('Invalid parameter: n={:d} should be larger than m={:d}'.format(n, m))
-        if (n-m)%2: 
-            raise ValueError('Invalid parameter: n-m={:d} should be a positive even number.'.format(n-m))
+        if (n - m) % 2:
+            raise ValueError('Invalid parameter: n-m={:d} should be a positive even number.'.format(n - m))
 
-        jpoly = jacobi( (n-m)//2, m, 0.0, (1.0-2.0*rho**2))
+        jpoly = jacobi((n - m) // 2, m, 0.0, (1.0 - 2.0 * rho ** 2))
 
-        return (-1)**((n-m)//2) * rho**m * jpoly
+        return (-1) ** ((n - m) // 2) * rho ** m * jpoly
 
-    def __ZradFactorial__(self, m, n, rho):
-        '''
+    @staticmethod
+    def __ZradFactorial__(m, n, rho):
+        """
             CURRENTLY NOT USED
-            Computes the radial Zernike polinomial
+            Computes the radial Zernike polynomial
 
             Parameters
             ----------
             m : integer
               azimuthal number
-            n : integer 
+            n : integer
               radian number
-            rho : array like 
+            rho : array like
               Pupil semi-diameter normalised radial coordinates
 
             Returns
             -------
-            R_mn : array like 
-              the radial Zernike polinomial with shape identical to rho
+            R_mn : array like
+              the radial Zernike polynomial with shape identical to rho
 
-        '''
+        """
         m = np.abs(m)
 
         if (n < 0):
             raise ValueError('Invalid parameter: n={:d} should be > 0'.format(n))
         if (m > n):
             raise ValueError('Invalid parameter: n={:d} should be larger than m={:d}'.format(n, m))
-        if (n-m)%2: 
-            raise ValueError('Invalid parameter: n-m={:d} should be a positive even number.'.format(n-m))
+        if (n - m) % 2:
+            raise ValueError('Invalid parameter: n-m={:d} should be a positive even number.'.format(n - m))
 
-        pre_fac = lambda k: (-1.0)**k * fac(n-k) / ( fac(k) * fac( (n+m)//2 - k ) * fac( (n-m)//2 - k ) )
+        pre_fac = lambda k: (-1.0) ** k * fac(n - k) / (fac(k) * fac((n + m) // 2 - k) * fac((n - m) // 2 - k))
 
-        return sum(pre_fac(k) * rho**(n-2*k) for k in range((n-m)//2+1))
+        return sum(pre_fac(k) * rho ** (n - 2 * k) for k in range((n - m) // 2 + 1))
 
     def cov(self):
-        ''' 
+        """
         Computes the covariance matrix M defined as
-        
+
             M[i, j] = np.mean( Z[i, ...]*Z[j, ...]
-            
+
         When a pupil is defined as Phi = Sum c[k] Z[k, ...], the pupil RMS can be calculated as
-            
+
             RMS = np.sqrt( np.dot(c, np.dot(M, c)) )
-        
+
         This works also on a non-circular pupil, provided that the polynomials are masked over the pupil.
-        
-        Parameters
-        ----------
-        None
-        
+
         Returns
         -------
         M : array
           the covariance matrix
-        '''
-        cov = np.empty( (self.Z.shape[0], self.Z.shape[0]) )
+        """
+        cov = np.empty((self.Z.shape[0], self.Z.shape[0]))
         for i in range(self.Z.shape[0]):
             for j in range(i, self.Z.shape[0]):
-                cov[i, j] = cov[j, i] = np.ma.mean(self.Z[i]*self.Z[j])
-        
-        cov[cov<1e-10] = 0.0
-        
-        return cov
+                cov[i, j] = cov[j, i] = np.ma.mean(self.Z[i] * self.Z[j])
 
-  
+        cov[cov < 1e-10] = 0.0
+
+        return cov

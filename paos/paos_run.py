@@ -1,17 +1,20 @@
 import numpy as np
-from .paos_wfo import WFO
-from .paos_abcd import ABCD
-from .paos_coordinatebreak import CoordinateBreak
 from copy import deepcopy
 import gc
 
+from .paos_wfo import WFO
+from .paos_abcd import ABCD
+from .paos_coordinatebreak import CoordinateBreak
+from .paos_config import logger
+
+
 def push_results(wfo):
-    retval = {'amplitude':       wfo.amplitude,              
+    retval = {'amplitude':       wfo.amplitude,
               'wz':              wfo.wz,
               'distancetofocus': wfo.distancetofocus,
               'fratio':          wfo.fratio,
               'phase':           wfo.phase,
-              'dx':              wfo.dx, 
+              'dx':              wfo.dx,
               'dy':              wfo.dy,
               'wfo':             wfo.wfo,
               'wl':              wfo.wl,
@@ -23,7 +26,7 @@ def push_results(wfo):
 
 def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
     """
-    Run the POP. 
+    Run the POP.
     
     Parameters
     ----------
@@ -32,94 +35,112 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
     wavelength: scalar
         wavelength in meters
     gridsize: scalar
-        the size of the sumulation grid. It has to be a power of 2
+        the size of the simulation grid. It has to be a power of 2
     zoom: scalar
         zoom factor
     field: dictionary
         contains the slopes in the tangential and sagittal planes as field={'vt': slopey, 'vs': slopex}
     opt_chain: list
-        the list of the optical elements returned by paos.parseconfig
+        the list of the optical elements returned by paos.paos_parseconfig.ParseConfig
     
     Returns
     -------
     out: dict
-        ductionary containing the results of the POP
+        dictionary containing the results of the POP
+
+    Examples
+    --------
+
+    >>> from paos.paos_parseconfig import ParseConfig
+    >>> from paos.paos_run import run
+    >>> from paos.paos_plotpop import simple_plot
+    >>> pup_diameter, general, fields, optical_chain = ParseConfig('path/to/conf/file')
+    >>> ret_val = run(pup_diameter, 1.0e-6 * general['wavelength'], general['grid size'],
+    >>>               general['zoom'], fields['0'], optical_chain)
+
     """
     retval = dict()
-    
+
     vt = np.array([0.0, field['ut']])
     vs = np.array([0.0, field['us']])
 
     ABCDt = ABCD()
     ABCDs = ABCD()
-    
+
     wfo = WFO(pupil_diameter, wavelength, gridsize, zoom)
-    
+
     for index, item in opt_chain.items():
+
+        logger.trace('Surface: {}'.format(item['name']))
+
         if item['type'] == 'Coordinate Break':
+            logger.trace('Apply coordinate break')
             vt, vs = CoordinateBreak(vt, vs, item['xdec'], item['ydec'], item['xrot'], item['yrot'], 0.0)
 
         _retval_ = {'aperture': None}
 
         # Check if aperture needs to be applied
         if item['type'] in ['Standard', 'Paraxial Lens', 'Slit', 'Obscuration']:
+            logger.trace('Apply aperture type: {}'.format(item['type']))
             xdec = item['xdec'] if np.isfinite(item['xdec']) else vs[0]
             ydec = item['ydec'] if np.isfinite(item['ydec']) else vt[0]
-            xrad = item['xrad'] 
-            yrad = item['yrad'] 
-            xrad *= np.sqrt(1/(vs[1]**2+1))
-            yrad *= np.sqrt(1/(vt[1]**2+1))
+            xrad = item['xrad']
+            yrad = item['yrad']
+            xrad *= np.sqrt(1 / (vs[1] ** 2 + 1))
+            yrad *= np.sqrt(1 / (vt[1] ** 2 + 1))
             xaper = xdec - vs[0]
             yaper = ydec - vt[0]
-            
+
             aperture_shape = 'rectangular' if item['type'] == 'Slit' else 'elliptical'
             obscuration = True if item['type'] == 'Obscuration' else False
             if np.all(np.isfinite([xrad, yrad])):
-                aper = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad, 
+                aper = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad,
                                     shape=aperture_shape, obscuration=obscuration)
                 _retval_['aperture'] = aper
-        
+
         # Check if this is a stop surface
-        if item['is_stop']: wfo.make_stop()
-    
+        if item['is_stop']:
+            logger.trace('Apply stop')
+            wfo.make_stop()
+
         if item['type'] == 'Zernike':
             radius = item['Zradius'] if np.isfinite(item['Zradius']) else wfo.wz
-            wfo.zernikes(item['Zindex'], item['Z']*item['Zwavelength'], 
-                        item['Zordering'], item['Znormalize'], radius,
-                        origin=item['Zorigin'])
+            wfo.zernikes(item['Zindex'], item['Z'] * item['Zwavelength'],
+                         item['Zordering'], item['Znormalize'], radius,
+                         origin=item['Zorigin'])
 
         _retval_.update(push_results(wfo))
 
         Mt = item['ABCDt'].M
-        fl = np.inf if (item['ABCDt'].power==0) else item['ABCDt'].cout/item['ABCDt'].power 
-        T = item['ABCDt'].cout*item['ABCDt'].thickness
+        fl = np.inf if (item['ABCDt'].power == 0) else item['ABCDt'].cout / item['ABCDt'].power
+        T = item['ABCDt'].cout * item['ABCDt'].thickness
         n1n2 = item['ABCDt'].n1n2
-        
-        # Apply magnification
+
         if Mt != 1.0:
+            logger.trace('Apply magnification')
             wfo.Magnification(1.0, Mt)
-        
-        # Apply lens
+
         if np.isfinite(fl):
+            logger.trace('Apply lens')
             wfo.lens(fl)
-        
-        if np.isfinite(T) and np.abs(T)>1e-10:
+
+        if np.isfinite(T) and np.abs(T) > 1e-10:
+            logger.trace('Apply propagation thickness')
             wfo.propagate(T)
-        
-        vt = item['ABCDt']()@vt
-        vs = item['ABCDs']()@vs
-        ABCDt = item['ABCDt']*ABCDt
-        ABCDs = item['ABCDs']*ABCDs
-        
+
+        vt = item['ABCDt']() @ vt
+        vs = item['ABCDs']() @ vs
+        ABCDt = item['ABCDt'] * ABCDt
+        ABCDs = item['ABCDs'] * ABCDs
+
         _retval_['ABCDt'] = ABCDt
         _retval_['ABCDs'] = ABCDs
-        
+
         if item['save']:
+            logger.trace('Save optical surface to output dict')
             retval[item['num']] = deepcopy(_retval_)
         del _retval_
-        
+
     _ = gc.collect()
-    
+
     return retval
-    
-    

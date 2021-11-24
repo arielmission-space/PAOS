@@ -1,11 +1,32 @@
 import numpy as np
 import pandas as pd
 from .paos_abcd import ABCD
+from .paos_config import logger
 
 
 def ReadConfig(filename):
     """
+    Given the input file name, it parses the simulation parameters and returns a dictionary.
+    The input file is an excel spreadsheet which contains three data sheets named 'general',
+    'LD' and 'field'. 'general' contains the simulation wavelength, grid size and zoom, defined
+    as the ratio of grid size to initial beam size in unit of pixel. 'LD' is the lens data and
+    contains the sequence of surfaces for the simulation mimicking a Zemax lens data editor:
+    supported surfaces include coordinate break, standard surface, obscuration, zernike,
+    paraxial lens, slit and prism.
+
+    Returns
+    -------
+    dict
+        dictionary with the parsed input parameters for the simulation.
+
+    Examples
+    --------
+
+    >>> from paos.paos_parseconfig import ReadConfig
+    >>> simulation_parameters = ReadConfig(filename)
+
     """
+
     parameters = {'general': {}, 'LD': None, 'field': {}}
 
     with pd.ExcelFile(filename, engine='openpyxl') as xls:
@@ -25,6 +46,20 @@ def ReadConfig(filename):
 
 def ParseConfig(filename):
     """
+    It parses the input file name and returns the input pupil diameter and three dictionaries for the simulation:
+    one for the general parameters, one for the input fields and one for the optical chain.
+
+    Returns
+    -------
+    dict
+        the input pupil diameter, the general parameters, the input fields and the optical chain.
+
+    Examples
+    --------
+
+    >>> from paos.paos_parseconfig import ParseConfig
+    >>> pupil_diameter, general, fields, optical_chain = ParseConfig('path/to/conf/file')
+
     """
     parameters = ReadConfig(filename)
 
@@ -48,11 +83,13 @@ def ParseConfig(filename):
             if np.isfinite(xpup) and np.isfinite(ypup):
                 pup_diameter = 2*max(xpup, ypup)
             else:
+                logger.error('Pupil wrongly defined')
                 raise ValueError('Pupil wrongly defined')
 
             continue
 
         if n1 is None or pup_diameter is None:
+            logger.error('INIT is not the first surface in Lens Data.')
             raise ValueError('INIT is not the first surface in Lens Data.')
 
         _data_ = {
@@ -119,8 +156,12 @@ def ParseConfig(filename):
                 C = 0
                 n2 = n1
             else:
+                logger.error('Surface Type not recognised: {:s}'.format(str(_data_['type'])))
                 raise ValueError('Surface Type not recognised: {:s}'.format(str(_data_['type'])))
 
+            _data_['C'] = C
+            _data_['n1'] = n1
+            _data_['n2'] = n2
             _data_['ABCDt'] = ABCD(thickness, C, n1, n2, My)
             _data_['ABCDs'] = ABCD(thickness, C, n1, n2, Mx)
 
