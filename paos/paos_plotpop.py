@@ -130,7 +130,7 @@ def simple_plot(fig, axis, key, item, ima_scale, surface_zoom=dict()):
     axis.set_ylim(-zoomout * plotscale, zoomout * plotscale)
     axis.grid()
 
-    axis.set_title(r"S{:02d} | F#{:.2f} | w{:.4f}{:s} | $\lambda${:3.2f}$\mu$m | P{:2.0f}%".format(
+    axis.set_title(r"S{:02d} | F#{:.2f} | w{:.2f}{:s} | $\lambda${:3.2f}$\mu$m | P{:2.0f}%".format(
         key, item['fratio'],
         scale * item['wz'], unit, 1.0e6 * item['wl'], 100 * power))
     axis.set_xlabel(unit)

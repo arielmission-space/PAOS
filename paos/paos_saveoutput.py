@@ -277,7 +277,7 @@ def save_datacube(retval_list, file_name, group_names, keys_to_keep=None, overwr
 
     if overwrite:
         logger.info('Remove old file')
-        if os.path.isfile(file_name):
+        if os.path.exists(file_name) and os.path.isfile(file_name):
             os.remove(file_name)
 
     with h5py.File(file_name, 'a') as cube:

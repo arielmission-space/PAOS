@@ -35,17 +35,17 @@ def main():
     parser.add_argument("-keys", "--keys_to_keep", dest='store_keys', type=str,
                         default='amplitude,dx,dy,wl',
                         required=False, help="A list with the output dictionary keys to save")
-    parser.add_argument("-j", "--nThreads", dest='n_jobs', default=1,
+    parser.add_argument("-n", "--nThreads", dest='n_jobs', default=1,
                         type=int, required=False,
                         help="number of threads for parallel processing")
-    parser.add_argument("-P", "--plot", dest='plot', default=False,
-                        required=False, help="save target plots",
-                        action='store_true')
-    parser.add_argument("-l", "--logger", dest='log', default=False,
-                        required=False, help="save log file",
+    parser.add_argument("-p", "--plot", dest='plot', default=False,
+                        required=False, help="save output plots",
                         action='store_true')
     parser.add_argument("-d", "--debug", dest='debug', default=False,
                         required=False, help="enable debug mode",
+                        action='store_true')
+    parser.add_argument("-l", "--logger", dest='log', default=False,
+                        required=False, help="save log file",
                         action='store_true')
 
     args = parser.parse_args()
@@ -79,6 +79,8 @@ def main():
     pipeline(passvalue)
 
     logger.info('Paos simulation completed.')
+
+    return
 
 
 if __name__ == '__main__':

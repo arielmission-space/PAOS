@@ -1,6 +1,4 @@
 import os
-import logging
-
 import numpy as np
 from paos.paos_config import logger
 
@@ -42,7 +40,7 @@ def pipeline(passvalue):
 
     >>> from paos.paos_pipeline import pipeline
     >>> pipeline(passvalue={'conf':'path/to/conf/file',
-    >>>                     'output': 'path/to/output/folder',
+    >>>                     'output': 'path/to/output/file',
     >>>                     'wavelengths': '1.95,3.9',
     >>>                     'plot': True, 'n_jobs': 2,
     >>>                     'store_keys': 'amplitude,dx,dy,wl'})
@@ -79,11 +77,12 @@ def pipeline(passvalue):
     optc = {}
     for key, item in opt_chain.items():
         optc[key] = item
-        if 'light_output' in passvalue.keys():
+        if 'light_output' in passvalue.keys() and passvalue['light_output'] is True:
             optc[key]['save'] = False
             if item['name'] == 'IMAGE_PLANE':
                 optc[key]['save'] = True
-        if item['name'] == 'Z1' and 'wfe' in passvalue.keys():
+        if item['name'] == 'Z1' and 'wfe' in passvalue.keys() and passvalue['wfe'] is not None:
+            print('ok')
             wfe_file, column = passvalue['wfe'].split(',')
             logger.debug('Wfe realization file: {}; column: {}'.format(
                 wfe_file, column))

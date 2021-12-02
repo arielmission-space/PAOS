@@ -2,13 +2,14 @@ import numpy as np
 import photutils
 from .paos_zernike import Zernike
 import warnings
+from .paos_config import logger
 
 
 class WFO(object):
     """
     Physical optics wavefront propagation.
-    Implements the paraxial theory described in G. N. Lawrence, 
-    Applied Optics and Optical Engineering, Vol XI. 
+    Implements the paraxial theory described in
+    `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_
     
     All units are meters.
     
@@ -22,8 +23,8 @@ class WFO(object):
     grid_size: scalar
         grid size must be a power of 2
     zoom: scalar
-        linear scaling factor of input beam. 
-    
+        linear scaling factor of input beam.
+
     Attributes
     ----------
     wl: scalar
@@ -32,13 +33,13 @@ class WFO(object):
         current beam position along the z-axis (propagation axis).
         Initial value is 0
     w0: scalar
-        pilot Gaussian beam waist. 
+        pilot Gaussian beam waist.
         Initial value is beam_diameter/2
     zw0: scalar
         z-coordinate of the Gaussian beam waist.
         initial value is 0
     zr: scalar
-        Rayleigh distance: :math:`\pi w_{0}^{2} / \lambda`
+        Rayleigh distance: :math:`\\pi w_{0}^{2} / \\lambda`
     rayleigh_factor: scalar
         Scale factor multiplying zr to determine 'I' and 'O' regions.
         Built in value is 2
@@ -52,6 +53,17 @@ class WFO(object):
         pilot Gaussian beam f-ratio
     wfo: array [gridsize, gridsize], complex128
         the wavefront complex array
+    amplitude: array [gridsize, gridsize], float64
+        the wavefront amplitude array
+    phase: array [gridsize, gridsize], float64
+        the wavefront phase array in radians
+    wz: scalar
+        the Gaussian beam waist w(z) at current beam position
+    distancetofocus: scalar
+        the distance to focus from current beam position
+    extent: tuple
+        the physical coordinates of the wavefront bounding box (xmin, xmax, ymin, ymax).
+        Can be used directly in im.set_extent.
         
     Returns
     -------
@@ -60,7 +72,7 @@ class WFO(object):
     Example
     -------
     >>> import paos
-    >>> from matplolib import pyplot as plt
+    >>> import matplolib.pyplot as plt
     >>> fig, (ax0, ax1) = plt.sublots(nrows=1, ncols=1)
     >>> wfo = paos.WFO(1.0, 0.5e-6, 1024, 4)
     >>> wfo.aperture(0, 0, r=1.0/2, shape='circular')
@@ -140,41 +152,22 @@ class WFO(object):
 
     @property
     def amplitude(self):
-        """
-        Returns wavefront amplitude
-        """
         return np.abs(self._wfo)
 
     @property
     def phase(self):
-        """
-        Returns wavefront phase in radians
-        """
         return np.angle(self._wfo)
 
     @property
     def wz(self):
-        """
-        Returns w(z) at current beam position
-        """
         return self.w0 * np.sqrt(1.0 + ((self.z - self.zw0) / self.zr) ** 2)
 
     @property
     def distancetofocus(self):
-        """
-        Returns distance to focus from current beam position
-        """
         return self.zw0 - self.z
 
     @property
     def extent(self):
-        """
-        Returns
-        _______
-        out: tuple
-            physical coordinates of the wavefront bounding box (xmin, xmax, ymin, ymax).
-            Can be used directly in im.set_extent
-        """
         return (-self._wfo.shape[1] // 2 * self.dx, (self._wfo.shape[1] // 2 - 1) * self.dx,
                 -self._wfo.shape[0] // 2 * self.dy, (self._wfo.shape[0] // 2 - 1) * self.dy)
 
@@ -215,6 +208,7 @@ class WFO(object):
 
         if shape == 'elliptical':
             if hx is None or hy is None:
+                logger.error('Semi major/minor axes not defined')
                 raise AssertionError('Semi major/minor axes not defined')
             ihx = hx / self.dx
             ihy = hy / self.dy
@@ -223,6 +217,7 @@ class WFO(object):
             mask = aperture.to_mask(method='exact').to_image(self._wfo.shape)
         elif shape == 'circular':
             if r is None:
+                logger.error('Radius not defined')
                 raise AssertionError('Radius not defined')
             ihx = r / self.dx
             ihy = r / self.dy
@@ -231,6 +226,7 @@ class WFO(object):
             mask = aperture.to_mask(method='exact').to_image(self._wfo.shape)
         elif shape == 'rectangular':
             if hx is None or hy is None:
+                logger.error('Semi major/minor axes not defined')
                 raise AssertionError('Semi major/minor axes not defined')
             ihx = hx / self.dx
             ihy = hy / self.dy
@@ -239,6 +235,7 @@ class WFO(object):
             # Exact method non implemented in photutils 1.0.2
             mask = aperture.to_mask(method='subpixel', subpixels=32).to_image(self._wfo.shape)
         else:
+            logger.error('Aperture {:s} not defined yet.'.format(shape))
             raise ValueError('Aperture {:s} not defined yet.'.format(shape))
 
         if obscuration:
@@ -345,6 +342,7 @@ class WFO(object):
         if Mx == 1.0:
             return
 
+        logger.warning("Gaussian beam magnification is implemented, but has not been tested.")
         warnings.warn("Gaussian beam magnification is implemented, but has not been tested.",
                       category=UserWarning)
 
@@ -376,6 +374,7 @@ class WFO(object):
             return
 
         if self.C != 0:
+            logger.error("PTP wavefront should be planar")
             raise ValueError("PTP wavefront should be planar")
 
         wf = np.fft.ifftshift(self._wfo)
@@ -391,7 +390,7 @@ class WFO(object):
         self._wfo = np.fft.fftshift(wf)
 
     def stw(self, dz):
-        """a[1]=1
+        """
 
         Spherical-to-waist (near field to far field) wavefront propagator
         
@@ -404,6 +403,7 @@ class WFO(object):
             return
 
         if self.C == 0.0:
+            logger.error('STW wavefront should not be planar')
             raise ValueError('STW wavefront should not be planar')
 
         s = 'forward' if dz >= 0 else 'reverse'
@@ -436,9 +436,11 @@ class WFO(object):
             propagation distance
         """
         if np.abs(dz) < 0.001 * self.wl:
+            logger.debug('Thickness smaller than 1/1000 wavelength. Returning..')
             return
 
         if self.C != 0.0:
+            logger.error('WTS wavefront should be planar')
             raise ValueError('WTS wavefront should be planar')
 
         s = 'forward' if dz >= 0 else 'reverse'
@@ -525,7 +527,8 @@ class WFO(object):
         elif origin == 'y':
             phi = np.arctan2(xx, yy) + np.deg2rad(offset)
         else:
-            raise ValueError('Origin not recognised')
+            logger.error('Origin {} not recognised. Origin shall be either x or y'.format(origin))
+            raise ValueError('Origin {} not recognised. Origin shall be either x or y'.format(origin))
         zernike = Zernike(len(index), rho, phi, ordering=ordering, normalize=normalize)
         zer = zernike()
         wfe = (zer.T * Z).T.sum(axis=0)

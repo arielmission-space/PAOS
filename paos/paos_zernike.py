@@ -252,11 +252,11 @@ class Zernike:
         """
         Computes the covariance matrix M defined as
 
-            M[i, j] = np.mean( Z[i, ...]*Z[j, ...]
+        >>> M[i, j] = np.mean(Z[i, ...]*Z[j, ...])
 
-        When a pupil is defined as Phi = Sum c[k] Z[k, ...], the pupil RMS can be calculated as
+        When a pupil is defined as :math:`\\Phi = \\sum c[k] Z[k, ...]`, the pupil RMS can be calculated as
 
-            RMS = np.sqrt( np.dot(c, np.dot(M, c)) )
+        >>> RMS = np.sqrt( np.dot(c, np.dot(M, c)) )
 
         This works also on a non-circular pupil, provided that the polynomials are masked over the pupil.
 

@@ -23,7 +23,7 @@ def ReadConfig(filename):
     --------
 
     >>> from paos.paos_parseconfig import ReadConfig
-    >>> simulation_parameters = ReadConfig(filename)
+    >>> simulation_parameters = ReadConfig('path/to/conf/file')
 
     """
 
