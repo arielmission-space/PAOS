@@ -1,13 +1,14 @@
 import numpy as np
 import pandas as pd
 from .paos_abcd import ABCD
+from .util.material import Material
 from .paos_config import logger
 
 
 def ReadConfig(filename):
     """
     Given the input file name, it parses the simulation parameters and returns a dictionary.
-    The input file is an excel spreadsheet which contains three data sheets named 'general',
+    The input file is an Excel spreadsheet which contains three data sheets named 'general',
     'LD' and 'field'. 'general' contains the simulation wavelength, grid size and zoom, defined
     as the ratio of grid size to initial beam size in unit of pixel. 'LD' is the lens data and
     contains the sequence of surfaces for the simulation mimicking a Zemax lens data editor:
@@ -101,6 +102,7 @@ def ParseConfig(filename):
             'R':        element['Radius'],
             'T':        element['Thickness'],
             'material': element['Material'],
+            'glass':    element['Glass'] if 'Glass' in element.keys() else None,
             'xrad':     element['XRADIUS'],
             'yrad':     element['YRADIUS'],
             'xdec':     element['XDECENTER'],
@@ -111,7 +113,7 @@ def ParseConfig(filename):
             'My':       element['MagnificationY']
         }
 
-        if element['Surface Type'] == 'Zernike':
+        if _data_['type'] == 'Zernike':
             sheet, stmp = element['Range'].split('.')
             colrange = ''.join([i for i in stmp if not i.isdigit()])
             rowrange = ''.join([i for i in stmp if i.isdigit() or i == ':']).split(':')
@@ -148,8 +150,16 @@ def ParseConfig(filename):
                 n2 = n1
             elif _data_['type'] in ('Standard', 'Slit', 'Obscuration'):
                 C = 1.0/_data_['R'] if np.isfinite(_data_['R']) else 0.0
+                mat = Material()
                 if _data_['material'] == 'MIRROR':
                     n2 = -n1
+                elif _data_['material'] in mat.materials.keys():
+                    if _data_['name'].endswith('in'):
+                        n2 = mat.nmat0(_data_['material'], parameters['general']['wavelength'])[1]
+                    elif _data_['name'].endswith('out'):
+                        n2 = 1.0
+                    logger.debug('name: {}, curvature: {:4f}, thickness: {:.4f}, n1: {:4f}, n2: {:4f}'.format(
+                        _data_['name'], C, thickness, n1, n2))
                 else:
                     n2 = n1  # to be modified using material ref index
             elif _data_['type'] == 'Prism':

@@ -19,9 +19,8 @@
 from datetime import date
 
 project = 'PAOS'
-copyright = '2021-{:d}, Andrea Bocchieri, Enzo Pascale'.format(
-    date.today().year)
 author = 'Andrea Bocchieri, Enzo Pascale'
+copyright = '2020-{:d}, {}'.format(date.today().year, author)
 
 # The full version, including alpha/beta/rc tags
 import os

@@ -5,12 +5,39 @@ from .paos_config import logger
 
 def CoordinateBreak(vt, vs, xdec, ydec, xrot, yrot, zrot, order=0):
     """
-    Performs a coordinate break and estimates the new vt=(y0, uy) and vs=(x0, ux).
+    Performs a coordinate break and estimates the new :math:`\\vec{v_{t}}=(y, u_{y})`
+    and :math:`\\vec{v_{s}}=(x, u_{x})`.
+
+    Parameters
+    ----------
+    vt: array
+        vector :math:`\\vec{v_{t}}=(y, u_{y})` describing a ray propagating in the tangential plane
+    vs: array
+        vector :math:`\\vec{v_{s}}=(x, u_{x})` describing a ray propagating in the sagittal plane
+    xdec: float
+        x coordinate of the decenter to be applied
+    ydec: float
+        y coordinate of the decenter to be applied
+    xrot: float
+        tilt angle around the X axis to be applied
+    yrot: float
+        tilt angle around the Y axis to be applied
+    zrot: float
+        tilt angle around the Z axis to be applied
+    order: int
+        order of the coordinate break, defaults to 0.
+
+    Returns
+    -------
+    tuple
+        two arrays representing the new :math:`\\vec{v_{t}}=(y, u_{y})`
+        and :math:`\\vec{v_{s}}=(x, u_{x})`.
 
     Note
-    ----------
+    ----
     When order=0, first a coordinate decenter is applied, followed by a XYZ rotation.
     Coordinate break orders other than 0 not implemented yet.
+
     """
 
     if order != 0:

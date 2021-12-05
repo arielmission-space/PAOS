@@ -192,6 +192,8 @@ def plot_pop(retval, ima_scale='log', ncols=2, figname=None, surface_zoom=dict()
 
         if n_subplots == 1:
             axis = ax
+        elif n_subplots <= ncols:
+            axis = ax[k]
         else:
             i = k % ncols
             j = k // ncols

@@ -45,7 +45,7 @@ while :math:`f < 0` causes the beam to be more divergent.
 
 The tangential plane is the YZ plane and the sagittal plane is the XZ plane.
 
-ABCD ray tracing
+Ray tracing
 ----------------------------
 
 Paraxial ray tracing in the tangential plane (YZ) can be done by defining the vector :math:`\vec{v_{t}}=(y, u_{y})`
@@ -189,6 +189,10 @@ followed by the exit dioptre :math:`D_b`.
     When the thickness of the dioptre, :math:`t`, is negligible and can be set to zero, this gives back the
     thin lens ABCD matrix.
 
+.. note::
+    If a dioptre has :math:`R \rightarrow \infty`, this gives a plano-concave or plano-convex lens, depending
+    on the curvature of the other dioptre.
+
 .. _Magnification:
 
 Magnification
@@ -249,6 +253,25 @@ angles :math:`\theta_i` are as described in Fig.2 from the paper, reported in th
 .. image:: prism.png
    :width: 600
    :align: center
+
+After some algebra, the ABCD matrix for the tangential transfer can be rewritten as:
+
+.. math::
+    P_{t} =
+    \begin{pmatrix}
+    A & B\\
+    C & D
+    \end{pmatrix}
+    :label:
+
+where
+
+.. math::
+      A = \frac{cos(\theta_2) cos(\theta_4)}{cos(\theta_1) cos(\theta_3)} \\
+      B = \frac{L}{n} \frac{cos(\theta_1) cos(\theta_4)}{cos(\theta_2) cos(\theta_3)} \\
+      C = 0.0 \\
+      D = 1.0/A
+    :label:
 
 .. _Optical system equivalent:
 

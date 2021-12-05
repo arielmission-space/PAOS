@@ -24,8 +24,8 @@ Table of Contents
 -------------------
 
 .. toctree::
-   :name: usertoc
-   :maxdepth: 1
+    :name: usertoc
+    :maxdepth: 1
 
     Quick start <quickstart>
     Input system <inputs/index>

@@ -4,7 +4,7 @@ from datetime import date
 from .__version__ import __version__
 
 __pkg_name__ = 'paos'
-__author__ = "A. Bocchieri, E. Pascale"
+__author__ = "Andrea Bocchieri, Enzo Pascale"
 __description__ = "The Physical Ariel Optics Simulator"
 __url__ = "https://github.com/arielmission-space/PAOS"
 __license__ = "BSD-3-Clause"
@@ -39,4 +39,5 @@ logger.info('code version {}'.format(__version__))
 from .log import setLogLevel
 
 # setLogLevel(logging.TRACE)
-setLogLevel(logging.INFO)
+setLogLevel(logging.DEBUG)
+# setLogLevel(logging.INFO)
