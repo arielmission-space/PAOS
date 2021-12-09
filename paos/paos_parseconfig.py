@@ -1,3 +1,4 @@
+import os, sys
 import numpy as np
 import pandas as pd
 from .paos_abcd import ABCD
@@ -29,6 +30,10 @@ def ReadConfig(filename):
     """
 
     parameters = {'general': {}, 'LD': None, 'field': {}}
+
+    if not os.path.exists(filename) or not os.path.isfile(filename):
+        logger.error('Input file {} does not exist or is not a file. Quitting..'.format(filename))
+        sys.exit()
 
     with pd.ExcelFile(filename, engine='openpyxl') as xls:
         wb = pd.read_excel(xls, 'General')
@@ -64,6 +69,9 @@ def ParseConfig(filename):
     """
     parameters = ReadConfig(filename)
 
+    wl = parameters['general']['wavelength']
+    matlib = Material()
+
     n1 = None  # Refractive index
     pup_diameter = None  # input pupil pup_diameter
 
@@ -82,7 +90,7 @@ def ParseConfig(filename):
             ypup = element['YRADIUS']
 
             if np.isfinite(xpup) and np.isfinite(ypup):
-                pup_diameter = 2*max(xpup, ypup)
+                pup_diameter = 2 * max(xpup, ypup)
             else:
                 logger.error('Pupil wrongly defined')
                 raise ValueError('Pupil wrongly defined')
@@ -102,7 +110,6 @@ def ParseConfig(filename):
             'R':        element['Radius'],
             'T':        element['Thickness'],
             'material': element['Material'],
-            'glass':    element['Glass'] if 'Glass' in element.keys() else None,
             'xrad':     element['XRADIUS'],
             'yrad':     element['YRADIUS'],
             'xdec':     element['XDECENTER'],
@@ -118,11 +125,11 @@ def ParseConfig(filename):
             colrange = ''.join([i for i in stmp if not i.isdigit()])
             rowrange = ''.join([i for i in stmp if i.isdigit() or i == ':']).split(':')
             rowstart = int(rowrange[0])
-            nrows = int(rowrange[1])-rowstart+1
+            nrows = int(rowrange[1]) - rowstart + 1
 
             with pd.ExcelFile(filename, engine='openpyxl') as xls:
                 wb0 = pd.read_excel(xls, sheet, header=None, nrows=3)
-                wb1 = pd.read_excel(xls, sheet, skiprows=rowstart-1, usecols='A,'+colrange, nrows=nrows, header=None)
+                wb1 = pd.read_excel(xls, sheet, skiprows=rowstart - 1, usecols='A,' + colrange, nrows=nrows, header=None)
             _data_.update({
                 'Zindex':      wb1[0].to_numpy(dtype=int),
                 'Z':           wb1[1].to_numpy(dtype=float),
@@ -146,22 +153,18 @@ def ParseConfig(filename):
                 C = 0.0
                 n2 = n1
             elif _data_['type'] == 'Paraxial Lens':
-                C = 1.0/_data_['R'] if np.isfinite(_data_['R']) else 0.0
+                C = 1.0 / _data_['R'] if np.isfinite(_data_['R']) else 0.0
                 n2 = n1
             elif _data_['type'] in ('Standard', 'Slit', 'Obscuration'):
-                C = 1.0/_data_['R'] if np.isfinite(_data_['R']) else 0.0
-                mat = Material()
-                if _data_['material'] == 'MIRROR':
+                C = 1.0 / _data_['R'] if np.isfinite(_data_['R']) else 0.0
+                if _data_['material'] == 'SPACE':
+                    n2 = 1.0 * cout
+                elif _data_['material'] == 'MIRROR':
                     n2 = -n1
-                elif _data_['material'] in mat.materials.keys():
-                    if _data_['name'].endswith('in'):
-                        n2 = mat.nmat0(_data_['material'], parameters['general']['wavelength'])[1]
-                    elif _data_['name'].endswith('out'):
-                        n2 = 1.0
-                    logger.debug('name: {}, curvature: {:4f}, thickness: {:.4f}, n1: {:4f}, n2: {:4f}'.format(
-                        _data_['name'], C, thickness, n1, n2))
+                elif _data_['material'] in matlib.materials.keys():
+                    n2 = matlib.nmat0(_data_['material'], wl)[1] * cout
                 else:
-                    n2 = n1  # to be modified using material ref index
+                    n2 = n1
             elif _data_['type'] == 'Prism':
                 C = 0
                 n2 = n1
@@ -175,7 +178,11 @@ def ParseConfig(filename):
             _data_['ABCDt'] = ABCD(thickness, C, n1, n2, My)
             _data_['ABCDs'] = ABCD(thickness, C, n1, n2, Mx)
 
+            logger.debug('name: {}, curvature: {:4f}, thickness: {:.4f}, material: {}, n1: {:4f}, n2: {:4f}'.format(
+                _data_['name'], C, _data_['ABCDt'].thickness, _data_['material'], n1, n2))
+
             n1 = n2
             opt_chain[chain_step] = _data_
+            cout = _data_['ABCDt'].cout
 
     return pup_diameter, parameters['general'], parameters['field'], opt_chain

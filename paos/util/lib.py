@@ -2,7 +2,7 @@
 Dictionary for optical materials for use in `PAOS`.
 """
 
-opt_materials = {
+materials = {
     'CAF2': {'source': 'Handbook of Optics Vol. II',
              'Tref': 20.0,
              'sellmeier': {
@@ -43,10 +43,10 @@ opt_materials = {
                  'D0': 5.5400E-005}
              },
 
-    'BK7': {'source': 'Handbook of Optics Vol. II',
+    'BK7': {'source': 'not provided',
             'Tref': 20.0,
             'sellmeier': {
-                'K1': 1.03961212E-000,
+                'K1': 1.03961212E+000,
                 'L1': 6.00069867E-003,
                 'K2': 2.31792344E-001,
                 'L2': 2.00179144E-002,
@@ -57,7 +57,7 @@ opt_materials = {
                 'D0': 1.8600E-006}
             },
 
-    'SF11': {'source': 'Handbook of Optics Vol. II',
+    'SF11': {'source': 'not provided',
              'Tref': 20.0,
              'sellmeier': {
                  'K1': 1.73848403E+000,
@@ -70,4 +70,19 @@ opt_materials = {
              'Tmodel': {
                  'D0': 1.1200E-005}
              },
+
+    'BAF2': {'source': 'Handbook of Optics Vol. II',
+             'Tref': 20.0,
+             'sellmeier': {
+                 'K1': 6.43356000E-001,
+                 'L1': 3.34000000E-003,
+                 'K2': 5.06762000E-001,
+                 'L2': 1.20300000E-002,
+                 'K3': 3.82610000E+000,
+                 'L3': 2.15169810E+003
+             },
+             'Tmodel': {
+                 'D0': -4.4600E-005}
+             },
+
 }

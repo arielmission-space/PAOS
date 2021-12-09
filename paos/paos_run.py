@@ -118,6 +118,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         fl = np.inf if (item['ABCDt'].power == 0) else item['ABCDt'].cout / item['ABCDt'].power
         T = item['ABCDt'].cout * item['ABCDt'].thickness
         n1n2 = item['ABCDt'].n1n2
+        logger.trace('n1n2: {:.4f}'.format(n1n2))
 
         if Mt != 1.0:
             logger.trace('Apply magnification')
@@ -128,7 +129,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
             wfo.lens(fl)
 
         if np.isfinite(T) and np.abs(T) > 1e-10:
-            logger.trace('Apply propagation thickness')
+            logger.trace('Apply propagation thickness: T: {:.4f}'.format(T))
             wfo.propagate(T)
 
         vt = item['ABCDt']() @ vt
@@ -136,10 +137,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         ABCDt = item['ABCDt'] * ABCDt
         ABCDs = item['ABCDs'] * ABCDs
 
-        logger.debug("feff, t: {}".format(ABCDt.f_eff))
-        logger.debug("feff, s: {}".format(ABCDs.f_eff))
-        logger.debug("f: {}".format(fl))
-        logger.debug("distance to focus: {}".format(wfo.distancetofocus))
+        logger.debug("F num: {:2f}, distance to focus: {:.6f}".format(_retval_['fratio'], wfo.distancetofocus))
 
         _retval_['ABCDt'] = ABCDt
         _retval_['ABCDs'] = ABCDs

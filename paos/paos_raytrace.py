@@ -40,7 +40,5 @@ def raytrace(field, opt_chain):
         vs = item['ABCDs']() @ vs
         logger.info("S{:02d} - {:15s} y:{:7.3f}mm ut:{:10.3e} rad x:{:7.3f}mm us:{:7.3f} rad".format(
             key, item['name'], 1000 * vt[0], vt[1], 1000 * vs[0], vs[1]))
-        logger.debug("feff, t: {}".format(item['ABCDt'].f_eff))
-        logger.debug("feff, s: {}".format(item['ABCDs'].f_eff))
 
     return

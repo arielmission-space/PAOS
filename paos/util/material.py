@@ -27,9 +27,9 @@ class Material:
         else:
             self.wl = wl
         if materials is None:
-            from .lib import opt_materials
-            self.materials = opt_materials
-            logger.debug('Using default materials dictionary')
+            from .lib import materials
+            self.materials = materials
+            logger.debug('Using default library of optical materials')
         else:
             self.materials = materials
 
@@ -93,8 +93,6 @@ class Material:
         P: scalar
             reference pressure in atmospheres. Defaults to 1 atm.
         """
-        logger.debug('T: {}, P: {}'.format(T, P))
-
         wl2 = self.wl ** 2
 
         nref = 1.0 + 1.0e-8 * (6432.8 + 2949810 * wl2 / (146 * wl2 - 1) + 25540 * wl2 / (41 * wl2 - 1))
@@ -120,12 +118,11 @@ class Material:
         """
 
         name = name.upper()
-        logger.debug('Glass name: {}'.format(name))
-
         if name not in self.materials.keys():
-            logger.error('Glass {} currently not supported by paos.'.format(name))
+            logger.error('Glass {} currently not supported.'.format(name))
 
         material = self.materials[name]
+        logger.debug('Glass name: {} -- T ref: {}'.format(name, material['Tref']))
 
         nmat_abs = self.sellmeier(par=material['sellmeier']) * self.nair(T=material['Tref'])
         nmat = self.nT(n=nmat_abs, D0=material['Tmodel']['D0'], delta_T=self.Tambient - material['Tref'])

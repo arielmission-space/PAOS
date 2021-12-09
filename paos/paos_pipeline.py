@@ -48,14 +48,17 @@ def pipeline(passvalue):
 
     logger.debug('{}'.format(passvalue.keys()))
 
+    logger.debug('--------------------------------------------------------------------------------------------')
     logger.info('Parse lens file')
     pup_diameter, general, fields, opt_chain = ParseConfig(passvalue['conf'])
 
     if 'debug' in passvalue.keys() and passvalue['debug']:
+        logger.debug('--------------------------------------------------------------------------------------------')
         logger.debug('Perform a diagnostic ray tracing')
         raytrace(fields['0'], opt_chain)
 
-    logger.info('Run the POP')
+    logger.debug('--------------------------------------------------------------------------------------------')
+    logger.info('Set up the POP')
 
     if 'wavelengths' in passvalue.keys() and passvalue['wavelengths'] is not None:
         logger.debug('Using user provided wavelengths: {}'.format(passvalue['wavelengths']))
@@ -82,7 +85,6 @@ def pipeline(passvalue):
             if item['name'] == 'IMAGE_PLANE':
                 optc[key]['save'] = True
         if item['name'] == 'Z1' and 'wfe' in passvalue.keys() and passvalue['wfe'] is not None:
-            print('ok')
             wfe_file, column = passvalue['wfe'].split(',')
             logger.debug('Wfe realization file: {}; column: {}'.format(
                 wfe_file, column))
@@ -94,6 +96,9 @@ def pipeline(passvalue):
             Ck = wfe['col%i' % (float(column) + 4)].data
             optc[key]['Z'] = np.append(np.zeros(3), Ck)
             logger.debug('Wfe coefficients: {}'.format(optc[key]['Z']))
+
+    logger.debug('--------------------------------------------------------------------------------------------')
+    logger.info('Run the POP')
 
     if passvalue['n_jobs'] > 1:
         logger.info('Start POP in parallel...')
@@ -113,13 +118,20 @@ def pipeline(passvalue):
     end_time = time.time()
     logger.info('POP completed in {:6.1f}s'.format(end_time - start_time))
 
-    logger.info('Save POP simulation output to {}'.format(passvalue['output']))
+    # import sys
+    # sys.exit(0)
+
+    logger.debug('--------------------------------------------------------------------------------------------')
+    logger.info('Save POP simulation output .h5 file to {}'.format(passvalue['output']))
     group_tags = list(map(str, wavelengths))
     logger.debug('group tags: {}'.format(group_tags))
     store_keys = passvalue['store_keys'].split(',')
     logger.debug('Store keys: {}'.format(store_keys))
     save_datacube(ret, passvalue['output'], group_tags, keys_to_keep=store_keys,
                   overwrite=True)
+
+    logger.debug('--------------------------------------------------------------------------------------------')
+    logger.info('Save POP simulation output plot')
 
     if passvalue['plot']:
         plots_dir = '{}/plots'.format(os.path.dirname(passvalue['output']))

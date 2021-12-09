@@ -47,6 +47,8 @@ def simple_plot(fig, axis, key, item, ima_scale, surface_zoom=dict()):
     >>> plt.show()
 
     """
+    logger.trace('plotting S{:02d}'.format(key))
+
     if item['wz'] < 0.005:
         # Use microns
         scale = 1.0e6
@@ -55,8 +57,6 @@ def simple_plot(fig, axis, key, item, ima_scale, surface_zoom=dict()):
         # Use mm
         scale = 1.0e3
         unit = 'mm'
-
-    logger.debug('scale unit: {}'.format(unit))
 
     if 'psf' in item.keys():
         ima = np.ma.masked_array(data=item['psf'], mask=item['amplitude'] <= 0.0)
