@@ -45,7 +45,7 @@ while :math:`f < 0` causes the beam to be more divergent.
 
 The tangential plane is the YZ plane and the sagittal plane is the XZ plane.
 
-ABCD ray tracing
+Ray tracing
 ----------------------------
 
 Paraxial ray tracing in the tangential plane (YZ) can be done by defining the vector :math:`\vec{v_{t}}=(y, u_{y})`
@@ -55,6 +55,18 @@ Paraxial ray tracing can be done using ABCD matrices (see later in :ref:`Optical
 .. note::
     In the sagittal plane, the same equation apply, modified when necessary when cylindrical symmetry is violated.
     The relevant vector is :math:`\vec{v_{s}}=(x, u_{x})`.
+
+`PAOS` implements a function to perform a diagnostic ray tracing of an optical system, given the input fields and
+the optical chain. This function then prints the ray positions and slopes in the tangential and sagittal planes for
+each surface of the optical chain.
+
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        from paos.paos_raytrace import raytrace
+        raytrace(field={'us': 0.0, 'ut': 0.0}, opt_chain=optical_chain)
 
 Propagation
 ----------------------------
@@ -82,6 +94,16 @@ Either in free space or in a refractive medium, propagation over a distance :mat
     \end{pmatrix}
     :label:
 
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        from paos.paos_abcd import ABCD
+        thickness = 50.0  # mm
+        abcd = ABCD(thickness=thickness)
+        (A, B), (C, D) = abcd.ABCD
+
 Thin lenses
 ----------------------------
 
@@ -108,6 +130,16 @@ A thin lens changes the slope angle and this is given by
     :label:
 
 where :math:`\Phi = \frac{1}{f}` is the lens optical power.
+
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        from paos.paos_abcd import ABCD
+        radius = 20.0  # mm
+        abcd = ABCD(curvature=1.0/radius)
+        (A, B), (C, D) = abcd.ABCD
 
 Dioptre
 ----------------------------
@@ -140,6 +172,17 @@ with the dioptre power :math:`\Phi = \frac{n_2-n_1}{R}`, where R is the radius o
 .. note::
     :math:`R>0` if the centre of curvature is at the right of the dioptre and :math:`R<0` if at the left.
 
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        from paos.paos_abcd import ABCD
+        n1, n2 = 1.0, 1.5
+        radius = 20.0  # mm
+        abcd = ABCD(curvature = 1.0/radius, n1 = n1, n2 = n2)
+        (A, B), (C, D) = abcd.ABCD
+
 Medium change
 ----------------------------
 
@@ -165,6 +208,16 @@ The limiting case of a dioptre with :math:`R \rightarrow \infty` represents a ch
     \end{pmatrix}
     :label:
 
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        from paos.paos_abcd import ABCD
+        n1, n2 = 1.0, 1.5
+        abcd = ABCD(n1 = n1, n2 = n2)
+        (A, B), (C, D) = abcd.ABCD
+
 Thick lenses
 ----------------------------
 
@@ -189,6 +242,26 @@ followed by the exit dioptre :math:`D_b`.
     When the thickness of the dioptre, :math:`t`, is negligible and can be set to zero, this gives back the
     thin lens ABCD matrix.
 
+.. note::
+    If a dioptre has :math:`R \rightarrow \infty`, this gives a plano-concave or plano-convex lens, depending
+    on the curvature of the other dioptre.
+
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        import numpy as np
+        from paos.paos_abcd import ABCD
+
+        radius1, radius2 = np.inf, -20.0  # mm
+        n_os, n_l, n_is = 1.0, 1.5, 1.0
+        center_thickness = 5.0
+        abcd = ABCD(curvature = 1.0/radius1, n1 = n_os, n2 = n_l)
+        abcd = ABCD(thickness = center_thickness) * abcd
+        abcd = ABCD(curvature = 1.0/radius2, n1 = n_l, n2 = n_is) * abcd
+        (A, B), (C, D) = abcd.ABCD
+
 .. _Magnification:
 
 Magnification
@@ -211,6 +284,17 @@ A magnification is modelled as
     u_1
     \end{pmatrix}
     :label:
+
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        from paos.paos_abcd import ABCD
+        from paos.paos_abcd import ABCD
+        abcd = ABCD(M=2.0)
+        (A, B), (C, D) = abcd.ABCD
+
 
 Prism
 ----------------------------
@@ -249,6 +333,51 @@ angles :math:`\theta_i` are as described in Fig.2 from the paper, reported in th
 .. image:: prism.png
    :width: 600
    :align: center
+
+After some algebra, the ABCD matrix for the tangential transfer can be rewritten as:
+
+.. math::
+    P_{t} =
+    \begin{pmatrix}
+    A & B\\
+    C & D
+    \end{pmatrix}
+    :label:
+
+where
+
+.. math::
+      A = \frac{cos(\theta_2) cos(\theta_4)}{cos(\theta_1) cos(\theta_3)} \\
+      B = \frac{L}{n} \frac{cos(\theta_1) cos(\theta_4)}{cos(\theta_2) cos(\theta_3)} \\
+      C = 0.0 \\
+      D = 1.0/A
+    :label:
+
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        import numpy as np
+        from paos.paos_abcd import ABCD
+
+        thickness = 8.0e-3  # m
+        n = 1.5
+
+        theta_1 = np.deg2rad(60.0)
+        theta_2 = np.deg2rad(-30.0)
+        theta_3 = np.deg2rad(20.0)
+        theta_4 = np.deg2rad(-30.0)
+
+        A = np.cos(theta_2)*np.cos(theta_4)/(np.cos(theta_1)*np.cos(theta_3))
+        B = np.cos(theta_1)*np.cos(theta_4)/(np.cos(theta_2)*np.cos(theta_3))/n
+        C = 0.0
+        D = 1.0/A
+
+        abcdt = ABCD()
+        abcdt.ABCD = np.array([[A,B], [C,D]])
+        abcds = ABCD()
+        abcds.ABCD= np.array([[1, thickness/n], [0, 1]])
 
 .. _Optical system equivalent:
 
@@ -314,3 +443,19 @@ With these definitions, the effective focal length is
 .. math::
     f_{eff} = \frac{1}{\Phi M}
     :label:
+
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        from paos.paos_abcd import ABCD
+
+        radius = 20.0  # mm
+        n1, n2 = 1.0, 1.5
+        thickness = 5.0  # mm
+        magnification = 2.0
+
+        abcd = ABCD(thickness = thickness, curvature = 1.0/radius, n1=n1, n2=n2, M=magnification)
+        (A, B), (C, D) = abcd.ABCD
+

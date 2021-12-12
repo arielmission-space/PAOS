@@ -19,9 +19,8 @@
 from datetime import date
 
 project = 'PAOS'
-copyright = '2021-{:d}, Andrea Bocchieri, Enzo Pascale'.format(
-    date.today().year)
 author = 'Andrea Bocchieri, Enzo Pascale'
+copyright = '2020-{:d}, {}'.format(date.today().year, author)
 
 # The full version, including alpha/beta/rc tags
 import os
@@ -114,9 +113,10 @@ html_favicon = "_static/paos_logo.ico"
 
 html_show_sourcelink = False
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
+
+def setup(app):
+    app.add_css_file('paos.css')
+
 
 html_title = "%s v%s Manual" % (project, version)
 html_last_updated_fmt = '%b %d, %Y'

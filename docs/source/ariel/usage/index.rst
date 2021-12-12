@@ -33,6 +33,10 @@ the manufacturing of the `Ariel` telescope primary mirror (M1). `PAOS` can study
 effect of the aberrations to ensure that the optical quality, complexity, costs and
 risks are not too high.
 
+SNR
+---------------------
+placeholder
+
 Gain noise
 ---------------------
 

@@ -76,6 +76,22 @@ that can be solved as
     \rho = -\frac{z_0'}{z'}
     :label:
 
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        from paos.paos_coordinatebreak import CoordinateBreak
+
+        field={'us': 0.0, 'ut': 0.0}
+        vt = np.array([0.0, field['ut']])
+        vs = np.array([0.0, field['us']])
+
+        xdec, ydec = 0.0, 10.0e-3  # m
+        xrot, yrot, zrot = 0.1, 0.0, 0.0  # deg
+        vt, vs = CoordinateBreak(vt, vs, xdec, ydec, xrot, yrot, zrot, order=0.0)
+
+
 Gaussian beams
 --------------------------
 
@@ -286,6 +302,13 @@ Using these primitive operators, `PAOS` implements all possible propagations:
 #. OI(:math:`z_1`, :math:`z_2`) = PTP(:math:`z_2-z(w)`) STW(:math:`z_2-z(w)`)
 #. OO(:math:`z_1`, :math:`z_2`) = WTS(:math:`z_2-z(w)`) STW(:math:`z_2-z(w)`)
 
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        thickness = 10.0e-3  # m
+        wfo.propagate(dz = thickness)
 
 Wavefront phase
 -------------------------
@@ -436,6 +459,22 @@ orthogonal to the beam. If the aperture is (:math:`y_c, \phi_x, \phi_y`), the ap
 
 Supported aperture shapes are elliptical, circular or rectangular.
 
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+            xrad *= np.sqrt(1 / (vs[1] ** 2 + 1))
+            yrad *= np.sqrt(1 / (vt[1] ** 2 + 1))
+            xaper = xdec - vs[0]
+            yaper = ydec - vt[0]
+
+            aperture_shape = 'elliptical'  # or 'rectangular'
+            obscuration = False  # if True, applies obscuration
+
+            aperture = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad,
+                                    shape=aperture_shape, obscuration=obscuration)
+
 Stops
 --------------------------
 
@@ -445,6 +484,14 @@ It is often the boundary of the primary mirror. An aperture stop has an importan
 The field stop limits the field of view of an optical instrument.
 
 `PAOS` implements a generic stop normalizing the wavefront at the current position to unit energy.
+
+Example
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+        wfo.make_stop()
+
 
 POP propagation loop
 --------------------------

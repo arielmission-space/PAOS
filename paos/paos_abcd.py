@@ -25,14 +25,8 @@ class ABCD(object):
     Note
     ----------
     The class properties can differ from the value of the parameters used at
-    class instantiation. This because the ABCD matrix is decomposed into 4 primitives:
-
-    >>> ABCD = T@P@N@M
-    where
-    >>> T = [[1, thickness], [0, 1]]
-    >>> P = [[1, 0], [-power, 0]]
-    >>> N = [[1, 0], [0, n1/n2]]
-    >>> M = [[M, 0], [0, 1/M]]
+    class instantiation. This because the ABCD matrix is decomposed into four primitives,
+    multiplied together as discussed in :ref:`Optical system equivalent`.
 
     Examples
     --------
@@ -61,9 +55,9 @@ class ABCD(object):
         n1: scalar
             refractive index of the first medium. Default is 1.0
         n2: scalar
-            refractive index of the second medium. Default is 0.0
+            refractive index of the second medium. Default is 1.0
         M: scalar
-            optical magnification. Default is 0.0
+            optical magnification. Default is 1.0
         
         Note
         -----
