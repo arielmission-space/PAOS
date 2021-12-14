@@ -1,0 +1,26 @@
+{#
+  Inspired by sphinx/themes/basic/defindex.html
+#}
+{%- extends "layout.html" %}
+{% set title = _('Overview') %}
+{% block body %}
+<h1> <i>PAOS</i> and <i>Ariel</i> </h1>
+
+<p>
+    This section describes <i>PAOS</i> in the context of the <i>Ariel</i> space mission.
+</p>
+
+<h2>Indices:</h2>
+<table class="contentstable" align="center" width="50%"><tr>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("ariel/usage/index") }}">Use of <i>PAOS</i></a><br/>
+	<span class="linkdescr">Which are the main <i>PAOS</i> use cases for Ariel  </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("ariel/compatibility/index") }}">Compatibility of <i>PAOS</i></a><br/>
+	<span class="linkdescr">How <i>PAOS</i> is compatible with other <i>Ariel</i> simulators</span></p>
+
+    </tr>
+</table>
+
+
+{% endblock %}

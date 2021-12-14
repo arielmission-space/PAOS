@@ -1,5 +1,7 @@
 import os
 import numpy as np
+import logging
+from .log import setLogLevel
 from paos.paos_config import logger
 
 from paos.paos_parseconfig import ParseConfig
@@ -31,9 +33,9 @@ def pipeline(passvalue):
 
     Returns
     -------
-    None
-        Runs the POP in parallel or using a single thread and produces an output where all
-        (or a subset) of the products are stored. If indicated, the output includes plots.
+    None or dict or list of dict
+        If indicated, returns the simulation output dictionary or a list with a dictionary for
+        each simulation. Otherwise, returns None.
 
     Examples
     --------
@@ -42,11 +44,38 @@ def pipeline(passvalue):
     >>> pipeline(passvalue={'conf':'path/to/conf/file',
     >>>                     'output': 'path/to/output/file',
     >>>                     'wavelengths': '1.95,3.9',
-    >>>                     'plot': True, 'n_jobs': 2,
-    >>>                     'store_keys': 'amplitude,dx,dy,wl'})
+    >>>                     'plot': True,
+    >>>                     'loglevel': 'debug',
+    >>>                     'n_jobs': 2,
+    >>>                     'store_keys': 'amplitude,dx,dy,wl',
+    >>>                     'return': False})
     """
 
-    logger.debug('{}'.format(passvalue.keys()))
+    logger.debug('Set up logger')
+
+    if 'loglevel' in passvalue.keys():
+        if passvalue['loglevel'] == 'debug':
+            setLogLevel(logging.DEBUG)
+        elif passvalue['loglevel'] == 'trace':
+            setLogLevel(logging.TRACE)
+        elif passvalue['loglevel'] == 'info':
+            setLogLevel(logging.INFO)
+        else:
+            logger.error('loglevel shall be one of debug, trace or info')
+
+    logger.debug('--------------------------------------------------------------------------------------------')
+    logger.debug('Set pipeline defaults')
+
+    if 'plot' not in passvalue.keys():
+        passvalue['plot'] = False
+    if 'n_jobs' not in passvalue.keys():
+        passvalue['n_jobs'] = 1
+    if 'store_keys' not in passvalue.keys():
+        passvalue['store_keys'] = 'amplitude,dx,dy,wl'
+    if 'return' not in passvalue.keys():
+        passvalue['return'] = False
+
+    logger.debug('passvalue keys are {}'.format(list(passvalue.keys())))
 
     logger.debug('--------------------------------------------------------------------------------------------')
     logger.info('Parse lens file')
@@ -106,7 +135,7 @@ def pipeline(passvalue):
         logger.info('Start POP using a single thread...')
 
     start_time = time.time()
-    ret = Parallel(n_jobs=passvalue['n_jobs'])(
+    retval = Parallel(n_jobs=passvalue['n_jobs'])(
         delayed(run)(pup_diameter,
                      1.0e-6 * wl,
                      general['grid size'],
@@ -118,22 +147,20 @@ def pipeline(passvalue):
     end_time = time.time()
     logger.info('POP completed in {:6.1f}s'.format(end_time - start_time))
 
-    # import sys
-    # sys.exit(0)
-
     logger.debug('--------------------------------------------------------------------------------------------')
     logger.info('Save POP simulation output .h5 file to {}'.format(passvalue['output']))
     group_tags = list(map(str, wavelengths))
     logger.debug('group tags: {}'.format(group_tags))
     store_keys = passvalue['store_keys'].split(',')
     logger.debug('Store keys: {}'.format(store_keys))
-    save_datacube(ret, passvalue['output'], group_tags, keys_to_keep=store_keys,
+    save_datacube(retval, passvalue['output'], group_tags, keys_to_keep=store_keys,
                   overwrite=True)
 
-    logger.debug('--------------------------------------------------------------------------------------------')
-    logger.info('Save POP simulation output plot')
-
     if passvalue['plot']:
+
+        logger.debug('--------------------------------------------------------------------------------------------')
+        logger.info('Save POP simulation output plot')
+
         plots_dir = '{}/plots'.format(os.path.dirname(passvalue['output']))
         if not os.path.isdir(plots_dir):
             logger.info('folder {} not found in directory tree. Creating..'.format(
@@ -148,13 +175,21 @@ def pipeline(passvalue):
         logger.debug('fig base name: {}'.format(fig_name))
 
         _ = Parallel(n_jobs=passvalue['n_jobs'])(
-            delayed(plot_pop)(_ret_,
+            delayed(plot_pop)(_retval_,
                               ima_scale='log',
-                              ncols=3,
+                              ncols=2,
                               figname=''.join([fig_name, '_{}_um'.format(tag), '.png'])
                               )
-            for _ret_, tag in zip(tqdm(ret), group_tags))
+            for _retval_, tag in zip(tqdm(retval), group_tags))
         end_time = time.time()
         logger.info('Plotting completed in {:6.1f}s'.format(end_time - start_time))
 
-    return
+    if passvalue['return']:
+        logger.debug('Returning output dict')
+        if not hasattr(retval, 'len'):
+            return retval[0]
+        else:
+            return retval
+    else:
+        logger.debug('Not returning output dict')
+        return

@@ -73,6 +73,7 @@ def ParseConfig(filename):
     glasslib = Material(wl)
 
     n1 = None  # Refractive index
+    cout = 1.0  # Propagation is initialized assuming left to right direction (+Z)
     pup_diameter = None  # input pupil pup_diameter
 
     opt_chain = {}
@@ -90,7 +91,7 @@ def ParseConfig(filename):
             ypup = element['YRADIUS']
 
             if np.isfinite(xpup) and np.isfinite(ypup):
-                pup_diameter = 2 * max(xpup, ypup)
+                pup_diameter = 2.0 * max(xpup, ypup)
             else:
                 logger.error('Pupil wrongly defined')
                 raise ValueError('Pupil wrongly defined')
@@ -166,7 +167,7 @@ def ParseConfig(filename):
                 else:
                     n2 = n1
             elif _data_['type'] == 'Prism':
-                C = 0
+                C = 0.0
                 n2 = n1
             else:
                 logger.error('Surface Type not recognised: {:s}'.format(str(_data_['type'])))

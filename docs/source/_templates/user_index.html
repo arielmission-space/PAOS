@@ -1,0 +1,47 @@
+{#
+  Inspired by sphinx/themes/basic/defindex.html
+#}
+{%- extends "layout.html" %}
+{% set title = _('Overview') %}
+{% block body %}
+<h1> User Guide </h1>
+
+<p>
+    This user guide will walk you through all <i>PAOS</i> pipelines and functionalities.
+</p>
+
+<h2>Indices:</h2>
+<table class="contentstable" align="center" width="50%"><tr>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("user/quickstart") }}">Quickstart</a><br/>
+	<span class="linkdescr">How to launch <i>PAOS</i> from terminal shell </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("user/inputs/index") }}">Input system</a><br/>
+	<span class="linkdescr">The input system used by <i>PAOS</i></span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("user/abcd/index") }}">ABCD description</a><br/>
+	<span class="linkdescr">ABCD matrix theory and how it is implemented in <i>PAOS</i> </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("user/propagation/index") }}">POP description</a><br/>
+	<span class="linkdescr">Physical Optics Propagation and how it is implemented in <i>PAOS</i> </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("user/aberration/index") }}">Aberration description</a><br/>
+	<span class="linkdescr">Wavefront aberrations and how they are implemented in <i>PAOS</i> </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("user/material/index") }}">Materials description</a><br/>
+	<span class="linkdescr">Optical materials and how they are implemented in <i>PAOS</i> </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("user/plotting/index") }}">Plotting results</a><br/>
+	<span class="linkdescr">How to plot POP results </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("user/saving/index") }}">Saving results</a><br/>
+	<span class="linkdescr">How to save POP results </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("user/pipeline/index") }}">Automatic pipeline</a><br/>
+	<span class="linkdescr">An automated pipeline to run <i>PAOS</i> from python console or jupyter notebook </span></p>
+
+    </tr>
+</table>
+
+
+{% endblock %}

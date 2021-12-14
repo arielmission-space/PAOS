@@ -5,7 +5,8 @@ ABCD description
 =======================
 
 `PAOS` implements the paraxial theory described in
-`Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_
+`Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_.
+In `PAOS`, this is handled by the :class:`~paos.paos_abcd.ABCD` class.
 
 The paraxial region
 -----------------------
@@ -56,12 +57,12 @@ Paraxial ray tracing can be done using ABCD matrices (see later in :ref:`Optical
     In the sagittal plane, the same equation apply, modified when necessary when cylindrical symmetry is violated.
     The relevant vector is :math:`\vec{v_{s}}=(x, u_{x})`.
 
-`PAOS` implements a function to perform a diagnostic ray tracing of an optical system, given the input fields and
-the optical chain. This function then prints the ray positions and slopes in the tangential and sagittal planes for
-each surface of the optical chain.
+`PAOS` implements the function :func:`~paos.paos_raytrace.raytrace` to perform a diagnostic ray tracing of an optical
+system, given the input fields and the optical chain. This function then prints the ray positions and slopes in the
+tangential and sagittal planes for each surface of the optical chain.
 
-Example
-^^^^^^^^^^^^^
+Below is an example to call :func:`~paos.paos_raytrace.raytrace`, provided you already have the optical chain (if not,
+back to :ref:`Parse configuration file`).
 
 .. code-block:: python
 
@@ -94,8 +95,8 @@ Either in free space or in a refractive medium, propagation over a distance :mat
     \end{pmatrix}
     :label:
 
-Example
-^^^^^^^^^^^^^
+Below is an example to use :class:`~paos.paos_abcd.ABCD` to propagate a light ray over a thickness
+:math:`t = 50.0 \ \textrm{mm}`.
 
 .. code-block:: python
 
@@ -131,8 +132,8 @@ A thin lens changes the slope angle and this is given by
 
 where :math:`\Phi = \frac{1}{f}` is the lens optical power.
 
-Example
-^^^^^^^^^^^^^
+Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a thin lens with radius of
+curvature :math:`R = 20.0 \ \textrm{mm}` on a light ray.
 
 .. code-block:: python
 
@@ -144,8 +145,8 @@ Example
 Dioptre
 ----------------------------
 
-When light propagating from a medium with refractive index n1 enters in a dioptre of refractive index n2,
-the slope varies as
+When light propagating from a medium with refractive index :math:`n_1` enters in a dioptre of refractive index
+:math:`n_2`, the slope varies as
 
 .. math::
     \begin{pmatrix}
@@ -167,13 +168,13 @@ the slope varies as
     \end{pmatrix}
     :label:
 
-with the dioptre power :math:`\Phi = \frac{n_2-n_1}{R}`, where R is the radius of curvature.
+with the dioptre power :math:`\Phi = \frac{n_2-n_1}{R}`, where :math:`R` is the dioptre radius of curvature.
 
 .. note::
     :math:`R>0` if the centre of curvature is at the right of the dioptre and :math:`R<0` if at the left.
 
-Example
-^^^^^^^^^^^^^
+Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a dioptre with radius of curvature
+:math:`R = 20.0 \ \textrm{mm}` that causes a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.5` on a light ray.
 
 .. code-block:: python
 
@@ -208,8 +209,8 @@ The limiting case of a dioptre with :math:`R \rightarrow \infty` represents a ch
     \end{pmatrix}
     :label:
 
-Example
-^^^^^^^^^^^^^
+Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a change of medium from
+:math:`n_1 = 1.0` to :math:`n_2 = 1.5` on a light ray.
 
 .. code-block:: python
 
@@ -246,8 +247,10 @@ followed by the exit dioptre :math:`D_b`.
     If a dioptre has :math:`R \rightarrow \infty`, this gives a plano-concave or plano-convex lens, depending
     on the curvature of the other dioptre.
 
-Example
-^^^^^^^^^^^^^
+Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a thick lens on a light ray. The
+lens is :math:`t_c = 5.0 \ \textrm{mm}` thick and is plano-convex, i.e. the first dioptre has :math:`R = \infty` and
+the second has :math:`R = -20.0 \ \textrm{mm}`, causing the beam to converge. The index of refraction in object space
+and in image space is that of free space :math:`n_{os} = n_{is} = 1.0`, while the lens medium has :math:`n_l = 1.5`.
 
 .. code-block:: python
 
@@ -285,8 +288,8 @@ A magnification is modelled as
     \end{pmatrix}
     :label:
 
-Example
-^^^^^^^^^^^^^
+Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a magnification :math:`M = 2.0`
+on a light ray.
 
 .. code-block:: python
 
@@ -328,11 +331,14 @@ we report the ABCD matrices for the tangential and sagittal transfer:
     :label:
 
 where n is the refractive index of the prism, L is the geometrical path length of the prism, and the
-angles :math:`\theta_i` are as described in Fig.2 from the paper, reported in the image below.
+angles :math:`\theta_i` are as described in Fig.2 from the article, reported in the image below.
 
-.. image:: prism.png
+.. _prismtache:
+.. figure:: prism.png
    :width: 600
    :align: center
+
+   `Ray propagation through a prism (from the article cited in the text)`
 
 After some algebra, the ABCD matrix for the tangential transfer can be rewritten as:
 
@@ -353,8 +359,9 @@ where
       D = 1.0/A
     :label:
 
-Example
-^^^^^^^^^^^^^
+Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a prism on a collimated light ray.
+The prism is :math:`t = 8.0 \ \textrm{mm}` thick and has a refractive index of :math:`n_p = 1.5`. The prism angles
+:math:`\theta_i` are selected in conformity with the ray propagation in :numref:`prismtache`.
 
 .. code-block:: python
 
@@ -444,8 +451,10 @@ With these definitions, the effective focal length is
     f_{eff} = \frac{1}{\Phi M}
     :label:
 
-Example
-^^^^^^^^^^^^^
+Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate an optical system equivalent for a
+magnification :math:`M = 2.0`, a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.5`,
+a thin lens with radius of curvature :math:`R = 20.0 \ \textrm{mm}`, and a propagation over a thickness
+:math:`t = 5.0 \ \textrm{mm}`.
 
 .. code-block:: python
 

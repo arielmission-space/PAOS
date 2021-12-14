@@ -1,11 +1,15 @@
 .. _index:
 
 ===================================
-Welcome to PAOS's documentation!
+`PAOS` v0.0.2 Manual
 ===================================
+Welcome to the `PAOS` documentation, last updated Dec 14, 2021.
+
+Table of Contents
+==================
 
 .. toctree::
-   :caption: Table of Contents
+   :name: contentstoc
    :maxdepth: 1
 
     Introduction <intro>
@@ -13,7 +17,6 @@ Welcome to PAOS's documentation!
     User Guide <user/index>
     Validation <validation/index>
     Ariel <ariel/index>
-    Library <library>
     API Guide <api/modules>
     License <license>
     Acknowledgments <acknowledgements>

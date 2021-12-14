@@ -1,4 +1,4 @@
-Full API
+API Guide
 ==============
 
 .. toctree::

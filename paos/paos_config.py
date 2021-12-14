@@ -39,5 +39,5 @@ logger.info('code version {}'.format(__version__))
 from .log import setLogLevel
 
 # setLogLevel(logging.TRACE)
-setLogLevel(logging.DEBUG)
-# setLogLevel(logging.INFO)
+# setLogLevel(logging.DEBUG)
+setLogLevel(logging.INFO)

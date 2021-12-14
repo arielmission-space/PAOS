@@ -1,0 +1,43 @@
+{#
+  Inspired by sphinx/themes/basic/defindex.html
+#}
+{%- extends "layout.html" %}
+{% set title = _('Overview') %}
+{% block body %}
+<h1>{{ docstitle|e }}</h1>
+
+<p>
+  Welcome! This is the documentation for <i>PAOS</i> {{ release|e }}
+  {%- if last_updated %}, last updated {{ last_updated|e }}{% endif %}. 
+</p>
+
+<h2>Indices:</h2>
+<table class="contentstable" align="center" width="50%"><tr>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("intro") }}">Introduction</a><br/>
+	<span class="linkdescr">The <i>PAOS</i> helloworld </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("installation") }}">Installation</a><br/>
+	<span class="linkdescr">How to install <i>PAOS</i> </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("user/index") }}">User guide</a><br/>
+	<span class="linkdescr">How to use <i>PAOS</i> </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("validation/index") }}">Validation</a><br/>
+	<span class="linkdescr">How <i>PAOS</i> has been validated </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("ariel/index") }}">Ariel</a><br/>
+	<span class="linkdescr"><i>PAOS</i> for the <i>Ariel</i> mission </span></p>
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("api/modules") }}">API guide</a><br/>
+	<span class="linkdescr">Complete API guide </span></p>
+
+    <p class="biglink"><a class="smalllink" href="{{ pathto("license") }}"> License</a><br/>
+
+    <p class="biglink"><a class="smalllink" href="{{ pathto("acknowledgments") }}"> Acknowledgments</a><br/>
+
+    </tr>
+</table>
+
+
+{% endblock %}

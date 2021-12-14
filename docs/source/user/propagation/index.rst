@@ -76,8 +76,9 @@ that can be solved as
     \rho = -\frac{z_0'}{z'}
     :label:
 
-Example
-^^^^^^^^^^^^^
+Below is an example of a coordinate break where the input field is centered on the origin and has null angles
+:math:`u_{s}` and :math:`u_{t}` and is subsequently decentered on the Y axis by :math:`y_{dec} = 10.0 \textrm{mm}` and
+rotated around the X axis by :math:`x_{rot} = 0.1 ^{\circ}`.
 
 .. code-block:: python
 
@@ -241,6 +242,10 @@ for the Rayleigh distance, the Gaussian beam waist and the distance to focus.
     the Gaussian beam properties. A tangential magnification changes only the curvature of the
     propagating wavefront.
 
+.. code-block:: python
+
+        Ms, Mt = 1.0, 1.5
+        wfo.Magnification(Ms, Mt)
 
 .. _Wavefront propagation:
 
@@ -301,9 +306,6 @@ Using these primitive operators, `PAOS` implements all possible propagations:
 #. IO(:math:`z_1`, :math:`z_2`) = WTS(:math:`z_2-z(w)`) PTP(:math:`z_2-z(w)`)
 #. OI(:math:`z_1`, :math:`z_2`) = PTP(:math:`z_2-z(w)`) STW(:math:`z_2-z(w)`)
 #. OO(:math:`z_1`, :math:`z_2`) = WTS(:math:`z_2-z(w)`) STW(:math:`z_2-z(w)`)
-
-Example
-^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -459,9 +461,6 @@ orthogonal to the beam. If the aperture is (:math:`y_c, \phi_x, \phi_y`), the ap
 
 Supported aperture shapes are elliptical, circular or rectangular.
 
-Example
-^^^^^^^^^^^^^
-
 .. code-block:: python
 
             xrad *= np.sqrt(1 / (vs[1] ** 2 + 1))
@@ -475,6 +474,8 @@ Example
             aperture = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad,
                                     shape=aperture_shape, obscuration=obscuration)
 
+.. _Stops:
+
 Stops
 --------------------------
 
@@ -484,9 +485,6 @@ It is often the boundary of the primary mirror. An aperture stop has an importan
 The field stop limits the field of view of an optical instrument.
 
 `PAOS` implements a generic stop normalizing the wavefront at the current position to unit energy.
-
-Example
-^^^^^^^^^^^^^
 
 .. code-block:: python
 

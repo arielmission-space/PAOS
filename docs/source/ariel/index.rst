@@ -1,7 +1,7 @@
-.. _PAOS and Ariel:
+.. _Ariel:
 
 =======================
-PAOS and Ariel
+Ariel
 =======================
 
 This section describes `PAOS` in the context of the `Ariel` space mission.

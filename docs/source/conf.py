@@ -55,7 +55,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.githubpages',
               # 'nbsphinx',
               'matplotlib.sphinxext.plot_directive',
-              'sphinx_rtd_theme'
+              'sphinx_rtd_theme',
+              'sphinx_markdown_tables'
               ]
 
 # -----------------------------------------------------------------------------
@@ -97,29 +98,56 @@ intersphinx_mapping = {
 # HTML output
 # -----------------------------------------------------------------------------
 
-html_theme = 'pydata_sphinx_theme'
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named 'default.css' will overwrite the builtin 'default.css'.
+
+# Required theme setup
+html_theme = 'sphinx_material'
+
+# Set link name generated in the top bar.
+html_title = "%s v%s Manual" % (project, version)
+html_last_updated_fmt = '%b %d, %Y'
+
+# Material theme options (see theme.conf for more information)
 html_theme_options = {
-    "logo_link": "index",
-    "github_url": "https://github.com/arielmission-space/PAOS",
-    "collapse_navigation": True,
-    "navbar_start": ["navbar-logo"],
-    "navbar_center": ["navbar-nav"],
-    "navbar_end": ["navbar-icon-links"]
+
+    # Set the name of the project to appear in the navigation.
+    'nav_title': 'PAOS',
+
+    # Specify a base_url used to generate sitemap.xml. If not
+    # specified, then no sitemap will be built.
+    'base_url': 'https://github.com/arielmission-space/PAOS',
+
+    # Set the color and the accent color
+    'color_primary': 'blue-grey',
+    'color_accent': 'light-blue',
+
+    # Set the repo location to get a badge with stats
+    'repo_url': 'https://github.com/arielmission-space/PAOS',
+    'repo_name': 'Git repo',
+
+    # Visible levels of the global TOC; -1 means unlimited
+    'globaltoc_depth': 2,
+    # If False, expand all TOC entries
+    'globaltoc_collapse': True,
+    # If True, show hidden TOC entries
+    'globaltoc_includehidden': False,
+
+    # 'html_prettify': True,
 }
 
 html_static_path = ['_static']
 html_logo = "_static/paos_logo.jpg"
-html_favicon = "_static/paos_logo.ico"
+# html_favicon = ""
 
 html_show_sourcelink = False
 
-
-def setup(app):
-    app.add_css_file('paos.css')
-
-
-html_title = "%s v%s Manual" % (project, version)
-html_last_updated_fmt = '%b %d, %Y'
+html_additional_pages = {
+    'index': 'index.html',
+    'user/index': 'user_index.html',
+    'ariel/index': 'ariel.html',
+}
 
 html_use_modindex = True
 html_copy_source = False
@@ -127,6 +155,10 @@ html_domain_indices = False
 html_file_suffix = '.html'
 
 htmlhelp_basename = 'paos'
+
+html_sidebars = {
+    "**": ["logo-text.html", "globaltoc.html", "localtoc.html", "searchbox.html"]
+}
 
 add_module_names = False
 add_function_parentheses = False
@@ -142,3 +174,10 @@ mathjax_path = "https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS
 
 plot_html_show_formats = False
 plot_html_show_source_link = False
+
+
+def setup(app):
+    app.add_css_file('_static/paos.css')
+
+
+numfig = True

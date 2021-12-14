@@ -6,10 +6,11 @@ Quick start
 
 Short explanation on how to quickly run `PAOS` and have its output stored in a convenient file.
 
-Running PAOS from console
+Running PAOS from terminal
 ------------------------------
 
-The quickest way to run `PAOS` is from console.
+The quickest way to run `PAOS` is from terminal.
+
 Run it with the `help` flag to read the available options:
 
 .. code-block:: bash
@@ -18,48 +19,45 @@ Run it with the `help` flag to read the available options:
 
 The main command line flags are listed below.
 
-====================  =======================================================================
-flag                  description
-====================  =======================================================================
--c, --configuration   Input configuration file to pass
--o, --output          Output file
--p, --plot            Save output plots
--n, --nThreads        Number of threads for parallel processing
--d, --debug           Debug mode screen
--l, --log             Store the log output on file
-====================  =======================================================================
+========================================  ===========================================================================
+flag                                      description
+========================================  ===========================================================================
+-c, --configuration                       Input configuration file to pass
+-o, --output                              Output file
+-p, --plot                                Save output plots
+-n, --nThreads                            Number of threads for parallel processing
+-d, --debug                               Debug mode screen
+-l, --log                                 Store the log output on file
+========================================  ===========================================================================
 
 Where the configuration file shall be an `.xlsx` file and the output file an `.h5` file (see later in :ref:`h5`).
 `-n` must be followed by an integer. To activate `-p`, `-d` and `-l` no argument is needed.
 
 Other option flags may be given to run specific simulations.
 
-========================  ===========================================================================
-flag                      description
-========================  ===========================================================================
--wl, --wavelength         A list of specific wavelengths at which to run the simulation
--wlg, --wavelength_grid   A list with min wl, max wl, spectral resolution to build a wavelength grid
--wfe, --wfe_simulation    A list with wfe realization file and column to simulate an aberration
-========================  ===========================================================================
+========================================  ===========================================================================
+flag                                      description
+========================================  ===========================================================================
+-wl, --wavelength                         A list of specific wavelengths at which to run the simulation
+-wlg, --wavelength_grid                   A list with min wl, max wl, spectral resolution to build a wavelength grid
+-wfe, --wfe_simulation                    A list with wfe realization file and column to simulate an aberration
+========================================  ===========================================================================
 
 To have a lighter output please use the option flags listed below.
 
-========================  ===========================================================================
-flag                      description
-========================  ===========================================================================
--keys, --keys_to_keep     A list with the output dictionary keys to save
--lo, --light_output       Save only at last optical surface
-========================  ===========================================================================
+========================================  ===========================================================================
+flag                                      description
+========================================  ===========================================================================
+-keys, --keys_to_keep                     A list with the output dictionary keys to save
+-lo, --light_output                       Save only at last optical surface
+========================================  ===========================================================================
 
 To activate `-lo` no argument is needed.
 
-A quick look at the outputs
-----------------------------
-
 .. _h5:
 
-The `.h5` file
-^^^^^^^^^^^^^^^
+The output file
+-----------------
 
 `PAOS` stores its main output product to a HDF5_ `.h5` file. To open it, please choose your favourite viewer
 (e.g. HDFView_, HDFCompass_) or API (e.g. Cpp_, FORTRAN_ and Python_).
@@ -81,16 +79,24 @@ The `.h5` file
 
 .. _Python: https://www.h5py.org/
 
+For more information on how to produce a similar output file, see :ref:`Saving results`.
+
 
 The default plot
-^^^^^^^^^^^^^^^^^^
+------------------
 
-An important part of understanding the `PAOS` output is often to look at the default plot. It shows the squared
-amplitude of the complex wavefront at an optical surface such as the image plane, using a color scale (linear or
-logarithmic). The x and y axes are in physical units, e.g. micron. For reference, dark circular rings are
-superimposed on the first five zeros of the circular Airy function. The title of the plot features the optical
-surface name, the focal number, the Gaussian beam width, the wavelength and the total optical throughput.
+An important part of understanding the `PAOS` output is often to look at the default plot, as in the below figure.
 
 .. image:: _static/default_plot.png
    :width: 600
    :align: center
+
+This plot shows the PSF, i.e. the squared amplitude of the complex wavefront, at the `AIRS-CH0` focal plane.
+
+The color scale can be either linear or logarithmic. The x and y axes are in physical units, e.g. micron.
+For reference, dark circular rings are superimposed on the first five zeros of the circular Airy function.
+
+The title of the plot features the optical surface name, the focal number, the Gaussian beam width, the
+simulation wavelength and the total optical throughput that reaches the surface.
+
+For more information on how to produce a similar plot, see :ref:`Plotting results`.
