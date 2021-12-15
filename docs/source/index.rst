@@ -1,16 +1,12 @@
 .. _index:
 
-===================================
-`PAOS` v0.0.2 Manual
-===================================
-Welcome to the `PAOS` documentation, last updated Dec 14, 2021.
-
-Table of Contents
-==================
+================================
+Welcome to PAOS's documentation!
+================================
 
 .. toctree::
-   :name: contentstoc
-   :maxdepth: 1
+    :name: contentstoc
+    :maxdepth: 1
 
     Introduction <intro>
     Installation <installation>
@@ -20,10 +16,3 @@ Table of Contents
     API Guide <api/modules>
     License <license>
     Acknowledgments <acknowledgements>
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

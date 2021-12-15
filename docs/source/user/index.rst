@@ -31,9 +31,6 @@ Each functionality has a self-consistent example to run in python console or jup
 
 Have a good read. Feedback is highly appreciated.
 
-Table of Contents
--------------------
-
 .. toctree::
     :name: usertoc
     :maxdepth: 1

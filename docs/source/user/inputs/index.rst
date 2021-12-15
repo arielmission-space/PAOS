@@ -1,6 +1,5 @@
 .. _Input system:
 
-=======================
 Input system
 =======================
 
@@ -19,7 +18,7 @@ Having a generic input system was also advantageous to validate the `PAOS` code,
 optical system (see :ref:`Validation`).
 
 Configuration file
-=======================
+----------------------
 
 The configuration file is an Excel spreadsheet containing three data sheets named `General`, `Fields` and `Lens Data`.
 
@@ -66,10 +65,14 @@ Depending on the surface, optical materials are supported (see :ref:`Materials d
    `Lens Data (2)`
 
 Read configuration file
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Given the input file name, `PAOS` implements :func:`~paos.paos_parseconfig.ReadConfig`, a function that opens the file
 and returns the simulation parameters, as shown in the example below.
+
+Example
+~~~~~~~~~~~
+Code snippet to read a `PAOS` configuration file.
 
 .. code-block:: python
 
@@ -79,11 +82,15 @@ and returns the simulation parameters, as shown in the example below.
 .. _Parse configuration file:
 
 Parse configuration file
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Then, the simulation parameters are parsed by :func:`~paos.paos_parseconfig.ParseConfig` that prepares the simulation run.
 This function then returns the input pupil diameter along with the general parameters, the input fields
-and the optical chain, as shown below.
+and the optical chain, as shown the example below.
+
+Example
+~~~~~~~~~~~
+Code snippet to parse a `PAOS` configuration file.
 
 .. code-block:: python
 

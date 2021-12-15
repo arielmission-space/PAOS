@@ -1,6 +1,5 @@
 .. _Automatic pipeline:
 
-=======================
 Automatic pipeline
 =======================
 
@@ -15,7 +14,7 @@ runs the POP in parallel or using a single thread and produces an output where a
 (or a subset) of the products are stored. If indicated, the output includes plots.
 
 Example
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~
 
 .. code-block:: python
 

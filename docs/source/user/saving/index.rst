@@ -1,6 +1,5 @@
 .. _Saving results:
 
-=======================
 Saving results
 =======================
 
@@ -12,20 +11,38 @@ Given the POP simulation output dictionary, a hdf5 file name and the keys to sto
 at each surface, it saves the output dictionary along with the `PAOS` package information
 to the hdf5 output file. If indicated, overwrites past output file.
 
-.. image:: ouput.png
+:numref:`output_gen`
+
+:numref:`output_info`
+
+:numref:`output_surfaces`
+
+.. _output_gen:
+
+.. figure:: output_gen.png
    :width: 600
    :align: center
 
-.. image:: output_info.png
+   `Output file general interface`
+
+.. _output_info:
+
+.. figure:: output_info.png
    :width: 600
    :align: center
 
-.. image:: output_surfaces.png
+   `Output file info interface`
+
+.. _output_surfaces:
+
+.. figure:: output_surfaces.png
    :width: 600
    :align: center
+
+   `Output file surfaces interface`
 
 Example
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~
 
 .. code-block:: python
 
@@ -47,12 +64,18 @@ identifiers to tag each simulation and the keys to store at each surface, it sav
 outputs to a data cube along with the `PAOS` package information to the hdf5 output file.
 If indicated, overwrites past output file.
 
-.. image:: output_cube.png
+:numref:`output_cube`
+
+.. _output_cube:
+
+.. figure:: output_cube.png
    :width: 600
    :align: center
 
+   `Output file cube general interface`
+
 Example
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~
 
 .. code-block:: python
 

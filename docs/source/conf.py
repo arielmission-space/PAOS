@@ -181,3 +181,55 @@ def setup(app):
 
 
 numfig = True
+
+# -- Options for LaTeX output ---------------------------------------------
+
+with open('_templates/latexstyling.tex', 'r+') as f:
+    PREAMBLE = f.read()
+
+with open('_templates/latexstyling_maketitle.tex', 'r+') as f:
+    MAKETITLE = f.read()
+
+latex_engine = 'pdflatex'
+latex_elements = {
+    # The paper size ('letterpaper' or 'a4paper').
+    #
+    'papersize': 'a4paper',
+    'releasename': " ",
+    # Sonny, Lenny, Glenn, Conny, Rejne, Bjarne and Bjornstrup
+    'fncychap': '\\usepackage[Glenn]{fncychap}',
+    # 'fncychap': '\\usepackage{fncychap}',
+    'fontpkg': '\\usepackage{amsmath,amsfonts,amssymb,amsthm}',
+
+    'figure_align': 'htbp',
+    # The font size ('10pt', '11pt' or '12pt').
+    'pointsize': '12pt',
+
+    # Additional stuff for the LaTeX preamble.
+    'preamble': PREAMBLE,
+
+    'maketitle': MAKETITLE,
+    # Latex figure (float) alignment
+    #
+    # 'figure_align': 'htbp',
+    'sphinxsetup': \
+        'hmargin={0.7in,0.7in}, vmargin={1in,1in}, \
+        verbatimwithframe=true, \
+        TitleColor={rgb}{0,0,0}, \
+        HeaderFamily=\\rmfamily\\bfseries, \
+        InnerLinkColor={rgb}{0,0,1}, \
+        OuterLinkColor={rgb}{0,0,1}',
+
+    'tableofcontents': ' ',
+
+}
+
+latex_logo = '_static/paos_logo.jpg'
+
+# Grouping the document tree into LaTeX files. List of tuples
+# (source start file, target name, title,
+#  author, documentclass [howto, report, manual, or own class]).
+latex_documents = [
+    (master_doc, 'paos.tex', 'PAOS Manual',
+     'Andrea Bocchieri, Enzo Pascale', 'manual')
+]

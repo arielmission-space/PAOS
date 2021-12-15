@@ -1,21 +1,37 @@
 .. _Validation:
 
-=======================
 Validation
 =======================
 
 `PAOS` has been validated against the code PROPER
 (`John E. Krist, PROPER: an optical propagation library for IDL, Proc. SPIE, 6675 (2007) <https://doi.org/10.1117/12.731179>`_).
 
-.. image:: Amplitude_comparison.png
-   :width: 600
+:numref:`Amplitude_comparison`
+
+:numref:`Phase_comparison`
+
+:numref:`PSF_comparison`
+
+
+.. _Amplitude_comparison:
+.. figure:: Amplitude_comparison.png
+   :width: 900
    :align: center
 
-.. image:: Phase_comparison.png
-   :width: 600
+   `Amplitude comparison`
+
+.. _Phase_comparison:
+.. figure:: Phase_comparison.png
+   :width: 900
    :align: center
 
-.. image:: Psf_comparison.png
-   :width: 600
+   `Phase comparison`
+
+.. _Psf_comparison:
+.. figure:: Psf_comparison.png
+   :width: 900
    :align: center
+
+   `PSF comparison`
+
 

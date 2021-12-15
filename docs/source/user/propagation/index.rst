@@ -1,10 +1,11 @@
 .. _POP description:
 
-=======================
 POP description
 =======================
 
 Brief description of some concepts of physical optics wavefront propagation (POP) and how they are implemented in `PAOS`.
+
+In `PAOS`, this is handled by the class :class:`~paos.paos_wfo.WFO`.
 
 
 General diffraction
@@ -76,9 +77,14 @@ that can be solved as
     \rho = -\frac{z_0'}{z'}
     :label:
 
-Below is an example of a coordinate break where the input field is centered on the origin and has null angles
-:math:`u_{s}` and :math:`u_{t}` and is subsequently decentered on the Y axis by :math:`y_{dec} = 10.0 \textrm{mm}` and
-rotated around the X axis by :math:`x_{rot} = 0.1 ^{\circ}`.
+
+
+Example
+~~~~~~~~~~~~~
+
+Code snippet to use :func:`~paos.paos_coordinatebreak.CoordinateBreak` to simulate a coordinate break where the input
+field is centered on the origin and has null angles :math:`u_{s}` and :math:`u_{t}` and is subsequently decentered on
+the Y axis by :math:`y_{dec} = 10.0 \ \textrm{mm}` and rotated around the X axis by :math:`x_{rot} = 0.1 ^{\circ}`.
 
 .. code-block:: python
 
@@ -122,11 +128,15 @@ A Gaussian beam spreads out as
 where :math:`z_R` is the :ref:`Rayleigh distance`.
 
 A Gaussian beam is defined by just three parameters: :math:`w_0`, :math:`z_R` and the divergence angle :math:`\theta`,
-as in the figure below (from `Edmund Optics, Gaussian beam propagation <https://www.edmundoptics.com/knowledge-center/application-notes/lasers/gaussian-beam-propagation/>`_).
+as in :numref:`gaussianbeams` (from `Edmund Optics, Gaussian beam propagation <https://www.edmundoptics.com/knowledge-center/application-notes/lasers/gaussian-beam-propagation/>`_).
 
-.. image:: gaussianbeams.png
+.. _gaussianbeams:
+
+.. figure:: gaussianbeams.png
    :width: 600
    :align: center
+
+   `Gaussian beam diagram`
 
 The complex amplitude of a Gaussian beam is of the form
 (see e.g. `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_)
@@ -148,7 +158,7 @@ at the waist, where the wavefront is planar (:math:`R \rightarrow \infty`).
 .. _Rayleigh distance:
 
 Rayleigh distance
-^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Rayleigh distance of a Gaussian beam is defined as the value of z where the cross-sectional area of the beam is
 doubled. This occurs when w(z) has increased to :math:`\sqrt{2} w_0`.
@@ -173,7 +183,7 @@ to define specific propagators (see :ref:`Wavefront propagation`).
 
 
 Gaussian beam propagation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To the accuracy of Fresnel diffraction, a Gaussian beam propagates as
 (see e.g. `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_)
@@ -206,7 +216,7 @@ gives the following transformation:
     :label:
 
 Gaussian beam magnification
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Gaussian beam magnification can also be described using ABCD matrix optics.
 Using the definition given in :ref:`Magnification`, in this case
@@ -242,8 +252,16 @@ for the Rayleigh distance, the Gaussian beam waist and the distance to focus.
     the Gaussian beam properties. A tangential magnification changes only the curvature of the
     propagating wavefront.
 
+Example
+~~~~~~~~~~~~~
+
+Code snippet to use :class:`~paos.paos_wfo.WFO` to simulate a magnification of the beam for the tangential direction
+:math:`M_t = 1.5`, while keeping the sagittal direction unchanged (:math:`M_s = 1.0`).
+
 .. code-block:: python
 
+        from paos.paos_wfo import WFO
+        wfo = WFO(pupil_diameter, wavelength, gridsize, zoom)
         Ms, Mt = 1.0, 1.5
         wfo.Magnification(Ms, Mt)
 
@@ -279,12 +297,16 @@ Rayleigh range (RR), defined as the region between :math:`-z_R` and :math:`z_R` 
     \textrm{outside} \leftrightarrow |z - z(w)| > z_R
     :label: eq:insideout
 
-The situation is described in the below figure from
+The situation is described in :numref:`propagators`, taken from
 `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_.
 
-.. image:: propagators.png
+.. _propagators:
+
+.. figure:: propagators.png
    :width: 600
    :align: center
+
+   `Wavefront propagators`
 
 Explicitly, these possibilities are:
 
@@ -307,7 +329,15 @@ Using these primitive operators, `PAOS` implements all possible propagations:
 #. OI(:math:`z_1`, :math:`z_2`) = PTP(:math:`z_2-z(w)`) STW(:math:`z_2-z(w)`)
 #. OO(:math:`z_1`, :math:`z_2`) = WTS(:math:`z_2-z(w)`) STW(:math:`z_2-z(w)`)
 
+Example
+~~~~~~~~~~~~~
+
+Code snippet to use :class:`~paos.paos_wfo.WFO` to propagate the beam over a thickness of :math:`10.0 \ \textrm{mm}`.
+
 .. code-block:: python
+
+        from paos.paos_wfo import WFO
+        wfo = WFO(pupil_diameter, wavelength, gridsize, zoom)
 
         thickness = 10.0e-3  # m
         wfo.propagate(dz = thickness)
@@ -321,11 +351,15 @@ Consider a monochromatic collimated beam travelling with slope :math:`u = 0`, in
 direction of propagation of the beam. The planar beam is transformed into a converging or diverging beam. That means,
 a spherical wavefront with curvature :math:`>0` for a converging beam, or a :math:`<0` for a diverging beam.
 
-The convergent beam situation is described by the diagram below.
+The convergent beam situation is described in :numref:`convergent`.
 
-.. image:: convergent.png
+.. _convergent:
+
+.. figure:: convergent.png
    :width: 600
    :align: center
+
+   `Diagram for convergent beam`
 
 where:
 
@@ -360,16 +394,20 @@ The phase delay over the whole lens aperture is then
     :label:
 
 Sloped incoming beam
-^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When the incoming collimated beam has a slope :math:`u_1`, its phase on the plane of the lens is given by
 :math:`e^{2\pi j y u_1 / \lambda}` to which the lens adds a spherical sag.
 
-This situation is described by the diagram below.
+This situation is described in :numref:`convergent_sloped`.
 
-.. image:: convergent_sloped.png
+.. _convergent_sloped:
+
+.. figure:: convergent_sloped.png
    :width: 600
    :align: center
+
+   `Diagram for convergent sloped beam`
 
 The total phase delay is then
 
@@ -386,13 +424,17 @@ with :math:`y_0 = f u_1`.
     In this approximation, the focal plane is planar.
 
 Off-axis incoming beam
-^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The case of off-axis optics is described in the diagram below.
+The case of off-axis optics is described in :numref:`convergent_offaxis`.
 
-.. image:: convergent_offaxis.png
+.. _convergent_offaxis:
+
+.. figure:: convergent_offaxis.png
    :width: 600
    :align: center
+
+   `Diagram for off-axis beam`
 
 In this case, the beam centre is at :math:`y_c`.
 
@@ -412,7 +454,7 @@ Apart from constant phase terms, that can be neglected, this is equivalent to a 
 on the lens. The overall slope shifts the focal point in a planar focal plane. No aberrations are introduced.
 
 Paraxial phase correction
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For an optical element that can be modeled using its focal length :math:`f` (that is, mirrors, thin lenses
 and refractive surfaces), the paraxial phase effect is
@@ -461,18 +503,26 @@ orthogonal to the beam. If the aperture is (:math:`y_c, \phi_x, \phi_y`), the ap
 
 Supported aperture shapes are elliptical, circular or rectangular.
 
+Example
+~~~~~~~~~~~~~
+
+Code snippet to use :class:`~paos.paos_wfo.WFO` to simulate the beam propagation through an elliptical aperture.
+
 .. code-block:: python
 
-            xrad *= np.sqrt(1 / (vs[1] ** 2 + 1))
-            yrad *= np.sqrt(1 / (vt[1] ** 2 + 1))
-            xaper = xdec - vs[0]
-            yaper = ydec - vt[0]
+        from paos.paos_wfo import WFO
+        wfo = WFO(pupil_diameter, wavelength, gridsize, zoom)
 
-            aperture_shape = 'elliptical'  # or 'rectangular'
-            obscuration = False  # if True, applies obscuration
+        xrad *= np.sqrt(1 / (vs[1] ** 2 + 1))
+        yrad *= np.sqrt(1 / (vt[1] ** 2 + 1))
+        xaper = xdec - vs[0]
+        yaper = ydec - vt[0]
 
-            aperture = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad,
-                                    shape=aperture_shape, obscuration=obscuration)
+        aperture_shape = 'elliptical'  # or 'rectangular'
+        obscuration = False  # if True, applies obscuration
+
+        aperture = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad,
+                                shape=aperture_shape, obscuration=obscuration)
 
 .. _Stops:
 
@@ -486,7 +536,15 @@ The field stop limits the field of view of an optical instrument.
 
 `PAOS` implements a generic stop normalizing the wavefront at the current position to unit energy.
 
+Example
+~~~~~~~~~~~~~
+
+Code snippet to use :class:`~paos.paos_wfo.WFO` to simulate an aperture stop.
+
 .. code-block:: python
+
+        from paos.paos_wfo import WFO
+        wfo = WFO(pupil_diameter, wavelength, gridsize, zoom)
 
         wfo.make_stop()
 

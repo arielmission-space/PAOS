@@ -1,14 +1,16 @@
 .. _ABCD description:
 
-=======================
 ABCD description
 =======================
 
 `PAOS` implements the paraxial theory described in
 `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_.
-In `PAOS`, this is handled by the :class:`~paos.paos_abcd.ABCD` class.
 
-The paraxial region
+In `PAOS`, this is handled by the class :class:`~paos.paos_abcd.ABCD`.
+
+.. _Paraxial region:
+
+Paraxial region
 -----------------------
 
 For self-consistency, we give a definition for paraxial region, following
@@ -21,11 +23,15 @@ sines and tangents.
 Optical coordinates
 -----------------------
 
-The `PAOS` code implementation assumes optical coordinates as defined in the diagram below.
+The `PAOS` code implementation assumes optical coordinates as defined in :numref:`coordinates_def`.
 
-.. image:: coordinates.png
+.. _coordinates_def:
+
+.. figure:: coordinates.png
    :width: 600
    :align: center
+
+   `Optical coordinates definition`
 
 where
 
@@ -61,7 +67,10 @@ Paraxial ray tracing can be done using ABCD matrices (see later in :ref:`Optical
 system, given the input fields and the optical chain. This function then prints the ray positions and slopes in the
 tangential and sagittal planes for each surface of the optical chain.
 
-Below is an example to call :func:`~paos.paos_raytrace.raytrace`, provided you already have the optical chain (if not,
+Example
+^^^^^^^^^^
+
+Code snippet to call :func:`~paos.paos_raytrace.raytrace`, provided you already have the optical chain (if not,
 back to :ref:`Parse configuration file`).
 
 .. code-block:: python
@@ -95,7 +104,10 @@ Either in free space or in a refractive medium, propagation over a distance :mat
     \end{pmatrix}
     :label:
 
-Below is an example to use :class:`~paos.paos_abcd.ABCD` to propagate a light ray over a thickness
+Example
+^^^^^^^^^^
+
+Code snippet to use :class:`~paos.paos_abcd.ABCD` to propagate a light ray over a thickness
 :math:`t = 50.0 \ \textrm{mm}`.
 
 .. code-block:: python
@@ -132,7 +144,10 @@ A thin lens changes the slope angle and this is given by
 
 where :math:`\Phi = \frac{1}{f}` is the lens optical power.
 
-Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a thin lens with radius of
+Example
+^^^^^^^^^^
+
+Code snippet to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a thin lens with radius of
 curvature :math:`R = 20.0 \ \textrm{mm}` on a light ray.
 
 .. code-block:: python
@@ -173,7 +188,10 @@ with the dioptre power :math:`\Phi = \frac{n_2-n_1}{R}`, where :math:`R` is the 
 .. note::
     :math:`R>0` if the centre of curvature is at the right of the dioptre and :math:`R<0` if at the left.
 
-Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a dioptre with radius of curvature
+Example
+^^^^^^^^^^
+
+Code snippet to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a dioptre with radius of curvature
 :math:`R = 20.0 \ \textrm{mm}` that causes a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.5` on a light ray.
 
 .. code-block:: python
@@ -209,7 +227,10 @@ The limiting case of a dioptre with :math:`R \rightarrow \infty` represents a ch
     \end{pmatrix}
     :label:
 
-Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a change of medium from
+Example
+^^^^^^^^^^
+
+Code snippet to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a change of medium from
 :math:`n_1 = 1.0` to :math:`n_2 = 1.5` on a light ray.
 
 .. code-block:: python
@@ -247,7 +268,10 @@ followed by the exit dioptre :math:`D_b`.
     If a dioptre has :math:`R \rightarrow \infty`, this gives a plano-concave or plano-convex lens, depending
     on the curvature of the other dioptre.
 
-Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a thick lens on a light ray. The
+Example
+^^^^^^^^^^
+
+Code snippet to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a thick lens on a light ray. The
 lens is :math:`t_c = 5.0 \ \textrm{mm}` thick and is plano-convex, i.e. the first dioptre has :math:`R = \infty` and
 the second has :math:`R = -20.0 \ \textrm{mm}`, causing the beam to converge. The index of refraction in object space
 and in image space is that of free space :math:`n_{os} = n_{is} = 1.0`, while the lens medium has :math:`n_l = 1.5`.
@@ -288,7 +312,10 @@ A magnification is modelled as
     \end{pmatrix}
     :label:
 
-Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a magnification :math:`M = 2.0`
+Example
+^^^^^^^^^^
+
+Code snippet to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a magnification :math:`M = 2.0`
 on a light ray.
 
 .. code-block:: python
@@ -331,14 +358,15 @@ we report the ABCD matrices for the tangential and sagittal transfer:
     :label:
 
 where n is the refractive index of the prism, L is the geometrical path length of the prism, and the
-angles :math:`\theta_i` are as described in Fig.2 from the article, reported in the image below.
+angles :math:`\theta_i` are as described in Fig.2 from the article, reported in :numref:`prismtache`.
 
 .. _prismtache:
+
 .. figure:: prism.png
    :width: 600
    :align: center
 
-   `Ray propagation through a prism (from the article cited in the text)`
+   `Ray propagation through a prism`
 
 After some algebra, the ABCD matrix for the tangential transfer can be rewritten as:
 
@@ -359,7 +387,10 @@ where
       D = 1.0/A
     :label:
 
-Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a prism on a collimated light ray.
+Example
+^^^^^^^^^^
+
+Code snippet to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a prism on a collimated light ray.
 The prism is :math:`t = 8.0 \ \textrm{mm}` thick and has a refractive index of :math:`n_p = 1.5`. The prism angles
 :math:`\theta_i` are selected in conformity with the ray propagation in :numref:`prismtache`.
 
@@ -451,7 +482,10 @@ With these definitions, the effective focal length is
     f_{eff} = \frac{1}{\Phi M}
     :label:
 
-Below is an example to use :class:`~paos.paos_abcd.ABCD` to simulate an optical system equivalent for a
+Example
+^^^^^^^^^^
+
+Code snippet to use :class:`~paos.paos_abcd.ABCD` to simulate an optical system equivalent for a
 magnification :math:`M = 2.0`, a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.5`,
 a thin lens with radius of curvature :math:`R = 20.0 \ \textrm{mm}`, and a propagation over a thickness
 :math:`t = 5.0 \ \textrm{mm}`.
@@ -465,6 +499,6 @@ a thin lens with radius of curvature :math:`R = 20.0 \ \textrm{mm}`, and a propa
         thickness = 5.0  # mm
         magnification = 2.0
 
-        abcd = ABCD(thickness = thickness, curvature = 1.0/radius, n1=n1, n2=n2, M=magnification)
+        abcd = ABCD(thickness = thickness, curvature = 1.0/radius, n1 = n1, n2 = n2, M = magnification)
         (A, B), (C, D) = abcd.ABCD
 

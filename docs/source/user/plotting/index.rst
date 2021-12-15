@@ -1,6 +1,5 @@
 .. _Plotting results:
 
-=======================
 Plotting results
 =======================
 
@@ -10,12 +9,18 @@ Base plot
 Given the POP simulation output dict, plots the squared amplitude of the
 wavefront at the given optical surface.
 
-.. image:: Excite_base_plot.png
+:numref:`Excite_base_plot`
+
+.. _Excite_base_plot:
+
+.. figure:: Excite_base_plot.png
    :width: 600
    :align: center
 
+   `PSF at EXCITE image plane`
+
 Example
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~
 
 .. code-block:: python
 
@@ -40,12 +45,18 @@ POP plot
 Given the POP simulation output dict, plots the squared amplitude of the
 wavefront at all the optical surfaces.
 
-.. image:: Excite_POP_plot.png
+:numref:`Excite_POP_plot`
+
+.. _Excite_POP_plot:
+
+.. figure:: Excite_POP_plot.png
    :width: 600
    :align: center
 
+   `Full POP plot for EXCITE`
+
 Example
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~
 
 .. code-block:: python
 

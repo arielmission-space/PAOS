@@ -4,7 +4,6 @@ from ..paos_config import logger
 
 
 class Material:
-
     """
     Class for handling different optical materials for use in `PAOS`
     """
@@ -32,16 +31,20 @@ class Material:
         Implements the Sellmeier 1 equation to estimate the glass
         index of refraction relative to air at the glass reference temperature,
         :math:`T_{ref} = 20^{\\circ}`, and pressure, :math:`P_{ref} = 1 \\ atm`.
+        The Sellmeier 1 equation consists of three terms and is given as
+        :math:`\\displaystyle n^{2}(\\lambda )=1+{\\frac {K_{1}\\lambda ^{2}}{\\lambda ^{2}-L_{1}}}+
+        {\\frac {K_{2}\\lambda ^{2}}{\\lambda ^{2}-L_{2}}}+{\\frac {K_{3}\\lambda ^{2}}{\\lambda ^{2}-L_{3}}}`
 
         Parameters
         ----------
         par: dict
-            dictionary containing the 'K1', 'L1', 'K2', 'L2', 'K3', 'L3'
+            dictionary containing the :math:`K_1`, :math:`L_1`, :math:`K_2`, :math:`L_2`, :math:`K_3`, :math:`L_3`
             parameters of the Sellmeier 1 model
 
         Returns
         -------
-        out: the refractive index
+        scalar or array
+            the refractive index
         """
         wl2 = self.wl ** 2
         n2_1 = par['K1'] * wl2 / (wl2 - par['L1'])
@@ -54,6 +57,7 @@ class Material:
     def nT(n, D0, delta_T):
         """
         Estimate the change in the glass absolute index of refraction with temperature as
+
         :math:`n(\\Delta T) = \\frac{n^2 - 1}{2 n} D_0 \\Delta T + n`
 
         Parameters
@@ -91,7 +95,7 @@ class Material:
 
         nref = 1.0 + 1.0e-8 * (6432.8 + 2949810 * wl2 / (146 * wl2 - 1) + 25540 * wl2 / (41 * wl2 - 1))
         nair = 1 + (nref - 1) * P / (1.0 + 3.4785e-3 * (T - 15))
-        
+
         return nair
 
     def nmat(self, name):

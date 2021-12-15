@@ -1,0 +1,39 @@
+%! Author = andrea
+%! Date = 15/12/21
+
+% Maketitle
+\pagenumbering{Roman} %%% to avoid page 1 conflict with actual page 1
+
+\begin{titlepage}
+
+    \centering
+
+    \vspace*{30mm} %%% * is used to give space from top
+    \textbf{\Huge {PAOS Manual v0.0.2}}
+
+    \vspace{20mm}
+    \begin{figure}[!h]
+        \centering
+        \includegraphics[scale=0.4]{paos_logo.jpg}
+        \label{fig:paos_logo}
+    \end{figure}
+
+    \vspace{25mm}
+    \Large \textbf{{Andrea Bocchieri, Enzo Pascale}}
+
+    \vspace*{8mm}
+    \small Created on: December, 2021
+
+    \vspace{2mm}
+    \small Last updated: \MonthYearFormat\today
+
+
+\end{titlepage}
+
+\clearpage
+\pagenumbering{roman}
+\tableofcontents
+\listoffigures
+\listoftables
+\clearpage
+\pagenumbering{arabic}
