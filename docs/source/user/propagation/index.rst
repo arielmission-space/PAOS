@@ -13,12 +13,14 @@ General diffraction
 
 Diffraction is the deviation of a wave from the propagation that would be followed by a straight ray,
 which occurs when part of the wave is obstructed by the presence of a boundary. Light undergoes diffraction
-because of its wave nature. The Huygens-Fresnel principle is often used to explain diffraction intuitively.
-Each point on the wavefront propagating from a single source can be though of as being the source of spherical
-secondary wavefronts (wavelets). The combination of all wavelets cancels except at the boundary, which is
-locally parallel to the initial wavefront. However, if there is an object or aperture which obstructs some
-of the wavelets, changing their phase or amplitude, these wavelets interfere with the unobstructed wavelets,
-resulting in the diffraction of the wave.
+because of its wave nature.
+
+The Huygens-Fresnel principle is often used to explain diffraction intuitively. Each point on the wavefront
+propagating from a single source can be though of as being the source of spherical secondary wavefronts (wavelets).
+The combination of all wavelets cancels except at the boundary, which is locally parallel to the initial wavefront.
+
+However, if there is an object or aperture which obstructs some of the wavelets, changing their phase or amplitude,
+these wavelets interfere with the unobstructed wavelets, resulting in the diffraction of the wave.
 
 .. _Fresnel diffraction theory:
 
@@ -82,7 +84,7 @@ that can be solved as
 Example
 ~~~~~~~~~~~~~
 
-Code snippet to use :func:`~paos.paos_coordinatebreak.CoordinateBreak` to simulate a coordinate break where the input
+Code example to use :func:`~paos.paos_coordinatebreak.CoordinateBreak` to simulate a coordinate break where the input
 field is centered on the origin and has null angles :math:`u_{s}` and :math:`u_{t}` and is subsequently decentered on
 the Y axis by :math:`y_{dec} = 10.0 \ \textrm{mm}` and rotated around the X axis by :math:`x_{rot} = 0.1 ^{\circ}`.
 
@@ -255,7 +257,7 @@ for the Rayleigh distance, the Gaussian beam waist and the distance to focus.
 Example
 ~~~~~~~~~~~~~
 
-Code snippet to use :class:`~paos.paos_wfo.WFO` to simulate a magnification of the beam for the tangential direction
+Code example to use :class:`~paos.paos_wfo.WFO` to simulate a magnification of the beam for the tangential direction
 :math:`M_t = 1.5`, while keeping the sagittal direction unchanged (:math:`M_s = 1.0`).
 
 .. code-block:: python
@@ -332,7 +334,7 @@ Using these primitive operators, `PAOS` implements all possible propagations:
 Example
 ~~~~~~~~~~~~~
 
-Code snippet to use :class:`~paos.paos_wfo.WFO` to propagate the beam over a thickness of :math:`10.0 \ \textrm{mm}`.
+Code example to use :class:`~paos.paos_wfo.WFO` to propagate the beam over a thickness of :math:`10.0 \ \textrm{mm}`.
 
 .. code-block:: python
 
@@ -506,7 +508,7 @@ Supported aperture shapes are elliptical, circular or rectangular.
 Example
 ~~~~~~~~~~~~~
 
-Code snippet to use :class:`~paos.paos_wfo.WFO` to simulate the beam propagation through an elliptical aperture.
+Code example to use :class:`~paos.paos_wfo.WFO` to simulate the beam propagation through an elliptical aperture.
 
 .. code-block:: python
 
@@ -539,7 +541,7 @@ The field stop limits the field of view of an optical instrument.
 Example
 ~~~~~~~~~~~~~
 
-Code snippet to use :class:`~paos.paos_wfo.WFO` to simulate an aperture stop.
+Code example to use :class:`~paos.paos_wfo.WFO` to simulate an aperture stop.
 
 .. code-block:: python
 

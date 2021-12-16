@@ -72,7 +72,7 @@ and returns the simulation parameters, as shown in the example below.
 
 Example
 ~~~~~~~~~~~
-Code snippet to read a `PAOS` configuration file.
+Code example to read a `PAOS` configuration file.
 
 .. code-block:: python
 
@@ -90,7 +90,7 @@ and the optical chain, as shown the example below.
 
 Example
 ~~~~~~~~~~~
-Code snippet to parse a `PAOS` configuration file.
+Code example to parse a `PAOS` configuration file.
 
 .. code-block:: python
 

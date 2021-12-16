@@ -122,10 +122,10 @@ class Material:
         material = self.materials[name]
         logger.debug('Glass name: {} -- T ref: {}'.format(name, material['Tref']))
 
-        nmat_abs = self.sellmeier(par=material['sellmeier']) * self.nair(T=material['Tref'])
-        nmat = self.nT(n=nmat_abs, D0=material['Tmodel']['D0'], delta_T=self.Tambient - material['Tref'])
+        nmat0 = self.sellmeier(par=material['sellmeier']) * self.nair(T=material['Tref'])
+        nmat = self.nT(n=nmat0, D0=material['Tmodel']['D0'], delta_T=self.Tambient - material['Tref'])
 
-        return nmat_abs, nmat
+        return nmat0, nmat
 
     def plot_relative_index(self, material_list=None, ncols=2, figname=None):
         """

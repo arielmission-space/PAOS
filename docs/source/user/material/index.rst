@@ -18,7 +18,7 @@ In optics, dispersion is the phenomenon in which the phase velocity of a wave de
 where :math:`c` is the speed of light in a vacuum and :math:`n` is the refractive index of the dispersive medium.
 Physically, dispersion translates in a loss of kinetic energy through absorption. The absorption by the dispersive medium
 is different at different wavelengths, changing the angle of refraction of different colors of light as seen in the spectrum
-produced by a dispersive prism and in chromatic aberration of (thick) lenses.
+produced by a dispersive :ref:`prism` and in chromatic aberration of :ref:`thick lenses`.
 
 This can be seen in geometric optics from Snell's law:
 
@@ -36,22 +36,9 @@ For air and optical glasses, for visible and infra-red light refraction indices 
 
 while for ultraviolet the opposite behaviour is typically the case (anomalous dispersion).
 
-See later in :ref:`Plotting refractive indices` for the behaviour of supported optical materials in `PAOS`.
+See later in :ref:`Plotting refractive indices` for the dispersion behaviour of supported optical materials in `PAOS`.
 
-Supported materials
--------------------------
-
-Example
-~~~~~~~~~~~
-
-.. code-block:: python
-
-        from paos.util.material import Material
-
-        wl = 1.95  # micron
-        mat = Material(wl)
-        print('Supported materials: ')
-        print(*mat.materials.keys(), sep = "\n")
+.. _Sellmeier:
 
 Sellmeier equation
 ---------------------
@@ -71,26 +58,26 @@ Physically, each term of the sum represents an absorption resonance of strength 
 values.
 
 `PAOS` implements the Sellmeier 1 equation (Zemax OpticStudio :math:`^{©}` notation) to estimate the index of refraction
-relative to air for a particular optical galss at the glass reference temperature and pressure
+relative to air for a particular optical glass at the glass reference temperature and pressure
 
 .. math::
-    T_{ref} = 20^{\circ} \\
-    P_{ref} = 1 \ atm
+    T_{ref} = 20^{\circ} K \\
+    P_{ref} = 1 \ \textrm{atm}
     :label:
 
 This form of the original equation consists of only three terms and is given as
 
 .. math::
     n^{2}(\lambda )=1+{\frac {K_{1}\lambda ^{2}}{\lambda ^{2}-L_{1}}}+{\frac {K_{2}\lambda ^{2}}{\lambda ^{2}-L_{2}}}+{\frac {K_{3}\lambda ^{2}}{\lambda ^{2}-L_{3}}}
-    :label:
+    :label: Sellmeier 1
 
-The resulting refracting index should deviate from the actual refractive index by a quantity which is of the
-order of the homogeneity of a glass sample (see e.g. `Optical properties <http://oharacorp.com/o2.html>`_).
+The resulting refracting index should deviate by less than :math:`10^{-6}` from the actual refractive index which is order
+of the homogeneity of a glass sample (see e.g. `Optical properties <http://oharacorp.com/o2.html>`_).
 
 Example
 ~~~~~~~~~
 
-Code snippet to use :class:`~paos.util.material.Material` to estimate the index of refraction of borosilicate crown
+Code example to use :class:`~paos.util.material.Material` to estimate the index of refraction of borosilicate crown
 glass (known as `BK7`) for a range of wavelengths from the visible to the infra-red.
 
 .. code-block:: python
@@ -109,39 +96,48 @@ glass (known as `BK7`) for a range of wavelengths from the visible to the infra-
 Temperature and refractive index
 -----------------------------------
 
-Refractive index is affected by changes in the temperature of the dispersive medium.
+Changes in the temperature of the dispersive medium affect the refractive index. The temperature coefficient
+of refractive index is defined as the deviation :math:`dn/dT` from the curve and depends from both wavelength and
+temperature.
 
-Air
+The temperature coefficient values can be given as absolute (as measured under vacuum) and relative (as measured
+at ambient air (dry air at standard pressure).
 
-Estimate the air index of refraction at wavelength :math:`\lambda`, temperature :math:`T`,
-and relative pressure :math:`P`.
+`PAOS` estimates the air reference index of refraction as
 
 .. math::
     n_{ref} = 1.0 + 1.0 \cdot 10^{-8} \left(6432.8 + \frac{2949810 \lambda^2}{146 \lambda^2 - 1} + 25540 \frac{\lambda^2}{41 \lambda^2 - 1}\right)
     :label:
 
+where :math:`\lambda` is in units of micron, at the reference temperature :math:`T = 15 ^{\circ} K` and standard pressure.
+Under different temperatures and pressures, `PAOS` rescales this reference index using this formula
+
 .. math::
     n_{air} = 1 + \frac{P \left(n_{ref} - 1\right)} {1.0 + 3.4785 \cdot 10^{-3} (T - 15)}
     :label:
 
+The absolute temperature coefficient for a different medium can be calculated from the relative index as
+(see e.g. `Optical properties <http://oharacorp.com/o2.html>`_).
 
-This can be ascertained through the temperature
-coefficient of refractive index. The temperature coefficient of refractive index is defined as dn/dt from the
-curve showing the relationship between glass temperature and refractive index. The temperature coefficient of
-refractive index (for light of a given wavelength) changes with wavelength and temperature.
+.. math::
+    \frac{d n}{d T}, \textrm{absolute} =  \frac{d n}{d T}, \textrm{relative} + n \left(\frac{d n}{d T}, \textrm{air}\right)
+    :label:
 
-Therefore, the Abbe number also changes with temperature. There are two ways of showing the temperature
-coefficient of refractive index. One is the absolute coefficient (dn/dt absolute ) measured under vacuum and the
-other is the relative coefficient (dn/dt relative ) measured at ambient air (101.3 kPa {760 torr} dry air).
-
+`PAOS` calculates the refractive index of an optical material at a given pressure and temperature as
 
 .. math::
     n(\Delta T) = \frac{n^2 - 1}{2 n} D_0 \Delta T + n
     :label:
 
+where :math:`\Delta T` is given by the difference between the material operative temperature math:`T_{oper}` and the
+reference temperature :math:`T_{ref}`, :math:`n` is the refractive index as estimated using :eq:`Sellmeier 1` and
+:math:`D_0` is a temperature constant of the material.
 
 Example
 ~~~~~~~~~~
+
+Code example to use :class:`~paos.util.material.Material` to estimate the index of refraction of borosilicate crown
+glass (known as `BK7`) at reference and operating temperature.
 
 .. code-block:: python
 
@@ -150,16 +146,62 @@ Example
         wl = 1.95  # micron
         mat = Material(wl)
         glass = 'bk7'
-        print('absolute index of refraction {:.4f} \nindex relative to air {:.4f}'.format(
-            *mat.nmat(glass)), sep = "\n")
+        nmat0, nmat = mat.nmat(glass)
+        print('index of refraction at reference temperature = {:.4f}'.format(nmat0))
+        print('index of refraction at operating temperature = {:.4f}'.format(nmat))
 
+Supported materials
+-------------------------
 
-.. _Plotting refractive indices:
+`PAOS` supports a variety of optical materials (list is still updating), among which:
 
-Plotting refractive indices
-----------------------------
+#. CAF2 (calcium fluoride)
+#. SAPPHIRE (mainly aluminium oxide (:math:`\alpha-Al_2 O_3`) )
+#. ZNSE (zinc selenide)
+#. BK7 (borosilicate crown glass)
+#. SF11 (a dense-flint glass)
+#. BAF2 (barium flouride)
 
-:numref:`matplot`
+The relevant ones for the `Ariel` space mission are all of them except BAF2. A detailed description of the optical
+properties of these materials is beyond the scope of this documentation. However, for reference,
+:numref:`substrate_thorlabs` reports their transmission range (from `Thorlabs, Optical Substrates <https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=6973>`_).
+
+.. _substrate_thorlabs:
+
+.. figure:: Optical_Substrate_thorlabs.png
+   :width: 900
+   :align: center
+
+   `Transmission range of optical substrates (Thorlabs)`
+
+Example
+~~~~~~~~~~~
+
+Code example to use :class:`~paos.util.material.Material` to print all available optical materials.
+
+.. code-block:: python
+
+        from paos.util.material import Material
+
+        wl = 1.95  # micron
+        mat = Material(wl)
+        print('Supported materials: ')
+        print(*mat.materials.keys(), sep = "\n")
+
+Example
+~~~~~~~~~
+
+Code example to use :class:`~paos.util.material.Material` to plot the refractive index for all available optical
+materials, at their operating and reference temperature.
+
+.. code-block:: python
+
+        from paos.util.material import Material
+
+        mat = Material(wl=np.linspace(0.5, 8.0, 100))
+        mat.plot_relative_index(material_list=mat.materials.keys())
+
+:numref:`matplot` reports the resulting plot as of 16th December 2021.
 
 .. _matplot:
 
@@ -168,6 +210,3 @@ Plotting refractive indices
    :align: center
 
    `Relative index of supported materials`
-
-Example
-~~~~~~~~~

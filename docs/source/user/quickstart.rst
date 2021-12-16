@@ -22,7 +22,7 @@ The main command line flags are listed in :numref:`Main command line flags`.
 .. _Main command line flags:
 
 .. list-table:: Main command line flags
-   :widths: 30 60
+   :widths: 60 100
    :header-rows: 1
 
    * - flag
@@ -48,7 +48,7 @@ Other option flags may be given to run specific simulations, as detailed in :num
 .. _Other option flags:
 
 .. list-table:: Other option flags
-   :widths: 30 60
+   :widths: 60 100
    :header-rows: 1
 
    * - flag
@@ -65,7 +65,7 @@ To have a lighter output please use the option flags listed in :numref:`Lighter 
 .. _Lighter output flags:
 
 .. list-table:: Lighter output flags
-   :widths: 30 60
+   :widths: 60 100
    :header-rows: 1
 
    * - flag
@@ -82,7 +82,7 @@ To activate `-lo` no argument is needed.
 The output file
 -----------------
 
-`PAOS` stores its main output product to a HDF5_ `.h5` file such as that shown in :numref:`mainoutput`.
+`PAOS` stores its main output product to a HDF5_ file (extension is `.h5` or `.hdf5`) such as that shown in :numref:`mainoutput`.
 To open it, please choose your favourite viewer (e.g. HDFView_, HDFCompass_) or API (e.g. Cpp_, FORTRAN_ and Python_).
 
 .. _mainoutput:
