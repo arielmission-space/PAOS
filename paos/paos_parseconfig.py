@@ -1,183 +1,170 @@
-import os, sys
 import numpy as np
-import pandas as pd
+import configparser
+import os, sys
+
 from .paos_abcd import ABCD
 from .util.material import Material
 from .paos_config import logger
 
 
-def ReadConfig(filename):
-    """
-    Given the input file name, it parses the simulation parameters and returns a dictionary.
-    The input file is an Excel spreadsheet which contains three data sheets named 'general',
-    'LD' and 'field'. 'general' contains the simulation wavelength, grid size and zoom, defined
-    as the ratio of grid size to initial beam size in unit of pixel. 'LD' is the lens data and
-    contains the sequence of surfaces for the simulation mimicking a Zemax lens data editor:
-    supported surfaces include coordinate break, standard surface, obscuration, zernike,
-    paraxial lens, slit and prism.
-
-    Returns
-    -------
-    dict
-        dictionary with the parsed input parameters for the simulation.
-
-    Examples
-    --------
-
-    >>> from paos.paos_parseconfig import ReadConfig
-    >>> simulation_parameters = ReadConfig('path/to/conf/file')
-
-    """
-
-    parameters = {'general': {}, 'LD': None, 'field': {}}
-
+def getfloat(value):
+    try:
+        return np.float(value)
+    except:
+        return np.nan
+        
+def ParseConfig(filename):
+    config = configparser.ConfigParser()
+    filename = os.path.expanduser(filename)
     if not os.path.exists(filename) or not os.path.isfile(filename):
         logger.error('Input file {} does not exist or is not a file. Quitting..'.format(filename))
         sys.exit()
+    config.read(filename)
 
-    with pd.ExcelFile(filename, engine='openpyxl') as xls:
-        wb = pd.read_excel(xls, 'General')
-        for key, val in zip(wb['INIT'], wb['Value']):
-            parameters['general'][key] = val
-        wb = pd.read_excel(xls, 'Lens Data')
-        parameters['LD'] = wb
+    # Parse parameters in section 'general' 
+    allowed_grid_size = [64, 128, 256, 512, 1024]
+    allowed_zoom_val  = [1, 2, 4, 8, 16]
+    parameters = {}
+    parameters['project'] = config['general']['project']
+    parameters['version'] = config['general']['version']
+    dtmp = config['general'].getint('grid_size')
+    if not dtmp in allowed_grid_size:
+        raise ValueError('Grid size not allowed. Allowed values are',
+            allowed_grid_size)
+    parameters['grid_size'] = dtmp
+    dtmp = config['general'].getint('zoom')
+    if not dtmp in allowed_zoom_val:
+        raise ValueError('Zoom value not allowed. Allowed values are',
+            allowed_zoom_val)
+    parameters['zoom'] = dtmp
 
-        wb = pd.read_excel(xls, 'Fields')
-        for field, x, y in zip(wb['Field'], wb['X'], wb['Y']):
-            parameters['field'][str(field)] = {'us': np.tan(np.deg2rad(x)),
-                                               'ut': np.tan(np.deg2rad(y))}
 
-    return parameters
+    # Parse section 'wavelengths'
+    wavelengths = []; num=1
+    while True:
+        _wl_ = config['wavelengths'].getfloat('w{:d}'.format(num))
+        if _wl_:
+            wavelengths.append(_wl_)
+        else:
+            break
+        
+        num += 1
 
 
-def ParseConfig(filename):
-    """
-    It parses the input file name and returns the input pupil diameter and three dictionaries for the simulation:
-    one for the general parameters, one for the input fields and one for the optical chain.
-
-    Returns
-    -------
-    dict
-        the input pupil diameter, the general parameters, the input fields and the optical chain.
-
-    Examples
-    --------
-
-    >>> from paos.paos_parseconfig import ParseConfig
-    >>> pupil_diameter, general, fields, optical_chain = ParseConfig('path/to/conf/file')
-
-    """
-    parameters = ReadConfig(filename)
-
-    wl = parameters['general']['wavelength']
-    glasslib = Material(wl)
-
+    # Parse section 'fields' 
+    fields = []; num=1
+    while True:
+        _fld_ = config['fields'].get('f{:d}'.format(num))
+        if _fld_:
+            _fld_ = np.fromstring(_fld_, sep=',')
+            _fld_ = np.tan(np.deg2rad(_fld_))
+            fields.append({'us':_fld_[0], 'ut':_fld_[1]})
+        else:
+            break
+        
+        num += 1
+        
+            
+    # Parse sections 'lens_??' 
     n1 = None  # Refractive index
     pup_diameter = None  # input pupil pup_diameter
-
     opt_chain = {}
+    lens_num = 1
+    while 'lens_{:02d}'.format(lens_num) in config:
+        
+        _data_ = {'num': lens_num}
+        
+        element = config['lens_{:02d}'.format(lens_num)]
+        lens_num += 1
+        
+        if element.getboolean('Ignore'): continue
 
-    for index, element in parameters['LD'].iterrows():
+        _data_['type']    = element.get('SurfaceType', None)
+        _data_['R']       = getfloat(element.get('Radius', ''))
+        _data_['T']       = getfloat(element.get('Thickness', ''))
+        _data_['material'] = element.get('Material', None)
 
-        chain_step = element['Surface num']
 
-        if element['Ignore'] == 1:
-            continue
-
-        if element['Surface Type'] == 'INIT':
-            n1 = 1.0  # propagation starts in free space
-            xpup = element['XRADIUS']
-            ypup = element['YRADIUS']
-
-            if np.isfinite(xpup) and np.isfinite(ypup):
-                pup_diameter = 2.0 * max(xpup, ypup)
-            else:
-                logger.error('Pupil wrongly defined')
-                raise ValueError('Pupil wrongly defined')
-
+        _data_['is_stop'] = element.getboolean('Stop', False)
+        _data_['save']    = element.getboolean('Save', False)
+        _data_['name']    = element.get('Comment', '')
+    
+        thickness = _data_['T'] if np.isfinite(_data_['T']) else 0.0
+        curvature = 1/_data_['R'] if np.isfinite(_data_['R']) else 0.0
+        
+        if _data_['type'] == 'INIT':
+            n1 = 1.0
+            aperture = element.get('aperture', '').split(',')
+            aperture_shape, aperture_type = aperture[0].split()
+            if aperture_shape == 'elliptical' and aperture_type == 'aperture':
+                xpup = getfloat(aperture[2])
+                ypup = getfloat(aperture[3])
+                pup_diameter = 2.0*max(xpup, ypup)
+            
             continue
 
         if n1 is None or pup_diameter is None:
-            logger.error('INIT is not the first surface in Lens Data.')
-            raise ValueError('INIT is not the first surface in Lens Data.')
+                #logger.error('INIT is not the first surface in Lens Data.')
+                raise ValueError('INIT is not the first surface in Lens Data.')
+        
+        if _data_['type'] == 'Zernike':
+            n2 = n1
+            pass
 
-        _data_ = {
-            'num': element['Surface num'],
-            'type': element['Surface Type'],
-            'is_stop': True if element['Stop'] == 1 else False,
-            'save': True if element['Save'] == 1 else False,
-            'name': element['Comment'],
-            'R': element['Radius'],
-            'T': element['Thickness'],
-            'material': element['Material'],
-            'xrad': element['XRADIUS'],
-            'yrad': element['YRADIUS'],
-            'xdec': element['XDECENTER'],
-            'ydec': element['YDECENTER'],
-            'xrot': element['TiltAboutX'],
-            'yrot': element['TiltAboutY'],
-            'Mx': element['MagnificationX'],
-            'My': element['MagnificationY']
-        }
+        elif _data_['type'] == 'Coordinate Break':
+            n2 = n1
+            _data_['xdec'] = getfloat(element.get('Par1', ''))
+            _data_['ydec'] = getfloat(element.get('Par2', ''))
+            _data_['xrot'] = getfloat(element.get('Par3', ''))
+            _data_['yrot'] = getfloat(element.get('Par4', ''))
+                                    
+            
 
-        if element['Surface Type'] == 'Zernike':
-            sheet, stmp = element['Range'].split('.')
-            colrange = ''.join([i for i in stmp if not i.isdigit()])
-            rowrange = ''.join([i for i in stmp if i.isdigit() or i == ':']).split(':')
-            rowstart = int(rowrange[0])
-            nrows = int(rowrange[1]) - rowstart + 1
 
-            with pd.ExcelFile(filename, engine='openpyxl') as xls:
-                wb0 = pd.read_excel(xls, sheet, header=None, nrows=3)
-                wb1 = pd.read_excel(xls, sheet, skiprows=rowstart - 1, usecols='A,' + colrange, nrows=nrows,
-                                    header=None)
-            _data_.update({
-                'Zindex': wb1[0].to_numpy(dtype=int),
-                'Z': wb1[1].to_numpy(dtype=float),
-                'Zradius': max(_data_['xrad'], _data_['yrad']),
-                'Zwavelength': float(wb0[1][0]),
-                'Zordering': wb0[1][1].lower(),
-                'Znormalize': wb0[1][2],
-                'ABCDt': ABCD(),
-                'ABCDs': ABCD(),
-                'Zorigin': 'x'  # this is the default origin for the angles: from x axis, counted
-                # positive counterclockwise
-            })
-
-            opt_chain[chain_step] = _data_
-
-        else:
-            thickness = _data_['T'] if np.isfinite(_data_['T']) else 0.0
-            Mx = _data_['Mx'] if np.isfinite(_data_['Mx']) else 1.0
-            My = _data_['My'] if np.isfinite(_data_['My']) else 1.0
-            if _data_['type'] == 'Coordinate Break':
-                C = 0.0
-                n2 = n1
-            elif _data_['type'] == 'Paraxial Lens':
-                C = 1.0 / _data_['R'] if np.isfinite(_data_['R']) else 0.0
-                n2 = n1
-            elif _data_['type'] in ('Standard', 'Slit', 'Obscuration'):
-                C = 1.0 / _data_['R'] if np.isfinite(_data_['R']) else 0.0
-                if _data_['material'] == 'MIRROR':
-                    n2 = -n1
-                elif _data_['material'] in glasslib.materials.keys():
-                    n2 = glasslib.nmat(_data_['material'])[1] * np.sign(n1)
-                else:
-                    n2 = 1.0 * np.sign(n1)
-            elif _data_['type'] == 'Prism':
-                C = 0.0
-                n2 = n1
+        elif _data_['type'] == 'Paraxial Lens':
+            n2 = n1
+            focal_length = getfloat(element.get('Par1', ''))
+            curvature = 1/focal_length if np.isfinite(focal_length) else 0.0
+            if aperture:
+                aperture = aperture.split(',')
+                aperture_shape, aperture_type = aperture[0].split()
+                _data_['aperture'] = {'shape': aperture_shape,
+                                    'type': aperture_type,
+                                    'xrad': getfloat(aperture[1]),
+                                    'yrad': getfloat(aperture[2]),
+                                    'xc':   getfloat(aperture[3]),
+                                    'yc':   getfloat(aperture[4])
+                                    }
+        
+        elif _data_['type'] == 'Standard':
+            aperture = element.get('aperture', '')
+            if aperture:
+                aperture = aperture.split(',')
+                aperture_shape, aperture_type = aperture[0].split()
+                _data_['aperture'] = {'shape': aperture_shape,
+                                    'type': aperture_type,
+                                    'xrad': getfloat(aperture[1]),
+                                    'yrad': getfloat(aperture[2]),
+                                    'xc':   getfloat(aperture[3]),
+                                    'yc':   getfloat(aperture[4])
+                                    }
+                                    
+            if _data_['material'] == 'MIRROR':
+                n2 = -n1
+            #elif _data_['material'] in glasslib.materials.keys():
+            #    n2 = glasslib.nmat(_data_['material'])[1] * np.sign(n1)
             else:
-                logger.error('Surface Type not recognised: {:s}'.format(str(_data_['type'])))
-                raise ValueError('Surface Type not recognised: {:s}'.format(str(_data_['type'])))
+                n2 = 1.0 * np.sign(n1)
+            
+        else:
+            #logger.error('Surface Type not recognised: {:s}'.format(str(_data_['type'])))
+            raise ValueError('Surface Type not recognised: {:s}'.format(str(_data_['type'])))
 
-            _data_['ABCDt'] = ABCD(thickness, C, n1, n2, My)
-            _data_['ABCDs'] = ABCD(thickness, C, n1, n2, Mx)
+        _data_['ABCDt'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
+        _data_['ABCDs'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
 
-            logger.debug('name: {}, curvature: {:4f}, thickness: {:.4f}, material: {}, n1: {:4f}, n2: {:4f}'.format(
-                _data_['name'], _data_['ABCDt'].power, _data_['ABCDt'].thickness, _data_['material'], n1, n2))
-
-            n1 = n2
-            opt_chain[chain_step] = _data_
-
-    return pup_diameter, parameters['general'], parameters['field'], opt_chain
+        opt_chain[_data_['num']] = _data_
+        n1 = n2
+    
+    return pup_diameter, parameters, fields, opt_chain
+    

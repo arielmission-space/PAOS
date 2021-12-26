@@ -18,8 +18,8 @@ def raytrace(field, opt_chain):
 
     Returns
     -----
-    None
-        prints the output of the full ray tracing using the logger.
+    out: list
+        List of string. Each list item is the raytrace at a given surface.
 
     Examples
     --------
@@ -32,13 +32,16 @@ def raytrace(field, opt_chain):
     """
     vt = np.array([0.0, field['ut']])
     vs = np.array([0.0, field['us']])
+    ostr = []
     for key, item in opt_chain.items():
         if item['type'] == 'Coordinate Break':
             vt, vs = CoordinateBreak(vt, vs, item['xdec'], item['ydec'], item['xrot'], item['yrot'], 0.0)
 
         vt = item['ABCDt']() @ vt
         vs = item['ABCDs']() @ vs
-        logger.info("S{:02d} - {:15s} y:{:7.3f}mm ut:{:10.3e} rad x:{:7.3f}mm us:{:7.3f} rad".format(
-            key, item['name'], 1000 * vt[0], vt[1], 1000 * vs[0], vs[1]))
+        _ostr_ = "S{:02d} - {:15s} y:{:7.3f}mm ut:{:10.3e} rad x:{:7.3f}mm us:{:7.3f} rad".format(
+            key, item['name'], 1000 * vt[0], vt[1], 1000 * vs[0], vs[1])
+        logger.info(_ostr_)
+        ostr.append(_ostr_)
 
-    return
+    return ostr
