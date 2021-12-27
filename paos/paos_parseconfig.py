@@ -71,7 +71,8 @@ def ParseConfig(filename):
     opt_chain = {}
     lens_num = 1
     while 'lens_{:02d}'.format(lens_num) in config:
-        
+        curvature = None
+        thickness = None
         _data_ = {'num': lens_num}
         
         element = config['lens_{:02d}'.format(lens_num)]
@@ -88,9 +89,6 @@ def ParseConfig(filename):
         _data_['is_stop'] = element.getboolean('Stop', False)
         _data_['save']    = element.getboolean('Save', False)
         _data_['name']    = element.get('Comment', '')
-    
-        thickness = _data_['T'] if np.isfinite(_data_['T']) else 0.0
-        curvature = 1/_data_['R'] if np.isfinite(_data_['R']) else 0.0
         
         if _data_['type'] == 'INIT':
             n1 = 1.0
@@ -108,23 +106,32 @@ def ParseConfig(filename):
                 raise ValueError('INIT is not the first surface in Lens Data.')
         
         if _data_['type'] == 'Zernike':
+            thickness = 0.0
+            curvature = 0.0
             n2 = n1
-            pass
 
+            _data_['ABCDt'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
+            _data_['ABCDs'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
+
+            
         elif _data_['type'] == 'Coordinate Break':
+            thickness = _data_['T'] if np.isfinite(_data_['T']) else 0.0
+            curvature = 0.0
             n2 = n1
             _data_['xdec'] = getfloat(element.get('Par1', ''))
             _data_['ydec'] = getfloat(element.get('Par2', ''))
             _data_['xrot'] = getfloat(element.get('Par3', ''))
             _data_['yrot'] = getfloat(element.get('Par4', ''))
-                                    
-            
 
+            _data_['ABCDt'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
+            _data_['ABCDs'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
 
         elif _data_['type'] == 'Paraxial Lens':
-            n2 = n1
             focal_length = getfloat(element.get('Par1', ''))
+            thickness = _data_['T'] if np.isfinite(_data_['T']) else 0.0
             curvature = 1/focal_length if np.isfinite(focal_length) else 0.0
+            n2 = n1
+            aperture = element.get('aperture', '')
             if aperture:
                 aperture = aperture.split(',')
                 aperture_shape, aperture_type = aperture[0].split()
@@ -135,8 +142,32 @@ def ParseConfig(filename):
                                     'xc':   getfloat(aperture[3]),
                                     'yc':   getfloat(aperture[4])
                                     }
+            _data_['ABCDt'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
+            _data_['ABCDs'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
         
+        elif _data_['type'] == 'ABCD':
+            thickness = _data_['T'] if np.isfinite(_data_['T']) else 0.0
+            Ax = getfloat(element.get('Par1', ''))
+            Bx = getfloat(element.get('Par2', ''))
+            Cx = getfloat(element.get('Par3', ''))
+            Dx = getfloat(element.get('Par4', ''))
+            Ay = getfloat(element.get('Par5', ''))
+            By = getfloat(element.get('Par6', ''))
+            Cy = getfloat(element.get('Par7', ''))
+            Dy = getfloat(element.get('Par8', ''))
+            ABCDs = ABCD(thickness=thickness, curvature=0.0, n1=n1, n2=n1, M=1.0)
+            ABCDt = ABCD(thickness=thickness, curvature=0.0, n1=n1, n2=n1, M=1.0)
+            _ABCDs = np.array([[Ax, Bx], [Cx, Dx]])
+            _ABCDt = np.array([[Ay, By], [Cy, Dy]])
+            ABCDs.ABCD = ABCDs() @ _ABCDs
+            ABCDt.ABCD = ABCDt() @ _ABCDt
+            _data_['ABCDt'] = ABCDt
+            _data_['ABCDs'] = ABCDs
+            
+            
         elif _data_['type'] == 'Standard':
+            thickness = _data_['T'] if np.isfinite(_data_['T']) else 0.0
+            curvature = 1/_data_['R'] if np.isfinite(_data_['R']) else 0.0
             aperture = element.get('aperture', '')
             if aperture:
                 aperture = aperture.split(',')
@@ -156,15 +187,16 @@ def ParseConfig(filename):
             else:
                 n2 = 1.0 * np.sign(n1)
             
+            _data_['ABCDt'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
+            _data_['ABCDs'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
+
         else:
-            #logger.error('Surface Type not recognised: {:s}'.format(str(_data_['type'])))
+            logger.error('Surface Type not recognised: {:s}'.format(str(_data_['type'])))
             raise ValueError('Surface Type not recognised: {:s}'.format(str(_data_['type'])))
 
-        _data_['ABCDt'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
-        _data_['ABCDs'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
 
         opt_chain[_data_['num']] = _data_
         n1 = n2
     
-    return pup_diameter, parameters, fields, opt_chain
+    return pup_diameter, parameters, wavelengths, fields, opt_chain
     

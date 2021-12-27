@@ -36,8 +36,9 @@ import logging
 logger = logging.getLogger(__pkg_name__)
 logger.info('code version {}'.format(__version__))
 
-from .log import setLogLevel
+from .log import setLogLevel, addLogFile
 
 # setLogLevel(logging.TRACE)
 # setLogLevel(logging.DEBUG)
 setLogLevel(logging.INFO)
+addLogFile(level=logging.INFO)

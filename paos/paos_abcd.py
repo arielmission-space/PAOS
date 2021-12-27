@@ -88,8 +88,9 @@ class ABCD(object):
 
         self._ABCD = T @ D @ M
 
-        self._n1 = n1
-        self._n2 = n2
+        # Remove because not needed and would break ABCD surface type when defined in lens.ini file
+        #self._n1 = n1
+        #self._n2 = n2
         self._cin = np.sign(n1)
         self._cout = np.sign(n2)
 
@@ -113,13 +114,13 @@ class ABCD(object):
         (A, B), (C, D) = self._ABCD
         return -C / self.M
 
-    @property
-    def n1(self):
-        return self._n1
+    #@property
+    #def n1(self):
+    #    return self._n1
 
-    @property
-    def n2(self):
-        return self._n2
+    #@property
+    #def n2(self):
+    #    return self._n2
 
     @property
     def cin(self):
