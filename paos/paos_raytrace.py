@@ -3,7 +3,7 @@ from .paos_coordinatebreak import CoordinateBreak
 from .paos_config import logger
 
 
-def raytrace(field, opt_chain):
+def raytrace(field, opt_chain, x=0.0, y=0.0):
     """
     Diagnostic function that implements the full ray tracing
     and prints the output for each surface of the optical chain
@@ -30,8 +30,8 @@ def raytrace(field, opt_chain):
     >>> raytrace(fields['0'], optical_chain)
 
     """
-    vt = np.array([0.0, field['ut']])
-    vs = np.array([0.0, field['us']])
+    vt = np.array([y, field['ut']])
+    vs = np.array([x, field['us']])
     ostr = []
     for key, item in opt_chain.items():
         if item['type'] == 'Coordinate Break':

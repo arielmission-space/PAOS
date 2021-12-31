@@ -133,15 +133,22 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
 
         _retval_.update(push_results(wfo))
 
+        Ms = item['ABCDs'].M
         Mt = item['ABCDt'].M
         fl = np.inf if (item['ABCDt'].power == 0) else item['ABCDt'].cout / item['ABCDt'].power
         T = item['ABCDt'].cout * item['ABCDt'].thickness
         n1n2 = item['ABCDt'].n1n2
         logger.trace('n1n2: {:.4f}'.format(n1n2))
 
-        if Mt != 1.0:
+        if Mt != 1.0 or Ms != 1.0:
+            print("+++++++++++++++++++++++")
             logger.trace('Apply magnification')
-            wfo.Magnification(1.0, Mt)
+            wfo.Magnification(Ms, Mt)
+        
+        if np.abs(n1n2) != 1.0:
+            print("--------------------")
+            logger.trace('Apply medium change')
+            wfo.ChangeMedium(n1n2)
 
         if np.isfinite(fl):
             logger.trace('Apply lens')

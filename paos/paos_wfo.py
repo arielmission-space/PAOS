@@ -360,6 +360,20 @@ class WFO(object):
         self._zr *= Mx ** 2
         self._zw0 = self.z - delta_z
         self._fratio = np.abs(delta_z) / (2 * wz)
+    
+    def ChangeMedium(self, n1n2):
+        
+        _n1n2 = np.abs(n1n2)
+        
+        # Current distance to focus (before magnification)
+        delta_z = self.z - self.zw0
+        
+        delta_z /= n1n2
+        self._zr /= n1n2
+        self._wl *= n1n2
+        self._zw0 = self.z - delta_z
+        self._fratio /= n1n2
+        
 
     def ptp(self, dz):
         """
