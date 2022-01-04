@@ -141,12 +141,10 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         logger.trace('n1n2: {:.4f}'.format(n1n2))
 
         if Mt != 1.0 or Ms != 1.0:
-            print("+++++++++++++++++++++++")
             logger.trace('Apply magnification')
-            wfo.Magnification(Ms, Mt)
+            wfo.Magnification(Mt, Ms)
         
         if np.abs(n1n2) != 1.0:
-            print("--------------------")
             logger.trace('Apply medium change')
             wfo.ChangeMedium(n1n2)
 

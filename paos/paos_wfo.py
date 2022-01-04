@@ -331,15 +331,17 @@ class WFO(object):
         self._fratio = np.abs(delta_z) / (2 * wz)
         self._wfo = self._wfo * np.exp(2.0j * np.pi * qphase)
 
-    def Magnification(self, Mx, My):
+    def Magnification(self, My, Mx=None):
 
+        if Mx == None: Mx = My
+        
         assert Mx > 0.0, 'Negative magnification not implemented yet.'
         assert My > 0.0, 'Negative magnification not implemented yet.'
 
         self._dx *= Mx
         self._dy *= My
 
-        if Mx == 1.0:
+        if Mx == 1.0 or Mx == None:
             return
 
         logger.warning("Gaussian beam magnification is implemented, but has not been tested.")
