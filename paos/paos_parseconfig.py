@@ -109,7 +109,15 @@ def ParseConfig(filename):
             thickness = 0.0
             curvature = 0.0
             n2 = n1
-
+            wave = 1.0e-6*getfloat(element.get('Par1', ''))
+            _data_['Zordering'] = element.get('Par2', '').lower()
+            _data_['Znormalize'] = element.getboolean('Par3')
+            _data_['Zradius'] = getfloat(element.get('Par4', ''))
+            _data_['Zorigin'] = element.get('Par5', 'x')
+            
+            _data_['Zindex']=np.fromstring(element.get('Zindex', ''), sep=',', dtype=np.int)
+            _data_['Z']=np.fromstring(element.get('Z', ''), sep=',', dtype=np.float)*wave
+            
             _data_['ABCDt'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
             _data_['ABCDs'] = ABCD(thickness=thickness, curvature=curvature, n1=n1, n2=n2, M=1.0)
 

@@ -127,7 +127,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
 
         if item['type'] == 'Zernike':
             radius = item['Zradius'] if np.isfinite(item['Zradius']) else wfo.wz
-            wfo.zernikes(item['Zindex'], item['Z'] * item['Zwavelength'],
+            wfo.zernikes(item['Zindex'], item['Z'],
                          item['Zordering'], item['Znormalize'], radius,
                          origin=item['Zorigin'])
 
