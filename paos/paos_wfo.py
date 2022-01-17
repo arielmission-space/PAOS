@@ -343,7 +343,7 @@ class WFO(object):
 
         if Mx == 1.0 or Mx == None:
             return
-
+        
         logger.warning("Gaussian beam magnification is implemented, but has not been tested.")
         warnings.warn("Gaussian beam magnification is implemented, but has not been tested.",
                       category=UserWarning)

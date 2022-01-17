@@ -135,6 +135,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
 
         Ms = item['ABCDs'].M
         Mt = item['ABCDt'].M
+        
         fl = np.inf if (item['ABCDt'].power == 0) else item['ABCDt'].cout / item['ABCDt'].power
         T = item['ABCDt'].cout * item['ABCDt'].thickness
         n1n2 = item['ABCDt'].n1n2
