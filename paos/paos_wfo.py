@@ -1,7 +1,6 @@
 import numpy as np
 import photutils
 from .paos_zernike import Zernike
-import warnings
 from .paos_config import logger
 
 
@@ -341,12 +340,11 @@ class WFO(object):
         self._dx *= Mx
         self._dy *= My
 
-        if Mx == 1.0 or Mx == None:
-            return
-        
+        if np.abs(Mx-1.0) < 1.0e-8 or Mx == None:
+          # Don't do anything if magnification x is close to unity.
+          return
+
         logger.warning("Gaussian beam magnification is implemented, but has not been tested.")
-        warnings.warn("Gaussian beam magnification is implemented, but has not been tested.",
-                      category=UserWarning)
 
         # Current distance to focus (before magnification)
         delta_z = self.z - self.zw0
