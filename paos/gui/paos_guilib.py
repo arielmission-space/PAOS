@@ -6,6 +6,7 @@ import gc
 import logging
 import configparser
 from matplotlib import pyplot as plt
+from typing import List
 
 from paos import parse_config, raytrace, run, Zernike, save_datacube
 from paos.paos_config import base_dir, logger
@@ -20,7 +21,7 @@ from PySimpleGUI import change_look_and_feel, main_global_pysimplegui_settings, 
     RELIEF_RIDGE, RELIEF_SUNKEN, pin
 from PySimpleGUI import version, get_versions
 from PySimpleGUI import Checkbox, Text, InputText, InputCombo, Multiline, Listbox, Button, Column, Menu, Frame, Tab, \
-    TabGroup, Canvas
+    TabGroup, Canvas, Input, Combo
 from PySimpleGUI import Window, WINDOW_CLOSED, WINDOW_CLOSE_ATTEMPTED_EVENT
 from PySimpleGUI import popup, popup_scrolled, popup_quick_message, popup_get_file, popup_ok_cancel
 from PySimpleGUI import Submit, clipboard_set
@@ -56,18 +57,29 @@ class PaosConfigurationGui:
 
     def __init__(self, passvalue, theme=OFFICIAL_PYSIMPLEGUI_THEME, font=("Courier New", 16)):
         """
-
+        Initializes the GUI
         """
 
-        # ------ Define fallback configuration file ------ #
+        # ------ Instantiate global variables ------ #
         self.passvalue = passvalue
-        self.theme, self.font = theme, font
+        self.theme = theme
+        self.font = font
+        self.window = None
+        self.config = None
+        self.temporary_config = None
+        self.wavelengths = None
+        self.fields = None
 
+        # ------ Set up the debug logger ------ #
         if self.passvalue['debug']:
             setLogLevel(logging.DEBUG)
 
         # ------ Theme Definition ------ #
         change_look_and_feel(self.theme)
+
+        # ------ Symbols Definition ------ #
+        self.symbol_up = '▲'
+        self.symbol_down = '▼'
 
         # ------ Quick Message Definition ------ #
         w, h = Window.get_screen_size()
@@ -83,9 +95,8 @@ class PaosConfigurationGui:
         self.right_click_menu_def = ['', ['Nothing', 'Version', 'Exit']]
 
         # ------ Tabs Definition ------ #
-
         # Wavelengths
-        self.WAVELENGTH_MAX_ROWS = None
+        self.MAX_WAVELENGTHS = None
         self.wl_data = {'Wavelength (micron)': ''}
 
         # Fields
@@ -123,16 +134,12 @@ class PaosConfigurationGui:
         if 'conf' not in self.passvalue.keys() or self.passvalue['conf'] is None:
             self.passvalue['conf'] = os.path.join(base_dir, 'lens data', 'lens_file_template.ini')
 
-        # ------ Instantiate global variables ------ #
-        self.window = None
-        self.config = None
-        self.temporary_config = None
-
     def init_window(self):
         """
-
+        Initializes the main GUI window by parsing the configuration file and initializing the input data dimensions
         """
-        # ------ Config File Definition ------ #
+
+        # ------ Parse configuration file ------ #
         self.config = configparser.ConfigParser()
         if 'conf' in self.passvalue.keys() and self.passvalue['conf'] is not None:
             if not os.path.exists(self.passvalue['conf']) or not os.path.isfile(self.passvalue['conf']):
@@ -143,22 +150,28 @@ class PaosConfigurationGui:
             logger.debug('Configuration file not found. Exiting..')
             sys.exit()
 
-        self.WAVELENGTH_MAX_ROWS = len(self.config['wavelengths']) if 'wavelengths' in self.config.keys() else 2
+        # ------ Initialize input data dimensions ------ #
+        self.MAX_WAVELENGTHS = len(self.config['wavelengths']) if 'wavelengths' in self.config.keys() else 1
         self.MAX_FIELDS = len(self.config['fields']) if 'fields' in self.config.keys() else 1
-        self.MAX_SURFACES = len([k for k in self.config.keys() if k.startswith('lens')])
+        self.MAX_SURFACES = len([key for key in self.config.keys() if key.startswith('lens')])
 
-    # ------ Functions Definition ------ #
     @staticmethod
     def add_heading(headings, size=(24, 2)):
         """
+        Given a list of header names and a tuple for the size, returns a chained list of Text widgets with the specified
+        size where the first element is returned to prettify spacing
 
         Parameters
         ----------
-        headings
-        size
+        headings: list
+            a list of header names
+        size: tuple
+            a tuple for the widget sizes defined as (width, height)
 
         Returns
         -------
+        out: List[Text]
+            a chained list of Text widgets
 
         """
         headings_list = []
@@ -166,29 +179,32 @@ class PaosConfigurationGui:
             headings_list.append(Text(head, key=head, size=size))
         return list(itertools.chain([Text(' ' * 8)], headings_list))
 
-    @staticmethod
-    def collapse(layout, key):
-        return pin(Column(layout, key=key, visible=False))
-
     def fill_col(self, value, key, item, size=(24, 2)):
         """
+        Given the cell value, key and item, returns the widget of the desired type
 
         Parameters
         ----------
-        value
-        key
-        item
-        size
+        value: str or Iterable or dict
+            value or selection of values to put inside the widget
+        key: str
+            key to which the returned widget will be associated
+        item: bool or str
+            typically, the default value to show in the widget
+        size: tuple
+            a tuple for the widget sizes defined as (width, height)
 
         Returns
         -------
-
+        out: Checkbox or Input or Column or Combo
+            the desired Widget
         """
-        print(value, key, item)
+        row = None
+        print(item, value, key)
 
         if key.partition('_')[0] in self.lens_data.keys():
             current_cell = re.findall('[0-9]+', key.partition('_')[-1])
-            _, col = tuple(map(int, current_cell))
+            row, col = tuple(map(int, current_cell))
 
         default = item if item != 'NaN' else None
         disabled = False if item != 'NaN' else True
@@ -198,87 +214,197 @@ class PaosConfigurationGui:
         elif value in ['Comment', 'Radius', '']:
             return InputText(default_text=default, key=key, size=size, disabled=disabled)
         elif key.startswith('aperture'):
-            return InputText(default_text=default, key=key, size=size, disabled=disabled)
+            # return InputText(default_text=default, key=key, size=size, disabled=disabled)
+            return self.surface_tab(row=row, col=8, key=key, disabled=disabled)
         elif key.startswith('z'):
             return InputText(default_text=value, key=key, size=size, disabled=disabled)
         else:
             return InputCombo(default_value=default, values=value, key=key, size=(23, 2), disabled=disabled,
-                              expand_y=True, enable_events=True)
+                              enable_events=True)
+
+    def fill_surface_tab(self, row, col):
+        """
+        Given the row and column corresponding to the cell in the GUI lens data editor, returns a list of widgets with
+        the aperture parameters names and values
+
+        Parameters
+        ----------
+        row: int
+            row corresponding to the optical surface in the GUI lens data editor
+        col: int
+            column corresponding to the aperture header in the GUI lens data editor
+
+        Returns
+        -------
+        out: List[List[Text], List[Checkbox or Input or Column or Combo]]
+            list of widgets with the aperture parameters names and values
+        """
+        config_key = 'lens_{:02d}'.format(row)
+        config_items = None
+        if config_key in self.config.keys():
+            config_items = self.config[config_key].get('aperture', None)
+            config_items = config_items if config_items != '' else None
+        if config_items is not None:
+            config_items = config_items.split(',')
+
+        surface_tab = []
+        for k, (key, item) in enumerate(self.lens_data['aperture']['values'].items()):
+            key_item = key.replace(' ', '_') + '_({},{})'.format(row, col)
+            config_item = '' if config_items is None else config_items[k]
+
+            surface_tab.append([Text(key, size=(20, 1))])
+            surface_tab.append([self.fill_col(value=item, key=key_item, item=config_item, size=(20, 1))])
+
+        return surface_tab
+
+    @staticmethod
+    def collapse(layout, key):
+        """
+        Copyright 2020 PySimpleGUI.org
+        Helper function that creates a Column that can be later made hidden, thus appearing "collapsed"
+
+        Parameters
+        ----------
+        layout: List[List[Element]]
+            The layout for the section
+        key: str
+            Key used to make this section visible / invisible
+
+        Returns
+        -------
+        out: Column
+            A pinned column that can be placed directly into your layout
+
+        """
+        return pin(Column(layout, key=key, visible=False))
+
+    def surface_tab(self, row, col, key, disabled):
+        """
+        Given the row and column corresponding to the cell in the GUI lens data editor, returns the Column widget with
+        the aperture parameters
+
+        Parameters
+        ----------
+        row: int
+            row corresponding to the optical surface in the GUI lens data editor
+        col: int
+            column corresponding to the aperture header in the GUI lens data editor
+        key: str
+            key to which the returned Column widget will be associated
+        disabled: bool
+            boolean to disable or enable events for the Button widget
+
+        Returns
+        -------
+        out: Column
+            the Column widget for the aperture
+
+        """
+        button_symbol = '...' if disabled else self.symbol_up
+        text_color = 'gray' if disabled else 'yellow'
+        surface_tab_layout = Column(layout=[
+            [Button(button_symbol, enable_events=True, disabled=disabled,
+                    key='-OPEN STAB-({},{})'.format(row, col), font=("Courier New", 10), size=(2, 1)),
+             Text('Aperture', size=(20, 1), text_color=text_color, key='LD_Tab_Title_({},{})'.format(row, col))],
+            [self.collapse([[Column(layout=self.fill_surface_tab(row, col))]],
+                           key='LD_Tab_({},{})'.format(row, col))]], key=key)
+
+        return surface_tab_layout
 
     @staticmethod
     def par_heading_rules(surface_type):
         """
+        Given the optical surface type, applies pre-defined rules to return the desired list of headers
 
         Parameters
         ----------
-        surface_type
+        surface_type: str
+            the surface type (e.g. Standard)
 
         Returns
         -------
-
+        out: List[str] or None
+            the desired list of headers
         """
-        par_headings = []
-        if surface_type in ['INIT', 'Standard']:
-            par_headings = ['', '', '', '', '', '', '', '']
-        elif surface_type == 'Coordinate Break':
-            par_headings = ['Xtilt', 'Ytilt', 'Xdecenter', 'Ydecenter', '', '', '', '']
-        elif surface_type == 'Paraxial Lens':
-            par_headings = ['Focal length', '', '', '', '', '', '', '']
-        elif surface_type == 'ABCD':
-            par_headings = ['Ax', 'Bx', 'Cx', 'Dx', 'Ay', 'By', 'Cy', 'Dy']
-        elif surface_type == 'Zernike':
-            par_headings = ['Wavelength', 'Ordering', 'Normalization', 'Radius of S.A.', 'Origin', '', '', '']
 
-        return par_headings
+        if surface_type in ['INIT', 'Standard']:
+            headings = ['', '', '', '', '', '', '', '']
+        elif surface_type == 'Coordinate Break':
+            headings = ['Xtilt', 'Ytilt', 'Xdecenter', 'Ydecenter', '', '', '', '']
+        elif surface_type == 'Paraxial Lens':
+            headings = ['Focal length', '', '', '', '', '', '', '']
+        elif surface_type == 'ABCD':
+            headings = ['Ax', 'Bx', 'Cx', 'Dx', 'Ay', 'By', 'Cy', 'Dy']
+        elif surface_type == 'Zernike':
+            headings = ['Wavelength', 'Ordering', 'Normalization', 'Radius of S.A.', 'Origin', '', '', '']
+        else:
+            logger.error('Surface Type not recognised. Quitting...')
+            return
+
+        return headings
 
     def update_headings(self, row):
         """
+        Updates the displayed headers according to the rules set in `~PaosConfigurationGui.par_heading_rules`
 
         Parameters
         ----------
-        row
+        row: int
+            row corresponding to the optical surface in the GUI lens data editor
+
+        Returns
+        -------
+        out: None
+            Updates the headers
         """
         par_headings = self.par_heading_rules(self.values['SurfaceType_({},0)'.format(row)])
         for head, new_head in zip([key for key in self.lens_data.keys() if key.startswith('Par')], par_headings):
             self.window[head].update(new_head)
 
+        return
+
     @staticmethod
-    def lens_rules(surface_type, key, item):
+    def lens_rules(surface_type, header, item=None):
         """
+        Given the optical surface type, applies pre-defined rules to return the desired item for the widget
 
         Parameters
         ----------
-        surface_type
-        key
-        item
+        surface_type: str
+            the surface type (e.g. Standard)
+        header: str
+            the column header from the lens data editor
+        item: bool or str
+            the item to put in the cell widget
 
         Returns
         -------
-
+        out: bool or str
+            the item to put in the cell widget
         """
-        if surface_type == 'INIT' and key.startswith(
+        if surface_type == 'INIT' and header.startswith(
                 ('Radius', 'Thickness', 'Material', 'Save', 'Ignore', 'Stop', 'Par')):
             item = 'NaN'
 
         elif surface_type == 'Coordinate Break' and (
-                key.startswith(('Radius', 'Material', 'Aperture'))
-                or key.startswith(('Par5', 'Par6', 'Par7', 'Par8'))):
+                header.startswith(('Radius', 'Material', 'aperture'))
+                or header.startswith(('Par5', 'Par6', 'Par7', 'Par8'))):
             item = 'NaN'
 
-        elif surface_type == 'Standard' and key.startswith('Par'):
+        elif surface_type == 'Standard' and header.startswith('Par'):
             item = 'NaN'
 
         elif surface_type == 'Paraxial Lens' and (
-                key.startswith(('Radius', 'Material'))
-                or key.startswith(('Par2', 'Par3', 'Par4', 'Par5', 'Par6', 'Par7', 'Par8'))):
+                header.startswith(('Radius', 'Material'))
+                or header.startswith(('Par2', 'Par3', 'Par4', 'Par5', 'Par6', 'Par7', 'Par8'))):
             item = 'NaN'
 
-        elif surface_type == 'ABCD' and key.startswith(('Radius', 'Material')):
+        elif surface_type == 'ABCD' and header.startswith(('Radius', 'Material')):
             item = 'NaN'
 
         elif surface_type == 'Zernike' and (
-                key.startswith(('Radius', 'Thickness', 'Material', 'Aperture'))
-                or key.startswith(('Par6', 'Par7', 'Par8'))):
+                header.startswith(('Radius', 'Thickness', 'Material', 'aperture'))
+                or header.startswith(('Par6', 'Par7', 'Par8'))):
             item = 'NaN'
 
         return item
@@ -326,7 +452,8 @@ class PaosConfigurationGui:
 
                 surface_type_key = 'SurfaceType_({},0)'.format(row)
                 surface_type = lens_dict[surface_type_key]
-                lens_dict[name_key] = self.lens_rules(surface_type, name_key, lens_dict[name_key])
+                lens_dict[name_key] = self.lens_rules(
+                    surface_type=surface_type, header=name_key, item=lens_dict[name_key])
 
             return list(itertools.chain(row_widget,
                                         [self.fill_col(value, key, item)
@@ -350,59 +477,67 @@ class PaosConfigurationGui:
         -------
 
         """
-        table = {
-            'general': {
-                'project': self.values['project'],
-                'version': self.values['version'],
-                'grid_size': self.values['grid_size'],
-                'zoom': self.values['zoom'],
-                'lens_unit': self.values['lens_unit']
-            }
-        }
+        dictionary = {'general': {
+            'project': self.values['project'],
+            'version': self.values['version'],
+            'grid_size': self.values['grid_size'],
+            'zoom': self.values['zoom'],
+            'lens_unit': self.values['lens_unit']
+        }}
 
         key = 'wavelengths'
-        table[key] = {}
+        dictionary[key] = {}
         for nwl in range(1, self.nrows_wl + 1):
-            table[key]['w{}'.format(nwl)] = self.values['w{}'.format(nwl)]
+            dictionary[key]['w{}'.format(nwl)] = self.values['w{}'.format(nwl)]
 
         key = 'fields'
-        table[key] = {}
+        dictionary[key] = {}
         for nf in range(1, self.nrows_field + 1):
             fields = [self.values['f{}_{}'.format(nf, c)] for c in range(len(self.field_data.keys()))]
-            table[key]['f{}'.format(nf)] = ','.join(map(str, fields))
+            dictionary[key]['f{}'.format(nf)] = ','.join(map(str, fields))
 
         for r in range(1, self.nrows_ld + 1):
             key = 'lens_{:02d}'.format(r)
-            table[key] = {}
+            dictionary[key] = {}
             for (c, head) in enumerate(self.lens_data.keys()):
-                table[key][head] = self.values['{}_({},{})'.format(head, r, c)]
-                if table[key][head] == 'Zernike' and not self.config[key].getboolean('Ignore'):
-                    table[key]['zindex'] = self.config[key]['zindex']
-                    table[key]['z'] = self.config[key]['z']
+                if head == 'aperture':
+                    dictionary[key][head] = ','.join([self.values['{}_({},{})'.format(name_key.replace(' ', '_'), r, c)]
+                                                      for name_key in self.lens_data['aperture']['values'].keys()])
+                    if dictionary[key][head] == len(dictionary[key][head]) * ',':
+                        dictionary[key][head] = ''
+                else:
+                    dictionary[key][head] = self.values['{}_({},{})'.format(head, r, c)]
+                    if not self.config[key].getboolean('Ignore') and dictionary[key][head] == 'Zernike':
+                        dictionary[key]['zindex'] = self.config[key]['zindex']
+                        dictionary[key]['z'] = self.config[key]['z']
         if not show:
-            return table
+            return dictionary
         else:
-            popup_scrolled('lens_data = {}'.format(table), title='Copy your data from here', font='fixedsys',
+            popup_scrolled('lens_data = {}'.format(dictionary), title='Copy your data from here', font='fixedsys',
                            keep_on_top=True)
+            return
 
     def copy_to_clipboard(self):
         """
+        Saves the relevant data from the GUI configuration tabs into a dictionary, then copies it to the local clipboard
 
         Returns
         -------
-
+        None
         """
-        table = self.save_to_dict(show=False)
-        clipboard_set(table)
+        dictionary = self.save_to_dict(show=False)
+        clipboard_set(str(dictionary))
         return
 
     @staticmethod
     def get_clipboard_text():
         """
+        Returns a copy of the local clipboard content (e.g. an Excel column)
 
         Returns
         -------
-
+        out: List[str]
+            the local copy of the clipboard's content
         """
         root = Tk()
         root.withdraw()
@@ -447,7 +582,8 @@ class PaosConfigurationGui:
 
         return nrows
 
-    def write_to_config(self, dictionary):
+    @staticmethod
+    def write_to_config(dictionary):
         """
 
         Parameters
@@ -571,13 +707,16 @@ class PaosConfigurationGui:
                                             [Text('', size=(15, 1))]],
                    font=("Helvetica", 20), relief=RELIEF_SUNKEN, key='-GENERAL FRAME-', expand_x=True, expand_y=True)],
             [Frame('Wavelength Setup', layout=[[Text('', size=(15, 1))],
-                                               [Column(layout=list(itertools.chain(
-                                                   [self.add_heading(self.wl_data.keys())],
-                                                   [self.add_row_data(r, [item for key, item in self.wl_data.items()],
-                                                                      prefix='w')
-                                                    for r in range(1, self.WAVELENGTH_MAX_ROWS + 1)])),
-                                                   key='wavelengths',
-                                                   scrollable=True, expand_x=True, expand_y=True)]],
+                                               [Column(layout=list(
+                                                   itertools.chain(
+                                                       [self.add_heading(self.wl_data.keys())],
+                                                       [self.add_row_data(r,
+                                                                          [item for key, item in self.wl_data.items()],
+                                                                          prefix='w')
+                                                        for r in range(1, self.MAX_WAVELENGTHS + 1)])),
+                                                       key='wavelengths',
+                                                       scrollable=True, expand_x=True, expand_y=True)]
+                                               ],
                    font=("Helvetica", 20), relief=RELIEF_SUNKEN, key='-WL FRAME-', expand_x=True, expand_y=True)],
             [Frame('General Actions', layout=[
                 [Button(tooltip='Click to add wavelength', button_text='Add Wavelength',
@@ -778,15 +917,29 @@ class PaosConfigurationGui:
     @staticmethod
     def move_with_arrow_keys(window, event, values, elem_key, max_rows, max_cols):
         """
+        Given the current GUI window, the latest event, the dictionary containing the window values, the dictionary key
+        for the cell with focus and the maximum sizes for the current table editor, this method sets the focus on
+        the new cell (if the current cell changed).
 
         Parameters
         ----------
-        window
-        event
-        values
-        max_rows
-        max_cols
-        elem_key
+        window: Window
+            the current GUI window
+        event: str
+            the latest GUI event
+        values: dict
+            the dictionary containing the window values
+        elem_key: str
+            the dictionary key for the cell with focus
+        max_rows: int
+            the number of rows for the current table editor
+        max_cols: int
+            the number of columns for the current table editor
+
+        Returns
+        -------
+        out: int
+            The row number corresponding to where the current focus is
         """
         current_cell = re.findall('[0-9]+', elem_key.partition('_')[-1])
         r, c = tuple(map(int, current_cell))
@@ -930,7 +1083,7 @@ class PaosConfigurationGui:
             elif event == '-ADD ZERNIKE ROW-':
                 max_rows, _ = self.add_zernike_row(window=window, row=max_rows, dictionary=zernike, ordering=ordering)
 
-            elif event == 'PASTE ZERNIKES':
+            elif event == 'PASTE ZERNIKES' and isinstance(elem_key, str):
                 row, col = re.findall('[0-9]+', elem_key.partition('_')[-1])
                 if headings[int(col)] != 'Z':
                     logger.debug('The user shall select the starting cell from the Z column. Skipping..')
@@ -996,7 +1149,7 @@ class PaosConfigurationGui:
         """
         self.make_window()
 
-        self.nrows_wl, self.nrows_field, self.nrows_ld = self.WAVELENGTH_MAX_ROWS, self.MAX_FIELDS, self.MAX_SURFACES
+        self.nrows_wl, self.nrows_field, self.nrows_ld = self.MAX_WAVELENGTHS, self.MAX_FIELDS, self.MAX_SURFACES
         raytrace_log, retval = '', None
         fig, fig_agg = None, None
         wavelength = None
@@ -1004,6 +1157,7 @@ class PaosConfigurationGui:
         fields: list = []
         opt_chains: list = []
         save_to_ini_file = False
+        surface_tab_visible = False
 
         while True:  # Event Loop
             self.event, self.values = self.window.read()
@@ -1063,17 +1217,29 @@ class PaosConfigurationGui:
             elif self.event == '-ADD SURFACE-':
                 self.nrows_ld = self.add_row('lenses')
 
-            elif self.event.startswith('SurfaceType'):
+            elif isinstance(self.event, str) and self.event.startswith('-OPEN STAB-'):
+                row, col = re.findall('[0-9]+', self.event)
+                stab_key = 'LD_Tab_({},{})'.format(row, col)
+                surface_tab_visible = not surface_tab_visible
+                self.window[self.event].update(self.symbol_down if surface_tab_visible else self.symbol_up)
+                self.window[stab_key].update(visible=surface_tab_visible)
+
+            elif isinstance(self.event, str) and self.event.startswith('SurfaceType'):
                 row, col = re.findall('[0-9]+', self.event)
                 surface_type_key = 'SurfaceType_({},0)'.format(row)
-                c = 0
-                for key, value in self.lens_data.items():
+                for c, (key, value) in enumerate(self.lens_data.items()):
                     name_key = '{}_({},{})'.format(key, row, c)
-                    item = self.lens_rules(self.values[surface_type_key], name_key, self.values[name_key])
+                    item = self.lens_rules(surface_type=self.values[surface_type_key], header=name_key)
                     disabled = True if item == 'NaN' else False
-                    item_column_key = '{}_({},{})'.format(key, row, c)
+                    if key == 'aperture':
+                        item_column_key = '-OPEN STAB-({},{})'.format(row, c)
+                        self.window[item_column_key].update('...' if disabled else self.symbol_up)
+                        title_column_key = 'LD_Tab_Title_({},8)'.format(row)
+                        text_color = 'gray' if disabled else 'yellow'
+                        self.window[title_column_key].update(text_color=text_color)
+                    else:
+                        item_column_key = '{}_({},{})'.format(key, row, c)
                     self.window[item_column_key].update(disabled=disabled)
-                    c += 1
                 if self.values[surface_type_key] == 'Zernike':
                     action = popup_ok_cancel('Insert/Edit Zernike coefficients', keep_on_top=True)
                     if action == 'OK':
