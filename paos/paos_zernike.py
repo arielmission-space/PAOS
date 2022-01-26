@@ -162,14 +162,15 @@ class Zernike:
 
         return m, n
 
-    def mn2j(self, m, n, ordering):
+    @staticmethod
+    def mn2j(m, n, ordering):
         """
         Convert radial and azimuthal numbers, respectively n and m, into index j
         """
         if ordering == 'ansi':
-            return (self.n * (self.n + 2) + self.m) // 2
+            return (n * (n + 2) + m) // 2
         elif ordering == 'standard':
-            return (self.n * (self.n + 2) - self.m) // 2
+            return (n * (n + 2) - m) // 2
         elif ordering == 'fringe':
             a = (1 + (n + np.abs(m)) / 2) ** 2
             b = 2 * np.abs(m)

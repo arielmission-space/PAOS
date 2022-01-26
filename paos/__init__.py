@@ -5,9 +5,10 @@ from .paos_config import __pkg_name__, __author__, __url__, \
 
 from .paos_wfo import WFO
 from .paos_abcd import ABCD
-from .paos_parseconfig import ParseConfig
-from .paos_coordinatebreak import CoordinateBreak
 from .paos_zernike import Zernike
+
+from .paos_parseconfig import parse_config
+from .paos_coordinatebreak import coordinate_break
 from .paos_raytrace import raytrace
 from .paos_plotpop import plot_pop
 from .paos_saveoutput import save_output, save_datacube

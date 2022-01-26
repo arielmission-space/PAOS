@@ -26,5 +26,6 @@ Subpackages
 .. toctree::
     :maxdepth: 4
 
+    paos.gui
     paos.log
     paos.util
