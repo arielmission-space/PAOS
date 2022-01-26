@@ -64,6 +64,9 @@ class PaosConfigurationGui:
         self.passvalue = passvalue
         self.theme = theme
         self.font = font
+        self.font_titles = ("Helvetica", 20)
+        self.font_small = ("Courier New", 10)
+        self.font_underlined = ("Courier New underline", 16)
         self.window = None
         self.config = None
         self.temporary_config = None
@@ -200,7 +203,6 @@ class PaosConfigurationGui:
             the desired Widget
         """
         row = None
-        print(item, value, key)
 
         if key.partition('_')[0] in self.lens_data.keys():
             current_cell = re.findall('[0-9]+', key.partition('_')[-1])
@@ -304,7 +306,7 @@ class PaosConfigurationGui:
         text_color = 'gray' if disabled else 'yellow'
         surface_tab_layout = Column(layout=[
             [Button(button_symbol, enable_events=True, disabled=disabled,
-                    key='-OPEN STAB-({},{})'.format(row, col), font=("Courier New", 10), size=(2, 1)),
+                    key='-OPEN STAB-({},{})'.format(row, col), font=self.font_small, size=(2, 1)),
              Text('Aperture', size=(20, 1), text_color=text_color, key='LD_Tab_Title_({},{})'.format(row, col))],
             [self.collapse([[Column(layout=self.fill_surface_tab(row, col))]],
                            key='LD_Tab_({},{})'.format(row, col))]], key=key)
@@ -411,16 +413,21 @@ class PaosConfigurationGui:
 
     def add_row_data(self, row, input_list, prefix):
         """
+        Given the row in the GUI lens data editor, an input list and a prefix, returns a list of widgets to fill a GUI
+        editor data row
 
         Parameters
         ----------
-        row
+        row: int
+            row corresponding to the optical surface in the GUI lens data editor
         input_list
-        prefix
+        prefix: str
+            prefix to indicate which kind of widgets list must be returned
 
         Returns
         -------
-
+        out: List[Text, List[Checkbox or Input or Column or Combo]]
+            list of widgets to fill a GUI editor data row
         """
         row_widget = [Text(row, size=(6, 1), key='row idx {}'.format(row))]
 
@@ -513,7 +520,7 @@ class PaosConfigurationGui:
         if not show:
             return dictionary
         else:
-            popup_scrolled('lens_data = {}'.format(dictionary), title='Copy your data from here', font='fixedsys',
+            popup_scrolled('lens_data = {}'.format(dictionary), title='Copy your data from here',
                            keep_on_top=True)
             return
 
@@ -705,7 +712,7 @@ class PaosConfigurationGui:
                                              InputText(self.config['general'].get('lens_unit', ''),
                                                        key='lens_unit', size=(24, 1), disabled=True)],
                                             [Text('', size=(15, 1))]],
-                   font=("Helvetica", 20), relief=RELIEF_SUNKEN, key='-GENERAL FRAME-', expand_x=True, expand_y=True)],
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='-GENERAL FRAME-', expand_x=True, expand_y=True)],
             [Frame('Wavelength Setup', layout=[[Text('', size=(15, 1))],
                                                [Column(layout=list(
                                                    itertools.chain(
@@ -717,12 +724,12 @@ class PaosConfigurationGui:
                                                        key='wavelengths',
                                                        scrollable=True, expand_x=True, expand_y=True)]
                                                ],
-                   font=("Helvetica", 20), relief=RELIEF_SUNKEN, key='-WL FRAME-', expand_x=True, expand_y=True)],
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='-WL FRAME-', expand_x=True, expand_y=True)],
             [Frame('General Actions', layout=[
                 [Button(tooltip='Click to add wavelength', button_text='Add Wavelength',
                         enable_events=True, key="-ADD WAVELENGTH-")],
                 [Button('Paste Wavelengths', tooltip='Click to paste wavelengths', key='PASTE WL')]],
-                   font=("Helvetica", 20), relief=RELIEF_SUNKEN, key='-GENERAL ACTIONS FRAME-')]
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='-GENERAL ACTIONS FRAME-')]
         ]
 
         fields_layout = [
@@ -737,7 +744,7 @@ class PaosConfigurationGui:
                 [Button(tooltip='Click to add field row', button_text='Add Field', enable_events=True,
                         key="-ADD FIELD-")]
             ],
-                   font=("Helvetica", 20), relief=RELIEF_SUNKEN, key='-FIELDS ACTIONS FRAME-')]
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='-FIELDS ACTIONS FRAME-')]
         ]
 
         lens_data_layout = [
@@ -754,7 +761,7 @@ class PaosConfigurationGui:
                 [Button(tooltip='Click to add surface row', button_text='Add Surface', enable_events=True,
                         key="-ADD SURFACE-")]
             ],
-                   font=("Helvetica", 20),
+                   font=self.font_titles,
                    relief=RELIEF_SUNKEN,
                    key='-LENS DATA ACTIONS FRAME-')]
         ]
@@ -774,7 +781,7 @@ class PaosConfigurationGui:
                                                 values=[key for key, item in self.config.items('fields')],
                                                 size=(12, 4), background_color='grey20', key='select field',
                                                 enable_events=True)]))],
-                                      font=("Helvetica", 20),
+                                      font=self.font_titles,
                                       relief=RELIEF_SUNKEN,
                                       key='-PAOS SELECT INPUTS FRAME-')
                                 ],
@@ -791,7 +798,7 @@ class PaosConfigurationGui:
                                            enable_events=True,
                                            key="-SAVE FIG-")]
                                ],
-                                      font=("Helvetica", 20),
+                                      font=self.font_titles,
                                       relief=RELIEF_SUNKEN,
                                       key='-PAOS SAVE FRAME-')
                                 ])),
@@ -801,12 +808,12 @@ class PaosConfigurationGui:
                                        key="-RAYTRACE-")],
                                [Column(layout=[
                                    [Multiline(
-                                       key='raytrace log', font=('Courier New', 10), autoscroll=True, size=(90, 20),
+                                       key='raytrace log', font=self.font_small, autoscroll=True, size=(90, 20),
                                        pad=(0, (15, 0)), background_color='grey20', disabled=False)]],
                                    key='raytrace log col',
                                )]
                            ],
-                                  font=("Helvetica", 20),
+                                  font=self.font_titles,
                                   relief=RELIEF_SUNKEN,
                                   key='-PAOS RAYTRACE FRAME-'),
                             Text('', size=(5, 2)),
@@ -820,18 +827,17 @@ class PaosConfigurationGui:
                                                              key="-PLOT-")])),
                                 [Canvas(key='-CANVAS-', size=(90, 20))]
                             ],
-                                  font=("Helvetica", 20), relief=RELIEF_SUNKEN, expand_x=True, expand_y=True,
+                                  font=self.font_titles, relief=RELIEF_SUNKEN, expand_x=True, expand_y=True,
                                   key='-PAOS POP FRAME-')
                             ]
                            ]
 
         # logging_layout = [
         #     [Frame('GUI Logs', layout=[[Text("Anything printed will display here!")],
-        #                                [Output(font=('Courier New', 16),
-        #                                        size=(92, 34),
+        #                                [Output(size=(92, 34),
         #                                        pad=(0, (15, 0)),
         #                                        background_color='grey20')]],
-        #            font=("Helvetica", 25),
+        #            font=self.font_titles,
         #            relief=RELIEF_SUNKEN,
         #            key='-LOGS FRAME-')]
         # ]
@@ -839,19 +845,19 @@ class PaosConfigurationGui:
         info_layout = [
             [Frame('GUI Info', layout=[[Text('Github Repo: ')],
                                        [Text('https://github.com/arielmission-space/PAOS',
-                                             font=("Courier New underline", 16),
+                                             font=self.font_underlined,
                                              text_color='blue', enable_events=True, key='-LINK-')],
                                        [Text('')],
                                        [Text('Credits: Andrea Bocchieri and Enzo Pascale',
                                              key='-CREDITS-')],
                                        [Text('PySimpleGui version: {}'.format(version),
-                                             key='-GUI VERSION-')]], font=("Helvetica", 25),
+                                             key='-GUI VERSION-')]], font=self.font_titles,
                    relief=RELIEF_SUNKEN, key='-INFO FRAME-')]
         ]
 
         layout = [
             [Menu(self.menu_def, tearoff=True, key='-MENU-')],
-            [Text('Configuration Tabs', size=(38, 1), justification='center', font=("Helvetica", 16),
+            [Text('Configuration Tabs', size=(38, 1), justification='center',
                   relief=RELIEF_RIDGE, key='-TEXT HEADING-', enable_events=True)],
             [TabGroup([
                 [
@@ -1021,7 +1027,7 @@ class PaosConfigurationGui:
                                                 [Text('Radius of S.A.: {}'.format(radius), key='radius')],
                                                 [Text('', size=(6, 1))],
                                                 [Text('Origin: {}'.format(origin), key='origin')]))],
-                   font=("Helvetica", 20),
+                   font=self.font_titles,
                    relief=RELIEF_SUNKEN,
                    key='-ZERNIKE MEMO FRAME-',
                    )],
@@ -1045,7 +1051,7 @@ class PaosConfigurationGui:
                      enable_events=True,
                      key="-ADD ZERNIKE RADIAL ORDER-")],
             ],
-                                   font=("Helvetica", 20),
+                                   font=self.font_titles,
                                    relief=RELIEF_SUNKEN,
                                    key='-ZERNIKE ACTIONS FRAME-')]),
             [
