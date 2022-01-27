@@ -6,6 +6,17 @@ from matplotlib import ticker as ticks
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from .paos_config import logger
 
+plt.rcParams['figure.facecolor'] = 'white'
+plt.rc('lines', linewidth=1.5)
+
+
+def do_legend(axis):
+    legend = axis.legend(loc='best', ncol=1, frameon=True, prop={'size': 11})
+    legend.get_frame().set_facecolor('white')
+    legend.get_frame().set_edgecolor('white')
+    legend.get_frame().set_alpha(0.8)
+    return
+
 
 def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
     """
@@ -34,8 +45,8 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
 
     Returns
     -------
-    None or `~matplotlib.figure.Figure`
-        displays the plot output or stores it to the indicated plot path
+    None
+        updates the `~matplotlib.figure.Figure` object
 
     Examples
     --------
@@ -54,6 +65,7 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
     >>> plt.show()
 
     """
+    global ap, wx, wy
     logger.trace('plotting S{:02d}'.format(key))
 
     if key in options.keys() and 'pixel_units' in options[key].keys():
@@ -124,32 +136,33 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
 
     im.set_extent(np.array(item['extent']) * scale)
 
-    beamradius = scale * item['wz']
-    airyradius = 1.22 * scale * item['fratio'] * item['wl']
+    beam_radius = scale * item['wz']
+    airy_radius = 1.22 * scale * item['fratio'] * item['wl']
 
-    if np.isfinite(airyradius):
+    if np.isfinite(airy_radius):
         for airy_scale in [1.22, 2.23, 3.24, 4.24, 5.24]:
-            arad = airyradius * airy_scale / 1.22
+            arad = airy_radius * airy_scale / 1.22
             width = 2.0 * arad / (scale * item['dx']) if pixel_units else 2.0 * arad
             height = 2.0 * arad / (scale * item['dy']) if pixel_units else 2.0 * arad
             aper = Ellipse((0, 0), width=width, height=height, ec='k', lw=5, fill=False, alpha=0.5)
             axis.add_patch(aper)
 
-    if beamradius < airyradius and (item['ABCDt']() != np.eye(2)).all() and np.isfinite(airyradius):
-        plotscale = 5.24 * airyradius / 1.22  # 5th Airy null
+    if beam_radius < airy_radius and (item['ABCDt']() != np.eye(2)).all() and np.isfinite(airy_radius):
+        plot_scale = 5.24 * airy_radius / 1.22  # 5th Airy null
     elif not item['aperture'] is None:
-        plotscale = max(wx / 2, wy / 2)
+        plot_scale = max(wx / 2, wy / 2)
     else:
-        plotscale = beamradius
+        plot_scale = beam_radius
 
     if key in options.keys():
         if 'surface_zoom' in options[key].keys():
-            plotscale *= options[key]['surface_zoom']
+            plot_scale *= options[key]['surface_zoom']
         elif 'surface_scale' in options[key].keys():
-            plotscale = options[key]['surface_scale']
+            plot_scale = options[key]['surface_scale']
 
-    axis.set_title(r"S{:02d} | F#{:.2f} | w{:.2f}{:s} | $\lambda${:3.2f}$\mu$m | P{:2.0f}%".format(
-        key, item['fratio'], scale * item['wz'], unit, 1.0e6 * item['wl'], 100 * power))
+    axis.set_title(
+        fr"S{key:02d} | F#{item['fratio']:.2f} | w{scale * item['wz']:.2f}{unit:s} | "
+        fr"$\lambda${1.0e6 * item['wl']:3.2f}$\mu$m | P{100 * power:2.0f}%")
 
     if pixel_units:
         im.set_extent(np.array(item['extent']) / np.array([item['dx'], item['dx'], item['dy'], item['dy']]))
@@ -157,8 +170,8 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
 
     axis.set_xlabel(unit)
     axis.set_ylabel(unit)
-    axis.set_xlim(-plotscale, plotscale)
-    axis.set_ylim(-plotscale, plotscale)
+    axis.set_xlim(-plot_scale, plot_scale)
+    axis.set_ylim(-plot_scale, plot_scale)
     axis.grid()
 
     return
@@ -189,7 +202,7 @@ def plot_pop(retval, ima_scale='log', ncols=2, figname=None, options=dict()):
 
     Returns
     -------
-    None
+    out: None
         displays the plot output or stores it to the indicated plot path
 
     Examples
@@ -244,9 +257,9 @@ def plot_pop(retval, ima_scale='log', ncols=2, figname=None, options=dict()):
     return
 
 
-def plot_psf_xsec(fig, axis, key, item, psf_scale='linear', x_units='wave'):
+def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard'):
     """
-    Given the POP simulation output dict, plots the cross sections of the squared amplitude of the
+    Given the POP simulation output dict, plots the cross-sections of the squared amplitude of the
     wavefront at the given optical surface.
 
     Parameters
@@ -257,34 +270,39 @@ def plot_psf_xsec(fig, axis, key, item, psf_scale='linear', x_units='wave'):
         optical surface index
     item: dict
         optical surface dict
-    psf_scale: str
+    ima_scale: str
         y axis scale, can be either 'linear' or 'log'
     x_units: str
-        units for x axis. Default is wave, i.e. :math:`\\textrm{Displacement} / (F_# \\lambda)`.
-        Can also be 'standard', to have mm or microns.
+        units for x axis. Default is 'standard', to have units of mm or microns.
+        Can also be 'wave', i.e. :math:`\\textrm{Displacement} / (F_# \\lambda)`.
 
     Returns
     -------
-    None or `~matplotlib.figure.Figure`
-        displays the plot output or stores it to the indicated plot path
-
+    out: None
+        updates the `~matplotlib.figure.Figure` object
     Examples
     --------
 
+    >>> import matplotlib.pyplot as plt
     >>> from paos.paos_parseconfig import parse_config
     >>> from paos.paos_run import run
-    >>> from paos.paos_plotpop import simple_plot
-    >>> pup_diameter, general, fields, opt_chain = parse_config('path/to/conf/file')
-    >>> ret_val = run(pup_diameter, 1.0e-6 * general['wavelength'], general['grid size'],
-    >>>              general['zoom'], fields['0'], opt_chain)
-    >>> key = list(ret_val.keys())[-1]  # plot at last optical surface
     >>> from paos.paos_plotpop import plot_psf_xsec
-    >>> fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 8))
-    >>> plot_psf_xsec(fig=fig, axis=ax, key=key, item=ret_val[key], x_units='wave')
+    >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('/path/to/config/file')
+    >>> wl_idx = 0  # choose the first wavelength
+    >>> wavelength, opt_chain = wavelengths[wl_idx], opt_chains[wl_idx]
+    >>> ret_val = run(pup_diameter, 1.0e-6 * wavelength, parameters['grid_size'], parameters['zoom'],
+    >>>               fields[0], opt_chain)
+    >>> key = list(ret_val.keys())[-1]  # plot at last optical surface
+    >>> fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(16, 8))
+    >>> plot_psf_xsec(fig=fig, axis=ax, key=key, item=ret_val[key], ima_scale='log', x_units='wave')
 
     """
 
+    global wx, wy
     logger.trace('plotting S{:02d}'.format(key))
+
+    plot_scale, airy_scale = None, None
+    x_label = None
 
     if item['wz'] < 0.005:
         # Use microns
@@ -295,10 +313,6 @@ def plot_psf_xsec(fig, axis, key, item, psf_scale='linear', x_units='wave'):
         scale = 1.0e3
         unit = 'mm'
 
-    airyradius = 1.22 * item['fratio'] * item['wl'] * scale
-
-    dx, dy = item['dx'], item['dy']
-
     if 'psf' in item.keys():
         ima = np.ma.masked_array(data=item['psf'], mask=item['amplitude'] <= 0.0)
     else:
@@ -307,56 +321,90 @@ def plot_psf_xsec(fig, axis, key, item, psf_scale='linear', x_units='wave'):
 
     Npt = ima.shape[0]
     cross_idx = range(ima.shape[0])
-    x_i = dx * scale * np.linspace(-Npt // 2, Npt // 2, Npt, endpoint=False) * 1.22 / airyradius
+
+    airy_radius = 1.22 * item['fratio'] * item['wl'] * scale
+    dx, dy = item['dx'], item['dy']
+
+    if item['aperture'] is not None:
+
+        if hasattr(item['aperture'], 'w') and hasattr(item['aperture'], 'h'):
+            w = item['aperture'].w
+            h = item['aperture'].h
+            wx = w * dx * scale
+            wy = h * dy * scale
+
+        elif hasattr(item['aperture'], 'a') and hasattr(item['aperture'], 'b'):
+            a = item['aperture'].a
+            b = item['aperture'].b
+            wx = 2 * a * dx * scale
+            wy = 2 * b * dy * scale
+
+    beam_radius = scale * item['wz']
+    if beam_radius < airy_radius and (item['ABCDt']() != np.eye(2)).all() and np.isfinite(airy_radius):
+        plot_scale = 5.24 * airy_radius / 1.22  # 5th Airy null
+    elif not item['aperture'] is None:
+        plot_scale = max(wx / 2, wy / 2)
+    else:
+        plot_scale = beam_radius
+    x_label = unit
+
+    # Build the axis arrays
+    airy_scale = 1.22 / airy_radius
+    x_i = dx * scale * np.linspace(-Npt // 2, Npt // 2, Npt, endpoint=False)
     y_i = x_i * dy / dx
 
-    # Airy 2D function, normalised to area 1
-    xx, yy = np.meshgrid(x_i, y_i)
-    r = np.pi * np.sqrt(xx ** 2 + yy ** 2) + 1.0e-30
-    airy = (2.0 * j1(r) / r) ** 2
-    normalization = 0.25 * np.pi * (x_i[1] - x_i[0]) * (y_i[1] - y_i[0])
-    airy *= normalization
+    if item['wz'] < 0.005:
 
-    if x_units == 'wave':
-        airy_scale = 1.0
-        plotscale = 5.24
-        xlabel = r'1 /F$\lambda$'
-    elif x_units == 'standard':
-        airy_scale = 1.22 / airyradius
-        x_i, y_i = x_i / airy_scale,  y_i / airy_scale
-        xlabel = unit
-        plotscale = 5.24 * airyradius / 1.22
-    else:
-        logger.error('x units not supported. Choose either wave or standard.')
+        # Rescale the axis arrays
+        x_i *= airy_scale
+        y_i *= airy_scale
 
-    # Plot
+        # Airy 2D function, normalised to area 1
+        xx, yy = np.meshgrid(x_i, y_i)
+        r = np.pi * np.sqrt(xx ** 2 + yy ** 2) + 1.0e-30
+        airy = (2.0 * j1(r) / r) ** 2
+        normalization = 0.25 * np.pi * (x_i[1] - x_i[0]) * (y_i[1] - y_i[0])
+        airy *= normalization
+
+        if x_units == 'standard':
+            plot_scale = 5.24 / airy_scale
+            x_i /= airy_scale
+            y_i /= airy_scale
+
+        if x_units == 'wave':
+            airy_scale = 1.0
+            plot_scale = 5.24
+            x_label = r'1 /F$\lambda$'
+
+        # Plot Airy X and Y cross-sections
+        axis.plot(x_i, airy[Npt // 2, ...], color='green', label='Airy X-cut')
+        axis.plot(y_i, airy[..., Npt // 2], color='cyan', label='Airy Y-cut')
+        axis.set_ylim(1.0e-10, airy.max())
+
+        # plot vertical lines to mark the positions of the Airy dark rings and set the axis ticks
+        x_ticks = np.array([-5.24, -4.24, -3.24, -2.23, -1.22, 0.0, 1.22, 2.23, 3.24, 4.24, 5.24]) / airy_scale
+        axis.vlines(x_ticks, *axis.get_ylim(), colors='k', lw=2, alpha=0.5)
+        axis.set_xticks(x_ticks)
+
+    # Plot ima X, Y, 45 deg and 135 deg cross-sections
     axis.plot(x_i, ima[Npt // 2, ...], 'r', label='X-cut')
     axis.plot(y_i, ima[..., Npt // 2], 'b', label='Y-cut')
     axis.plot(np.sqrt(x_i ** 2 + y_i ** 2) * np.sign(x_i),
-            ima[cross_idx, cross_idx], '--r', label=r'45$^\circ$-cut')
-    axis.plot(np.sqrt(x_i ** 2 + y_i ** 2) * np.sign(y_i) + np.sqrt((x_i[1] - x_i[0]) * (y_i[1] - y_i[0])),
-            ima[cross_idx, cross_idx[::-1]], '--b', label=r'135$^\circ$-cut')
-
-    axis.plot(x_i, airy[Npt // 2, ...], color='green', label='Bessel X-cut')
-    axis.plot(y_i, airy[..., Npt // 2], color='cyan', label='Bessel Y-cut')
-
-    axis.set_ylabel('PSF cross-sections')
-    axis.set_xlabel(xlabel)
-    axis.legend()
-    axis.grid()
-
-    xticks = np.array([-5.24, -4.24, -3.24, -2.23, -1.22, 0.0, 1.22, 2.23, 3.24, 4.24, 5.24]) / airy_scale
-    axis.vlines(xticks, *axis.get_ylim(), colors='k', lw=2, alpha=0.5)
-    axis.set_xticks(xticks)
-    axis.get_xaxis().set_major_formatter(ticks.ScalarFormatter())
-    axis.tick_params(labelrotation=45)
-
-    axis.set_xlim(-plotscale, plotscale)
-
-    axis.set_yscale(psf_scale)
-    axis.set_ylim(1e-12, airy.max())
+              ima[cross_idx, cross_idx], '--r', label=r'45$^\circ$-cut')
+    axis.plot(np.sqrt(x_i ** 2 + y_i ** 2) * np.sign(x_i) + 0.5 * np.sqrt((x_i[1] - x_i[0]) * (y_i[1] - y_i[0])),
+              ima[cross_idx, cross_idx[::-1]], '--b', label=r'135$^\circ$-cut')
 
     axis.set_title(r"S{:02d} | F#{:.2f} | w{:.2f}{:s} | $\lambda${:3.2f}$\mu$m | P{:2.0f}%".format(
         key, item['fratio'], scale * item['wz'], unit, 1.0e6 * item['wl'], 100 * power))
+
+    axis.set_ylabel('Cross-sections')
+    axis.set_xlabel(x_label)
+    axis.get_xaxis().set_major_formatter(ticks.ScalarFormatter())
+    axis.tick_params(labelrotation=45)
+    axis.set_yscale(ima_scale)
+    axis.set_xlim(-plot_scale, plot_scale)
+
+    do_legend(axis=axis)
+    axis.grid()
 
     return
