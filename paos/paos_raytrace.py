@@ -1,5 +1,5 @@
 import numpy as np
-from .paos_coordinatebreak import CoordinateBreak
+from .paos_coordinatebreak import coordinate_break
 from .paos_config import logger
 
 
@@ -24,9 +24,9 @@ def raytrace(field, opt_chain, x=0.0, y=0.0):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import ParseConfig
+    >>> from paos.paos_parseconfig import parse_config
     >>> from paos.paos_raytrace import raytrace
-    >>> pupil_diameter, general, fields, optical_chain = ParseConfig('path/to/conf/file')
+    >>> pupil_diameter, general, fields, optical_chain = parse_config('path/to/conf/file')
     >>> raytrace(fields['0'], optical_chain)
 
     """
@@ -35,7 +35,7 @@ def raytrace(field, opt_chain, x=0.0, y=0.0):
     ostr = []
     for key, item in opt_chain.items():
         if item['type'] == 'Coordinate Break':
-            vt, vs = CoordinateBreak(vt, vs, item['xdec'], item['ydec'], item['xrot'], item['yrot'], 0.0)
+            vt, vs = coordinate_break(vt, vs, item['xdec'], item['ydec'], item['xrot'], item['yrot'], 0.0)
 
         vt = item['ABCDt']() @ vt
         vs = item['ABCDs']() @ vs

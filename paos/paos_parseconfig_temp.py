@@ -6,7 +6,7 @@ from .util.material import Material
 from .paos_config import logger
 
 
-def ReadConfig(filename):
+def read_config(filename):
     """
     Given the input file name, it parses the simulation parameters and returns a dictionary.
     The input file is an Excel spreadsheet which contains three data sheets named 'general',
@@ -24,8 +24,8 @@ def ReadConfig(filename):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import ReadConfig
-    >>> simulation_parameters = ReadConfig('path/to/conf/file')
+    >>> from paos.paos_parseconfig import read_config
+    >>> simulation_parameters = read_config('path/to/conf/file')
 
     """
 
@@ -63,11 +63,11 @@ def ParseConfig(filename):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import ParseConfig
-    >>> pupil_diameter, general, fields, optical_chain = ParseConfig('path/to/conf/file')
+    >>> from paos.paos_parseconfig import parse_config
+    >>> pupil_diameter, general, fields, optical_chain = parse_config('path/to/conf/file')
 
     """
-    parameters = ReadConfig(filename)
+    parameters = read_config(filename)
 
     wl = parameters['general']['wavelength']
     glasslib = Material(wl)

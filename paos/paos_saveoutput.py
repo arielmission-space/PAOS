@@ -188,10 +188,10 @@ def save_output(retval, file_name, keys_to_keep=None, overwrite=True):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import ParseConfig
+    >>> from paos.paos_parseconfig import parse_config
     >>> from paos.paos_run import run
     >>> from paos.paos_saveoutput import save_output
-    >>> pup_diameter, general, fields, opt_chain = ParseConfig('path/to/conf/file')
+    >>> pup_diameter, general, fields, opt_chain = parse_config('path/to/conf/file')
     >>> ret_val = run(pup_diameter, 1.0e-6 * general['wavelength'], general['grid size'],
     >>>              general['zoom'], fields['0'], opt_chain)
     >>> save_output(ret_val, 'path/to/hdf5/file', keys_to_keep=['wfo', 'dx', 'dy'],
@@ -251,12 +251,12 @@ def save_datacube(retval_list, file_name, group_names, keys_to_keep=None, overwr
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import ParseConfig
+    >>> from paos.paos_parseconfig import parse_config
     >>> from paos.paos_run import run
     >>> from paos.paos_saveoutput import save_datacube
     >>> from joblib import Parallel, delayed
     >>> from tqdm import tqdm
-    >>> pup_diameter, general, fields, opt_chain = ParseConfig('path/to/conf/file')
+    >>> pup_diameter, general, fields, opt_chain = parse_config('path/to/conf/file')
     >>> wavelengths = [1.95, 3.9]
     >>> ret_val_list = Parallel(n_jobs=2)(delayed(run)(pup_diameter, 1.0e-6 * wl, general['grid size'],
     >>>               general['zoom'], fields['0'], opt_chain) for wl in tqdm(wavelengths))

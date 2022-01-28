@@ -3,7 +3,7 @@ from scipy.spatial.transform import Rotation as R
 from .paos_config import logger
 
 
-def CoordinateBreak(vt, vs, xdec, ydec, xrot, yrot, zrot, order=0):
+def coordinate_break(vt, vs, xdec, ydec, xrot, yrot, zrot, order=0):
     """
     Performs a coordinate break and estimates the new :math:`\\vec{v_{t}}=(y, u_{y})`
     and :math:`\\vec{v_{s}}=(x, u_{x})`.

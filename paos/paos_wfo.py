@@ -71,7 +71,7 @@ class WFO(object):
     Example
     -------
     >>> import paos
-    >>> import matplolib.pyplot as plt
+    >>> import matplotlib.pyplot as plt
     >>> fig, (ax0, ax1) = plt.sublots(nrows=1, ncols=1)
     >>> wfo = paos.WFO(1.0, 0.5e-6, 1024, 4)
     >>> wfo.aperture(0, 0, r=1.0/2, shape='circular')
@@ -84,7 +84,7 @@ class WFO(object):
     """
 
     def __init__(self, beam_diameter, wl, grid_size, zoom):
-        
+
         assert np.log2(grid_size).is_integer(), "Grid size should be 2**n"
         assert zoom > 0, 'zoom factor should be positive'
         assert beam_diameter > 0, 'beam diameter should be positive'
@@ -231,7 +231,7 @@ class WFO(object):
             ihy = hy / self.dy
             theta = 0.0 if tilt is None else np.deg2rad(tilt)
             aperture = photutils.aperture.RectangularAperture((ixc, iyc), ihx, ihy, theta=theta)
-            # Exact method non implemented in photutils 1.0.2
+            # Exact method not implemented in photutils 1.0.2
             mask = aperture.to_mask(method='subpixel', subpixels=32).to_image(self._wfo.shape)
         else:
             logger.error('Aperture {:s} not defined yet.'.format(shape))
@@ -332,17 +332,17 @@ class WFO(object):
 
     def Magnification(self, My, Mx=None):
 
-        if Mx == None: Mx = My
-        
+        if Mx is None: Mx = My
+
         assert Mx > 0.0, 'Negative magnification not implemented yet.'
         assert My > 0.0, 'Negative magnification not implemented yet.'
 
         self._dx *= Mx
         self._dy *= My
 
-        if np.abs(Mx-1.0) < 1.0e-8 or Mx == None:
-          # Don't do anything if magnification x is close to unity.
-          return
+        if np.abs(Mx - 1.0) < 1.0e-8 or Mx is None:
+            logger.trace('Does not do anything if magnification x is close to unity.')
+            return
 
         logger.warning("Gaussian beam magnification is implemented, but has not been tested.")
 
@@ -373,7 +373,6 @@ class WFO(object):
         self._wl *= n1n2
         self._zw0 = self.z - delta_z
         self._fratio /= n1n2
-        
 
     def ptp(self, dz):
         """

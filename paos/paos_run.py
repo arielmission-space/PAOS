@@ -4,7 +4,7 @@ import gc
 
 from .paos_wfo import WFO
 from .paos_abcd import ABCD
-from .paos_coordinatebreak import CoordinateBreak
+from .paos_coordinatebreak import coordinate_break
 from .paos_config import logger
 
 
@@ -51,10 +51,10 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import ParseConfig
+    >>> from paos.paos_parseconfig import parse_config
     >>> from paos.paos_run import run
     >>> from paos.paos_plotpop import simple_plot
-    >>> pup_diameter, general, fields, optical_chain = ParseConfig('path/to/conf/file')
+    >>> pup_diameter, general, fields, optical_chain = parse_config('path/to/conf/file')
     >>> ret_val = run(pup_diameter, 1.0e-6 * general['wavelength'], general['grid size'],
     >>>               general['zoom'], fields['0'], optical_chain)
 
@@ -78,7 +78,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
 
         if item['type'] == 'Coordinate Break':
             logger.trace('Apply coordinate break.')
-            vt, vs = CoordinateBreak(vt, vs, item['xdec'], item['ydec'], item['xrot'], item['yrot'], 0.0)
+            vt, vs = coordinate_break(vt, vs, item['xdec'], item['ydec'], item['xrot'], item['yrot'], 0.0)
 
         _retval_ = {'aperture': None}
 
@@ -100,25 +100,24 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
                 aper = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad,
                                     shape=item['aperture']['shape'], obscuration=obscuration)
                 _retval_['aperture'] = aper
-            
-            
-        #if item['type'] in ['Standard', 'Paraxial Lens', 'Slit', 'Obscuration']:
-            #xdec = item['xdec'] if np.isfinite(item['xdec']) else vs[0]
-            #ydec = item['ydec'] if np.isfinite(item['ydec']) else vt[0]
-            #xrad = item['xrad']
-            #yrad = item['yrad']
-            #xrad *= np.sqrt(1 / (vs[1] ** 2 + 1))
-            #yrad *= np.sqrt(1 / (vt[1] ** 2 + 1))
-            #xaper = xdec - vs[0]
-            #yaper = ydec - vt[0]
 
-            #aperture_shape = 'rectangular' if item['type'] == 'Slit' else 'elliptical'
-            #obscuration = True if item['type'] == 'Obscuration' else False
-            #if np.all(np.isfinite([xrad, yrad])):
-                #logger.trace('Apply aperture')
-                #aper = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad,
-                                    #shape=aperture_shape, obscuration=obscuration)
-                #_retval_['aperture'] = aper
+        # if item['type'] in ['Standard', 'Paraxial Lens', 'Slit', 'Obscuration']:
+        #     xdec = item['xdec'] if np.isfinite(item['xdec']) else vs[0]
+        #     ydec = item['ydec'] if np.isfinite(item['ydec']) else vt[0]
+        #     xrad = item['xrad']
+        #     yrad = item['yrad']
+        #     xrad *= np.sqrt(1 / (vs[1] ** 2 + 1))
+        #     yrad *= np.sqrt(1 / (vt[1] ** 2 + 1))
+        #     xaper = xdec - vs[0]
+        #     yaper = ydec - vt[0]
+        #
+        #     aperture_shape = 'rectangular' if item['type'] == 'Slit' else 'elliptical'
+        #     obscuration = True if item['type'] == 'Obscuration' else False
+        #     if np.all(np.isfinite([xrad, yrad])):
+        #         logger.trace('Apply aperture')
+        #         aper = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad,
+        #                             shape=aperture_shape, obscuration=obscuration)
+        #         _retval_['aperture'] = aper
 
         # Check if this is a stop surface
         if item['is_stop']:
