@@ -6,12 +6,9 @@ from matplotlib import ticker as ticks
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from .paos_config import logger
 
-plt.rcParams['figure.facecolor'] = 'white'
-plt.rc('lines', linewidth=1.5)
 
-
-def do_legend(axis):
-    legend = axis.legend(loc='best', ncol=1, frameon=True, prop={'size': 11})
+def do_legend(axis, ncol=1):
+    legend = axis.legend(loc='best', ncol=ncol, frameon=True, prop={'size': 12})
     legend.get_frame().set_facecolor('white')
     legend.get_frame().set_edgecolor('white')
     legend.get_frame().set_alpha(0.8)
@@ -25,9 +22,9 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
 
     Parameters
     ----------
-    fig: `~matplotlib.figure.Figure`
+    fig: :class:`~matplotlib.figure.Figure`
         instance of matplotlib figure artist
-    axis: `~matplotlib.axes.Axes`
+    axis: :class:`~matplotlib.axes.Axes`
         instance of matplotlib axes artist
     key: int
         optical surface index
@@ -46,7 +43,7 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
     Returns
     -------
     None
-        updates the `~matplotlib.figure.Figure` object
+        updates the :class:`~matplotlib.figure.Figure` object
 
     Examples
     --------
@@ -264,7 +261,7 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard'):
 
     Parameters
     ----------
-    fig: `~matplotlib.figure.Figure`
+    fig: :class:`~matplotlib.figure.Figure`
         instance of matplotlib figure artist
     key: int
         optical surface index
@@ -382,9 +379,9 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard'):
         axis.set_ylim(1.0e-10, airy.max())
 
         # plot vertical lines to mark the positions of the Airy dark rings and set the axis ticks
-        x_ticks = np.array([-5.24, -4.24, -3.24, -2.23, -1.22, 0.0, 1.22, 2.23, 3.24, 4.24, 5.24]) / airy_scale
+        x_ticks = np.array([-5.24, -4.24, -3.24, -2.23, -1.22, 1.22, 2.23, 3.24, 4.24, 5.24]) / airy_scale
         axis.vlines(x_ticks, *axis.get_ylim(), colors='k', lw=2, alpha=0.5)
-        axis.set_xticks(x_ticks)
+        axis.set_xticks(list(x_ticks) + [0.0])
 
     # Plot ima X, Y, 45 deg and 135 deg cross-sections
     axis.plot(x_i, ima[Npt // 2, ...], 'r', label='X-cut')

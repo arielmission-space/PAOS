@@ -61,7 +61,7 @@ values.
 relative to air for a particular optical glass at the glass reference temperature and pressure
 
 .. math::
-    T_{ref} = 20^{\circ} K \\
+    T_{ref} = 20^{\circ} C \\
     P_{ref} = 1 \ \textrm{atm}
     :label:
 
@@ -109,7 +109,7 @@ at ambient air (dry air at standard pressure).
     n_{ref} = 1.0 + 1.0 \cdot 10^{-8} \left(6432.8 + \frac{2949810 \lambda^2}{146 \lambda^2 - 1} + 25540 \frac{\lambda^2}{41 \lambda^2 - 1}\right)
     :label:
 
-where :math:`\lambda` is in units of micron, at the reference temperature :math:`T = 15 ^{\circ} K` and standard pressure.
+where :math:`\lambda` is in units of micron, at the reference temperature :math:`T = 15 ^{\circ} C` and standard pressure.
 Under different temperatures and pressures, `PAOS` rescales this reference index using this formula
 
 .. math::
@@ -129,7 +129,7 @@ The absolute temperature coefficient for a different medium can be calculated fr
     n(\Delta T) = \frac{n^2 - 1}{2 n} D_0 \Delta T + n
     :label:
 
-where :math:`\Delta T` is given by the difference between the material operative temperature math:`T_{oper}` and the
+where :math:`\Delta T` is given by the difference between the material operative temperature :math:`T_{oper}` and the
 reference temperature :math:`T_{ref}`, :math:`n` is the refractive index as estimated using :eq:`Sellmeier 1` and
 :math:`D_0` is a temperature constant of the material.
 

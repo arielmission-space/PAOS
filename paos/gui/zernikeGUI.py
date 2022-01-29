@@ -20,7 +20,7 @@ class ZernikeGUI(SimpleGUI):
 
     Parameters
     ----------
-    config: `~configparser.ConfigParser` object
+    config: :class:`~configparser.ConfigParser` object
     values: dict
     row: int
     key: str

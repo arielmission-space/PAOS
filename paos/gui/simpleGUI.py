@@ -1,12 +1,13 @@
 import configparser
+import gc
 import itertools
 import os
-import sys
-import gc
 import re
+import sys
 from tkinter import Tk
 from typing import List
 
+import numpy as np
 from PySimpleGUI import Text, Column, Canvas, InputText
 from PySimpleGUI import Window
 from PySimpleGUI import clipboard_set
@@ -123,7 +124,7 @@ class SimpleGUI:
     @staticmethod
     def to_configparser(dictionary):
         """
-        Given a dictionary, it converts it into a `~configparser.ConfigParser` object
+        Given a dictionary, it converts it into a :class:`~configparser.ConfigParser` object
 
         Parameters
         ----------
@@ -132,7 +133,7 @@ class SimpleGUI:
 
         Returns
         -------
-        out: `~configparser.ConfigParser`
+        out: :class:`~configparser.ConfigParser`
         """
 
         config = configparser.ConfigParser()
@@ -161,7 +162,7 @@ class SimpleGUI:
 
         Parameters
         ----------
-        figure: `~matplotlib.figure.Figure`
+        figure: :class:`~matplotlib.figure.Figure`
             the figure to be drawn
         canvas: Canvas
             the canvas onto which to draw the figure
@@ -169,7 +170,7 @@ class SimpleGUI:
         Returns
         -------
         out: FigureCanvasTkAgg
-            the Tkinter widget to draw a `~matplotlib.figure.Figure` onto a Canvas
+            the Tkinter widget to draw a :class:`~matplotlib.figure.Figure` onto a Canvas
         """
         figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
         figure_canvas_agg.draw()
@@ -184,7 +185,7 @@ class SimpleGUI:
         Parameters
         ----------
         fig_agg: FigureCanvasTkAgg
-            the Tkinter widget to draw a `~matplotlib.figure.Figure` onto a Canvas
+            the Tkinter widget to draw a :class:`~matplotlib.figure.Figure` onto a Canvas
 
         Returns
         -------

@@ -24,7 +24,7 @@ def read_config(filename):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import read_config
+    >>> from paos.paos_parseconfig_temp import read_config
     >>> simulation_parameters = read_config('path/to/conf/file')
 
     """
@@ -63,8 +63,8 @@ def ParseConfig(filename):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import parse_config
-    >>> pupil_diameter, general, fields, optical_chain = parse_config('path/to/conf/file')
+    >>> from paos.paos_parseconfig_temp import ParseConfig
+    >>> pupil_diameter, general, fields, optical_chain = ParseConfig('path/to/conf/file')
 
     """
     parameters = read_config(filename)

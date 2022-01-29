@@ -67,7 +67,9 @@ def parse_config(filename):
         raise ValueError('Verify lens_unit=m in ini file')
 
     Tambient = config['general'].getfloat('Tambient')
+    parameters['Tambient'] = Tambient
     Pambient = config['general'].getfloat('Pambient')
+    parameters['Pambient'] = Pambient
 
     # Parse section 'wavelengths'
     wavelengths = []
@@ -101,7 +103,7 @@ def parse_config(filename):
     pup_diameter = None  # input pupil pup_diameter
     for _wl_ in wavelengths:
         n1, n2 = None, None  # Refractive index
-        glasslib = Material(_wl_, Tambient=Tambient)
+        glasslib = Material(_wl_, Tambient=Tambient, Pambient=Pambient)
         opt_chain = {}
         lens_num = 1
         while 'lens_{:02d}'.format(lens_num) in config:

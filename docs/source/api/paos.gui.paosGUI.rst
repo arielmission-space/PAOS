@@ -1,7 +1,7 @@
-paos.gui.paos_guilib module
+paos.gui.paosGUI module
 ===========================
 
-.. automodule:: paos.gui.paos_guilib
+.. automodule:: paos.gui.paosGUI
    :members:
    :undoc-members:
    :show-inheritance:
