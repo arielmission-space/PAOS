@@ -38,6 +38,13 @@ def parse_config(filename):
     opt_chain_list: List
         Each list entry is a dictionary of the optical surfaces in the ini file, estimated at the give wavelength.
         (Relevant only for diffractive components)
+
+    Examples
+    --------
+
+    >>> from paos.paos_parseconfig import parse_config
+    >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/ini/file')
+
     """
     config = configparser.ConfigParser()
     filename = os.path.expanduser(filename)

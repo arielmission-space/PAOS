@@ -34,11 +34,11 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
         plot color map scale, can be either 'linear' or 'log'
     options: dict
         dict containing the options to display the plot: axis scale, option to display physical units,
-        zoom scale and color scale.
-        ex. 0) options={4: {'ima_scale':'linear'}}
-            1) options={4: {'surface_scale':60, 'ima_scale':'linear'}}
-            2) options={4: {'surface_scale':21, 'pixel_units':True, 'ima_scale':'linear'}}
-            3) options={4: {'surface_zoom':2, 'ima_scale':'log'}}
+        zoom scale and color scale. Examples:
+        0) options={4: {'ima_scale':'linear'}}
+        1) options={4: {'surface_scale':60, 'ima_scale':'linear'}}
+        2) options={4: {'surface_scale':21, 'pixel_units':True, 'ima_scale':'linear'}}
+        3) options={4: {'surface_zoom':2, 'ima_scale':'log'}}
 
     Returns
     -------
@@ -51,9 +51,9 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
     >>> from paos.paos_parseconfig import parse_config
     >>> from paos.paos_run import run
     >>> from paos.paos_plotpop import simple_plot
-    >>> pup_diameter, general, fields, opt_chain = parse_config('path/to/conf/file')
-    >>> ret_val = run(pup_diameter, 1.0e-6 * general['wavelength'], general['grid size'],
-    >>>              general['zoom'], fields['0'], opt_chain)
+    >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/ini/file')
+    >>> ret_val = run(pup_diameter, 1.0e-6 * wavelengths[0], parameters['grid size'],
+    >>>              parameters['zoom'], fields[0], opt_chains[0])
     >>> from matplotlib import pyplot as plt
     >>> fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 8))
     >>> key = list(ret_val.keys())[-1]  # plot at last optical surface
@@ -191,10 +191,11 @@ def plot_pop(retval, ima_scale='log', ncols=2, figname=None, options=dict()):
         name of figure to save
     options: dict
         dict containing the options to display the plot: axis scale, axis unit, zoom scale and color scale.
-        ex. 0) options={4: {'ima_scale':'linear'}}
-            1) options={4: {'surface_scale':60, 'ima_scale':'linear'}}
-            2) options={4: {'surface_scale':21, 'pixel_units':True, 'ima_scale':'linear'}}
-            3) options={4: {'surface_zoom':2, 'ima_scale':'log'}}
+        Examples:
+        0) options={4: {'ima_scale':'linear'}}
+        1) options={4: {'surface_scale':60, 'ima_scale':'linear'}}
+        2) options={4: {'surface_scale':21, 'pixel_units':True, 'ima_scale':'linear'}}
+        3) options={4: {'surface_zoom':2, 'ima_scale':'log'}}
 
 
     Returns
@@ -208,19 +209,22 @@ def plot_pop(retval, ima_scale='log', ncols=2, figname=None, options=dict()):
     >>> from paos.paos_parseconfig import parse_config
     >>> from paos.paos_run import run
     >>> from paos.paos_plotpop import plot_pop
-    >>> pup_diameter, general, fields, opt_chain = parse_config('path/to/conf/file')
-    >>> ret_val = run(pup_diameter, 1.0e-6 * general['wavelength'], general['grid size'],
-    >>>              general['zoom'], fields['0'], opt_chain)
+    >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/ini/file')
+    >>> ret_val = run(pup_diameter, 1.0e-6 * wavelengths[0], parameters['grid size'],
+    >>>              parameters['zoom'], fields[0], opt_chains[0])
     >>> plot_pop(ret_val, ima_scale='log', ncols=3, figname='path/to/output/plot')
 
     """
+
+    i, j = None, None
 
     n_subplots = len(retval)
     if ncols > n_subplots:
         ncols = n_subplots
 
     nrows = n_subplots // ncols
-    if n_subplots % ncols: nrows += 1
+    if n_subplots % ncols:
+        nrows += 1
 
     figsize = (8 * ncols, 6 * nrows)
     fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
@@ -271,7 +275,7 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard'):
         y axis scale, can be either 'linear' or 'log'
     x_units: str
         units for x axis. Default is 'standard', to have units of mm or microns.
-        Can also be 'wave', i.e. :math:`\\textrm{Displacement} / (F_# \\lambda)`.
+        Can also be 'wave', i.e. :math:`\\textrm{Displacement} / (F_{num} \\lambda)`.
 
     Returns
     -------
@@ -295,9 +299,9 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard'):
 
     """
 
-    global wx, wy
     logger.trace('plotting S{:02d}'.format(key))
 
+    wx, wy = None, None
     plot_scale, airy_scale = None, None
     x_label = None
 

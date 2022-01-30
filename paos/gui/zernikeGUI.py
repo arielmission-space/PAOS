@@ -14,7 +14,6 @@ from paos.paos_config import logger
 
 
 class ZernikeGUI(SimpleGUI):
-
     """
     Generates the Zernike editor for the `PAOS` GUI
 
@@ -107,44 +106,44 @@ class ZernikeGUI(SimpleGUI):
 
         layout = [
             [Frame('Parameters',
-                   layout=[list(itertools.chain([Text('Wavelength: {}'.format(wavelength), key='wavelength')],
-                                                [Text('', size=(6, 1))],
-                                                [Text('Ordering: {}'.format(self.ordering), key='ordering')],
-                                                [Text('', size=(6, 1))],
-                                                [Text('Normalization: {}'.format(normalization),
-                                                      key='normalization')],
-                                                [Text('', size=(6, 1))],
-                                                [Text('Radius of S.A.: {}'.format(radius), key='radius')],
-                                                [Text('', size=(6, 1))],
-                                                [Text('Origin: {}'.format(origin), key='origin')]))],
+                   layout=[list(itertools.chain(
+                       [Text('Wavelength: {}'.format(wavelength), key='wavelength')],
+                       [Text('', size=(6, 1))],
+                       [Text('Ordering: {}'.format(self.ordering), key='ordering')],
+                       [Text('', size=(6, 1))],
+                       [Text('Normalization: {}'.format(normalization),
+                             key='normalization')],
+                       [Text('', size=(6, 1))],
+                       [Text('Radius of S.A.: {}'.format(radius), key='radius')],
+                       [Text('', size=(6, 1))],
+                       [Text('Origin: {}'.format(origin), key='origin')]))],
                    font=self.font_titles,
                    relief=RELIEF_SUNKEN,
                    key='-ZERNIKE MEMO FRAME-',
                    )],
             [Text('', size=(10, 2))],
-            [Column(layout=list(
-                itertools.chain([self.add_heading(self.headings)],
-                                [self.chain_widgets(row=i + 1,
-                                                    input_list=[r, float(self.zernike['z'][i]), int(m[i]), int(n[i])],
-                                                    prefix='z')
-                                 for i, r in enumerate(self.zernike['zindex'])
-                                 ]
-                                )), scrollable=True, expand_y=True, key='zernike')],
+            [Column(layout=list(itertools.chain(
+                [self.add_heading(self.headings)],
+                [self.chain_widgets(row=i + 1,
+                                    input_list=[r, float(self.zernike['z'][i]), int(m[i]), int(n[i])],
+                                    prefix='z')
+                 for i, r in enumerate(self.zernike['zindex'])])),
+                scrollable=True, vertical_scroll_only=True, expand_y=True, key='zernike')],
             [Text('', size=(10, 2))],
-            itertools.chain([Frame('Zernike Actions', layout=[
-                [Button(tooltip='Click to add a new row',
-                        button_text='Add row',
-                        enable_events=True,
-                        key="-ADD ZERNIKE ROW-"),
-                 Button(
-                     tooltip='Click to add a radial order',
-                     button_text='Add/Complete radial order',
-                     enable_events=True,
-                     key="-ADD ZERNIKE RADIAL ORDER-")],
-            ],
-                                   font=self.font_titles,
-                                   relief=RELIEF_SUNKEN,
-                                   key='-ZERNIKE ACTIONS FRAME-')]),
+            itertools.chain([
+                Frame('Zernike Actions', layout=[
+                    [Button(tooltip='Click to add a new row',
+                            button_text='Add row',
+                            enable_events=True,
+                            key="-ADD ZERNIKE ROW-"),
+                     Button(
+                         tooltip='Click to add a radial order',
+                         button_text='Add/Complete radial order',
+                         enable_events=True,
+                         key="-ADD ZERNIKE RADIAL ORDER-")]],
+                      font=self.font_titles,
+                      relief=RELIEF_SUNKEN,
+                      key='-ZERNIKE ACTIONS FRAME-')]),
             [
                 Button('Paste Zernike', tooltip='Click to paste Zernike coefficients', key='PASTE ZERNIKES'),
                 Submit(tooltip='Click to submit (debug)', key='-SUBMIT ZERNIKES-'),
@@ -153,7 +152,7 @@ class ZernikeGUI(SimpleGUI):
         ]
 
         self.window = Window('Zernike window', layout, default_element_size=(12, 1),
-                             return_keyboard_events=True, finalize=True, modal=True,
+                             return_keyboard_events=True, finalize=True,
                              enable_close_attempted_event=True, resizable=True,
                              element_justification='center', keep_on_top=True)
 
@@ -182,10 +181,13 @@ class ZernikeGUI(SimpleGUI):
             elif event == '-ADD ZERNIKE ROW-':
                 self.max_rows, _ = self.add_row(row=self.max_rows, dictionary=self.zernike, ordering=self.ordering)
 
+                # Update the 'zernike' Column scrollbar
+                self.update_column_scrollbar(window=self.window, col_key='zernike')
+
             elif event == 'PASTE ZERNIKES' and isinstance(elem_key, str):
                 row, col = re.findall('[0-9]+', elem_key.partition('_')[-1])
                 if self.headings[int(col)] != 'Z':
-                    logger.debug('The user shall select the starting cell from the Z column. Skipping..')
+                    logger.debug('The user shall select any cell from from the Z column. Skipping..')
                     continue
                 text = self.get_clipboard_text()
                 row0 = row = int(row)
@@ -195,6 +197,9 @@ class ZernikeGUI(SimpleGUI):
                         self.max_rows, _ = self.add_row(row=self.max_rows, dictionary=self.zernike,
                                                         ordering=self.ordering)
                     row += 1
+
+                # Update the 'zernike' Column scrollbar
+                self.update_column_scrollbar(window=self.window, col_key='zernike')
 
             elif event == '-ADD ZERNIKE RADIAL ORDER-':
 
@@ -224,6 +229,9 @@ class ZernikeGUI(SimpleGUI):
                 jmax = Zernike.mn2j(m=new_m, n=new_n, ordering=self.ordering)
                 while self.max_rows < jmax + 1:
                     self.max_rows, _ = self.add_row(row=self.max_rows, dictionary=self.zernike, ordering=self.ordering)
+
+                # Update the 'zernike' Column scrollbar
+                self.update_column_scrollbar(window=self.window, col_key='zernike')
 
             # ------- Display a popup window with the Zernike GUI values given as a flat dictionary ------#
             elif event == '-SUBMIT ZERNIKES-':

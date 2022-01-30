@@ -36,7 +36,7 @@ For air and optical glasses, for visible and infra-red light refraction indices 
 
 while for ultraviolet the opposite behaviour is typically the case (anomalous dispersion).
 
-See later in :ref:`Plotting refractive indices` for the dispersion behaviour of supported optical materials in `PAOS`.
+See later in :ref:`Supported materials` for the dispersion behaviour of supported optical materials in `PAOS`.
 
 .. _Sellmeier:
 
@@ -149,6 +149,8 @@ glass (known as `BK7`) at reference and operating temperature.
         nmat0, nmat = mat.nmat(glass)
         print('index of refraction at reference temperature = {:.4f}'.format(nmat0))
         print('index of refraction at operating temperature = {:.4f}'.format(nmat))
+
+.. _Supported materials:
 
 Supported materials
 -------------------------

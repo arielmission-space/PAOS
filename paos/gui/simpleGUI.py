@@ -7,20 +7,19 @@ import sys
 from tkinter import Tk
 from typing import List
 
-import numpy as np
-from PySimpleGUI import Text, Column, Canvas, InputText
+from PySimpleGUI import Text, Column, Canvas, InputText, Frame
 from PySimpleGUI import Window
 from PySimpleGUI import clipboard_set
 from PySimpleGUI import pin
 from PySimpleGUI import popup_quick_message
 from matplotlib import pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasAgg, FigureCanvasTkAgg
+import io
 
 from paos.paos_config import logger
 
 
 class SimpleGUI:
-
     """
     Base class for the Graphical User Interface (GUI) for `PAOS`, built using the publicly available library PySimpleGUI
     """
@@ -85,25 +84,68 @@ class SimpleGUI:
         return list(itertools.chain([Text(' ' * 8)], headings_list))
 
     @staticmethod
-    def collapse(layout, key):
+    def collapse_frame(title, layout, key):
         """
-        Copyright 2020 PySimpleGUI.org
+        Helper function that creates a Frame that can be later made hidden, thus appearing "collapsed"
+
+        Parameters
+        ----------
+        title: str
+            the Frame title
+        layout: List[List[Element]]
+            the layout for the section
+        key: str
+            key used to make this section visible / invisible
+
+        Returns
+        -------
+        out: Frame
+            A pinned Frame that can be placed directly into your layout
+
+        """
+        return pin(Frame(title=title, layout=layout, key=key, visible=False))
+
+    @staticmethod
+    def collapse_column(layout, key):
+        """
         Helper function that creates a Column that can be later made hidden, thus appearing "collapsed"
 
         Parameters
         ----------
         layout: List[List[Element]]
-            The layout for the section
+            the layout for the section
         key: str
-            Key used to make this section visible / invisible
+            key used to make this section visible / invisible
 
         Returns
         -------
         out: Column
-            A pinned column that can be placed directly into your layout
+            A pinned Column that can be placed directly into your layout
 
         """
-        return pin(Column(layout, key=key, visible=False))
+        return pin(Column(layout=layout, key=key, visible=False))
+
+    @staticmethod
+    def update_column_scrollbar(window, col_key):
+        """
+        Given the current GUI window and the current Column key, updates the column scrollbar if the Column has changed
+
+        Parameters
+        ----------
+        window: Window
+            the current GUI window
+        col_key: str
+            the current Column key
+
+        Returns
+        -------
+        out: None
+            Updates the column scrollbar
+
+        """
+        window.refresh()
+        window[col_key].contents_changed()
+        return
 
     @staticmethod
     def get_clipboard_text():
@@ -158,6 +200,7 @@ class SimpleGUI:
     @staticmethod
     def draw_figure(figure, canvas):
         """
+        CURRENTLY NOT USED
         Given a Canvas and a figure, it draws the figure onto the Canvas
 
         Parameters
@@ -178,23 +221,54 @@ class SimpleGUI:
         return figure_canvas_agg
 
     @staticmethod
-    def delete_figure(fig_agg):
+    def draw_image(figure, element):
         """
-        Given a FigureCanvasTkAgg widget, it deletes it and closes the corresponding plot
+        Draws the previously created "figure" in the supplied Image Element
 
         Parameters
         ----------
-        fig_agg: FigureCanvasTkAgg
-            the Tkinter widget to draw a :class:`~matplotlib.figure.Figure` onto a Canvas
+        figure: :class:`~matplotlib.figure.Figure`
+            a Matplotlib figure
+        element: Image
+            an Image element
+
+        Returns
+        -------
+        out: Canvas
+            The figure canvas
+
+        """
+        if figure is not None:
+            plt.close('all')  # erases previously drawn plots
+            canvas = FigureCanvasAgg(figure)
+            buf = io.BytesIO()
+            canvas.print_figure(buf, format='png')
+            if buf is not None:
+                buf.seek(0)
+                element.update(data=buf.read())
+                element.update(visible=True)
+                return canvas
+            else:
+                return None
+
+    @staticmethod
+    def clear_image(element):
+        """
+        Given an Image widget, it clears it
+
+        Parameters
+        ----------
+        element: Image
+            the Image widget to clear
 
         Returns
         -------
         out: None
-            deletes a FigureCanvasTkAgg widget and closes the corresponding plot
+            clears an Image widget
         """
-        logger.debug('Clearing figure canvas')
-        fig_agg.get_tk_widget().forget()
-        plt.close()
+        logger.debug('Clearing image')
+        element.update()
+        element.update(visible=False)
 
         return
 
@@ -284,6 +358,32 @@ class SimpleGUI:
                                     [InputText(default_text=value, key=key, size=(24, 2))
                                      for value, key in zip(input_list, keys)]
                                     ))
+
+    def make_visible(self, event, visible, key):
+        """
+        Given the current event, a boolean and the widget key, it makes the widget visible/invisible
+
+        Parameters
+        ----------
+        event: str
+            the current event
+        visible: bool
+            if True, the widget becomes visible. If False, it becomes invisible
+        key: str
+            the widget key
+
+        Returns
+        -------
+        out: bool
+            the updated visibile parameter of the widget
+
+        """
+        visible = not visible
+        self.window[key].update(visible=visible)
+        # Update the triangle symbol
+        self.window[event].update(self.symbol_down if visible else self.symbol_up)
+
+        return visible
 
     def close_window(self):
         """
