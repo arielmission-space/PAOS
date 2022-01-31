@@ -126,7 +126,7 @@ class Zernike:
         N: integer
             Number of polynomials (starting from Piston)
         ordering: string
-            can take values 'ansi', 'noll', 'fringe'
+            can take values 'ansi', 'standard', 'noll', 'fringe'
 
         Returns
         -------

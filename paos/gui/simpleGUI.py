@@ -7,7 +7,7 @@ import sys
 from tkinter import Tk
 from typing import List
 
-from PySimpleGUI import Text, Column, Canvas, InputText, Frame
+from PySimpleGUI import Text, Column, Canvas, InputText, Frame, ProgressBar
 from PySimpleGUI import Window
 from PySimpleGUI import clipboard_set
 from PySimpleGUI import pin
@@ -273,6 +273,25 @@ class SimpleGUI:
         return
 
     @staticmethod
+    def reset_progress_bar(progress_bar):
+        """
+        Given a progress bar element, it resets it
+
+        Parameters
+        ----------
+        progress_bar: ProgressBar
+            the progress bar element to reset
+
+        Returns
+        -------
+        out: ProgressBar
+            resets the progress bar element
+        """
+        progress_bar.metadata = 0
+        progress_bar.update_bar(progress_bar.metadata)
+        return progress_bar
+
+    @staticmethod
     def move_with_arrow_keys(window, event, values, elem_key, max_rows, max_cols):
         """
         Given the current GUI window, the latest event, the dictionary containing the window values, the dictionary key
@@ -387,7 +406,12 @@ class SimpleGUI:
 
     def close_window(self):
         """
-        Closes the GUI window and deletes the temporary .ini file (if present) and any plots in the process
+        Deletes the temporary .ini file (if present), any unsaved outputs and then closes the GUI window
+
+        Returns
+        -------
+        out: None
+            closes the GUI window and cleans up the memory
         """
 
         # ------ Remove temporary config ------ #
@@ -408,5 +432,46 @@ class SimpleGUI:
 
         # ------ Collect garbage ------ #
         _ = gc.collect()
+
+        return
+
+    @staticmethod
+    def sort_column(window, values, col_key):
+        """
+        Given a GUI window, the window contents (values) and the Column key, it sorts the Column elements in
+        increasing order
+
+        Parameters
+        ----------
+        window: Window
+            the GUI window
+        values: dict
+            the dictionary with the Window contents
+        col_key: str
+            the Column key
+
+        Returns
+        -------
+        out: None
+            Sorts the Column elements in ascending order
+
+        """
+        col_values = []
+        keys = []
+        for key, item in values.items():
+            if key.startswith(col_key):
+                col_values.append(item)
+                keys.append(key)
+
+        if '' in col_values:
+            logger.error('Invalid wavelength in column. Continuing..')
+            return
+
+        col_values = list(map(float, col_values))
+        col_values.sort()
+        col_values = list(map(str, col_values))
+
+        for key, value in zip(keys, col_values):
+            window[key].update(value)
 
         return
