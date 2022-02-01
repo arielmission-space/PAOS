@@ -187,6 +187,7 @@ class ZernikeGUI(SimpleGUI):
 
         self.make_window()
 
+        # ------ Instantiate local variables ------ #
         order_closed = False
 
         while True:

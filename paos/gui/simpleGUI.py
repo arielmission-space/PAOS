@@ -333,7 +333,7 @@ class SimpleGUI:
         # if the current cell changed, set focus on new cell
         if current_cell != (r, c):
             for key in values.keys():
-                if key.endswith('({},{})'.format(r, c)):
+                if key.endswith(f'({r},{c})'):
                     window[key].set_focus()  # set the focus on the element moved to
                     window[key].update()
         return r
@@ -370,8 +370,8 @@ class SimpleGUI:
         out: List[Text, List[Checkbox or Input or Column or Combo]]
             list of widgets
         """
-        row_widget = [Text(row, size=(6, 1), key='row idx {}'.format(row))]
-        keys = ['{}_({},{})'.format(prefix, row, i) for i in range(len(input_list))]
+        row_widget = [Text(row, size=(6, 1), key=f'row idx {row}')]
+        keys = [f'{prefix}_({row},{i})' for i in range(len(input_list))]
 
         return list(itertools.chain(row_widget,
                                     [InputText(default_text=value, key=key, size=(24, 2))
@@ -417,8 +417,8 @@ class SimpleGUI:
         # ------ Remove temporary config ------ #
         if self.temporary_config is not None:
             if not os.path.exists(self.temporary_config) or not os.path.isfile(self.temporary_config):
-                logger.error('Input temporary file {} does not exist or is not a file. Quitting..'.format(
-                    self.temporary_config))
+                logger.error(f'Input temporary file {self.temporary_config} does not exist or is not a file. '
+                             f'Quitting..')
                 sys.exit()
             logger.info('Removing temporary .ini configuration file')
             os.remove(self.temporary_config)

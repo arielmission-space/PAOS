@@ -128,8 +128,6 @@ class PaosGUI(SimpleGUI):
             self.passvalue['conf'] = os.path.join(base_dir, 'lens data', 'lens_file_template.ini')
 
         # ------ Instantiate some more global variables (for dynamic updates) ------ #
-        self.selected_wl = ['w1']
-        self.selected_field = ['f1']
         self.disable_wfe = True
         self.disable_wfe_color = ''
 
@@ -642,9 +640,6 @@ class PaosGUI(SimpleGUI):
         # Close all previous plots
         plt.close('all')
 
-        if not retval_list:
-            logger.debug('Run POP first')
-            return
         if figure_agg is not None:
             # Reset figure canvas
             self.clear_image(self.window[image_key])
@@ -673,9 +668,9 @@ class PaosGUI(SimpleGUI):
                 idx.append(j)
                 j += 1
             if 'nwl' in image_key:
-                self.window['-Slider (nwl)-'].update(range=(0, n_max-n_min-1))
+                self.window['-Slider (nwl)-'].update(range=(0, n_max - n_min - 1))
             elif 'wfe' in image_key:
-                self.window['-Slider (wfe)-'].update(range=(0, n_max-n_min-1))
+                self.window['-Slider (wfe)-'].update(range=(0, n_max - n_min - 1))
             return figure_list, idx
         else:
             ret = retval_list[0]
@@ -716,9 +711,8 @@ class PaosGUI(SimpleGUI):
             self.clear_image(self.window[image_key])
         # Get the simulation index
         n = int(self.values[slider_key])
-        if n > len(figure_list) - 1:
-            print('0')
-            return
+        # if n > len(figure_list) - 1:
+        #     return
         # Draw the image
         figure_agg = self.draw_image(figure=figure_list[n], element=self.window[image_key])
         # Update the 'MC LAUNCHER COL' Column scrollbar
@@ -900,7 +894,7 @@ class PaosGUI(SimpleGUI):
                 [Text('P unit:', size=(24, 1)),
                  InputText('(atm)', key='P_unit', size=(24, 1), disabled=True)],
                 [Text('', size=(24, 1))]],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='-GENERAL FRAME-', expand_x=True)],
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='GENERAL FRAME', expand_x=True)],
             [Frame('Wavelength Setup', layout=[
                 [Text('', size=(24, 1))],
                 list(itertools.chain(
@@ -914,7 +908,7 @@ class PaosGUI(SimpleGUI):
                         [Text('Sort wavelengths: ', size=(24, 1)),
                          Button(tooltip='Click to sort wavelengths', button_text='Sort',
                                 enable_events=True, key="-SORT WL-")]],
-                           font=self.font_titles, relief=RELIEF_SUNKEN, key='-GENERAL ACTIONS FRAME-')],
+                           font=self.font_titles, relief=RELIEF_SUNKEN, key='GENERAL ACTIONS FRAME')],
                     [Text('', size=(15, 1))],
                     [Column(layout=list(itertools.chain(
                         [self.add_heading(self.wl_data.keys())],
@@ -922,7 +916,7 @@ class PaosGUI(SimpleGUI):
                          for r in range(1, self.nrows_wl + 1)])),
                         key='wavelengths', scrollable=True, vertical_scroll_only=True, expand_y=True)]
                 ))],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='-WL FRAME-', expand_x=True, expand_y=True,
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='WL FRAME', expand_x=True, expand_y=True,
                    element_justification='top')],
         ]
         # Define fields layout
@@ -937,7 +931,7 @@ class PaosGUI(SimpleGUI):
                 [Button(tooltip='Click to add field row', button_text='Add Field', enable_events=True,
                         key="-ADD FIELD-")]
             ],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='-FIELDS ACTIONS FRAME-')]
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='FIELDS ACTIONS FRAME')]
         ]
         # Define lens data layout
         lens_data_layout = [
@@ -951,23 +945,23 @@ class PaosGUI(SimpleGUI):
             [Frame('Lens Data Actions', layout=[
                 [Button(tooltip='Click to add surface row', button_text='Add Surface', enable_events=True,
                         key="-ADD SURFACE-")]],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='-LENS DATA ACTIONS FRAME-')]
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='LENS DATA ACTIONS FRAME')]
         ]
         # Define launcher layout
         launcher_layout = [list(itertools.chain(
             [Frame('Select inputs', layout=[
                 list(itertools.chain(
                     [Text('Select wavelength', size=(12, 2)),
-                     Listbox(default_values=self.selected_wl,
+                     Listbox(default_values=['w1'],
                              values=[key for key, item in self.config.items('wavelengths')],
                              size=(12, 4), background_color='grey20', key='select wl',
                              enable_events=True)],
                     [Text('', size=(5, 2))],
                     [Text('Select field', size=(12, 2)),
-                     Listbox(default_values=self.selected_field,
+                     Listbox(default_values=['f1'],
                              values=[key for key, item in self.config.items('fields')],
                              size=(12, 4), background_color='grey20', key='select field', enable_events=True)]))],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='-INPUTS FRAME-')
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='INPUTS FRAME')
              ],
             [Text('', size=(100, 2))],
             [Frame('Save', layout=[
@@ -976,7 +970,7 @@ class PaosGUI(SimpleGUI):
                 [Button(tooltip='Save the POP output', button_text='Save POP', enable_events=True, key="-SAVE POP-")],
                 [Button(tooltip='Save the plot', button_text='Save Plot', enable_events=True, key="-SAVE FIG-")]
             ],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='-PAOS SAVE FRAME-')
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='PAOS SAVE FRAME')
              ])),
             [Frame('Raytrace', layout=[
                 [Text('Run a diagnostic raytrace')],
@@ -985,7 +979,7 @@ class PaosGUI(SimpleGUI):
                     [Multiline(key='raytrace log', font=self.font_small, autoscroll=True, size=(90, 20),
                                pad=(0, (15, 0)), background_color='grey20', disabled=False)]],
                     key='raytrace log col')]],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='-PAOS RAYTRACE FRAME-'),
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='PAOS RAYTRACE FRAME'),
              Text('', size=(5, 2)),
              Frame('POP', layout=[
                  list(itertools.chain(
@@ -999,36 +993,25 @@ class PaosGUI(SimpleGUI):
                                  key="Ima scale"),
                       Button(tooltip='Plot', button_text='Plot', enable_events=True, key="-PLOT-")])),
                  [Image(key='-IMAGE-', size=(90, 20))]],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, expand_x=True, expand_y=True, key='-PAOS POP FRAME-')
+                   font=self.font_titles, relief=RELIEF_SUNKEN, expand_x=True, expand_y=True, key='PAOS POP FRAME')
              ]
         ]
         # Define parallel launcher layout
         monte_carlo_layout = [
             [Column(layout=[
+                [Text('', size=(6, 1))],
                 [Button(self.symbol_up, enable_events=True, disabled=False,
-                        key='-OPEN FRAME INPUTS-', font=self.font_small, size=(2, 1)),
-                 Text('Select inputs', size=(20, 1), text_color='yellow', key='', font=self.font_titles,
-                      relief=RELIEF_SUNKEN)],
+                        key='-OPEN FRAME MC (nwl)-', font=self.font_small, size=(2, 1)),
+                 Text('MC Wavelengths', size=(20, 1), text_color='yellow', key='-FRAME TITLE MC (nwl)-',
+                      font=self.font_titles, relief=RELIEF_SUNKEN)],
                 [Column(layout=[[self.collapse_frame(title='', layout=[
-                    list(itertools.chain(
-                        [Text('Select wavelength', size=(12, 2)),
-                         Listbox(default_values=self.selected_wl,
-                                 values=[key for key, item in self.config.items('wavelengths')],
-                                 size=(12, 4), background_color='grey20', key='select wl (MC)',
-                                 enable_events=True)],
-                        [Text('', size=(5, 2))],
+                    [Frame('Select inputs', layout=[
                         [Text('Select field', size=(12, 2)),
-                         Listbox(default_values=self.selected_field,
+                         Listbox(default_values=['f1'],
                                  values=[key for key, item in self.config.items('fields')],
-                                 size=(12, 4), background_color='grey20', key='select field (MC)',
-                                 enable_events=True)]
-                    ))], key='-MC INPUTS FRAME-')]])],
-                [Text('', size=(6, 2))],
-                [Button(self.symbol_up, enable_events=True, disabled=False,
-                        key='-OPEN FRAME MC WAVELENGTHS-', font=self.font_small, size=(2, 1)),
-                 Text('MC Wavelengths', size=(20, 1), text_color='yellow', key='', font=self.font_titles,
-                      relief=RELIEF_SUNKEN)],
-                [Column(layout=[[self.collapse_frame(title='', layout=[
+                                 size=(12, 4), background_color='grey20', key='select field (nwl)',
+                                 enable_events=True)]], font=self.font_subtitles, relief=RELIEF_SUNKEN,
+                           key='INPUTS FRAME (nwl)')],
                     list(itertools.chain(
                         [Frame('Run and Save', layout=[
                             [Text('', size=(6, 2))],
@@ -1069,15 +1052,29 @@ class PaosGUI(SimpleGUI):
                                     key='-Slider (nwl)-', enable_events=True)],
                             [Image(key='-IMAGE (nwl)-')]],
                                font=self.font_subtitles, relief=RELIEF_SUNKEN, expand_x=True, expand_y=True,
-                               key='-IMAGE FRAME (nwl)-')],
+                               key='IMAGE FRAME (nwl)')],
                     ))
-                ], key='-MC WAVELENGTHS FRAME-')]])],
+                ], key='FRAME MC (nwl)')]])],
                 [Text('', size=(6, 2))],
                 [Button(self.symbol_up, enable_events=True, disabled=self.disable_wfe,
-                        key='-OPEN FRAME MC WFE-', font=self.font_small, size=(2, 1)),
-                 Text('MC Wavefront error', size=(20, 1), text_color=self.disable_wfe_color, key="-FRAME MC WFE TITLE-",
-                      font=self.font_titles, relief=RELIEF_SUNKEN)],
+                        key='-OPEN FRAME MC (wfe)-', font=self.font_small, size=(2, 1)),
+                 Text('MC Wavefront error', size=(20, 1), text_color=self.disable_wfe_color,
+                      key="-FRAME TITLE MC (wfe)-", font=self.font_titles, relief=RELIEF_SUNKEN)],
                 [Column(layout=[[self.collapse_frame(title='', layout=[
+                    [Frame('Select inputs', layout=[
+                        list(itertools.chain(
+                            [Text('Select wavelength', size=(12, 2)),
+                             Listbox(default_values=['w1'],
+                                     values=[key for key, item in self.config.items('wavelengths')],
+                                     size=(12, 4), background_color='grey20', key='select wl (wfe)',
+                                     enable_events=True)],
+                            [Text('', size=(5, 2))],
+                            [Text('Select field', size=(12, 2)),
+                             Listbox(default_values=['f1'],
+                                     values=[key for key, item in self.config.items('fields')],
+                                     size=(12, 4), background_color='grey20', key='select field (wfe)',
+                                     enable_events=True)]
+                        ))], key='INPUTS FRAME (wfe)', font=self.font_subtitles, relief=RELIEF_SUNKEN)],
                     list(itertools.chain(
                         [Frame('Run and Save', layout=[
                             [Text('', size=(6, 2))],
@@ -1127,7 +1124,7 @@ class PaosGUI(SimpleGUI):
                                key='-IMAGE FRAME (wfe)-'
                                )]
                     ))
-                ], key='-MC WFE FRAME-')]])],
+                ], key='FRAME MC (wfe)')]])],
             ], scrollable=True, expand_x=True, expand_y=True, key='MC LAUNCHER COL')]
         ]
 
@@ -1199,18 +1196,22 @@ class PaosGUI(SimpleGUI):
         # ------ Generate the main GUI window ------ #
         self.make_window()
 
-        # ------ Instantiate global variables ------ #
-        raytrace_log, retval, retval_list = '', {}, []
-        saving_groups = []
+        # ------ Instantiate local variables ------ #
+        raytrace_log = ''
+        retval, retval_list, saving_groups = {}, [], []
         figure, figure_list_nwl, figure_list_wfe = None, [], []
         fig_agg, fig_agg_nwl, fig_agg_wfe = None, None, None
+        idx_nwl, idx_wfe = [], []
         save_to_ini_file = False
+
+        # ------ Instantiate more local variables for dynamic interface ------ #
         aperture_tab_visible = False
         input_frame_visible = False
         mc_wavelengths_frame_visible = False
         mc_wfe_frame_visible = False
         wfe_realizations_file = None
-        idx_nwl, idx_wfe = [], []
+
+        pop = ''
 
         while True:  # Event Loop
 
@@ -1239,8 +1240,9 @@ class PaosGUI(SimpleGUI):
                 # Save back to the configuration file
                 if save_to_ini_file:
                     self.to_ini()
-                # Always good to delete some
+                # Clear simulation outputs
                 del retval, figure
+                retval, figure = {}, None
                 retval_list.clear()
                 figure_list_nwl.clear()
                 figure_list_wfe.clear()
@@ -1278,14 +1280,14 @@ class PaosGUI(SimpleGUI):
                         self.nrows_wl = self.add_row('wavelengths')
                         self.wl_keys.append(f'w{self.nrows_wl}')
                         # Update 'select wl' Listbox widget in the launcher Tab
-                        self.window["select wl"].update(self.wl_keys)
+                        self.window["select wl"].update(self.wl_keys, set_to_index=0)
                     row += 1
                 # Update the 'wavelengths' Column scrollbar
                 self.update_column_scrollbar(window=self.window, col_key='wavelengths')
                 # Update 'select wl' Listbox widget in the launcher Tab
-                self.window["select wl"].update(self.wl_keys)
+                self.window["select wl"].update(self.wl_keys, set_to_index=0)
                 # Update 'select wl' Listbox widget in the Monte Carlo Tab
-                self.window["select wl (MC)"].update(self.wl_keys)
+                self.window["select wl (wfe)"].update(self.wl_keys, set_to_index=0)
 
             # ------- Sort the wavelengths column in increasing order ------#
             elif self.event == '-SORT WL-':
@@ -1298,9 +1300,9 @@ class PaosGUI(SimpleGUI):
                 self.nrows_wl = self.add_row('wavelengths')
                 self.wl_keys.append(f'w{self.nrows_wl}')
                 # Update 'select wl' Listbox widget in the launcher Tab
-                self.window["select wl"].update(self.wl_keys)
+                self.window["select wl"].update(self.wl_keys, set_to_index=0)
                 # Update 'select wl' Listbox widget in the Monte Carlo Tab
-                self.window["select wl (MC)"].update(self.wl_keys)
+                self.window["select wl (wfe)"].update(self.wl_keys, set_to_index=0)
                 # Update the 'wavelengths' Column scrollbar
                 self.update_column_scrollbar(window=self.window, col_key='wavelengths')
 
@@ -1310,9 +1312,10 @@ class PaosGUI(SimpleGUI):
                 self.nrows_field = self.add_row('fields')
                 self.field_keys.append(f'f{self.nrows_field}')
                 # Update 'select field' Listbox widget in the launcher Tab
-                self.window["select field"].update(self.field_keys)
+                self.window["select field"].update(self.field_keys, set_to_index=0)
                 # Update 'select field' Listbox widget in the Monte Carlo Tab
-                self.window["select field (MC)"].update(self.field_keys)
+                self.window["select field (nwl)"].update(self.field_keys, set_to_index=0)
+                self.window["select field (wfe)"].update(self.field_keys, set_to_index=0)
                 # Update the 'fields' Column scrollbar
                 self.update_column_scrollbar(window=self.window, col_key='fields')
 
@@ -1375,87 +1378,68 @@ class PaosGUI(SimpleGUI):
                         self.window[f'Par2_({row},{col})'].update(zernike['ordering'])
                 # Enable/Disable the wfe frame
                 self.disable_wfe = False if 'Zernike' in self.values.values() else True
-                self.window['-OPEN FRAME MC WFE-'].update(disabled=self.disable_wfe)
+                self.window['-OPEN FRAME MC (wfe)-'].update(disabled=self.disable_wfe)
                 self.disable_wfe_color = 'gray' if self.disable_wfe else 'yellow'
-                self.window['-FRAME MC WFE TITLE-'].update(text_color=self.disable_wfe_color)
+                self.window['-FRAME TITLE MC (wfe)-'].update(text_color=self.disable_wfe_color)
 
-            # ------- Select a different wavelength or field using the 'select field' or the 'select field' Listbox
-            # widget in the launcher tab ------#
+            # ------- Update 'Select wavelength' or 'Select field' Listbox widget in the Launcher tab ------#
             elif self.event in ['select wl', 'select field']:
-                if self.values['select wl'] == self.selected_wl and self.values['select field'] == self.selected_field:
-                    continue
-                if retval_list is not None:
-                    # Reset POP simulation output
-                    retval_list.clear()
-                    del retval
-                    retval = {}
-                if fig_agg is not None:
-                    # Reset figure canvas
-                    self.clear_image(self.window['-IMAGE-'])
-                if self.event == 'select field' and raytrace_log is not None:
-                    raytrace_log = ''
+                # Reset previous outputs
+                del retval, figure
+                retval, figure = {}, None
+                retval_list.clear()
+                # Reset figure canvas
+                self.clear_image(self.window['-IMAGE-'])
+                if self.event == 'select field':
                     # Update the raytrace log Column
+                    raytrace_log = ''
                     self.window['raytrace log'].update(raytrace_log)
-                if self.event == 'select wl':
-                    self.selected_wl = self.values['select wl']
-                elif self.event == 'select field':
-                    self.selected_field = self.values['select field']
+                _ = gc.collect()
 
-            # ------- Select a different wavelength or field using the 'select field' or the 'select field' Listbox
-            # widget in the Monte Carlo tab ------#
-            elif self.event in ['select wl (MC)', 'select field (MC)']:
-                if self.values['select wl (MC)'] == self.selected_wl and \
-                        self.values['select field (MC)'] == self.selected_field:
-                    continue
-                if self.event == 'select field (MC)' \
-                        or int(self.values['select wl (MC)'][0][1:]) > len(retval_list):
-                    if retval_list:
-                        # Reset POP simulation output
-                        retval_list.clear()
-                    if figure_list_nwl:
-                        # Reset figure
-                        figure_list_nwl.clear()
-                if figure_list_wfe:
-                    # Reset figure
-                    figure_list_wfe.clear()
-                if fig_agg_nwl is not None:
-                    # Reset figure canvas
-                    self.clear_image(self.window['-IMAGE (nwl)-'])
-                if fig_agg_wfe is not None:
-                    # Reset figure canvas
-                    self.clear_image(self.window['-IMAGE (wfe)-'])
-                if self.event == 'select wl':
-                    self.selected_wl = self.values['select wl (MC)']
-                elif self.event == 'select field':
-                    self.selected_field = self.values['select field (MC)']
+            # ------- Update 'Select field' Listbox widget in MC Wavelengths frame ------#
+            elif self.event == 'select field (nwl)':
+                # Reset POP simulation output
+                retval_list.clear()
+                # Reset figure
+                figure_list_nwl.clear()
+                # Reset figure canvas
+                self.clear_image(self.window['-IMAGE (nwl)-'])
+                # Reset progress bar
+                _ = self.reset_progress_bar(self.window['progbar (nwl)'])
+                _ = gc.collect()
 
-            # ------- Make the 'Select inputs' frame visible/invisible by clicking on the triangle symbol ------#
-            elif isinstance(self.event, str) and self.event.startswith('-OPEN FRAME INPUTS-'):
-                # Make the 'Select inputs' frame visible/invisible
-                input_frame_visible = self.make_visible(self.event, input_frame_visible, '-MC INPUTS FRAME-')
-                # Update the 'MC LAUNCHER COL' Column scrollbar
-                self.update_column_scrollbar(window=self.window, col_key='MC LAUNCHER COL')
+            # ------- Update 'Select wavelength' or 'Select field' Listbox widget in MC Wavefront error frame ------#
+            elif self.event in ['select wl (wfe)', 'select field (wfe)']:
+                # Reset POP simulation output
+                retval_list.clear()
+                # Reset figures
+                figure_list_wfe.clear()
+                # Reset figure canvas
+                self.clear_image(self.window['-IMAGE (wfe)-'])
+                # Reset progress bar
+                _ = self.reset_progress_bar(self.window['progbar (wfe)'])
+                _ = gc.collect()
 
             # ------- Make the 'MC Wavelengths' frame visible/invisible by clicking on the triangle symbol ------#
-            elif isinstance(self.event, str) and self.event.startswith('-OPEN FRAME MC WAVELENGTHS-'):
+            elif self.event == '-OPEN FRAME MC (nwl)-':
                 # Make the 'MC Wavelengths' frame visible/invisible
                 mc_wavelengths_frame_visible = self.make_visible(
-                    self.event, mc_wavelengths_frame_visible, '-MC WAVELENGTHS FRAME-')
+                    self.event, mc_wavelengths_frame_visible, 'FRAME MC (nwl)')
                 # Update the 'MC LAUNCHER COL' Column scrollbar
                 self.update_column_scrollbar(window=self.window, col_key='MC LAUNCHER COL')
 
             # ------- Make the 'MC Wavefront error' frame visible/invisible by clicking on the triangle symbol ------#
-            elif isinstance(self.event, str) and self.event.startswith('-OPEN FRAME MC WFE-'):
+            elif self.event == '-OPEN FRAME MC (wfe)-':
                 # Make the 'MC Wavefront error' frame visible/invisible
-                mc_wfe_frame_visible = self.make_visible(self.event, mc_wfe_frame_visible, '-MC WFE FRAME-')
+                mc_wfe_frame_visible = self.make_visible(self.event, mc_wfe_frame_visible, 'FRAME MC (wfe)')
                 # Update the 'MC LAUNCHER COL' Column scrollbar
                 self.update_column_scrollbar(window=self.window, col_key='MC LAUNCHER COL')
 
             # ------- Run a diagnostic raytrace and display the output in a Column widget ------#
             elif self.event == '-RAYTRACE-':
                 # Get the wavelength and the field indexes from the respective Listbox widgets
-                n_wl = int(self.selected_wl[0][1:]) - 1
-                n_field = int(self.selected_field[0][1:]) - 1
+                n_wl, = self.window['select wl'].GetIndexes()
+                n_field, = self.window['select field'].GetIndexes()
                 # Parse the temporary configuration file
                 pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config(self.temporary_config)
                 wavelength, field, opt_chain = wavelengths[n_wl], fields[n_field], opt_chains[n_wl]
@@ -1468,8 +1452,8 @@ class PaosGUI(SimpleGUI):
 
             # ------- Run the POP ------#
             elif self.event == '-POP-':
-                if self.values[self.selected_wl[0]] == '':
-                    logger.debug(f'Invalid wavelength = {self.selected_wl}. Continuing..')
+                if self.values[self.values['select wl'][0]] == '':
+                    logger.debug(f'Invalid wavelength. Continuing..')
                     continue
                 # Clean up the GUI before running the POP
                 del retval, figure
@@ -1482,8 +1466,8 @@ class PaosGUI(SimpleGUI):
                 plt.close('all')
                 _ = gc.collect()
                 # Get the wavelength and the field indexes from the respective Listbox widgets
-                n_wl = int(self.selected_wl[0][1:]) - 1
-                n_field = int(self.selected_field[0][1:]) - 1
+                n_wl, = self.window['select wl'].GetIndexes()
+                n_field, = self.window['select field'].GetIndexes()
                 # Parse the temporary configuration file
                 pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config(self.temporary_config)
                 wavelength, field, opt_chain = wavelengths[n_wl], fields[n_field], opt_chains[n_wl]
@@ -1493,6 +1477,8 @@ class PaosGUI(SimpleGUI):
                 # For later saving
                 saving_groups = [wavelength]
                 retval_list = [retval]
+                # For later plotting
+                pop = 'simple'
 
             # ------- Run the POP (nwl) ------#
             elif self.event == '-POP (nwl)-':
@@ -1510,7 +1496,7 @@ class PaosGUI(SimpleGUI):
                 progbar_nwl = self.reset_progress_bar(self.window['progbar (nwl)'])
                 _ = self.reset_progress_bar(self.window['progbar (wfe)'])
                 # Get the field index from the Listbox widget
-                n_field = int(self.selected_field[0][1:]) - 1
+                n_field, = self.window['select field (nwl)'].GetIndexes()
                 # Get the number of parallel jobs
                 n_jobs = int(self.values['NJOBS (nwl)'])
                 # Parse the temporary configuration file
@@ -1535,6 +1521,7 @@ class PaosGUI(SimpleGUI):
                 retval_list = list(itertools.chain.from_iterable(retval_list))
                 # For later plotting
                 self.window['RANGE (nwl)'].update(value='-'.join(['0', str(len(retval_list))]))
+                pop = 'nwl'
 
             # ------- Select wfe table to import ------#
             elif self.event == '-IMPORT WFE-':
@@ -1545,18 +1532,6 @@ class PaosGUI(SimpleGUI):
 
             # ------- Run the POP (wfe) ------#
             elif self.event == '-POP (wfe)-':
-                if wfe_realizations_file is None:
-                    logger.debug('Import Wavefront error table first')
-                    continue
-                # Read the wfe table
-                wfe = ascii.read(wfe_realizations_file)
-                # Get the number of wfe realizations
-                sims = len(wfe.columns) - 3
-                # Get the Zernike surface index
-                surf = self.values['NSURF (wfe)']
-                if surf == '':
-                    logger.debug('Indicate valid index of Zernike surface')
-                    continue
                 # Clean up the GUI before running the POP
                 del retval, figure
                 retval, figure = {}, None
@@ -1570,9 +1545,27 @@ class PaosGUI(SimpleGUI):
                 # Reset progress bars
                 _ = self.reset_progress_bar(self.window['progbar (nwl)'])
                 progbar_wfe = self.reset_progress_bar(self.window['progbar (wfe)'])
+                # Get the Zernike surface index
+                surf = self.values['NSURF (wfe)']
+                if surf == '':
+                    logger.debug('The indicated surface index is not valid. Continuing...')
+                    continue
+                elif self.values[f'SurfaceType_({int(surf)},0)'] != 'Zernike':
+                    logger.debug('The indicated surface index does not belong to a Zernike surface. Continuing...')
+                    continue
+                elif self.values[f'Ignore_({int(surf)},6)']:
+                    logger.debug('Zernike surface is currently ignored. Continuing...')
+                    continue
+                elif wfe_realizations_file is None:
+                    logger.debug('Import Wavefront error table first')
+                    continue
+                # Read the wfe table
+                wfe = ascii.read(wfe_realizations_file)
+                # Get the number of wfe realizations
+                sims = len(wfe.columns) - 3
                 # Get the wavelength and the field indexes from the respective Listbox widgets
-                n_wl = int(self.selected_wl[0][1:]) - 1
-                n_field = int(self.selected_field[0][1:]) - 1
+                n_wl, = self.window['select wl (wfe)'].GetIndexes()
+                n_field, = self.window['select field (wfe)'].GetIndexes()
                 # Get the number of parallel jobs
                 n_jobs = int(self.values['NJOBS (wfe)'])
                 # Parse the temporary configuration file
@@ -1603,6 +1596,8 @@ class PaosGUI(SimpleGUI):
                 retval_list = list(itertools.chain.from_iterable(retval_list))
                 # For later plotting
                 self.window['RANGE (wfe)'].update(value='-'.join(['0', str(len(retval_list))]))
+                # For later plotting
+                pop = 'wfe'
 
             # ------- Save the output of the diagnostic raytrace ------#
             elif self.event == '-SAVE RAYTRACE-':
@@ -1610,29 +1605,57 @@ class PaosGUI(SimpleGUI):
                 self.to_txt(text_list=raytrace_log)
 
             # ------- Save the output of the POP ------#
-            elif self.event.startswith('-SAVE POP'):
+            elif self.event == '-SAVE POP-':
+                if pop != 'simple' or not retval_list:
+                    logger.debug('Run POP first')
+                    continue
+                # Save the POP output
+                self.to_hdf5(retval_list, saving_groups)
+
+            # ------- Save the output of the POP (nwl) ------#
+            elif self.event == '-SAVE POP (nwl)-':
+                if pop != 'nwl' or not retval_list:
+                    logger.debug('Run POP (nwl) first')
+                    continue
+                # Save the POP output
+                self.to_hdf5(retval_list, saving_groups)
+
+            # ------- Save the output of the POP (wfe) ------#
+            elif self.event == '-SAVE POP (wfe)-':
+                if pop != 'wfe' or not retval_list:
+                    logger.debug('Run POP (wfe) first')
+                    continue
                 # Save the POP output
                 self.to_hdf5(retval_list, saving_groups)
 
             # ------- Plot at the given optical surface ------#
-            elif self.event.startswith('-PLOT'):
-                # Plot
-                if 'nwl' in self.event:
-                    figure_list_nwl, idx_nwl = self.draw_surface(
-                        retval_list=retval_list, groups=saving_groups, figure_agg=fig_agg_nwl,
-                        image_key='-IMAGE (nwl)-', surface_key='S# (nwl)', scale_key='Ima scale (nwl)',
-                        range_key='RANGE (nwl)')
-                elif 'wfe' in self.event:
-                    figure_list_wfe, idx_wfe = self.draw_surface(
-                        retval_list=retval_list, groups=saving_groups, figure_agg=fig_agg_wfe,
-                        image_key='-IMAGE (wfe)-', surface_key='S# (wfe)', scale_key='Ima scale (wfe)',
-                        range_key='RANGE (wfe)')
-                else:
-                    figure = self.draw_surface(
-                        retval_list=retval_list, groups=saving_groups, figure_agg=fig_agg,
-                        image_key='-IMAGE-', surface_key='S#', scale_key='Ima scale')
-                    # Draw the figure canvas
-                    fig_agg = self.draw_image(figure=figure, element=self.window['-IMAGE-'])
+            elif self.event == '-PLOT-':
+                if pop != 'simple' or not retval_list:
+                    logger.debug('Run POP first')
+                    continue
+                figure = self.draw_surface(
+                    retval_list=retval_list, groups=saving_groups, figure_agg=fig_agg,
+                    image_key='-IMAGE-', surface_key='S#', scale_key='Ima scale')
+                # Draw the figure canvas
+                fig_agg = self.draw_image(figure=figure, element=self.window['-IMAGE-'])
+
+            elif self.event == '-PLOT (nwl)-':
+                if pop != 'nwl' or not retval_list:
+                    logger.debug('Run POP (nwl) first')
+                    continue
+                figure_list_nwl, idx_nwl = self.draw_surface(
+                    retval_list=retval_list, groups=saving_groups, figure_agg=fig_agg_nwl,
+                    image_key='-IMAGE (nwl)-', surface_key='S# (nwl)', scale_key='Ima scale (nwl)',
+                    range_key='RANGE (nwl)')
+
+            elif self.event == '-PLOT (wfe)-':
+                if pop != 'wfe' or not retval_list:
+                    logger.debug('Run POP (wfe) first')
+                    continue
+                figure_list_wfe, idx_wfe = self.draw_surface(
+                    retval_list=retval_list, groups=saving_groups, figure_agg=fig_agg_wfe,
+                    image_key='-IMAGE (wfe)-', surface_key='S# (wfe)', scale_key='Ima scale (wfe)',
+                    range_key='RANGE (wfe)')
 
             # ------- Display the plot for a given wavelength (MC) ------#
             elif self.event in ['-DISPLAY PLOT (nwl)-', '-Slider (nwl)-']:
@@ -1665,7 +1688,7 @@ class PaosGUI(SimpleGUI):
                     continue
                 for wl, figure in zip(np.array(saving_groups)[idx_nwl], np.array(figure_list_nwl)):
                     filename = os.path.join(folder, f'{self.values["Fig prefix (nwl)"]}_{self.values["S# (nwl)"]}_'
-                                                    f'{self.values["select field (MC)"][0]}_wl{wl}micron.png')
+                                                    f'{self.values["select field (nwl)"][0]}_wl{wl}micron.png')
                     # Save the plot to the specified .png or .jpg file
                     self.save_figure(figure, filename)
 
@@ -1681,7 +1704,7 @@ class PaosGUI(SimpleGUI):
                     continue
                 for n, figure in zip(np.array(saving_groups)[idx_wfe], np.array(figure_list_wfe)):
                     filename = os.path.join(folder, f'{self.values["Fig prefix (wfe)"]}_{self.values["S# (wfe)"]}_'
-                                                    f'{self.values["select field (MC)"][0]}_N{n}.png')
+                                                    f'{self.values["select field (wfe)"][0]}_N{n}.png')
                     # Save the plot to the specified .png or .jpg file
                     self.save_figure(figure, filename)
 
