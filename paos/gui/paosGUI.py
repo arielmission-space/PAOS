@@ -867,6 +867,9 @@ class PaosGUI(SimpleGUI):
                 [Text('Project Name:', size=(24, 1)),
                  InputText(self.config['general'].get('project', ''),
                            tooltip='Insert project name', key='project', size=(80, 1))],
+                [Text('Comment:', size=(24, 1)),
+                 InputText(self.config['general'].get('comment', ''),
+                           tooltip='Insert comment', key='comment', size=(80, 1))],
                 [Text('Version:', size=(24, 1)),
                  InputText(self.config['general'].get('version', ''),
                            tooltip='Insert project version tag', key='version', size=(24, 1))],
@@ -1081,6 +1084,8 @@ class PaosGUI(SimpleGUI):
                             [Text('Import Wavefront error table: ', size=(30, 1)),
                              Button(tooltip='Import wfe table', button_text='Import wfe', enable_events=True,
                                     key="-IMPORT WFE-")],
+                            [Text('Unit of Zernike coefficients: ', size=(30, 1)),
+                             InputText(tooltip='Zernike unit (-9=nm)', default_text='-9', key="ZUNIT (wfe)")],
                             [Text('', size=(6, 2))],
                             [Text('Number of parallel jobs: ', size=(30, 1)),
                              InputText(tooltip='Number of jobs', default_text=2, key="NJOBS (wfe)")],
@@ -1561,6 +1566,7 @@ class PaosGUI(SimpleGUI):
                     continue
                 # Read the wfe table
                 wfe = ascii.read(wfe_realizations_file)
+                wave = float(''.join(['1.0e', self.values['ZUNIT (wfe)']]))
                 # Get the number of wfe realizations
                 sims = len(wfe.columns) - 3
                 # Get the wavelength and the field indexes from the respective Listbox widgets
@@ -1574,8 +1580,7 @@ class PaosGUI(SimpleGUI):
                 opt = []
                 for k in range(sims):
                     temp = copy.deepcopy(opt_chain)
-                    ck = wfe['col%i' % (k + 4)].data
-                    ck *= 1.0e-9  # ck are assumed to be in units of nanometers (r.m.s.)
+                    ck = wfe['col%i' % (k + 4)].data * wave
                     temp[int(surf)]['Z'] = np.append(np.zeros(3), ck)
                     opt.append(temp)
                 # Run the POP
