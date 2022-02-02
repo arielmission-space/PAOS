@@ -53,7 +53,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx.ext.autosummary',
               'sphinx.ext.githubpages',
-              # 'nbsphinx',
+              'nbsphinx',
+              'jupyter_sphinx',
               'matplotlib.sphinxext.plot_directive',
               'sphinx_rtd_theme',
               'sphinx_markdown_tables'
@@ -203,7 +204,7 @@ latex_elements = {
 
     'figure_align': 'htbp',
     # The font size ('10pt', '11pt' or '12pt').
-    'pointsize': '12pt',
+    'pointsize': '11pt',
 
     # Additional stuff for the LaTeX preamble.
     'preamble': PREAMBLE,
@@ -233,3 +234,8 @@ latex_documents = [
     (master_doc, 'paos.tex', 'PAOS Manual',
      'Andrea Bocchieri, Enzo Pascale', 'manual')
 ]
+
+# This will ensure that your package is importable by any IPython kernels, as they will inherit the environment
+# variables from the main Sphinx process.
+package_path = os.path.abspath('../..')
+os.environ['PYTHONPATH'] = ':'.join((package_path, os.environ.get('PYTHONPATH', '')))

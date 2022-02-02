@@ -52,6 +52,8 @@ while :math:`f < 0` causes the beam to be more divergent.
 
 The tangential plane is the YZ plane and the sagittal plane is the XZ plane.
 
+.. _Ray tracing:
+
 Ray tracing
 ----------------------------
 
@@ -63,9 +65,13 @@ Paraxial ray tracing can be done using ABCD matrices (see later in :ref:`Optical
     In the sagittal plane, the same equation apply, modified when necessary when cylindrical symmetry is violated.
     The relevant vector is :math:`\vec{v_{s}}=(x, u_{x})`.
 
-`PAOS` implements the function :func:`~paos.paos_raytrace.raytrace` to perform a diagnostic ray tracing of an optical
+`PAOS` implements the function :func:`~paos.paos_raytrace.raytrace` to perform a diagnostic Paraxial ray-tracing of an optical
 system, given the input fields and the optical chain. This function then prints the ray positions and slopes in the
 tangential and sagittal planes for each surface of the optical chain.
+
+Several Python codes exist that can implement a fully fledged ray-tracing. In a next `PAOS` version we will add support
+for using one of such codes as an external library to be able to get the expected map of aberrations produced by the
+realistic elements of the `Ariel` optical chain (e.g. mirrors)
 
 Example
 ^^^^^^^^^^
@@ -73,10 +79,23 @@ Example
 Code example to call :func:`~paos.paos_raytrace.raytrace`, provided you already have the optical chain (if not,
 back to :ref:`Parse configuration file`).
 
-.. code-block:: python
+.. jupyter-execute::
+        :hide-code:
+        :stderr:
+        :hide-output:
+
+        import os, sys
+        paospath = "~/git/PAOS"
+        if not os.path.expanduser(paospath) in sys.path:
+            sys.path.append( os.path.expanduser(paospath) )
+
+        from paos.paos_parseconfig import parse_config
+        pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('../lens data/lens_file_TA_Ground.ini')
+
+.. jupyter-execute::
 
         from paos.paos_raytrace import raytrace
-        raytrace(field={'us': 0.0, 'ut': 0.0}, opt_chain=optical_chain)
+        raytrace(field={'us': 0.0, 'ut': 0.0}, opt_chain=opt_chains[0])
 
 Propagation
 ----------------------------
@@ -107,15 +126,15 @@ Either in free space or in a refractive medium, propagation over a distance :mat
 Example
 ^^^^^^^^^^
 
-Code example to use :class:`~paos.paos_abcd.ABCD` to propagate a light ray over a thickness
+Code example to initialize :class:`~paos.paos_abcd.ABCD` to propagate a light ray over a thickness
 :math:`t = 50.0 \ \textrm{mm}`.
 
-.. code-block:: python
+.. jupyter-execute::
 
         from paos.paos_abcd import ABCD
         thickness = 50.0  # mm
         abcd = ABCD(thickness=thickness)
-        (A, B), (C, D) = abcd.ABCD
+        print(abcd.ABCD)
 
 Thin lenses
 ----------------------------
@@ -147,15 +166,15 @@ where :math:`\Phi = \frac{1}{f}` is the lens optical power.
 Example
 ^^^^^^^^^^
 
-Code example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a thin lens with radius of
+Code example to initialize :class:`~paos.paos_abcd.ABCD` to simulate the effect of a thin lens with radius of
 curvature :math:`R = 20.0 \ \textrm{mm}` on a light ray.
 
-.. code-block:: python
+.. jupyter-execute::
 
         from paos.paos_abcd import ABCD
         radius = 20.0  # mm
         abcd = ABCD(curvature=1.0/radius)
-        (A, B), (C, D) = abcd.ABCD
+        print(abcd.ABCD)
 
 Dioptre
 ----------------------------
@@ -191,16 +210,16 @@ with the dioptre power :math:`\Phi = \frac{n_2-n_1}{R}`, where :math:`R` is the 
 Example
 ^^^^^^^^^^
 
-Code example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a dioptre with radius of curvature
-:math:`R = 20.0 \ \textrm{mm}` that causes a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.5` on a light ray.
+Code example to initialize :class:`~paos.paos_abcd.ABCD` to simulate the effect of a dioptre with radius of curvature
+:math:`R = 20.0 \ \textrm{mm}` that causes a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.25` on a light ray.
 
-.. code-block:: python
+.. jupyter-execute::
 
         from paos.paos_abcd import ABCD
-        n1, n2 = 1.0, 1.5
+        n1, n2 = 1.0, 1.25
         radius = 20.0  # mm
         abcd = ABCD(curvature = 1.0/radius, n1 = n1, n2 = n2)
-        (A, B), (C, D) = abcd.ABCD
+        print(abcd.ABCD)
 
 Medium change
 ----------------------------
@@ -230,15 +249,15 @@ The limiting case of a dioptre with :math:`R \rightarrow \infty` represents a ch
 Example
 ^^^^^^^^^^
 
-Code example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a change of medium from
-:math:`n_1 = 1.0` to :math:`n_2 = 1.5` on a light ray.
+Code example to initialize :class:`~paos.paos_abcd.ABCD` to simulate the effect of a change of medium from
+:math:`n_1 = 1.0` to :math:`n_2 = 1.25` on a light ray.
 
-.. code-block:: python
+.. jupyter-execute::
 
         from paos.paos_abcd import ABCD
-        n1, n2 = 1.0, 1.5
+        n1, n2 = 1.0, 1.25
         abcd = ABCD(n1 = n1, n2 = n2)
-        (A, B), (C, D) = abcd.ABCD
+        print(abcd.ABCD)
 
 .. _thick lenses:
 
@@ -273,23 +292,31 @@ followed by the exit dioptre :math:`D_b`.
 Example
 ^^^^^^^^^^
 
-Code example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a thick lens on a light ray. The
+Code example to initialize :class:`~paos.paos_abcd.ABCD` to simulate the effect of a thick lens on a light ray. The
 lens is :math:`t_c = 5.0 \ \textrm{mm}` thick and is plano-convex, i.e. the first dioptre has :math:`R = \infty` and
 the second has :math:`R = -20.0 \ \textrm{mm}`, causing the beam to converge. The index of refraction in object space
-and in image space is that of free space :math:`n_{os} = n_{is} = 1.0`, while the lens medium has :math:`n_l = 1.5`.
+and in image space is that of free space :math:`n_{os} = n_{is} = 1.0`, while the lens medium has :math:`n_l = 1.25`.
 
-.. code-block:: python
+.. jupyter-execute::
 
         import numpy as np
         from paos.paos_abcd import ABCD
 
         radius1, radius2 = np.inf, -20.0  # mm
-        n_os, n_l, n_is = 1.0, 1.5, 1.0
+        n_os, n_l, n_is = 1.0, 1.25, 1.0
         center_thickness = 5.0
         abcd = ABCD(curvature = 1.0/radius1, n1 = n_os, n2 = n_l)
         abcd = ABCD(thickness = center_thickness) * abcd
         abcd = ABCD(curvature = 1.0/radius2, n1 = n_l, n2 = n_is) * abcd
-        (A, B), (C, D) = abcd.ABCD
+        print(abcd.ABCD)
+
+You can now print the thick lens effective focal length as
+
+.. jupyter-execute::
+
+        print(abcd.f_eff)
+
+Notice how in this case the resulting :math:`f_{eff}` does not depend on :math:`t_c`.
 
 .. _Magnification:
 
@@ -317,15 +344,15 @@ A magnification is modelled as
 Example
 ^^^^^^^^^^
 
-Code example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a magnification :math:`M = 2.0`
+Code example to initialize :class:`~paos.paos_abcd.ABCD` to simulate the effect of a magnification :math:`M = 2.0`
 on a light ray.
 
-.. code-block:: python
+.. jupyter-execute::
 
         from paos.paos_abcd import ABCD
         from paos.paos_abcd import ABCD
         abcd = ABCD(M=2.0)
-        (A, B), (C, D) = abcd.ABCD
+        print(abcd.ABCD)
 
 .. _prism:
 
@@ -393,16 +420,16 @@ where
 Example
 ^^^^^^^^^^
 
-Code example to use :class:`~paos.paos_abcd.ABCD` to simulate the effect of a prism on a collimated light ray.
-The prism is :math:`t = 8.0 \ \textrm{mm}` thick and has a refractive index of :math:`n_p = 1.5`. The prism angles
+Code example to initialize :class:`~paos.paos_abcd.ABCD` to simulate the effect of a prism on a collimated light ray.
+The prism is :math:`t = 2.0 \ \textrm{mm}` thick and has a refractive index of :math:`n_p = 1.5`. The prism angles
 :math:`\theta_i` are selected in accordance with the ray propagation in :numref:`prismtache`.
 
-.. code-block:: python
+.. jupyter-execute::
 
         import numpy as np
         from paos.paos_abcd import ABCD
 
-        thickness = 8.0e-3  # m
+        thickness = 2.0e-3  # m
         n = 1.5
 
         theta_1 = np.deg2rad(60.0)
@@ -419,6 +446,9 @@ The prism is :math:`t = 8.0 \ \textrm{mm}` thick and has a refractive index of :
         abcdt.ABCD = np.array([[A, B], [C, D]])
         abcds = ABCD()
         abcds.ABCD = np.array([[1, thickness / n], [0, 1]])
+
+        print(abcdt.ABCD)
+        print(abcds.ABCD)
 
 .. _Optical system equivalent:
 
@@ -488,20 +518,20 @@ With these definitions, the effective focal length is
 Example
 ^^^^^^^^^^
 
-Code example to use :class:`~paos.paos_abcd.ABCD` to simulate an optical system equivalent for a
-magnification :math:`M = 2.0`, a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.5`,
+Code example to initialize :class:`~paos.paos_abcd.ABCD` to simulate an optical system equivalent for a
+magnification :math:`M = 2.0`, a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.25`,
 a thin lens with radius of curvature :math:`R = 20.0 \ \textrm{mm}`, and a propagation over a thickness
 :math:`t = 5.0 \ \textrm{mm}`.
 
-.. code-block:: python
+.. jupyter-execute::
 
         from paos.paos_abcd import ABCD
 
         radius = 20.0  # mm
-        n1, n2 = 1.0, 1.5
+        n1, n2 = 1.0, 1.25
         thickness = 5.0  # mm
         magnification = 2.0
 
         abcd = ABCD(thickness = thickness, curvature = 1.0/radius, n1 = n1, n2 = n2, M = magnification)
-        (A, B), (C, D) = abcd.ABCD
+        print(abcd.ABCD)
 

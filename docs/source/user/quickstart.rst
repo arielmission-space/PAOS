@@ -27,6 +27,8 @@ The main command line flags are listed in :numref:`Main command line flags`.
 
    * - flag
      - description
+   * - -h, --help
+     - show this help message and exit
    * - -c, --configuration
      - Input configuration file to pass
    * - -o, --output
@@ -40,8 +42,15 @@ The main command line flags are listed in :numref:`Main command line flags`.
    * - -l, --log
      - Store the log output on file
 
-Where the configuration file shall be an `.xlsx` file and the output file an `.h5` file (see later in :ref:`h5`).
+Where the configuration file shall be an `.ini` file and the output file an `.h5` file (see later in :ref:`h5`).
 `-n` must be followed by an integer. To activate `-p`, `-d` and `-l` no argument is needed.
+
+.. note::
+
+    `PAOS` implements the `log` submodule which makes use of the python standard module logging for output information.
+    Top-level details of the calculation are output at level logging.INFO, while details of the propagation through
+    each optical plane and debugging messages are printed at level logging.DEBUG. The latter can be accessed by setting
+    the flag `-d`, as explained above. Set the flag `-l` to redirect the logger output to a .log textfile.
 
 Other option flags may be given to run specific simulations, as detailed in :numref:`Other option flags`.
 
@@ -111,7 +120,7 @@ For more information on how to produce a similar output file, see :ref:`Saving r
 The default plot
 ------------------
 
-An important part of understanding the `PAOS` output is often to look at the default plot, as in :numref:`defaultplot`,
+An important part of understanding the `PAOS` output is to look at the default plot, as in :numref:`defaultplot`,
 which shows the PSF, i.e. the squared amplitude of the complex wavefront, at the `AIRS-CH0` focal plane.
 
 .. _defaultplot:
@@ -123,7 +132,7 @@ which shows the PSF, i.e. the squared amplitude of the complex wavefront, at the
    `Default PAOS plot`
 
 The title of the plot features the optical surface name, the focal number, the Gaussian beam width, the
-simulation wavelength and the total optical throughput that reaches the surface..
+simulation wavelength and the total optical throughput that reaches the surface.
 
 The color scale can be either linear or logarithmic. The x and y axes are in physical units, e.g. micron.
 For reference, dark circular rings are superimposed on the first five zeros of the circular Airy function.

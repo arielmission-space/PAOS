@@ -54,9 +54,8 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
     >>> from paos.paos_parseconfig import parse_config
     >>> from paos.paos_run import run
     >>> from paos.paos_plotpop import simple_plot
-    >>> pup_diameter, general, fields, optical_chain = parse_config('path/to/conf/file')
-    >>> ret_val = run(pup_diameter, 1.0e-6 * general['wavelength'], general['grid size'],
-    >>>               general['zoom'], fields['0'], optical_chain)
+    >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/conf/file')
+    >>> ret_val = run(pup_diameter, 1.0e-6 * wavelength, parameters['grid_size'], parameters['zoom'], fields[0], opt_chain)
 
     """
 

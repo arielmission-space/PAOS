@@ -77,20 +77,43 @@ of the homogeneity of a glass sample (see e.g. `Optical properties <http://ohara
 Example
 ~~~~~~~~~
 
-Code example to use :class:`~paos.util.material.Material` to estimate the index of refraction of borosilicate crown
-glass (known as `BK7`) for a range of wavelengths from the visible to the infra-red.
+Code example to use :class:`~paos.util.material.Material` to estimate and plot the index of refraction of borosilicate
+crown glass (known as `BK7`) for a range of wavelengths from the visible to the infra-red.
 
-.. code-block:: python
+.. jupyter-execute::
+        :hide-code:
+        :stderr:
+        :hide-output:
+
+        import os, sys
+        paospath = "~/git/PAOS"
+        if not os.path.expanduser(paospath) in sys.path:
+            sys.path.append( os.path.expanduser(paospath) )
+
+        import paos
+
+.. jupyter-execute::
 
         import numpy as np
+        import matplotlib.pyplot as plt
+
         from paos.util.material import Material
 
-        glass = 'bk7'
+        wl = np.linspace(0.5, 8.0, 100)
+        mat = Material(wl=wl)
 
-        mat = Material(wl=np.linspace(0.5, 8.0, 10))
-        print('Sellmeier refractive index: ')
-        material = mat.materials[glass.upper()]
-        mat.sellmeier(material['sellmeier'])
+        glass = 'BK7'
+        material = mat.materials[glass]
+        sellmeier = mat.sellmeier(material['sellmeier'])
+
+        fig = plt.figure(figsize=(8, 6))
+        ax = fig.add_subplot(1,1,1)
+        ax.plot(wl, sellmeier)
+        ax.set_title(f'{glass} refractive index')
+        ax.set_ylabel('Sellmeier')
+        ax.set_xlabel(r'Wavelength [$\mu$m]')
+        plt.grid()
+        plt.show()
 
 
 Temperature and refractive index
@@ -137,18 +160,42 @@ Example
 ~~~~~~~~~~
 
 Code example to use :class:`~paos.util.material.Material` to estimate the index of refraction of borosilicate crown
-glass (known as `BK7`) at reference and operating temperature.
+glass (known as `BK7`) for a given wavelength at reference and operating temperature.
 
-.. code-block:: python
+.. jupyter-execute::
 
         from paos.util.material import Material
 
         wl = 1.95  # micron
-        mat = Material(wl)
-        glass = 'bk7'
+        Tref, Tambient = 20.0, -223.0
+        mat = Material(wl, Tambient=Tambient)
+        glass = 'BK7'
         nmat0, nmat = mat.nmat(glass)
-        print('index of refraction at reference temperature = {:.4f}'.format(nmat0))
-        print('index of refraction at operating temperature = {:.4f}'.format(nmat))
+
+        from IPython.display import display, Latex
+        display(Latex("\\textrm{Index of refraction at } T_{ref} = %0.1f:\\newline n_{%s, 0} = %0.4f " % (Tref, glass, nmat0)))
+        display(Latex("\\textrm{Index of refraction at } T_{amb} = %0.1f:\\newline n_{%s, 0} = %0.4f " % (Tambient, glass, nmat)))
+
+Pressure and refractive index
+-----------------------------------
+
+Note also that `PAOS` can easily model systems used in a vacuum by changing the air pressure to zero.
+
+Example
+~~~~~~~~~~
+
+Same code example as before, but ambient pressure is set to zero.
+
+.. jupyter-execute::
+
+        mat = Material(wl, Tambient=Tambient, Pambient=0.0)
+        nmat0, nmat = mat.nmat(glass)
+
+        from IPython.display import display, Latex
+        display(Latex("\\textrm{Index of refraction at } T_{ref} = %0.1f:\\newline n_{%s, 0} = %0.4f " % (Tref, glass, nmat0)))
+        display(Latex("\\textrm{Index of refraction at } T_{amb} = %0.1f:\\newline n_{%s, 0} = %0.4f " % (Tambient, glass, nmat)))
+
+Note the non-negligible difference in the resulting refractive indexes.
 
 .. _Supported materials:
 
@@ -181,12 +228,11 @@ Example
 
 Code example to use :class:`~paos.util.material.Material` to print all available optical materials.
 
-.. code-block:: python
+.. jupyter-execute::
 
         from paos.util.material import Material
 
-        wl = 1.95  # micron
-        mat = Material(wl)
+        mat = Material(wl=1.95)
         print('Supported materials: ')
         print(*mat.materials.keys(), sep = "\n")
 
@@ -196,19 +242,9 @@ Example
 Code example to use :class:`~paos.util.material.Material` to plot the refractive index for all available optical
 materials, at their operating and reference temperature.
 
-.. code-block:: python
+.. jupyter-execute::
 
         from paos.util.material import Material
 
         mat = Material(wl=np.linspace(0.5, 8.0, 100))
         mat.plot_relative_index(material_list=mat.materials.keys())
-
-:numref:`matplot` reports the resulting plot as of 16th December 2021.
-
-.. _matplot:
-
-.. figure:: mat.png
-   :width: 1200
-   :align: center
-
-   `Relative index of supported materials`

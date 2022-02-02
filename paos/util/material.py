@@ -9,7 +9,7 @@ class Material:
     Class for handling different optical materials for use in `PAOS`
     """
 
-    def __init__(self, wl, Tambient=-218.0, Pambient=0.0, materials=None):
+    def __init__(self, wl, Tambient=-218.0, Pambient=1.0, materials=None):
         """
         Parameters
         ----------
@@ -140,8 +140,8 @@ class Material:
         -------
         out: tuple(scalar, scalar) or tuple(array, array)
             returns two arrays for the glass index of refraction at the given wavelengths:
-            the index of refraction in vacuum at :math:`T_{ref} = 20^{\\circ} C` (nmat0)
-            and the index of refraction in vacuum at :math:`T_{amb}` (nmat)
+            the index of refraction at :math:`T_{ref} = 20^{\\circ} C` (nmat0)
+            and the index of refraction at :math:`T_{amb}` (nmat)
         """
 
         name = name.upper()

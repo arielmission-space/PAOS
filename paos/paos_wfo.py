@@ -66,20 +66,26 @@ class WFO(object):
         
     Returns
     -------
-    out: an instance of _wfo
+    out: an instance of wfo
     
     Example
     -------
     >>> import paos
     >>> import matplotlib.pyplot as plt
-    >>> fig, (ax0, ax1) = plt.sublots(nrows=1, ncols=1)
-    >>> wfo = paos.WFO(1.0, 0.5e-6, 1024, 4)
-    >>> wfo.aperture(0, 0, r=1.0/2, shape='circular')
+    >>> beam_diameter = 1.0  # m
+    >>> wavelength = 3.0  # micron
+    >>> grid_size = 512
+    >>> zoom = 4
+    >>> xdec, ydec = 0.0, 0.0
+    >>> fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+    >>> wfo = paos.WFO(beam_diameter, 1.0e-6 * wavelength, grid_size, zoom)
+    >>> wfo.aperture(xc=xdec, yc=ydec, r=beam_diameter/2, shape='circular')
     >>> wfo.make_stop()
-    >>> ax0.imshow(wfo.amplitude())
-    >>> wfo.lens(1.0)
-    >>> wfo.propagate(1.0)
-    >>> ax1.imshow(wfo.amplitude())
+    >>> ax0.imshow(wfo.amplitude)
+    >>> wfo.lens(lens_fl=1.0)
+    >>> wfo.propagate(dz=1.0)
+    >>> ax1.imshow(wfo.amplitude)
+    >>> plt.show()
 
     """
 
@@ -331,8 +337,25 @@ class WFO(object):
         self._wfo = self._wfo * np.exp(2.0j * np.pi * qphase)
 
     def Magnification(self, My, Mx=None):
+        """
+        Given the optical magnification along one or both directions, updates the sampling along both directions,
+        the beam semi-diameter, the Rayleigh distance, the distance to focus, and the beam focal ratio
 
-        if Mx is None: Mx = My
+        Parameters
+        ----------
+        My: scalar
+            optical magnification along tangential direction
+        Mx: scalar
+            optical magnification along sagittal direction
+
+        Returns
+        -------
+        out: None
+            updates the wfo parameters
+
+        """
+        if Mx is None:
+            Mx = My
 
         assert Mx > 0.0, 'Negative magnification not implemented yet.'
         assert My > 0.0, 'Negative magnification not implemented yet.'
@@ -362,7 +385,21 @@ class WFO(object):
         self._fratio = np.abs(delta_z) / (2 * wz)
     
     def ChangeMedium(self, n1n2):
-        
+        """
+        Given the ratio of refractive indices n1/n2 for light propagating from a medium with refractive index n1,
+        into a medium with refractive index n2, updates the Rayleigh distance, the wavelength, the distance to focus,
+        and the beam focal ratio
+
+        Parameters
+        ----------
+        n1n2
+
+        Returns
+        -------
+        out: None
+            updates the wfo parameters
+
+        """
         _n1n2 = np.abs(n1n2)
         
         # Current distance to focus (before magnification)
@@ -376,14 +413,15 @@ class WFO(object):
 
     def ptp(self, dz):
         """
-        Point-to-point (far field) wavefront propagator
+        Plane-to-plane (far field) wavefront propagator
         
         Parameters
         ----------
         dz: scalar
             propagation distance
         """
-        if np.abs(dz) < 0.00 * self.wl:
+        if np.abs(dz) < 0.001 * self.wl:
+            logger.debug('Thickness smaller than 1/1000 wavelength. Returning..')
             return
 
         if self.C != 0:
@@ -404,7 +442,6 @@ class WFO(object):
 
     def stw(self, dz):
         """
-
         Spherical-to-waist (near field to far field) wavefront propagator
         
         Parameters
@@ -413,6 +450,7 @@ class WFO(object):
             propagation distance
         """
         if np.abs(dz) < 0.001 * self.wl:
+            logger.debug('Thickness smaller than 1/1000 wavelength. Returning..')
             return
 
         if self.C == 0.0:

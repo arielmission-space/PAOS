@@ -188,6 +188,8 @@ Lens_xx
 Lens data sections describing how to define the different optical surfaces (INIT, Coordinate Break,
 Standard, Paraxial Lens, ABCD and Zernike) and their required parameters.
 
+.. _lens_xx_table:
+
 .. list-table:: [lens_xx]
    :widths: 30 20 20 20 20 20 20 20 20 40
    :header-rows: 1
@@ -339,13 +341,120 @@ Code example to parse a `PAOS` configuration file.
 GUI editor
 ----------------------
 
+`PAOS` implements a GUI editor that allows to dynamically edit and modify the configuration file and to launch POP
+simulations. This makes it effectively the `PAOS` front-end.
 
+The quickest way to run the GUI is from terminal.
+
+Run it with the `help` flag to read the available options:
+
+.. code-block:: bash
+
+   $ python runGUI.py --help
+
+.. _GUI command line flags:
+
+.. list-table:: GUI command line flags
+   :widths: 60 100
+   :header-rows: 1
+
+   * - flag
+     - description
+   * - -h, --help
+     - show this help message and exit
+   * - -c, --configuration
+     - Input configuration file to pass
+   * - -o, --output
+     - Output file path
+   * - -d, --debug
+     - Debug mode screen
+   * - -l, --log
+     - Store the log output on file
+
+Where the configuration file shall be an `.ini` file (see :ref:`Configuration file`). If no configuration file is
+passed it defaults to the configuration template `template.ini` file. To activate `-d` and `-l` no argument is needed.
+
+The GUI editor then opens and displays a GUI window with a standard Menu (`Open`, `Save`, `Save As`, `Global Settings`,
+`Exit`) and a series of Tabs:
+
+#. :ref:`General Tab`
+#. :ref:`Fields Tab`
+#. :ref:`Lens data Tab`
+    :ref:`Zernike Tab`
+#. :ref:`Launcher Tab`
+#. :ref:`Monte Carlo Tab`
+#. :ref:`Info Tab`
+
+On the bottom of the GUI window, there are five Buttons to perform several actions:
+
+* Submit:
+
+  Submits all values from the GUI window in a flat dictionary
+* Show Dict:
+
+  Shows the GUI window values in a nested dictionary, organized into the same sections as the configuration file
+* Copy to clipboard:
+
+  Copied the nested dictionary to the local keyboard
+* Save:
+
+  Saves the GUI window to the configuration file upon exiting
+* Exit:
+
+  Exits the GUI window
+
+The GUI window defines also a right-click Menu with the following options:
+
+* Nothing:
+
+  Does nothing
+* Version:
+
+  Displays the current Python, tkinter and PySimpleGUI versions
+* Exit:
+
+  Exits the GUI window
+
+.. _General Tab:
+
+General Tab
+^^^^^^^^^^^^^^^^
+This Tab opens upon starting the GUI. Its purpose is to setup the main simulation parameters.
+
+It contains two Frames:
+
+* the `General Setup`
+    Displays the general simulation parameters and `PAOS` units, as defined in :ref:`general section`. The contents
+    can be altered as necessary, safe if the the cells are disabled.
+* the `Wavelength Setup`
+    Lists the wavelengths to simulate. This list can be altered by editing the wavelengths, adding more wavelengths,
+    pasting a list of wavelengths from the local clipboard (:math:`\textit{comma}`-separated or
+    :math:`\backslash n`-separated) and can also be sorted to increasing order.
+
+Below we report a snapshot of this Tab.
 
 .. _GeneralTab:
+
 .. figure:: GeneralTab.png
    :align: center
 
    `General Tab`
+
+.. _Fields Tab:
+
+Fields Tab
+^^^^^^^^^^^^^^^^
+
+This GUI Tab describes the input fields to simulate.
+
+It lists the input fields, as defined in :ref:`fields section`. The fields contents can be edited as necessary and new
+fields can be added.
+
+.. note::
+    While more than one field can be listed in this Tab, the current version of `PAOS` only supports simulating one
+    field at a time
+
+Below we report a snapshot of this Tab.
 
 .. _FieldsTab:
 .. figure:: FieldsTab.png
@@ -353,11 +462,39 @@ GUI editor
 
    `Fields Tab`
 
+.. _Lens data Tab:
+
+Lens data Tab
+^^^^^^^^^^^^^^^^
+
+This GUI Tab contains a Table that lists the optical surfaces describing the optical chain to simulate, as defined in
+:ref:`Lens_xx`. The structure is 1:1 with that of Zemax OpticStudio :math:`^{©}` and the columns are the same as in
+:ref:`lens_xx_table`. The contents of each row can be edited as necessary and new surfaces can be added. The Table has
+horizontal and vertical scrollbars to allow any movement.
+
+For each row, columns are automatically enabled/disabled according to the surface type.
+
+.. tip::
+    The column headers for Par1..N change according to the cursor position in the Table.
+
+.. tip::
+    It is possible to move the cursor with arrow keys.
+
+.. tip::
+    To see/edit the contents of the `aperture` column, click on the Button with the yellow triangle.
+
+Below we report a snapshot of this Tab.
+
 .. _LensDataTab:
 .. figure:: LensDataTab.png
    :align: center
 
    `Lens data Tab`
+
+.. _Zernike Tab:
+
+Zernike Tab
+~~~~~~~~~~~~~
 
 .. _ZernikeTab:
 .. figure:: ZernikeTab.png
@@ -365,11 +502,21 @@ GUI editor
 
    `Zernike Tab`
 
+.. _Launcher Tab:
+
+Launcher Tab
+^^^^^^^^^^^^^^^^
+
 .. _LauncherTab:
 .. figure:: LauncherTab.png
    :align: center
 
    `Launcher Tab`
+
+.. _Monte Carlo Tab:
+
+Monte Carlo Tab
+^^^^^^^^^^^^^^^^
 
 .. _MonteCarloTab1:
 .. figure:: MonteCarloTab1.png
@@ -382,3 +529,14 @@ GUI editor
    :align: center
 
    `Monte Carlo Tab (2)`
+
+.. _Info Tab:
+
+Info Tab
+^^^^^^^^^^^^^^^^
+
+.. _InfoTab:
+.. figure:: InfoTab.png
+   :align: center
+
+   `Info Tab`

@@ -5,29 +5,32 @@ from .paos_config import logger
 
 def raytrace(field, opt_chain, x=0.0, y=0.0):
     """
-    Diagnostic function that implements the full ray tracing
-    and prints the output for each surface of the optical chain
-    as the ray positions and slopes in the tangential and sagittal planes.
+    Diagnostic function that implements the Paraxial ray-tracing and prints the output for each surface of the optical
+    chain as the ray positions and slopes in the tangential and sagittal planes.
 
     Parameters
     ----------
-    field: dictionary
+    field: dict
         contains the slopes in the tangential and sagittal planes as field={'vt': slopey, 'vs': slopex}
-    opt_chain: list
-        the list of the optical elements returned by paos.parseconfig
+    opt_chain: dict
+        the dict of the optical elements returned by paos.parse_config
+    x: float
+        X-coordinate of the initial ray position
+    y: float
+        Y-coordinate of the initial ray position
 
     Returns
     -----
-    out: list
-        List of string. Each list item is the raytrace at a given surface.
+    out: list[str]
+        A list of strings where each list item is the raytrace at a given surface.
 
     Examples
     --------
 
     >>> from paos.paos_parseconfig import parse_config
     >>> from paos.paos_raytrace import raytrace
-    >>> pupil_diameter, general, fields, optical_chain = parse_config('path/to/conf/file')
-    >>> raytrace(fields['0'], optical_chain)
+    >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/conf/file')
+    >>> raytrace(fields[0], opt_chains[0])
 
     """
     vt = np.array([y, field['ut']])

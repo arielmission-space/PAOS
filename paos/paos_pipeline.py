@@ -15,6 +15,7 @@ from joblib import Parallel, delayed
 from astropy.io import ascii
 from tqdm import tqdm
 import time
+import gc
 
 
 def pipeline(passvalue):
@@ -79,12 +80,12 @@ def pipeline(passvalue):
 
     logger.debug('--------------------------------------------------------------------------------------------')
     logger.info('Parse lens file')
-    pup_diameter, general, fields, opt_chain = parse_config(passvalue['conf'])
+    pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config(passvalue['conf'])
 
     if 'debug' in passvalue.keys() and passvalue['debug']:
         logger.debug('--------------------------------------------------------------------------------------------')
         logger.debug('Perform a diagnostic ray tracing')
-        raytrace(fields['0'], opt_chain)
+        raytrace(fields[0], opt_chains[0])
 
     logger.debug('--------------------------------------------------------------------------------------------')
     logger.info('Set up the POP')
@@ -101,13 +102,13 @@ def pipeline(passvalue):
         wavelengths = np.logspace(np.log10(wl_min), np.log10(wl_max), n_bin)
     else:
         logger.debug('Using wavelength from configuration file')
-        wavelengths = [general['wavelength']]
+        wavelengths = [wavelengths[0]]
 
     logger.debug('Wavelengths: {}'.format(wavelengths))
     logger.debug('Set up the optical chain for the POP run')
 
     optc = {}
-    for key, item in opt_chain.items():
+    for key, item in opt_chains[0].items():
         optc[key] = item
         if 'light_output' in passvalue.keys() and passvalue['light_output'] is True:
             optc[key]['save'] = False
@@ -138,14 +139,15 @@ def pipeline(passvalue):
     retval = Parallel(n_jobs=passvalue['n_jobs'])(
         delayed(run)(pup_diameter,
                      1.0e-6 * wl,
-                     general['grid size'],
-                     general['zoom'],
-                     fields['0'],
+                     parameters['grid_size'],
+                     parameters['zoom'],
+                     fields[0],
                      optc
                      )
         for wl in tqdm(wavelengths))
     end_time = time.time()
     logger.info('POP completed in {:6.1f}s'.format(end_time - start_time))
+    _ = gc.collect()
 
     logger.debug('--------------------------------------------------------------------------------------------')
     logger.info('Save POP simulation output .h5 file to {}'.format(passvalue['output']))

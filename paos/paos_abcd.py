@@ -17,7 +17,7 @@ class ABCD(object):
     n1n2: scalar
         ratio of refractive indices n1/n2 for light propagating
         from a medium with refractive index n1, into a medium
-        with refractive index b2
+        with refractive index n2
     c : scalar
         speed of light. Can take values +1 for light travelling left-to-right (+Z), 
         and -1 for light travelling right-to-left (-Z)
@@ -89,8 +89,8 @@ class ABCD(object):
         self._ABCD = T @ D @ M
 
         # Remove because not needed and would break ABCD surface type when defined in lens.ini file
-        #self._n1 = n1
-        #self._n2 = n2
+        # self._n1 = n1
+        # self._n2 = n2
         self._cin = np.sign(n1)
         self._cout = np.sign(n2)
 
@@ -114,12 +114,12 @@ class ABCD(object):
         (A, B), (C, D) = self._ABCD
         return -C / self.M
 
-    #@property
-    #def n1(self):
+    # @property
+    # def n1(self):
     #    return self._n1
 
-    #@property
-    #def n2(self):
+    # @property
+    # def n2(self):
     #    return self._n2
 
     @property

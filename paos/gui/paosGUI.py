@@ -125,7 +125,7 @@ class PaosGUI(SimpleGUI):
 
         # ------ Define fallback configuration file ------ #
         if 'conf' not in self.passvalue.keys() or self.passvalue['conf'] is None:
-            self.passvalue['conf'] = os.path.join(base_dir, 'lens data', 'lens_file_template.ini')
+            self.passvalue['conf'] = os.path.join(base_dir, 'lens data', 'template.ini')
 
         # ------ Instantiate some more global variables (for dynamic updates) ------ #
         self.disable_wfe = True

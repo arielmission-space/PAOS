@@ -20,6 +20,8 @@ For clarity, it is divided into several sections:
     Wavefront aberrations and how they are implemented in `PAOS`
 #. :ref:`Materials description`
     Optical materials and how they are implemented in `PAOS`
+#. :ref:`Monte Carlo simulations`
+    How to perform Monte Carlo simulations using `PAOS`
 #. :ref:`Plotting results`
     How to plot POP results
 #. :ref:`Saving results`
@@ -41,6 +43,7 @@ Have a good read. Feedback is highly appreciated.
     POP description <propagation/index>
     Aberration description <aberration/index>
     Materials description <material/index>
+    Monte Carlo simulations <monte_carlo/index>
     Plotting results <plotting/index>
     Saving results <saving/index>
     Automatic pipeline <pipeline/index>

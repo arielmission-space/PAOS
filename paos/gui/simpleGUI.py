@@ -48,7 +48,7 @@ class SimpleGUI:
                             auto_close_duration=2, location=(int(0.4 * w), int(0.1 * h)))
 
         # ------ Menu Definition ------ #
-        self.menu_def = [['&File', ['&Open', '&Save', '&Save As', '&Exit', 'Global Settings']],
+        self.menu_def = [['&File', ['&Open', '&Save', '&Save As', 'Global Settings', '&Exit']],
                          ['&Help', '&About'], ]
 
         # ------ Right Click Menu Definition ------ #

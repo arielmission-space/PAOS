@@ -27,7 +27,8 @@ the path to local `PAOS` path.
 
 This can be done as in the below code example.
 
-.. code-block:: python
+.. jupyter-execute::
+        :stderr:
 
         import os, sys
         paospath = "~/git/PAOS"

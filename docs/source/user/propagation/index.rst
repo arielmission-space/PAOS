@@ -79,27 +79,41 @@ that can be solved as
     \rho = -\frac{z_0'}{z'}
     :label:
 
-
-
 Example
 ~~~~~~~~~~~~~
 
-Code example to use :func:`~paos.paos_coordinatebreak.CoordinateBreak` to simulate a coordinate break where the input
+Code example to use :func:`~paos.paos_coordinatebreak.coordinate_break` to simulate a coordinate break where the input
 field is centered on the origin and has null angles :math:`u_{s}` and :math:`u_{t}` and is subsequently decentered on
 the Y axis by :math:`y_{dec} = 10.0 \ \textrm{mm}` and rotated around the X axis by :math:`x_{rot} = 0.1 ^{\circ}`.
 
-.. code-block:: python
+.. jupyter-execute::
+        :hide-code:
+        :stderr:
+        :hide-output:
 
-        from paos.paos_coordinatebreak import CoordinateBreak
+        import os, sys
+        paospath = "~/git/PAOS"
+        if not os.path.expanduser(paospath) in sys.path:
+            sys.path.append( os.path.expanduser(paospath) )
 
-        field={'us': 0.0, 'ut': 0.0}
+        import paos
+
+.. jupyter-execute::
+
+        import numpy as np
+        from paos.paos_coordinatebreak import coordinate_break
+
+        field = {'us': 0.0, 'ut': 0.0}
         vt = np.array([0.0, field['ut']])
         vs = np.array([0.0, field['us']])
 
         xdec, ydec = 0.0, 10.0e-3  # m
         xrot, yrot, zrot = 0.1, 0.0, 0.0  # deg
-        vt, vs = CoordinateBreak(vt, vs, xdec, ydec, xrot, yrot, zrot, order=0.0)
+        vt, vs = coordinate_break(vt, vs, xdec, ydec, xrot, yrot, zrot, order=0.0)
 
+        print(vs, vt)
+
+.. _Gaussian beams:
 
 Gaussian beams
 --------------------------
@@ -258,14 +272,25 @@ Example
 ~~~~~~~~~~~~~
 
 Code example to use :class:`~paos.paos_wfo.WFO` to simulate a magnification of the beam for the tangential direction
-:math:`M_t = 1.5`, while keeping the sagittal direction unchanged (:math:`M_s = 1.0`).
+:math:`M_t = 3.0`, while keeping the sagittal direction unchanged (:math:`M_s = 1.0`).
 
-.. code-block:: python
+.. jupyter-execute::
+        :stderr:
 
         from paos.paos_wfo import WFO
-        wfo = WFO(pupil_diameter, wavelength, gridsize, zoom)
-        Ms, Mt = 1.0, 1.5
+
+        beam_diameter = 1.0  # m
+        wavelength = 3.0e-6
+        grid_size = 512
+        zoom = 4
+
+        wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
+        Ms, Mt = 1.0, 3.0
         wfo.Magnification(Ms, Mt)
+
+        print(wfo.wz)
+
+As a result, the semi-diameter of the beam increases three-fold.
 
 .. _Wavefront propagation:
 
@@ -336,13 +361,19 @@ Example
 
 Code example to use :class:`~paos.paos_wfo.WFO` to propagate the beam over a thickness of :math:`10.0 \ \textrm{mm}`.
 
-.. code-block:: python
+.. jupyter-execute::
+        :stderr:
 
         from paos.paos_wfo import WFO
-        wfo = WFO(pupil_diameter, wavelength, gridsize, zoom)
+
+        wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
+        print(f'Initial beam position, beam semi diameter: {wfo.z, wfo.wz}')
 
         thickness = 10.0e-3  # m
         wfo.propagate(dz = thickness)
+        print(f'Final beam position, beam semi diameter: ({wfo.z}, {wfo.wz:.6f})')
+
+The current beam position along the z-axis is now updated.
 
 Wavefront phase
 -------------------------
@@ -508,23 +539,35 @@ Supported aperture shapes are elliptical, circular or rectangular.
 Example
 ~~~~~~~~~~~~~
 
-Code example to use :class:`~paos.paos_wfo.WFO` to simulate the beam propagation through an elliptical aperture.
+Code example to use :class:`~paos.paos_wfo.WFO` to simulate the beam propagation through an elliptical aperture with semi-major
+axes :math:`x_{rad} = 0.55` and :math:`y_{rad} = 0.365`, positioned at :math:`x_{dec} = 0.0`, :math:`y_{dec} = 0.0`.
 
-.. code-block:: python
+.. jupyter-execute::
 
         from paos.paos_wfo import WFO
-        wfo = WFO(pupil_diameter, wavelength, gridsize, zoom)
+
+        xrad = 0.55  # m
+        yrad = 0.365
+        xdec = ydec = 0.0
+
+        field = {'us': 0.0, 'ut': 0.1}
+        vt = np.array([0.0, field['ut']])
+        vs = np.array([0.0, field['us']])
 
         xrad *= np.sqrt(1 / (vs[1] ** 2 + 1))
         yrad *= np.sqrt(1 / (vt[1] ** 2 + 1))
         xaper = xdec - vs[0]
         yaper = ydec - vt[0]
 
+        wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
+
         aperture_shape = 'elliptical'  # or 'rectangular'
         obscuration = False  # if True, applies obscuration
 
         aperture = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad,
                                 shape=aperture_shape, obscuration=obscuration)
+
+        print(aperture)
 
 .. _Stops:
 
@@ -543,12 +586,16 @@ Example
 
 Code example to use :class:`~paos.paos_wfo.WFO` to simulate an aperture stop.
 
-.. code-block:: python
+.. jupyter-execute::
 
+        import numpy as np
         from paos.paos_wfo import WFO
-        wfo = WFO(pupil_diameter, wavelength, gridsize, zoom)
+
+        wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
+        print(f'Total throughput: {np.sum(wfo.amplitude**2)}')
 
         wfo.make_stop()
+        print(f'Total throughput: {np.sum(wfo.amplitude**2)}')
 
 
 POP propagation loop
@@ -576,5 +623,37 @@ Once the initialization is completed, `PAOS` repeats these actions in a loop:
 .. note::
     Each action is performed according to the configuration file, see :ref:`Input system`.
 
+Example
+~~~~~~~~~~~~~
 
+Code example to use :class:`~paos.paos_wfo.WFO` to simulate a simple propagation loop that involves key actions such as
+applying a circular aperture, the throughput normalization, applying a Paraxial lens with focal length
+:math:`f=1.0` m, and propagating to the lens focus.
 
+.. jupyter-execute::
+        :stderr:
+
+        import matplotlib.pyplot as plt
+
+        fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+        wfo = paos.WFO(beam_diameter, wavelength, grid_size, zoom)
+
+        wfo.aperture(xc=xdec, yc=ydec, r=beam_diameter/2, shape='circular')
+        wfo.make_stop()
+        ax0.imshow(wfo.amplitude**2)
+        ax0.set_title('Aperture')
+
+        fl = 1.0  # m
+        thickness = 1.0
+
+        wfo.lens(lens_fl=fl)
+        wfo.propagate(dz=thickness)
+        ax1.imshow(wfo.amplitude**2)
+        ax1.set_title('Focus')
+
+        zoomin = 16
+        shapex, shapey = wfo.amplitude.shape
+        ax1.set_xlim(shapex // 2 - shapex // 2 // zoomin, shapex // 2 + shapex // 2 // zoomin)
+        ax1.set_ylim(shapey // 2 - shapey // 2 // zoomin, shapey // 2 + shapey // 2 // zoomin)
+
+        plt.show()

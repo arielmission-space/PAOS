@@ -21,7 +21,7 @@ def main():
                         required=False, help="save log file",
                         action='store_true')
     parser.add_argument("-o", "--output", dest='output', type=str,
-                        required=False, default=None, help="Output file")
+                        required=False, default=None, help="Output file path")
 
     args = parser.parse_args()
     passvalue = {'conf': args.conf,
