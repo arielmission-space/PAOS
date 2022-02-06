@@ -22,13 +22,13 @@ Below, we show the plots for the squared amplitude of the wavefront at all surfa
 .. figure:: proper_hst.png
    :align: center
 
-   `PROPER HST`
+   `PROPER HST propagation`
 
 .. _PAOS HST:
 .. figure:: paos_hst.png
    :align: center
 
-   `PAOS HST`
+   `PAOS HST propagation`
 
 For the validation, we compared the amplitude (:numref:`Amplitude_comparison`), phase (:numref:`Phase_comparison`) and
 PSF (:numref:`PSF_comparison`) at the HST focus as obtained by `PROPER` and `PAOS`, along with their differences.

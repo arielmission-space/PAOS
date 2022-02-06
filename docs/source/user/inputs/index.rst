@@ -58,7 +58,7 @@ General
 ^^^^^^^^^^^
 Section describing the general simulation parameters and `PAOS` units
 
-.. list-table:: [general]
+.. list-table:: General
    :widths: 40 40 100
    :header-rows: 1
 
@@ -114,7 +114,7 @@ Wavelengths
 ^^^^^^^^^^^^^
 Section listing the wavelengths to simulate (preferably in increasing order)
 
-.. list-table:: [wavelengths]
+.. list-table:: Wavelengths
    :widths: 40 40 100
    :header-rows: 1
 
@@ -148,7 +148,7 @@ Fields
 ^^^^^^^^^^^^^
 Section listing the input fields to simulate
 
-.. list-table:: [fields]
+.. list-table:: Fields
    :widths: 40 40 100
    :header-rows: 1
 
@@ -190,7 +190,7 @@ Standard, Paraxial Lens, ABCD and Zernike) and their required parameters.
 
 .. _lens_xx_table:
 
-.. list-table:: [lens_xx]
+.. list-table:: Lens_xx
    :widths: 30 20 20 20 20 20 20 20 20 40
    :header-rows: 1
    :align: center
@@ -322,7 +322,7 @@ Below we report a snapshot of the first lens data section from the Ariel AIRS CH
 Parse configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`PAOS` implements the method :func:`~paos.paos_parseconfig.parse_config` that parses the input file, prepares the
+`PAOS` implements the method :func:`~paos.paos_parseconfig.parse_config` that parses the .ini configuration file, prepares the
 simulation run and returns the simulation parameters and the optical chain. This method can be called as in the example
 below.
 

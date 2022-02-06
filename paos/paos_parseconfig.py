@@ -36,7 +36,7 @@ def parse_config(filename):
     wavelengths: List
         list of wavelengths
     opt_chain_list: List
-        Each list entry is a dictionary of the optical surfaces in the ini file, estimated at the give wavelength.
+        Each list entry is a dictionary of the optical surfaces in the .ini file, estimated at the given wavelength.
         (Relevant only for diffractive components)
 
     Examples

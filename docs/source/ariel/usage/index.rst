@@ -14,7 +14,6 @@ to collect photons in a sufficiently compact region of the focal plane.
 
 PAOS was developed to demonstrate that even at wavelengths where Ariel is
 not diffraction-limited it still delivers high quality data for scientific analysis.
-
 `PAOS` can perform a large number of detailed analyses for any optical system
 for which the Fresnel approximation holds (see :ref:`Fresnel diffraction theory`).
 
@@ -35,7 +34,12 @@ risks are not too high.
 
 SNR
 ---------------------
-placeholder
+
+`PAOS` can verify that the realistic PSF at the `Ariel` focal planes are compatible
+with the scientific requirements such as the Signal to Noise Ratio (SNR), before having
+a system-level measurement. Indeed, if the PSF is too aberrated, the astrophysical
+signal from the stellar target is diffused into the secondary lobes, resulting in lower
+signal per pixel and SNR.
 
 Gain noise
 ---------------------

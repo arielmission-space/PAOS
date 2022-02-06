@@ -43,13 +43,13 @@ About `PAOS`
 ------------
 `PAOS`, the Physical `Ariel` Optics Simulator, is an End-to-End physical optics propagation model of the `Ariel` Telescope
 and subsystems. `PAOS` was developed to demonstrate that even at wavelengths where it is not diffraction-limited
-(:math:`\lambda < 3.0 \ \textrm{micron}`) `Ariel` still delivers high quality data for scientific analysis.
+(:math:`\lambda < 3.0 \ \mu m`) `Ariel` still delivers high quality data for scientific analysis.
 
 Having a generic input system which mimics the Zemax OpticStudio :math:`^{©}` interface, `PAOS` allows any user
 expert in CAD modeling to simulate other optical systems, as well (see later in :ref:`Input system`).
 
-`PAOS` simulates the complex wavefront along the propagation axis, and the Point Spread Function (PSF) at the
-intermediate and focal planes. To do so, `PAOS` implements the Paraxial theory described
+`PAOS` simulates the complex wavefront at each point along the propagation axis, and the Point Spread Function (PSF)
+at the principal and intermediate focal planes. To do so, `PAOS` implements the Paraxial theory described
 in `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_
 (see later in :ref:`ABCD description`). `PAOS` implements a paraxial ray-tracing (see :ref:`Ray tracing`) to estimate
 the projections of the physical apertures/obscurations, which is used to perform the propagation for an off-axis
@@ -60,7 +60,7 @@ aliasing in the computational grid.
 properties of the pilot beam, an analitically-traced on-axis Gaussian beam (see :ref:`Gaussian beams`).
 `PAOS` also supports the propagation through refractive media (see later in :ref:`Materials description`) and is
 designed to facilitate Monte Carlo simulations for e.g. performance estimation for an ensemble of wavefront error
-realizations, compatible with an optical performance requirement (see later in :ref:`Monte Carlo`).
+realizations, compatible with an optical performance requirement (see later in :ref:`Monte Carlo simulations`).
 
 `PAOS` has been validated using the physical optics propagation library PROPER
 (`John E. Krist, PROPER: an optical propagation library for IDL, SPIE (2007) <https://doi.org/10.1117/12.731179>`_)

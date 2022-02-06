@@ -221,6 +221,8 @@ Code example to initialize :class:`~paos.paos_abcd.ABCD` to simulate the effect 
         abcd = ABCD(curvature = 1.0/radius, n1 = n1, n2 = n2)
         print(abcd.ABCD)
 
+.. _Medium change:
+
 Medium change
 ----------------------------
 
@@ -469,6 +471,8 @@ This black box and its matrix can be decomposed into four, non-commuting element
 
 Explicitly:
 
+.. _oseq:
+
 .. math::
     \begin{pmatrix}
     A & B\\
@@ -535,3 +539,65 @@ a thin lens with radius of curvature :math:`R = 20.0 \ \textrm{mm}`, and a propa
         abcd = ABCD(thickness = thickness, curvature = 1.0/radius, n1 = n1, n2 = n2, M = magnification)
         print(abcd.ABCD)
 
+.. _Thick lens equivalent:
+
+Thick lens equivalent
+----------------------------
+
+A thick lens can be implemented as two spherical surfaces separated by some distance, and a medium change.
+
+The ABCD matrix is
+
+.. math::
+    \begin{pmatrix}
+    A & B\\
+    C & D
+    \end{pmatrix} =
+    \begin{pmatrix}
+    1 & 0\\
+    -\Phi_2/n_1 & n_2/n_1
+    \end{pmatrix}
+    \begin{pmatrix}
+    1 & L\\
+    0 & 1
+    \end{pmatrix}
+    \begin{pmatrix}
+    1 & 0\\
+    -\Phi_1/n_2 & n_1/n_2
+    \end{pmatrix} =
+    \begin{pmatrix}
+    1 - L \Phi_1/n_2 & L n_1/n_2\\
+    L \frac{\Phi_1 \Phi_2}{n_1 n_2} - \frac{1}{n_1} (\Phi_1 + \Phi_2)& n_1/n_2
+    \end{pmatrix}
+    :label:
+
+This is equivalent to two thin lenses separated by some distance, described by the ABCD matrix
+
+.. math::
+    \begin{pmatrix}
+    A & B\\
+    C & D
+    \end{pmatrix} =
+    \begin{pmatrix}
+    1 & 0\\
+    -1/f_2 & 1
+    \end{pmatrix}
+    \begin{pmatrix}
+    1 & L n_1/n_2\\
+    0 & 1
+    \end{pmatrix}
+    \begin{pmatrix}
+    1 & 0\\
+    -1/f_1 & 1
+    \end{pmatrix}
+    :label:
+
+where
+
+.. math::
+      \frac{1}{f_1} = \Phi_1 = \frac{n_2 - n_1}{R_1} \\
+      \frac{1}{f_2} = \Phi_2 = \frac{n_1 - n_2}{R_2} \\
+    :label:
+
+The curvature radii, :math:`R_1` and :math:`R_2`, follow the usual sign convention:
+positive if the centre lies in the image space, and negative if it lies in the object space.

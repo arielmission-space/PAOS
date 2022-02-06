@@ -246,7 +246,7 @@ Using the definition given in :ref:`Magnification`, in this case
 Therefore, for the complex radius of curvature we have that
 
 .. math::
-    q_2 = M^2 q_1.
+    q_2 = M^2 q_1
     :label:
 
 Using the definition of :math:`q(z)` it follows that
@@ -291,6 +291,63 @@ Code example to use :class:`~paos.paos_wfo.WFO` to simulate a magnification of t
         print(wfo.wz)
 
 As a result, the semi-diameter of the beam increases three-fold.
+
+Gaussian beam change of medium
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As seen in :ref:`Medium change`, a change of medium from :math:`n_1` to :math:`n_2` can be described using an ABCD matrix with
+
+.. math::
+      A = 1 \\
+      D = n_1/n_2 \\
+      B = C = 0
+    :label:
+
+Therefore, for the complex radius of curvature we have that
+
+.. math::
+    q_2 = q_1 n_2/n_1
+    :label:
+
+Using the definition of :math:`q(z)` it follows that
+
+#. :math:`R_2 = R_1 n_2/n_1`
+#. :math:`w_2 = w_1`
+#. :math:`z_{R,2} = z_{R,1} n_2/n_1`
+#. :math:`w_{0,2} = w_{0,1}`
+#. :math:`z_2 = z_1 n_2/n_1`
+
+For the phase radius, the semi-diameter of the beam, the Rayleigh distance, the Gaussian beam waist and the distance to focus, respectively.
+
+Moreover, since :math:`\lambda_{2} = \lambda_{1} n_2/n_1`, it follows that
+
+.. math::
+    f_{num, 2} = f_{num, 1} n_1/n_2
+    :label:
+
+Example
+~~~~~~~~~~~~~
+
+Code example to use :class:`~paos.paos_wfo.WFO` to simulate a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.5`.
+
+.. jupyter-execute::
+        :stderr:
+
+        from paos.paos_wfo import WFO
+
+        beam_diameter = 1.0  # m
+        wavelength = 3.0e-6
+        grid_size = 512
+        zoom = 4
+
+        wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
+        zr1 = wfo.zr
+
+        n1, n2 = 1.0, 1.5
+        wfo.ChangeMedium(n1n2=n1/n2)
+        zr2 = wfo.zr
+
+        print(zr2/zr1)
 
 .. _Wavefront propagation:
 

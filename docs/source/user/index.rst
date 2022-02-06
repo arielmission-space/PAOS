@@ -43,7 +43,7 @@ Have a good read. Feedback is highly appreciated.
     POP description <propagation/index>
     Aberration description <aberration/index>
     Materials description <material/index>
-    Monte Carlo simulations <monte_carlo/index>
+    Monte Carlo simulations <montecarlo/index>
     Plotting results <plotting/index>
     Saving results <saving/index>
     Automatic pipeline <pipeline/index>

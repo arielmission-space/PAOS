@@ -117,7 +117,7 @@ To open it, please choose your favourite viewer (e.g. HDFView_, HDFCompass_) or 
 For more information on how to produce a similar output file, see :ref:`Saving results`.
 
 
-The default plot
+The baseline plot
 ------------------
 
 An important part of understanding the `PAOS` output is to look at the default plot, as in :numref:`defaultplot`,
@@ -129,7 +129,7 @@ which shows the PSF, i.e. the squared amplitude of the complex wavefront, at the
    :width: 600
    :align: center
 
-   `Default PAOS plot`
+   `Baseline PAOS plot`
 
 The title of the plot features the optical surface name, the focal number, the Gaussian beam width, the
 simulation wavelength and the total optical throughput that reaches the surface.
