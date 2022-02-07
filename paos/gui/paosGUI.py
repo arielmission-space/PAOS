@@ -16,8 +16,7 @@ from PySimpleGUI import Checkbox, Text, InputText, InputCombo, Multiline, Listbo
     TabGroup, Input, Combo, popup_get_folder, Image, Slider
 from PySimpleGUI import Submit
 from PySimpleGUI import Window, WINDOW_CLOSED, WINDOW_CLOSE_ATTEMPTED_EVENT
-from PySimpleGUI import change_look_and_feel, main_global_pysimplegui_settings, OFFICIAL_PYSIMPLEGUI_THEME, \
-    RELIEF_RIDGE, RELIEF_SUNKEN
+from PySimpleGUI import main_global_pysimplegui_settings, RELIEF_RIDGE, RELIEF_SUNKEN, TIMEOUT_KEY
 from PySimpleGUI import popup, popup_scrolled, popup_get_file, popup_ok_cancel
 from PySimpleGUI import version, get_versions
 from PySimpleGUI import ProgressBar
@@ -25,13 +24,13 @@ from joblib import Parallel, delayed
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 
-from paos import parse_config, raytrace, run, save_datacube
+from paos import parse_config, raytrace, run
+from paos.paos_parseconfig import getfloat
 from paos.gui.simpleGUI import SimpleGUI
 from paos.gui.zernikeGUI import ZernikeGUI
 from paos.log import setLogLevel
 from paos.paos_config import __pkg_name__, __author__, __url__, __version__
 from paos.paos_config import base_dir, logger
-from paos.paos_plotpop import simple_plot, plot_psf_xsec
 
 
 class PaosGUI(SimpleGUI):
@@ -44,8 +43,6 @@ class PaosGUI(SimpleGUI):
         input dictionary for the GUI.
         It contains the file path to the input configuration .ini file to pass (defaults to using a template if
         unspecified), the debug and logger keywords and the file path to the output file to write.
-    theme: str
-        GUI theme. By default, it is set to the official PySimpleGUI theme
     font: tuple
         GUI default font. By default, it is set to ("Courier New", 16)
 
@@ -54,7 +51,7 @@ class PaosGUI(SimpleGUI):
     -------
     >>> from paos.gui.paosGUI import PaosGUI
     >>> passvalue = {'conf': '/path/to/ini/file/', 'debug': False}
-    >>> PaosGUI(passvalue=passvalue, theme='Dark')()
+    >>> PaosGUI(passvalue=passvalue)()
 
     Note
     ----
@@ -62,7 +59,7 @@ class PaosGUI(SimpleGUI):
 
     """
 
-    def __init__(self, passvalue, theme=OFFICIAL_PYSIMPLEGUI_THEME, font=("Courier New", 16)):
+    def __init__(self, passvalue, font=("Courier New", 16)):
         """
         Initializes the Paos GUI.
         This includes instantiating the global variables, setting up the debug logger (optional), defining the content
@@ -72,56 +69,53 @@ class PaosGUI(SimpleGUI):
         # ------ Instantiate global variables ------ #
         super().__init__()
         self.passvalue = passvalue
-        self.theme = theme
         self.font = font
-        self.wavelengths = None
-        self.wl_keys = None
-        self.fields = None
-        self.field_keys = None
 
         # ------ Set up the debug logger ------ #
         if self.passvalue['debug']:
             setLogLevel(logging.DEBUG)
 
-        # ------ Theme Definition ------ #
-        change_look_and_feel(self.theme)
-
         # ------ Tabs Definition ------ #
         # Wavelengths
+        self.wavelengths = None
+        self.wl_keys = None
         self.nrows_wl = None
         self.wl_data = {'Wavelength': ''}
 
         # Fields
+        self.fields = None
+        self.field_keys = None
         self.nrows_field = None
         self.field_data = {'X': '', 'Y': ''}
 
         # Lens data surfaces
+        self.ld_keys = None
         self.nrows_ld = None
         self.lens_data = {
-            'SurfaceType': {'values': ['INIT', 'Coordinate Break', 'Standard', 'Paraxial Lens', 'ABCD', 'Zernike']},
-            'Comment': {'values': 'Comment'},
-            'Radius': {'values': ''},
-            'Thickness': {'values': ''},
-            'Material': {'values': ['', 'MIRROR', 'BK7', 'BAF2', 'CAF2', 'SAPPHIRE', 'SF11', 'ZNSE']},
-            'Save': {'values': 'Save'},
-            'Ignore': {'values': 'Ignore'},
-            'Stop': {'values': 'Stop'},
-            'aperture': {'values': {'Aperture Type': ['',
-                                                      'rectangular aperture', 'rectangular obscuration',
-                                                      'circular aperture', 'circular obscuration',
-                                                      'elliptical aperture', 'elliptical obscuration'],
-                                    'X-Half Width': '',
-                                    'Y-Half Width': '',
-                                    'Aperture X-Decenter': '',
-                                    'Aperture Y-Decenter': ''}},
-            'Par1': {'values': ''},
-            'Par2': {'values': ''},
-            'Par3': {'values': ''},
-            'Par4': {'values': ''},
-            'Par5': {'values': ''},
-            'Par6': {'values': ''},
-            'Par7': {'values': ''},
-            'Par8': {'values': ''}}
+            'SurfaceType': ['INIT', 'Coordinate Break', 'Standard', 'Paraxial Lens', 'ABCD', 'Zernike'],
+            'Comment': 'Comment',
+            'Radius': '',
+            'Thickness': '',
+            'Material': ['', 'MIRROR', 'BK7', 'BAF2', 'CAF2', 'SAPPHIRE', 'SF11', 'ZNSE'],
+            'Save': 'Save',
+            'Ignore': 'Ignore',
+            'Stop': 'Stop',
+            'aperture': {'Aperture Type': ['',
+                                           'rectangular aperture', 'rectangular obscuration',
+                                           'circular aperture', 'circular obscuration',
+                                           'elliptical aperture', 'elliptical obscuration'],
+                         'X-Half Width': '',
+                         'Y-Half Width': '',
+                         'Aperture X-Decenter': '',
+                         'Aperture Y-Decenter': ''},
+            'Par1': '',
+            'Par2': '',
+            'Par3': '',
+            'Par4': '',
+            'Par5': '',
+            'Par6': '',
+            'Par7': '',
+            'Par8': ''}
 
         # ------ Define fallback configuration file ------ #
         if 'conf' not in self.passvalue.keys() or self.passvalue['conf'] is None:
@@ -130,6 +124,10 @@ class PaosGUI(SimpleGUI):
         # ------ Instantiate some more global variables (for dynamic updates) ------ #
         self.disable_wfe = True
         self.disable_wfe_color = ''
+
+        # ------ Instantiate some more global variables (for running simulations and plotting) ------ #
+        self.retval, self.retval_list, self.saving_groups = {}, [], []
+        self.figure, self.figure_list_nwl, self.figure_list_wfe = None, [], []
 
     def init_window(self):
         """
@@ -154,14 +152,16 @@ class PaosGUI(SimpleGUI):
         self.nrows_field = len(self.config['fields']) if 'fields' in self.config.keys() else 1
         self.nrows_ld = len([key for key in self.config.keys() if key.startswith('lens')])
 
-        # ------- Initialize keys of wavelengths, fields ------#
+        # ------- Initialize keys of wavelengths, fields and surfaces ------#
         self.wl_keys = [f'w{k}' for k in range(1, self.nrows_wl + 1)]
         self.field_keys = [f'f{k}' for k in range(1, self.nrows_field + 1)]
+        self.ld_keys = [f'S{k}' for k in range(1, self.nrows_ld + 1)]
 
         for key, item in self.config.items():
-            for subkey, subitem in item.items():
-                if subkey == 'surfacetype' and subitem == 'Zernike':
-                    self.disable_wfe = False
+            if key.startswith('lens'):
+                for subkey, subitem in item.items():
+                    if subitem == 'Zernike' and not self.config[key].getboolean('ignore'):
+                        self.disable_wfe = False
         self.disable_wfe_color = 'gray' if self.disable_wfe else 'yellow'
 
     def get_widget(self, value, key, item, size=(24, 2)):
@@ -184,21 +184,16 @@ class PaosGUI(SimpleGUI):
         out: Checkbox or Input or Column or Combo
             the desired Widget
         """
-        row = None
-
-        if key.partition('_')[0] in self.lens_data.keys():
-            cell = re.findall('[0-9]+', key.partition('_')[-1])
-            row, col = tuple(map(int, cell))
 
         default = item if item != 'NaN' else None
         disabled = False if item != 'NaN' else True
 
         if value in ['Save', 'Ignore', 'Stop']:
-            return Checkbox(text=value, default=default, key=key, size=(21, 2), disabled=disabled)
+            return Checkbox(text=value, default=default, key=key, size=(21, 2), disabled=disabled, enable_events=True)
         elif value in ['Comment', 'Radius', '']:
             return InputText(default_text=default, key=key, size=size, disabled=disabled)
         elif key.startswith('aperture'):
-            return self.aperture_tab(row=row, col=8, key=key, disabled=disabled)
+            return self.aperture_tab(key=key, disabled=disabled)
         else:
             return InputCombo(default_value=default, values=value, key=key, size=(23, 2), disabled=disabled,
                               enable_events=True)
@@ -229,7 +224,7 @@ class PaosGUI(SimpleGUI):
             aperture = aperture.split(',')
 
         tab = []
-        for k, (key, item) in enumerate(self.lens_data['aperture']['values'].items()):
+        for k, (key, item) in enumerate(self.lens_data['aperture'].items()):
             key_item = key.replace(' ', '_') + f'_({row},{col})'
             config_item = '' if aperture is None else aperture[k]
 
@@ -238,17 +233,13 @@ class PaosGUI(SimpleGUI):
 
         return tab
 
-    def aperture_tab(self, row, col, key, disabled):
+    def aperture_tab(self, key, disabled):
         """
         Given the row and column corresponding to the cell in the GUI lens data editor, returns the Column widget with
         the aperture parameters
 
         Parameters
         ----------
-        row: int
-            row corresponding to the optical surface in the GUI lens data editor
-        col: int
-            column corresponding to the aperture header in the GUI lens data editor
         key: str
             key to which the returned Column widget will be associated
         disabled: bool
@@ -260,6 +251,10 @@ class PaosGUI(SimpleGUI):
             the Column widget for the aperture
 
         """
+
+        cell = re.findall('[0-9]+', key.partition('_')[-1])
+        row, col = tuple(map(int, cell))
+
         button_symbol = self.symbol_disabled if disabled else self.symbol_up
         text_color = 'gray' if disabled else 'yellow'
         surface_tab_layout = Column(layout=[
@@ -316,7 +311,8 @@ class PaosGUI(SimpleGUI):
             Updates the headers
         """
         par_headings = self.par_heading_rules(self.values[f'SurfaceType_({row},0)'])
-        for head, new_head in zip([key for key in self.lens_data.keys() if key.startswith('Par')], par_headings):
+        old_par_headings = ['Par1', 'Par2', 'Par3', 'Par4', 'Par5', 'Par6', 'Par7', 'Par8']
+        for head, new_head in zip(old_par_headings, par_headings):
             self.window[head].update(new_head)
 
         return
@@ -399,8 +395,8 @@ class PaosGUI(SimpleGUI):
             items = self.config['fields'].get(key, '0.0,0.0').split(',')
             keys = ['_'.join([key, str(i)]) for i in range(len(items))]
             return list(itertools.chain(row_widget,
-                                        [self.get_widget(value, key, item) for value, key, item in
-                                         zip(input_list, keys, items)]))
+                                        [self.get_widget(value, key, item)
+                                         for value, key, item in zip(input_list, keys, items)]))
 
         elif prefix == 'l':
             key = 'lens_{:02d}'.format(row)
@@ -408,14 +404,14 @@ class PaosGUI(SimpleGUI):
             lens_dict = {}
             for c, name in enumerate(self.lens_data.keys()):
                 name_key = f'{name}_({row},{c})'
+                lens_dict[name_key] = None
                 if key in self.config.keys() and name in self.config[key].keys():
-                    lens_dict[name_key] = self.config[key].getboolean(name) \
-                        if name in ['Save', 'Ignore', 'Stop'] else self.config[key][name]
-                else:
-                    lens_dict[name_key] = None
+                    if name in ['Save', 'Ignore', 'Stop']:
+                        lens_dict[name_key] = self.config[key].getboolean(name)
+                    else:
+                        lens_dict[name_key] = self.config[key][name]
 
-                surface_type_key = f'SurfaceType_({row},0)'
-                surface_type = lens_dict[surface_type_key]
+                surface_type = lens_dict[f'SurfaceType_({row},0)']
                 lens_dict[name_key] = self.lens_data_rules(surface_type=surface_type, header=name_key,
                                                            item=lens_dict[name_key])
 
@@ -443,13 +439,13 @@ class PaosGUI(SimpleGUI):
 
         if column_key == 'wavelengths':
             nrows = self.nrows_wl
-            input_list = [item for key, item in self.wl_data.items()]
+            input_list = ['']
         elif column_key == 'fields':
             nrows = self.nrows_field
-            input_list = [item for key, item in self.field_data.items()]
+            input_list = ['', '']
         elif column_key == 'lenses':
             nrows = self.nrows_ld
-            input_list = [item['values'] for key, item in self.lens_data.items()]
+            input_list = [item for key, item in self.lens_data.items()]
         else:
             logger.error('Key error')
 
@@ -464,6 +460,67 @@ class PaosGUI(SimpleGUI):
                 self.window[f'{head}_({nrows},{c})'].bind("<Button-1>", "_LeftClick")
 
         return nrows
+
+    def update_wfe_frame(self):
+        """
+        Checks if a Zernike surface is present in the lens data editor and whether it is ignored and
+        updates the Wfe Frame accordingly, by enabling/disabling it and recalculates the Column scrollbar
+
+        Returns
+        -------
+        out: None
+            updates the Wfe Frame
+
+        """
+        disable_wfe = []
+        for key, item in self.values.items():
+            if item == 'Zernike':
+                row, col = re.findall('[0-9]+', key)
+                if self.values[f'Ignore_({row},6)']:
+                    disable_wfe.append(True)
+                else:
+                    disable_wfe.append(False)
+
+        self.disable_wfe = False if False in disable_wfe else True
+        self.disable_wfe_color = 'gray' if self.disable_wfe else 'yellow'
+
+        self.window['-OPEN FRAME MC (wfe)-'].update(disabled=self.disable_wfe)
+        self.window['-FRAME TITLE MC (wfe)-'].update(text_color=self.disable_wfe_color)
+
+        if self.disable_wfe:
+            self.window['-OPEN FRAME MC (wfe)-'].update(self.symbol_up)
+            self.window['FRAME MC (wfe)'].update(visible=False)
+            self.update_column_scrollbar(window=self.window, col_key='MC LAUNCHER COL')
+
+        return
+
+    def reset_simulation(self):
+        """
+        Clean up used memory, close matplotlib plots and reset variables before running new simulations
+
+        Returns
+        -------
+        out: None
+            Resets variables and matplotlib plots to free up memory
+
+        """
+
+        # Reset simulation variables
+        del self.retval, self.figure
+        self.retval, self.figure = {}, None
+        self.retval_list.clear()
+        self.figure_list_nwl.clear()
+        self.figure_list_wfe.clear()
+        # Clear Image elements
+        for image_key in ['-IMAGE-', '-IMAGE (nwl)-', '-IMAGE (wfe)-']:
+            self.clear_image(self.window[image_key])
+        # Close matplotlib plots
+        plt.close('all')
+        _ = gc.collect()
+        # Reset progress bars
+        _ = self.reset_progress_bar(self.window['progbar (nwl)'])
+        _ = self.reset_progress_bar(self.window['progbar (wfe)'])
+        return
 
     def save_to_dict(self, show=True):
         """
@@ -514,7 +571,7 @@ class PaosGUI(SimpleGUI):
                 section = dictionary[key]
                 if head == 'aperture':
                     section[head] = ','.join([self.values[f'{name_key.replace(" ", "_")}_({k},{c})']
-                                              for name_key in self.lens_data['aperture']['values'].keys()])
+                                              for name_key in self.lens_data['aperture'].keys()])
                     if section[head] == len(section[head]) * ',':
                         section[head] = ''
                 else:
@@ -563,41 +620,8 @@ class PaosGUI(SimpleGUI):
             config.write(cf)
         return
 
-    @staticmethod
-    def plot_surface(key, retval, ima_scale):
-        """
-        Given the optical surface key, the POP output dictionary and the image scale, plots the squared amplitude
-        of the wavefront at the given surface (cross-sections and 2D plot)
-
-        Parameters
-        ----------
-        key: int
-            the key index associated to the optical surface
-        retval: dict
-            the POP output dictionary
-        ima_scale: str
-            the image scale. Can be either 'linear' or 'log'
-
-        Returns
-        -------
-        out: :class:`~matplotlib.figure.Figure`
-            the figure with the squared amplitude of the wavefront at the given surface
-
-        """
-
-        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
-        # Xsec plot
-        plot_psf_xsec(fig=fig, axis=axs[0], key=key, item=retval[key], ima_scale=ima_scale)
-        # 2D plot
-        simple_plot(fig=fig, axis=axs[1], key=key, item=retval[key], ima_scale=ima_scale)
-        fig.suptitle(axs[0].get_title(), fontsize=20)
-        axs[0].set_title('X-sec view')
-        axs[1].set_title('2D view')
-        fig.tight_layout()
-
-        return fig
-
-    def draw_surface(self, retval_list, groups, figure_agg, image_key, surface_key, scale_key, range_key=None):
+    def draw_surface(self, retval_list, groups, figure_agg, image_key, surface_key, scale_key, range_key=None,
+                     zoom=1):
         """
         Given a list of simulation output dictionaries, the names to associate to each simulation, the Figure element
         to draw on and its key, the key for the surface to plot and the plot scale, plots at the given optical surface
@@ -624,6 +648,8 @@ class PaosGUI(SimpleGUI):
             1) '0,10' means that the first ten simulations are plotted
             If the number of simulations to plot is greater than len(retval_list), plots all the simulations and
             nothing bad happens
+        zoom: scalar
+            the surface zoom factor: more increases the axis limits
 
         Returns
         -------
@@ -639,6 +665,11 @@ class PaosGUI(SimpleGUI):
 
         # Close all previous plots
         plt.close('all')
+
+        zoom = getfloat(zoom)
+        if np.isnan(zoom):
+            logger.warning('The input zoom value is not a scalar')
+            zoom = 1
 
         if figure_agg is not None:
             # Reset figure canvas
@@ -663,7 +694,7 @@ class PaosGUI(SimpleGUI):
                     break
                 # Plot
                 logger.debug(f'Plotting POP for group {group}')
-                figure_list.append(self.plot_surface(key, ret, ima_scale))
+                figure_list.append(self.plot_surface(key, ret, ima_scale, zoom))
                 # Get the index of the plotted figures
                 idx.append(j)
                 j += 1
@@ -679,7 +710,7 @@ class PaosGUI(SimpleGUI):
                 logger.error('Surface not present in POP output: it was either ignored or simply not saved')
                 return
             # Plot
-            fig = self.plot_surface(key, ret, ima_scale)
+            fig = self.plot_surface(key, ret, ima_scale, zoom)
             return fig
 
     def display_plot_slide(self, figure_list, figure_agg, image_key, slider_key):
@@ -711,137 +742,11 @@ class PaosGUI(SimpleGUI):
             self.clear_image(self.window[image_key])
         # Get the simulation index
         n = int(self.values[slider_key])
-        # if n > len(figure_list) - 1:
-        #     return
         # Draw the image
         figure_agg = self.draw_image(figure=figure_list[n], element=self.window[image_key])
         # Update the 'MC LAUNCHER COL' Column scrollbar
         self.update_column_scrollbar(window=self.window, col_key='MC LAUNCHER COL')
         return figure_agg
-
-    @staticmethod
-    def save_figure(figure, filename=None):
-        """
-        Given a matplotlib figure and a file path (optional), saves the figure to the file path
-
-        Parameters
-        ----------
-        figure: :class:`~matplotlib.figure.Figure`
-            the matplotlib figure to save
-        filename: str
-            the saving file path
-
-        Returns
-        -------
-        out: None
-            Saves the matplotlib figure
-
-        """
-        if figure is None:
-            logger.debug('Create plot first')
-            return
-
-        if filename is None:
-            # Get the file path to save to
-            filename = popup_get_file('Choose file (PNG, JPG) to save to', save_as=True, keep_on_top=True)
-
-            if filename is None:
-                logger.debug('Pressed Cancel. Continuing...')
-                return
-
-            if not filename.endswith(('.PNG', '.png', '.JPG', '.jpg')):
-                logger.warning('Saving file format not provided. Defaulting to .png')
-                filename = ''.join([filename, '.png'])
-
-        # Save the plot to the specified .png or .jpg file
-        figure.savefig(filename, bbox_inches='tight', dpi=150)
-
-        logger.debug(f'Saved figure to {filename}')
-
-        return
-
-    @staticmethod
-    def to_hdf5(retval_list, groups, keys_to_keep=None):
-        """
-        Given the POP output dictionary list, the names for each simulation (saving groups) and the keys to store,
-        opens a popup to get the output file name and then dumps the simulation outputs to a hdf5 file.
-
-        Parameters
-        ----------
-        retval_list: List of dict
-            list of simulation output dictionaries
-        groups: List of strings
-            names to associate to each simulation in the output
-        keys_to_keep: List of strings
-            dictionary keys to store
-
-        Returns
-        -------
-        out: None
-            Dumps the simulation output to the indicated hdf5 file
-
-        """
-
-        if keys_to_keep is None:
-            keys_to_keep = ['amplitude', 'dx', 'dy', 'wl']
-
-        if not retval_list:
-            logger.debug('Run POP first')
-            return
-
-        # Get the file path to save to
-        filename = popup_get_file('Choose file (HDF5) to save to', save_as=True, keep_on_top=True)
-
-        if filename is None:
-            logger.debug('Pressed Cancel. Continuing...')
-            return
-
-        if not filename.endswith(('.HDF5', '.hdf5', '.H5', '.h5')):
-            logger.warning('Saving file format not provided. Defaulting to .h5')
-            filename = ''.join([filename, '.h5'])
-
-        # Save the POP output to the specified .hdf5 file
-        tags = list(map(str, groups))
-        save_datacube(retval_list, filename, tags, keys_to_keep=keys_to_keep, overwrite=True)
-        return
-
-    @staticmethod
-    def to_txt(text_list):
-        """
-        Given a list of strings, opens a popup to get the output file name and then dumps the text ordered in rows
-        to the output text file
-
-        Parameters
-        ----------
-        text_list: list of strings
-
-        Returns
-        -------
-        out: None
-            writes the input text list to a text file.
-            Used to save the output of the diagnostic raytrace
-
-        """
-
-        if text_list == '':
-            logger.debug('Perform raytrace first')
-            return
-
-        # Get the file path to save to
-        filename = popup_get_file('Choose file (TXT) to save to', save_as=True, keep_on_top=True)
-
-        if filename is None:
-            logger.debug('Pressed Cancel. Continuing...')
-            return
-
-        if not filename.endswith(('.TXT', '.txt')):
-            logger.warning('Saving file format not provided. Defaulting to .txt')
-            filename = ''.join([filename, '.txt'])
-
-        # Save the text list to the specified .txt file
-        with open(filename, "wt") as f:
-            f.write('\n'.join(text_list))
-        return
 
     def make_window(self):
         """
@@ -887,12 +792,12 @@ class PaosGUI(SimpleGUI):
                 [Text('Wavelengths unit:', size=(24, 1)),
                  InputText('micrometers', size=(24, 1), key='lambda_units', disabled=True)],
                 [Text('T ambient:', size=(24, 1)),
-                 InputText(self.config['general'].get('Tambient', ''),
+                 InputText(self.config['general'].get('Tambient', '20.0'),
                            tooltip='Insert ambient temperature', key='tambient', size=(24, 1))],
                 [Text('T unit:', size=(24, 1)),
                  InputText('(°C)', key='T_unit', size=(24, 1), disabled=True)],
                 [Text('P ambient:', size=(24, 1)),
-                 InputText(self.config['general'].get('Pambient', ''),
+                 InputText(self.config['general'].get('Pambient', '1.0'),
                            tooltip='Insert ambient pressure', key='pambient', size=(24, 1))],
                 [Text('P unit:', size=(24, 1)),
                  InputText('(atm)', key='P_unit', size=(24, 1), disabled=True)],
@@ -915,8 +820,7 @@ class PaosGUI(SimpleGUI):
                     [Text('', size=(15, 1))],
                     [Column(layout=list(itertools.chain(
                         [self.add_heading(self.wl_data.keys())],
-                        [self.chain_widgets(r, [item for key, item in self.wl_data.items()], prefix='w')
-                         for r in range(1, self.nrows_wl + 1)])),
+                        [self.chain_widgets(r, [''], prefix='w') for r in range(1, self.nrows_wl + 1)])),
                         key='wavelengths', scrollable=True, vertical_scroll_only=True, expand_y=True)]
                 ))],
                    font=self.font_titles, relief=RELIEF_SUNKEN, key='WL FRAME', expand_x=True, expand_y=True,
@@ -926,8 +830,7 @@ class PaosGUI(SimpleGUI):
         fields_layout = [
             [Column(layout=list(itertools.chain(
                 [self.add_heading(self.field_data.keys())],
-                [self.chain_widgets(r, [item for key, item in self.field_data.items()], prefix='f')
-                 for r in range(1, self.nrows_field + 1)])),
+                [self.chain_widgets(r, ['', ''], prefix='f') for r in range(1, self.nrows_field + 1)])),
                 scrollable=True, vertical_scroll_only=True, expand_x=True, expand_y=True, key='fields')],
             [Text(' ')],
             [Frame('Fields Actions', layout=[
@@ -941,7 +844,7 @@ class PaosGUI(SimpleGUI):
             [Column(layout=list(itertools.chain(
                 [self.add_heading(self.lens_data.keys())],
                 [[Text('')]],
-                [self.chain_widgets(r, [item['values'] for key, item in self.lens_data.items()], prefix='l')
+                [self.chain_widgets(r, [item for key, item in self.lens_data.items()], prefix='l')
                  for r in range(1, self.nrows_ld + 1)])),
                 scrollable=True, expand_x=True, expand_y=True, key='lenses')],
             [Text(' ')],
@@ -951,53 +854,65 @@ class PaosGUI(SimpleGUI):
                    font=self.font_titles, relief=RELIEF_SUNKEN, key='LENS DATA ACTIONS FRAME')]
         ]
         # Define launcher layout
-        launcher_layout = [list(itertools.chain(
-            [Frame('Select inputs', layout=[
+        launcher_layout = [
+            [Column(layout=[
+                [Frame('Select inputs', layout=[
+                    list(itertools.chain(
+                        [Text('Select wavelength', size=(12, 2)),
+                         Listbox(default_values=['w1'],
+                                 values=self.wl_keys,
+                                 size=(12, 4), key='select wl',
+                                 enable_events=True)],
+                        [Text('', size=(5, 2))],
+                        [Text('Select field', size=(12, 2)),
+                         Listbox(default_values=['f1'],
+                                 values=self.field_keys,
+                                 size=(12, 4), key='select field', enable_events=True)]))],
+                       font=self.font_titles, relief=RELIEF_SUNKEN, key='INPUTS FRAME')
+                 ],
+                [Text('', size=(6, 1))],
                 list(itertools.chain(
-                    [Text('Select wavelength', size=(12, 2)),
-                     Listbox(default_values=['w1'],
-                             values=[key for key, item in self.config.items('wavelengths')],
-                             size=(12, 4), background_color='grey20', key='select wl',
-                             enable_events=True)],
-                    [Text('', size=(5, 2))],
-                    [Text('Select field', size=(12, 2)),
-                     Listbox(default_values=['f1'],
-                             values=[key for key, item in self.config.items('fields')],
-                             size=(12, 4), background_color='grey20', key='select field', enable_events=True)]))],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='INPUTS FRAME')
-             ],
-            [Text('', size=(100, 2))],
-            [Frame('Save', layout=[
-                [Button(tooltip='Save raytrace output', button_text='Save raytrace', enable_events=True,
-                        key="-SAVE RAYTRACE-")],
-                [Button(tooltip='Save the POP output', button_text='Save POP', enable_events=True, key="-SAVE POP-")],
-                [Button(tooltip='Save the plot', button_text='Save Plot', enable_events=True, key="-SAVE FIG-")]
-            ],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='PAOS SAVE FRAME')
-             ])),
-            [Frame('Raytrace', layout=[
-                [Text('Run a diagnostic raytrace')],
-                [Button(tooltip='Launch raytrace', button_text='Raytrace', enable_events=True, key="-RAYTRACE-")],
-                [Column(layout=[
-                    [Multiline(key='raytrace log', font=self.font_small, autoscroll=True, size=(90, 20),
-                               pad=(0, (15, 0)), background_color='grey20', disabled=False)]],
-                    key='raytrace log col')]],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='PAOS RAYTRACE FRAME'),
-             Text('', size=(5, 2)),
-             Frame('POP', layout=[
-                 list(itertools.chain(
-                     [Text('Run the POP: '),
-                      Button(tooltip='Launch POP', button_text='POP', enable_events=True, key="-POP-")],
-                     [Text('', size=(6, 2))],
-                     [Text('Plot surface: '),
-                      InputCombo(tooltip='Surface number', values=[f'S{k}' for k in range(1, self.nrows_ld + 1)],
-                                 default_value=f'S{self.nrows_ld}', key="S#"),
-                      InputCombo(tooltip='Color scale', values=['linear scale', 'log scale'], default_value='log scale',
-                                 key="Ima scale"),
-                      Button(tooltip='Plot', button_text='Plot', enable_events=True, key="-PLOT-")])),
-                 [Image(key='-IMAGE-', size=(90, 20))]],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, expand_x=True, expand_y=True, key='PAOS POP FRAME')
-             ]
+                    [Frame('Run and Save', layout=[
+                        [Text('Run a diagnostic raytrace')],
+                        [Button(tooltip='Launch raytrace', button_text='Raytrace', enable_events=True,
+                                key="-RAYTRACE-")],
+                        [Column(layout=[
+                            [Multiline(key='raytrace log', font=self.font_small, autoscroll=True, size=(90, 20),
+                                       pad=(0, (15, 0)), disabled=False)]],
+                            key='raytrace log col')],
+                        [Button(tooltip='Save raytrace output', button_text='Save raytrace', enable_events=True,
+                                key="-SAVE RAYTRACE-")],
+                        [Text('', size=(6, 1))],
+                        [Text('Run the POP: ', size=(30, 1)),
+                         Button(tooltip='Launch POP', button_text='POP', enable_events=True, key="-POP-")],
+                        [Text('Save the POP output: ', size=(30, 1)),
+                         Button(tooltip='Save the POP output', button_text='Save POP', enable_events=True,
+                                key="-SAVE POP-")],
+                        [Text('', size=(6, 1))],
+                        [Text('Select surface zoom: ', size=(30, 1)),
+                         InputText(tooltip='Surface zoom', default_text='1', key="Surface zoom")],
+                        [Text('Select surface number: ', size=(30, 1)),
+                         InputCombo(tooltip='Surface number', values=self.ld_keys,
+                                    default_value=f'S{self.nrows_ld}', key="S#")],
+                        [Text('Select plot scale: ', size=(30, 1)),
+                         InputCombo(tooltip='Color scale', values=['linear scale', 'log scale'],
+                                    default_value='log scale', key="Ima scale")],
+                        [Text('Plot surface: ', size=(30, 1)),
+                         Button(tooltip='Plot', button_text='Plot', enable_events=True,
+                                key="-PLOT-")],
+                        [Text('Save the Plots', size=(30, 1)),
+                         Button(tooltip='Save the plot', button_text='Save Plot', enable_events=True,
+                                key="-SAVE FIG-")]],
+                           font=self.font_subtitles, relief=RELIEF_SUNKEN, expand_x=True, expand_y=True,
+                           key='-RUN AND SAVE FRAME-')],
+                    [Frame('Display', layout=[
+                        [Text('', size=(6, 1))],
+                        [Button(tooltip='Display plot', button_text='Display plot', enable_events=True,
+                                key="-DISPLAY PLOT-")],
+                        [Image(key='-IMAGE-')]],
+                           font=self.font_subtitles, relief=RELIEF_SUNKEN, expand_x=True, expand_y=True,
+                           key='IMAGE FRAME')]
+                ))], scrollable=True, expand_x=True, expand_y=True, key='LAUNCHER COL')]
         ]
         # Define parallel launcher layout
         monte_carlo_layout = [
@@ -1011,8 +926,8 @@ class PaosGUI(SimpleGUI):
                     [Frame('Select inputs', layout=[
                         [Text('Select field', size=(12, 2)),
                          Listbox(default_values=['f1'],
-                                 values=[key for key, item in self.config.items('fields')],
-                                 size=(12, 4), background_color='grey20', key='select field (nwl)',
+                                 values=self.field_keys,
+                                 size=(12, 4), key='select field (nwl)',
                                  enable_events=True)]], font=self.font_subtitles, relief=RELIEF_SUNKEN,
                            key='INPUTS FRAME (nwl)')],
                     list(itertools.chain(
@@ -1023,7 +938,7 @@ class PaosGUI(SimpleGUI):
                             [Text('Run the multi-wl POP: ', size=(30, 1)),
                              Button(tooltip='Launch POP', button_text='POP', enable_events=True,
                                     key="-POP (nwl)-"),
-                             ProgressBar(max_value=40, orientation='horizontal', size=(40, 8), border_width=2,
+                             ProgressBar(max_value=20, orientation='horizontal', size=(40, 8), border_width=2,
                                          key='progbar (nwl)', metadata=0, bar_color=('Yellow', 'Gray'))],
                             [Text('Save the POP output: ', size=(30, 1)),
                              Button(tooltip='Save the POP output', button_text='Save POP', enable_events=True,
@@ -1031,12 +946,15 @@ class PaosGUI(SimpleGUI):
                             [Text('', size=(6, 2))],
                             [Text('Range to plot: ', size=(30, 1)),
                              InputText(tooltip='Select sim range to plot', default_text='0-1', key="RANGE (nwl)")],
-                            [Text('Plot surface: ', size=(30, 1)),
-                             InputCombo(tooltip='Surface number',
-                                        values=[f'S{k}' for k in range(1, self.nrows_ld + 1)],
-                                        default_value=f'S{self.nrows_ld}', key="S# (nwl)"),
+                            [Text('Select surface zoom: ', size=(30, 1)),
+                             InputText(tooltip='Surface zoom', default_text='1', key="Surface zoom (nwl)")],
+                            [Text('Select surface number: ', size=(30, 1)),
+                             InputCombo(tooltip='Surface number', values=self.ld_keys,
+                                        default_value=f'S{self.nrows_ld}', key="S# (nwl)")],
+                            [Text('Select plot scale: ', size=(30, 1)),
                              InputCombo(tooltip='Color scale', values=['linear scale', 'log scale'],
-                                        default_value='log scale', key="Ima scale (nwl)"),
+                                        default_value='log scale', key="Ima scale (nwl)")],
+                            [Text('Plot surface: ', size=(30, 1)),
                              Button(tooltip='Plot', button_text='Plot', enable_events=True,
                                     key="-PLOT (nwl)-")],
                             [Text('Figure prefix: ', size=(30, 1)),
@@ -1067,16 +985,12 @@ class PaosGUI(SimpleGUI):
                     [Frame('Select inputs', layout=[
                         list(itertools.chain(
                             [Text('Select wavelength', size=(12, 2)),
-                             Listbox(default_values=['w1'],
-                                     values=[key for key, item in self.config.items('wavelengths')],
-                                     size=(12, 4), background_color='grey20', key='select wl (wfe)',
-                                     enable_events=True)],
+                             Listbox(default_values=['w1'], values=self.wl_keys, size=(12, 4),
+                                     key='select wl (wfe)', enable_events=True)],
                             [Text('', size=(5, 2))],
                             [Text('Select field', size=(12, 2)),
-                             Listbox(default_values=['f1'],
-                                     values=[key for key, item in self.config.items('fields')],
-                                     size=(12, 4), background_color='grey20', key='select field (wfe)',
-                                     enable_events=True)]
+                             Listbox(default_values=['f1'], values=self.field_keys, size=(12, 4),
+                                     key='select field (wfe)', enable_events=True)]
                         ))], key='INPUTS FRAME (wfe)', font=self.font_subtitles, relief=RELIEF_SUNKEN)],
                     list(itertools.chain(
                         [Frame('Run and Save', layout=[
@@ -1085,7 +999,9 @@ class PaosGUI(SimpleGUI):
                              Button(tooltip='Import wfe table', button_text='Import wfe', enable_events=True,
                                     key="-IMPORT WFE-")],
                             [Text('Unit of Zernike coefficients: ', size=(30, 1)),
-                             InputText(tooltip='Zernike unit (-9=nm)', default_text='-9', key="ZUNIT (wfe)")],
+                             InputCombo(tooltip='Zernike unit',
+                                        values=['meters', 'millimeters', 'micrometers', 'nanometers'],
+                                        default_value='nanometers', key="ZUNIT (wfe)")],
                             [Text('', size=(6, 2))],
                             [Text('Number of parallel jobs: ', size=(30, 1)),
                              InputText(tooltip='Number of jobs', default_text=2, key="NJOBS (wfe)")],
@@ -1093,7 +1009,7 @@ class PaosGUI(SimpleGUI):
                              InputText(tooltip='Index of Zernike', default_text='', key="NSURF (wfe)")],
                             [Text('Run the POP for each wfe: ', size=(30, 1)),
                              Button(tooltip='Launch POP', button_text='POP', enable_events=True, key="-POP (wfe)-"),
-                             ProgressBar(max_value=40, orientation='horizontal', size=(40, 8), border_width=2,
+                             ProgressBar(max_value=20, orientation='horizontal', size=(40, 8), border_width=2,
                                          key='progbar (wfe)', metadata=0, bar_color=('Yellow', 'Gray'))],
                             [Text('Save the POP output: ', size=(30, 1)),
                              Button(tooltip='Save the POP output', button_text='Save POP', enable_events=True,
@@ -1101,16 +1017,19 @@ class PaosGUI(SimpleGUI):
                             [Text('', size=(6, 2))],
                             [Text('Range to plot: ', size=(30, 1)),
                              InputText(tooltip='Select sim range to plot', default_text='0-1', key="RANGE (wfe)")],
-                            [Text('Plot surface: ', size=(30, 1)),
-                             InputCombo(tooltip='Surface number',
-                                        values=[f'S{k}' for k in range(1, self.nrows_ld + 1)],
-                                        default_value=f'S{self.nrows_ld}', key="S# (wfe)"),
+                            [Text('Select surface zoom: ', size=(30, 1)),
+                             InputText(tooltip='Surface zoom', default_text='1', key="Surface zoom (wfe)")],
+                            [Text('Select surface number: ', size=(30, 1)),
+                             InputCombo(tooltip='Surface number', values=self.ld_keys,
+                                        default_value=f'S{self.nrows_ld}', key="S# (wfe)")],
+                            [Text('Select plot scale: ', size=(30, 1)),
                              InputCombo(tooltip='Color scale', values=['linear scale', 'log scale'],
-                                        default_value='log scale', key="Ima scale (wfe)"),
+                                        default_value='log scale', key="Ima scale (wfe)")],
+                            [Text('Plot surface: ', size=(30, 1)),
                              Button(tooltip='Plot', button_text='Plot', enable_events=True,
                                     key="-PLOT (wfe)-")],
                             [Text('Figure prefix: ', size=(30, 1)),
-                             InputText(tooltip='Figure prefix', default_text='Wfe', key="Fig prefix (wfe)")],
+                             InputText(tooltip='Figure prefix', default_text='Plot', key="Fig prefix (wfe)")],
                             [Text('Save the Plots', size=(30, 1)),
                              Button(tooltip='Save the plots', button_text='Save Plot', enable_events=True,
                                     key="-SAVE FIG (wfe)-")]],
@@ -1175,7 +1094,7 @@ class PaosGUI(SimpleGUI):
                              element_padding=(1, 1), return_keyboard_events=True, finalize=True,
                              right_click_menu=self.right_click_menu_def, resizable=True,
                              font=self.font, enable_close_attempted_event=True,
-                             element_justification='center', keep_on_top=True)
+                             element_justification='center', keep_on_top=False)
 
         self.window['-CONF TAB GROUP-'].expand(True, True, True)
 
@@ -1203,15 +1122,12 @@ class PaosGUI(SimpleGUI):
 
         # ------ Instantiate local variables ------ #
         raytrace_log = ''
-        retval, retval_list, saving_groups = {}, [], []
-        figure, figure_list_nwl, figure_list_wfe = None, [], []
         fig_agg, fig_agg_nwl, fig_agg_wfe = None, None, None
         idx_nwl, idx_wfe = [], []
         save_to_ini_file = False
 
         # ------ Instantiate more local variables for dynamic interface ------ #
         aperture_tab_visible = False
-        input_frame_visible = False
         mc_wavelengths_frame_visible = False
         mc_wfe_frame_visible = False
         wfe_realizations_file = None
@@ -1221,7 +1137,9 @@ class PaosGUI(SimpleGUI):
         while True:  # Event Loop
 
             # ------- Read the current window ------#
-            self.event, self.values = self.window.read()
+            self.event, self.values = self.window.read(timeout=1000)
+            if self.event == TIMEOUT_KEY:
+                continue
             logger.debug(f'============ Event = {self.event} ==============')
 
             # ------- Save to temporary configuration file ------#
@@ -1246,11 +1164,11 @@ class PaosGUI(SimpleGUI):
                 if save_to_ini_file:
                     self.to_ini()
                 # Clear simulation outputs
-                del retval, figure
-                retval, figure = {}, None
-                retval_list.clear()
-                figure_list_nwl.clear()
-                figure_list_wfe.clear()
+                del self.retval, self.figure
+                self.retval, self.figure = {}, None
+                self.retval_list.clear()
+                self.figure_list_nwl.clear()
+                self.figure_list_wfe.clear()
                 for image_key in ['-IMAGE-', '-IMAGE (nwl)-', '-IMAGE (wfe)-']:
                     self.clear_image(self.window[image_key])
                 # Close the current window
@@ -1328,6 +1246,11 @@ class PaosGUI(SimpleGUI):
             elif self.event == '-ADD SURFACE-':
                 # Add the new optical surface and update surface count
                 self.nrows_ld = self.add_row('lenses')
+                self.ld_keys.append(f'S{self.nrows_ld}')
+                # Update 'select surface' InputCombo widget in the Launcher and Monte Carlo Tabs
+                self.window["S#"].update(self.ld_keys)
+                self.window["S# (nwl)"].update(self.ld_keys)
+                self.window["S# (wfe)"].update(self.ld_keys)
                 # Update the 'lenses' Column scrollbar
                 self.update_column_scrollbar(window=self.window, col_key='lenses')
 
@@ -1338,6 +1261,8 @@ class PaosGUI(SimpleGUI):
                 aperture_tab_key = f'LD_Tab_({row},{col})'
                 # Make the aperture tab visible/invisible
                 aperture_tab_visible = self.make_visible(self.event, aperture_tab_visible, aperture_tab_key)
+                # Update the 'Lens data' Column scrollbar
+                self.update_column_scrollbar(window=self.window, col_key='lenses')
 
             # ------- Assign/edit the surface type in the lens data editor ------#
             elif isinstance(self.event, str) and self.event.startswith('SurfaceType'):
@@ -1382,17 +1307,18 @@ class PaosGUI(SimpleGUI):
                         col = list(self.lens_data.keys()).index("Par2")
                         self.window[f'Par2_({row},{col})'].update(zernike['ordering'])
                 # Enable/Disable the wfe frame
-                self.disable_wfe = False if 'Zernike' in self.values.values() else True
-                self.window['-OPEN FRAME MC (wfe)-'].update(disabled=self.disable_wfe)
-                self.disable_wfe_color = 'gray' if self.disable_wfe else 'yellow'
-                self.window['-FRAME TITLE MC (wfe)-'].update(text_color=self.disable_wfe_color)
+                self.update_wfe_frame()
+
+            # ------- Enable/Disable the wfe frame ------#
+            elif isinstance(self.event, str) and self.event.startswith('Ignore'):
+                self.update_wfe_frame()
 
             # ------- Update 'Select wavelength' or 'Select field' Listbox widget in the Launcher tab ------#
             elif self.event in ['select wl', 'select field']:
                 # Reset previous outputs
-                del retval, figure
-                retval, figure = {}, None
-                retval_list.clear()
+                del self.retval, self.figure
+                self.retval, self.figure = {}, None
+                self.retval_list.clear()
                 # Reset figure canvas
                 self.clear_image(self.window['-IMAGE-'])
                 if self.event == 'select field':
@@ -1404,9 +1330,9 @@ class PaosGUI(SimpleGUI):
             # ------- Update 'Select field' Listbox widget in MC Wavelengths frame ------#
             elif self.event == 'select field (nwl)':
                 # Reset POP simulation output
-                retval_list.clear()
+                self.retval_list.clear()
                 # Reset figure
-                figure_list_nwl.clear()
+                self.figure_list_nwl.clear()
                 # Reset figure canvas
                 self.clear_image(self.window['-IMAGE (nwl)-'])
                 # Reset progress bar
@@ -1416,9 +1342,9 @@ class PaosGUI(SimpleGUI):
             # ------- Update 'Select wavelength' or 'Select field' Listbox widget in MC Wavefront error frame ------#
             elif self.event in ['select wl (wfe)', 'select field (wfe)']:
                 # Reset POP simulation output
-                retval_list.clear()
+                self.retval_list.clear()
                 # Reset figures
-                figure_list_wfe.clear()
+                self.figure_list_wfe.clear()
                 # Reset figure canvas
                 self.clear_image(self.window['-IMAGE (wfe)-'])
                 # Reset progress bar
@@ -1453,23 +1379,15 @@ class PaosGUI(SimpleGUI):
                 # Update the raytrace log Column
                 self.window['raytrace log'].update('\n'.join(raytrace_log))
                 # For later saving
-                saving_groups = [wavelength]
+                self.saving_groups = [wavelength]
 
             # ------- Run the POP ------#
             elif self.event == '-POP-':
+                print(self.values['select wl'])
                 if self.values[self.values['select wl'][0]] == '':
                     logger.debug(f'Invalid wavelength. Continuing..')
                     continue
-                # Clean up the GUI before running the POP
-                del retval, figure
-                retval, figure = {}, None
-                retval_list.clear()
-                figure_list_nwl.clear()
-                figure_list_wfe.clear()
-                for image_key in ['-IMAGE-', '-IMAGE (nwl)-', '-IMAGE (wfe)-']:
-                    self.clear_image(self.window[image_key])
-                plt.close('all')
-                _ = gc.collect()
+                self.reset_simulation()
                 # Get the wavelength and the field indexes from the respective Listbox widgets
                 n_wl, = self.window['select wl'].GetIndexes()
                 n_field, = self.window['select field'].GetIndexes()
@@ -1477,29 +1395,19 @@ class PaosGUI(SimpleGUI):
                 pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config(self.temporary_config)
                 wavelength, field, opt_chain = wavelengths[n_wl], fields[n_field], opt_chains[n_wl]
                 # Run the POP
-                retval = run(pup_diameter, 1.0e-6 * wavelength, parameters['grid_size'], parameters['zoom'],
-                             field, opt_chain)
+                self.retval = run(pup_diameter, 1.0e-6 * wavelength, parameters['grid_size'], parameters['zoom'],
+                                  field, opt_chain)
                 # For later saving
-                saving_groups = [wavelength]
-                retval_list = [retval]
+                self.saving_groups = [wavelength]
+                self.retval_list = [self.retval]
                 # For later plotting
                 pop = 'simple'
 
             # ------- Run the POP (nwl) ------#
             elif self.event == '-POP (nwl)-':
                 # Clean up the GUI before running the POP
-                del retval, figure
-                retval, figure = {}, None
-                retval_list.clear()
-                figure_list_nwl.clear()
-                figure_list_wfe.clear()
-                for image_key in ['-IMAGE-', '-IMAGE (nwl)-', '-IMAGE (wfe)-']:
-                    self.clear_image(self.window[image_key])
-                plt.close('all')
-                _ = gc.collect()
-                # Reset progress bars
-                progbar_nwl = self.reset_progress_bar(self.window['progbar (nwl)'])
-                _ = self.reset_progress_bar(self.window['progbar (wfe)'])
+                self.reset_simulation()
+                progbar_nwl = self.window['progbar (nwl)']
                 # Get the field index from the Listbox widget
                 n_field, = self.window['select field (nwl)'].GetIndexes()
                 # Get the number of parallel jobs
@@ -1513,7 +1421,7 @@ class PaosGUI(SimpleGUI):
                 for i in range(0, len(wavelengths), n_jobs):
                     wl_batch = wavelengths[i:i + n_jobs]
                     opt_batch = opt_chains[i:i + n_jobs]
-                    retval_list.append(Parallel(n_jobs=n_jobs)(
+                    self.retval_list.append(Parallel(n_jobs=n_jobs)(
                         delayed(run)(pup_diameter, 1.0e-6 * wavelength, parameters['grid_size'], parameters['zoom'],
                                      field, opt_chain)
                         for wavelength, opt_chain in tqdm(zip(wl_batch, opt_batch))))
@@ -1522,10 +1430,10 @@ class PaosGUI(SimpleGUI):
                     progbar_nwl.update_bar(progbar_nwl.metadata)
                 logger.info('Parallel POP completed in {:6.1f}s'.format(time.time() - start_time))
                 # For later saving
-                saving_groups = wavelengths
-                retval_list = list(itertools.chain.from_iterable(retval_list))
+                self.saving_groups = wavelengths
+                self.retval_list = list(itertools.chain.from_iterable(self.retval_list))
                 # For later plotting
-                self.window['RANGE (nwl)'].update(value='-'.join(['0', str(len(retval_list))]))
+                self.window['RANGE (nwl)'].update(value='-'.join(['0', str(len(self.retval_list))]))
                 pop = 'nwl'
 
             # ------- Select wfe table to import ------#
@@ -1538,18 +1446,8 @@ class PaosGUI(SimpleGUI):
             # ------- Run the POP (wfe) ------#
             elif self.event == '-POP (wfe)-':
                 # Clean up the GUI before running the POP
-                del retval, figure
-                retval, figure = {}, None
-                retval_list.clear()
-                figure_list_nwl.clear()
-                figure_list_wfe.clear()
-                for image_key in ['-IMAGE-', '-IMAGE (nwl)-', '-IMAGE (wfe)-']:
-                    self.clear_image(self.window[image_key])
-                plt.close('all')
-                _ = gc.collect()
-                # Reset progress bars
-                _ = self.reset_progress_bar(self.window['progbar (nwl)'])
-                progbar_wfe = self.reset_progress_bar(self.window['progbar (wfe)'])
+                self.reset_simulation()
+                progbar_wfe = self.window['progbar (wfe)']
                 # Get the Zernike surface index
                 surf = self.values['NSURF (wfe)']
                 if surf == '':
@@ -1566,7 +1464,15 @@ class PaosGUI(SimpleGUI):
                     continue
                 # Read the wfe table
                 wfe = ascii.read(wfe_realizations_file)
-                wave = float(''.join(['1.0e', self.values['ZUNIT (wfe)']]))
+                wave = 1.0
+                if self.values['ZUNIT (wfe)'] == 'meters':
+                    pass
+                elif self.values['ZUNIT (wfe)'] == 'millimeters':
+                    wave = 1.0e-3
+                elif self.values['ZUNIT (wfe)'] == 'micrometers':
+                    wave = 1.0e-6
+                elif self.values['ZUNIT (wfe)'] == 'nanometers':
+                    wave = 1.0e-9
                 # Get the number of wfe realizations
                 sims = len(wfe.columns) - 3
                 # Get the wavelength and the field indexes from the respective Listbox widgets
@@ -1588,7 +1494,7 @@ class PaosGUI(SimpleGUI):
                 logger.info('Start POP in parallel...')
                 for i in range(0, sims, n_jobs):
                     opt_batch = opt[i:i + n_jobs]
-                    retval_list.append(Parallel(n_jobs=n_jobs)(
+                    self.retval_list.append(Parallel(n_jobs=n_jobs)(
                         delayed(run)(pup_diameter, 1.0e-6 * wavelength, parameters['grid_size'], parameters['zoom'],
                                      field, o_chain)
                         for o_chain in tqdm(opt_batch)))
@@ -1597,10 +1503,10 @@ class PaosGUI(SimpleGUI):
                     progbar_wfe.update_bar(progbar_wfe.metadata)
                 logger.info('Parallel POP completed in {:6.1f}s'.format(time.time() - start_time))
                 # For later saving
-                saving_groups = list(range(sims))
-                retval_list = list(itertools.chain.from_iterable(retval_list))
+                self.saving_groups = list(range(sims))
+                self.retval_list = list(itertools.chain.from_iterable(self.retval_list))
                 # For later plotting
-                self.window['RANGE (wfe)'].update(value='-'.join(['0', str(len(retval_list))]))
+                self.window['RANGE (wfe)'].update(value='-'.join(['0', str(len(self.retval_list))]))
                 # For later plotting
                 pop = 'wfe'
 
@@ -1611,79 +1517,84 @@ class PaosGUI(SimpleGUI):
 
             # ------- Save the output of the POP ------#
             elif self.event == '-SAVE POP-':
-                if pop != 'simple' or not retval_list:
+                if pop != 'simple' or not self.retval_list:
                     logger.debug('Run POP first')
                     continue
                 # Save the POP output
-                self.to_hdf5(retval_list, saving_groups)
+                self.to_hdf5(self.retval_list, self.saving_groups)
 
             # ------- Save the output of the POP (nwl) ------#
             elif self.event == '-SAVE POP (nwl)-':
-                if pop != 'nwl' or not retval_list:
+                if pop != 'nwl' or not self.retval_list:
                     logger.debug('Run POP (nwl) first')
                     continue
                 # Save the POP output
-                self.to_hdf5(retval_list, saving_groups)
+                self.to_hdf5(self.retval_list, self.saving_groups)
 
             # ------- Save the output of the POP (wfe) ------#
             elif self.event == '-SAVE POP (wfe)-':
-                if pop != 'wfe' or not retval_list:
+                if pop != 'wfe' or not self.retval_list:
                     logger.debug('Run POP (wfe) first')
                     continue
                 # Save the POP output
-                self.to_hdf5(retval_list, saving_groups)
+                self.to_hdf5(self.retval_list, self.saving_groups)
 
             # ------- Plot at the given optical surface ------#
             elif self.event == '-PLOT-':
-                if pop != 'simple' or not retval_list:
+                if pop != 'simple' or not self.retval_list:
                     logger.debug('Run POP first')
                     continue
-                figure = self.draw_surface(
-                    retval_list=retval_list, groups=saving_groups, figure_agg=fig_agg,
-                    image_key='-IMAGE-', surface_key='S#', scale_key='Ima scale')
-                # Draw the figure canvas
-                fig_agg = self.draw_image(figure=figure, element=self.window['-IMAGE-'])
+                self.figure = self.draw_surface(
+                    retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg,
+                    image_key='-IMAGE-', surface_key='S#', scale_key='Ima scale',
+                    zoom=getfloat(self.values['Surface zoom']))
 
             elif self.event == '-PLOT (nwl)-':
-                if pop != 'nwl' or not retval_list:
+                if pop != 'nwl' or not self.retval_list:
                     logger.debug('Run POP (nwl) first')
                     continue
-                figure_list_nwl, idx_nwl = self.draw_surface(
-                    retval_list=retval_list, groups=saving_groups, figure_agg=fig_agg_nwl,
+                self.figure_list_nwl, idx_nwl = self.draw_surface(
+                    retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg_nwl,
                     image_key='-IMAGE (nwl)-', surface_key='S# (nwl)', scale_key='Ima scale (nwl)',
-                    range_key='RANGE (nwl)')
+                    range_key='RANGE (nwl)', zoom=getfloat(self.values['Surface zoom (nwl)']))
 
             elif self.event == '-PLOT (wfe)-':
-                if pop != 'wfe' or not retval_list:
+                if pop != 'wfe' or not self.retval_list:
                     logger.debug('Run POP (wfe) first')
                     continue
-                figure_list_wfe, idx_wfe = self.draw_surface(
-                    retval_list=retval_list, groups=saving_groups, figure_agg=fig_agg_wfe,
+                self.figure_list_wfe, idx_wfe = self.draw_surface(
+                    retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg_wfe,
                     image_key='-IMAGE (wfe)-', surface_key='S# (wfe)', scale_key='Ima scale (wfe)',
-                    range_key='RANGE (wfe)')
+                    range_key='RANGE (wfe)', zoom=getfloat(self.values['Surface zoom (wfe)']))
+
+            elif self.event == '-DISPLAY PLOT-':
+                # Draw the figure canvas
+                fig_agg = self.draw_image(figure=self.figure, element=self.window['-IMAGE-'])
+                # Update the 'LAUNCHER COL' Column scrollbar
+                self.update_column_scrollbar(window=self.window, col_key='LAUNCHER COL')
 
             # ------- Display the plot for a given wavelength (MC) ------#
             elif self.event in ['-DISPLAY PLOT (nwl)-', '-Slider (nwl)-']:
                 # Display the plot for a given wavelength
-                self.display_plot_slide(figure_list_nwl, fig_agg_nwl, '-IMAGE (nwl)-', '-Slider (nwl)-')
+                self.display_plot_slide(self.figure_list_nwl, fig_agg_nwl, '-IMAGE (nwl)-', '-Slider (nwl)-')
                 # Update the 'MC LAUNCHER COL' Column scrollbar
                 self.update_column_scrollbar(window=self.window, col_key='MC LAUNCHER COL')
 
             # ------- Display the plot for a given wfe realization (MC) ------#
             elif self.event in ['-DISPLAY PLOT (wfe)-', '-Slider (wfe)-']:
                 # Display the plot for a given wfe realization
-                self.display_plot_slide(figure_list_wfe, fig_agg_wfe, '-IMAGE (wfe)-', '-Slider (wfe)-')
+                self.display_plot_slide(self.figure_list_wfe, fig_agg_wfe, '-IMAGE (wfe)-', '-Slider (wfe)-')
                 # Update the 'MC LAUNCHER COL' Column scrollbar
                 self.update_column_scrollbar(window=self.window, col_key='MC LAUNCHER COL')
 
             # ------- Save the Plot ------#
             elif self.event == '-SAVE FIG-':
                 # Save figure
-                self.save_figure(figure=figure)
+                self.save_figure(figure=self.figure)
 
             # ------- Save the Plot (nwl) ------#
             elif self.event == '-SAVE FIG (nwl)-':
-                if not figure_list_nwl:
+                if not self.figure_list_nwl:
                     logger.debug('Create plot first')
                     continue
                 # Get the folder to save to
@@ -1691,7 +1602,7 @@ class PaosGUI(SimpleGUI):
                 if folder is None:
                     logger.debug('Pressed Cancel. Continuing...')
                     continue
-                for wl, figure in zip(np.array(saving_groups)[idx_nwl], np.array(figure_list_nwl)):
+                for wl, figure in zip(np.array(self.saving_groups)[idx_nwl], np.array(self.figure_list_nwl)):
                     filename = os.path.join(folder, f'{self.values["Fig prefix (nwl)"]}_{self.values["S# (nwl)"]}_'
                                                     f'{self.values["select field (nwl)"][0]}_wl{wl}micron.png')
                     # Save the plot to the specified .png or .jpg file
@@ -1699,7 +1610,7 @@ class PaosGUI(SimpleGUI):
 
             # ------- Save the Plot (wfe) ------#
             elif self.event == '-SAVE FIG (wfe)-':
-                if not figure_list_wfe:
+                if not self.figure_list_wfe:
                     logger.debug('Create plot first')
                     continue
                 # Get the folder to save to
@@ -1707,7 +1618,7 @@ class PaosGUI(SimpleGUI):
                 if folder is None:
                     logger.debug('Pressed Cancel. Continuing...')
                     continue
-                for n, figure in zip(np.array(saving_groups)[idx_wfe], np.array(figure_list_wfe)):
+                for n, figure in zip(np.array(self.saving_groups)[idx_wfe], np.array(self.figure_list_wfe)):
                     filename = os.path.join(folder, f'{self.values["Fig prefix (wfe)"]}_{self.values["S# (wfe)"]}_'
                                                     f'{self.values["select field (wfe)"][0]}_N{n}.png')
                     # Save the plot to the specified .png or .jpg file
@@ -1739,7 +1650,7 @@ class PaosGUI(SimpleGUI):
                 # Close the current window
                 self.close_window()
                 # Relaunch the GUI for the new configuration file
-                PaosGUI(passvalue=self.passvalue, theme=self.theme)()
+                PaosGUI(passvalue=self.passvalue)()
 
             # ------- Display a Save As popup window with text entry field and browse button ------#
             elif self.event == 'Save As':

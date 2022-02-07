@@ -38,7 +38,7 @@ def main():
         else:
             addLogFile()
 
-    PaosGUI(passvalue=passvalue, theme='Dark')()
+    PaosGUI(passvalue=passvalue)()
 
     logger.info('PAOS GUI exited')
     return

@@ -8,6 +8,22 @@ from .paos_config import logger
 
 
 def do_legend(axis, ncol=1):
+    """
+    Create a nice legend for the plots
+
+    Parameters
+    ----------
+    axis: '~matplotlib.pyplot.axis'
+        An instance of matplotlib axis
+    ncol: int
+        The number of legend columns
+
+    Returns
+    -------
+    out: None
+        Produces a nice matplotlib legend
+
+    """
     legend = axis.legend(loc='best', ncol=ncol, frameon=True, prop={'size': 12})
     legend.get_frame().set_facecolor('white')
     legend.get_frame().set_edgecolor('white')
@@ -33,8 +49,10 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
     ima_scale: str
         plot color map scale, can be either 'linear' or 'log'
     options: dict
-        dict containing the options to display the plot: axis scale, option to display physical units,
-        zoom scale and color scale. Examples:
+        dict containing the options to override the plotting default for one or more surfaces, specified by the
+        dictionary key. Available options are the surface scale, an option to display physical units, the surface
+        zoom(out) and the plot scale.
+        Examples:
         0) options={4: {'ima_scale':'linear'}}
         1) options={4: {'surface_scale':60, 'ima_scale':'linear'}}
         2) options={4: {'surface_scale':21, 'pixel_units':True, 'ima_scale':'linear'}}
@@ -258,7 +276,7 @@ def plot_pop(retval, ima_scale='log', ncols=2, figname=None, options=dict()):
     return
 
 
-def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard'):
+def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard', surface_zoom=1):
     """
     Given the POP simulation output dict, plots the cross-sections of the squared amplitude of the
     wavefront at the given optical surface.
@@ -276,6 +294,8 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard'):
     x_units: str
         units for x axis. Default is 'standard', to have units of mm or microns.
         Can also be 'wave', i.e. :math:`\\textrm{Displacement} / (F_{num} \\lambda)`.
+    surface_zoom: scalar
+        Surface zoom: more increases the axis limits
 
     Returns
     -------
@@ -295,7 +315,7 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard'):
     >>>               fields[0], opt_chain)
     >>> key = list(ret_val.keys())[-1]  # plot at last optical surface
     >>> fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(16, 8))
-    >>> plot_psf_xsec(fig=fig, axis=ax, key=key, item=ret_val[key], ima_scale='log', x_units='wave')
+    >>> plot_psf_xsec(fig=fig,axis=ax,key=key,item=ret_val[key],ima_scale='log',x_units='wave')
 
     """
 
@@ -384,8 +404,9 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard'):
 
         # plot vertical lines to mark the positions of the Airy dark rings and set the axis ticks
         x_ticks = np.array([-5.24, -4.24, -3.24, -2.23, -1.22, 1.22, 2.23, 3.24, 4.24, 5.24]) / airy_scale
-        axis.vlines(x_ticks, *axis.get_ylim(), colors='k', lw=2, alpha=0.5)
-        axis.set_xticks(list(x_ticks) + [0.0])
+        if surface_zoom <= 1.2:
+            axis.vlines(x_ticks, *axis.get_ylim(), colors='k', lw=2, alpha=0.5)
+            axis.set_xticks(list(x_ticks) + [0.0])
 
     # Plot ima X, Y, 45 deg and 135 deg cross-sections
     axis.plot(x_i, ima[Npt // 2, ...], 'r', label='X-cut')
@@ -403,7 +424,7 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard'):
     axis.get_xaxis().set_major_formatter(ticks.ScalarFormatter())
     axis.tick_params(labelrotation=45)
     axis.set_yscale(ima_scale)
-    axis.set_xlim(-plot_scale, plot_scale)
+    axis.set_xlim(-plot_scale * surface_zoom, plot_scale * surface_zoom)
 
     do_legend(axis=axis)
     axis.grid()

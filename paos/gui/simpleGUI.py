@@ -7,15 +7,17 @@ import sys
 from tkinter import Tk
 from typing import List
 
-from PySimpleGUI import Text, Column, Canvas, InputText, Frame, ProgressBar
+from PySimpleGUI import Checkbox, Text, InputText, InputCombo, Column, Canvas, Frame, ProgressBar
 from PySimpleGUI import Window
 from PySimpleGUI import clipboard_set
 from PySimpleGUI import pin
-from PySimpleGUI import popup_quick_message
+from PySimpleGUI import popup_get_file
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasAgg, FigureCanvasTkAgg
 import io
 
+from paos.paos_plotpop import simple_plot, plot_psf_xsec
+from paos import save_datacube
 from paos.paos_config import logger
 
 
@@ -27,9 +29,8 @@ class SimpleGUI:
     def __init__(self):
         """
         Initializes the GUI.
-        This includes instantiating the global variables, defining the GUI theme and symbols to use, defining a quick
-        message to display when opening the GUI that auto-closes itself and defining the GUI Menu (principal and
-        right-click)
+        This includes instantiating the global variables, defining the symbols to use
+        and defining the GUI Menu (principal and right-click)
         """
 
         # ------ Instantiate global variables ------ #
@@ -40,12 +41,6 @@ class SimpleGUI:
         self.font_subtitles = ("Helvetica", 18)
         self.font_small = ("Courier New", 10)
         self.font_underlined = ("Courier New underline", 16)
-
-        # ------ Quick Message Definition ------ #
-        w, h = Window.get_screen_size()
-        popup_quick_message('Hang on for a moment, this will take a bit to create...',
-                            auto_close=True, non_blocking=True, keep_on_top=True,
-                            auto_close_duration=2, location=(int(0.4 * w), int(0.1 * h)))
 
         # ------ Menu Definition ------ #
         self.menu_def = [['&File', ['&Open', '&Save', '&Save As', 'Global Settings', '&Exit']],
@@ -198,6 +193,89 @@ class SimpleGUI:
         return config
 
     @staticmethod
+    def to_hdf5(retval_list, groups, keys_to_keep=None):
+        """
+        Given the POP output dictionary list, the names for each simulation (saving groups) and the keys to store,
+        opens a popup to get the output file name and then dumps the simulation outputs to a hdf5 file.
+
+        Parameters
+        ----------
+        retval_list: List of dict
+            list of simulation output dictionaries
+        groups: List of strings
+            names to associate to each simulation in the output
+        keys_to_keep: List of strings
+            dictionary keys to store
+
+        Returns
+        -------
+        out: None
+            Dumps the simulation output to the indicated hdf5 file
+
+        """
+
+        if keys_to_keep is None:
+            keys_to_keep = ['amplitude', 'dx', 'dy', 'wl']
+
+        if not retval_list:
+            logger.debug('Run POP first')
+            return
+
+        # Get the file path to save to
+        filename = popup_get_file('Choose file (HDF5) to save to', save_as=True, keep_on_top=True)
+
+        if filename is None:
+            logger.debug('Pressed Cancel. Continuing...')
+            return
+
+        if not filename.endswith(('.HDF5', '.hdf5', '.H5', '.h5')):
+            logger.warning('Saving file format not provided. Defaulting to .h5')
+            filename = ''.join([filename, '.h5'])
+
+        # Save the POP output to the specified .hdf5 file
+        tags = list(map(str, groups))
+        save_datacube(retval_list, filename, tags, keys_to_keep=keys_to_keep, overwrite=True)
+        return
+
+    @staticmethod
+    def to_txt(text_list):
+        """
+        Given a list of strings, opens a popup to get the output file name and then dumps the text ordered in rows
+        to the output text file
+
+        Parameters
+        ----------
+        text_list: list of strings
+
+        Returns
+        -------
+        out: None
+            writes the input text list to a text file.
+            Used to save the output of the diagnostic raytrace
+
+        """
+
+        if text_list == '':
+            logger.debug('Perform raytrace first')
+            return
+
+        # Get the file path to save to
+        filename = popup_get_file('Choose file (TXT) to save to', save_as=True, keep_on_top=True)
+
+        if filename is None:
+            logger.debug('Pressed Cancel. Continuing...')
+            return
+
+        if not filename.endswith(('.TXT', '.txt')):
+            logger.warning('Saving file format not provided. Defaulting to .txt')
+            filename = ''.join([filename, '.txt'])
+
+        # Save the text list to the specified .txt file
+        with open(filename, "wt") as f:
+            f.write('\n'.join(text_list))
+        return
+
+    @staticmethod
     def draw_figure(figure, canvas):
         """
         CURRENTLY NOT USED
@@ -219,6 +297,43 @@ class SimpleGUI:
         figure_canvas_agg.draw()
         figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
         return figure_canvas_agg
+
+    @staticmethod
+    def plot_surface(key, retval, ima_scale, zoom=1):
+        """
+        Given the optical surface key, the POP output dictionary and the image scale, plots the squared amplitude
+        of the wavefront at the given surface (cross-sections and 2D plot)
+
+        Parameters
+        ----------
+        key: int
+            the key index associated to the optical surface
+        retval: dict
+            the POP output dictionary
+        ima_scale: str
+            the image scale. Can be either 'linear' or 'log'
+        zoom: scalar
+            the surface zoom factor: more increases the axis limits
+
+        Returns
+        -------
+        out: :class:`~matplotlib.figure.Figure`
+            the figure with the squared amplitude of the wavefront at the given surface
+
+        """
+
+        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+        # Xsec plot
+        plot_psf_xsec(fig=fig, axis=axs[0], key=key, item=retval[key], ima_scale=ima_scale, surface_zoom=zoom)
+        # 2D plot
+        simple_plot(fig=fig, axis=axs[1], key=key, item=retval[key], ima_scale=ima_scale,
+                    options={key: {'surface_zoom': zoom}})
+        fig.suptitle(axs[0].get_title(), fontsize=20)
+        axs[0].set_title('X-sec view')
+        axs[1].set_title('2D view')
+        fig.tight_layout()
+
+        return fig
 
     @staticmethod
     def draw_image(figure, element):
@@ -269,6 +384,47 @@ class SimpleGUI:
         logger.debug('Clearing image')
         element.update()
         element.update(visible=False)
+
+        return
+
+    @staticmethod
+    def save_figure(figure, filename=None):
+        """
+        Given a matplotlib figure and a file path (optional), saves the figure to the file path
+
+        Parameters
+        ----------
+        figure: :class:`~matplotlib.figure.Figure`
+            the matplotlib figure to save
+        filename: str
+            the saving file path
+
+        Returns
+        -------
+        out: None
+            Saves the matplotlib figure
+
+        """
+        if figure is None:
+            logger.debug('Create plot first')
+            return
+
+        if filename is None:
+            # Get the file path to save to
+            filename = popup_get_file('Choose file (PNG, JPG) to save to', save_as=True, keep_on_top=True)
+
+            if filename is None:
+                logger.debug('Pressed Cancel. Continuing...')
+                return
+
+            if not filename.endswith(('.PNG', '.png', '.JPG', '.jpg')):
+                logger.warning('Saving file format not provided. Defaulting to .png')
+                filename = ''.join([filename, '.png'])
+
+        # Save the plot to the specified .png or .jpg file
+        figure.savefig(filename, bbox_inches='tight', dpi=150)
+
+        logger.debug(f'Saved figure to {filename}')
 
         return
 
@@ -352,7 +508,7 @@ class SimpleGUI:
         return
 
     @staticmethod
-    def chain_widgets(row, input_list, prefix):
+    def chain_widgets(row, input_list, prefix, disabled_list=[]):
         """
         Given the row in the GUI editor, an input list and the key prefix, returns a list of widgets
 
@@ -364,6 +520,8 @@ class SimpleGUI:
             the item list to insert in the cell widgets
         prefix: str
             the key prefix
+        disabled_list: list[bool]
+            list with options to disable widgets
 
         Returns
         -------
@@ -373,9 +531,12 @@ class SimpleGUI:
         row_widget = [Text(row, size=(6, 1), key=f'row idx {row}')]
         keys = [f'{prefix}_({row},{i})' for i in range(len(input_list))]
 
+        if not disabled_list:
+            disabled_list = [False for _ in input_list]
+
         return list(itertools.chain(row_widget,
-                                    [InputText(default_text=value, key=key, size=(24, 2))
-                                     for value, key in zip(input_list, keys)]
+                                    [InputText(default_text=value, key=key, size=(24, 2), disabled=disabled)
+                                     for value, key, disabled in zip(input_list, keys, disabled_list)]
                                     ))
 
     def make_visible(self, event, visible, key):

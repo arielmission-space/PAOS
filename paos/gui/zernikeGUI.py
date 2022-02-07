@@ -5,7 +5,7 @@ import sys
 from PySimpleGUI import RELIEF_SUNKEN
 from PySimpleGUI import Submit
 from PySimpleGUI import Text, Button, Column, Frame
-from PySimpleGUI import Window, WINDOW_CLOSED, WINDOW_CLOSE_ATTEMPTED_EVENT
+from PySimpleGUI import Window, WINDOW_CLOSED, WINDOW_CLOSE_ATTEMPTED_EVENT, TIMEOUT_KEY
 from PySimpleGUI import popup
 
 from paos import Zernike
@@ -45,6 +45,7 @@ class ZernikeGUI(SimpleGUI):
         self.par = ['', '', '', '', '']
         self.names = ['Par1', 'Par2', 'Par3', 'Par4', 'Par5']
         self.headings = ['Zindex', 'Z', 'm', 'n']
+        self.disabled_cols = [True, False, True, True]
         self.max_rows = None
 
     def add_row(self, row, dictionary, ordering):
@@ -78,7 +79,8 @@ class ZernikeGUI(SimpleGUI):
 
         # Extend the Column layout
         self.window.extend_layout(self.window['zernike'],
-                                  [self.chain_widgets(row=row, input_list=input_list, prefix='z')])
+                                  [self.chain_widgets(row=row, input_list=input_list, prefix='z',
+                                                      disabled_list=self.disabled_cols)])
         # Update the GUI Zernike tab
         self.window['zernike'].update()
 
@@ -149,7 +151,8 @@ class ZernikeGUI(SimpleGUI):
                 [self.add_heading(self.headings)],
                 [self.chain_widgets(row=i + 1,
                                     input_list=[r, float(self.zernike['z'][i]), int(m[i]), int(n[i])],
-                                    prefix='z')
+                                    prefix='z',
+                                    disabled_list=self.disabled_cols)
                  for i, r in enumerate(self.zernike['zindex'])])),
                 scrollable=True, vertical_scroll_only=True, expand_y=True, key='zernike')],
             [Text('', size=(10, 2))],
@@ -178,7 +181,7 @@ class ZernikeGUI(SimpleGUI):
         self.window = Window('Zernike window', layout, default_element_size=(12, 1),
                              return_keyboard_events=True, finalize=True,
                              enable_close_attempted_event=True, resizable=True,
-                             element_justification='center', keep_on_top=True)
+                             element_justification='center', keep_on_top=False)
 
     def __call__(self):
         """
@@ -191,7 +194,9 @@ class ZernikeGUI(SimpleGUI):
         order_closed = False
 
         while True:
-            event, values = self.window.read()
+            event, values = self.window.read(timeout=1000)
+            if event == TIMEOUT_KEY:
+                continue
             logger.debug('============ Event = {} =============='.format(event))
             elem = self.window.find_element_with_focus()
             elem_key = elem.Key if (elem is not None and isinstance(elem.Key, (str, tuple))) else (0, 0)
