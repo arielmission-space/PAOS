@@ -10,15 +10,21 @@ To model the propagation of an electromagnetic field through an optical system, 
 
 These two methods yield different representations of the beam propagation and are used to different scopes.
 Ray-tracing is typically used during the design phase as it is fast, flexible and extremely useful to determine the
-basic properties of an optical system (magnification, aberrations, vignetting, etc.). However, rays propagate along
-straight lines without interfering with one another and thus are not suitable to predict the effects of diffraction.
-Conversely, POP models the propagation of wavefronts that coherently interfere with themselves, but it cannot determine
-aberration changes (which must be input separately).
+basic properties of an optical system (magnification, aberrations, vignetting, etc.).
+
+However, rays propagate along straight lines without interfering with one another and thus are not suitable to
+predict the effects of diffraction. Conversely, POP models the propagation of wavefronts that coherently interfere
+with themselves, but it cannot determine aberration changes (which must be input separately).
+
+Propagation codes
+---------------------
 
 Several optical propagation codes exist, that implement ray-tracing or POP or combine the two. Widely used examples
 include commercial ray-tracing programs like Code V :math:`^{©}` and Zemax OpticStudio :math:`^{©}` that also offer
-POP calculations. However, these programs are costly, require intense training and are not easily customizable to
-several needs (e.g. Monte Carlo simulations to test wavefront aberration control). Free, publicly available propagation
+POP calculations.
+
+However, these programs are costly, require intense training and are not easily customizable to several needs
+(e.g. Monte Carlo simulations to test wavefront aberration control). Free, publicly available propagation
 codes, with access to source code are rare. Notable examples include:
 
 * LightPipes

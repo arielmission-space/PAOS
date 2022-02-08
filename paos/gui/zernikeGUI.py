@@ -147,31 +147,39 @@ class ZernikeGUI(SimpleGUI):
                    key='-ZERNIKE MEMO FRAME-',
                    )],
             [Text('', size=(10, 2))],
-            [Column(layout=list(itertools.chain(
-                [self.add_heading(self.headings)],
-                [self.chain_widgets(row=i + 1,
-                                    input_list=[r, float(self.zernike['z'][i]), int(m[i]), int(n[i])],
-                                    prefix='z',
-                                    disabled_list=self.disabled_cols)
-                 for i, r in enumerate(self.zernike['zindex'])])),
-                scrollable=True, vertical_scroll_only=True, expand_y=True, key='zernike')],
-            [Text('', size=(10, 2))],
-            itertools.chain([
-                Frame('Zernike Actions', layout=[
-                    [Button(tooltip='Click to add a new row',
+            [Frame('Zernike Setup', layout=[
+                [Text('', size=(24, 1))],
+                [Column(layout=list(itertools.chain(
+                    [self.add_heading(self.headings)],
+                    [self.chain_widgets(row=i + 1,
+                                        input_list=[r, float(self.zernike['z'][i]), int(m[i]), int(n[i])],
+                                        prefix='z',
+                                        disabled_list=self.disabled_cols)
+                     for i, r in enumerate(self.zernike['zindex'])])),
+                    scrollable=True, vertical_scroll_only=True, expand_y=True, key='zernike')],
+                [Text('', size=(10, 2))],
+                [Frame('Zernike Actions', layout=[
+                    [Text('Add a new row: ', size=(24, 1)),
+                     Button(tooltip='Click to add a new row',
                             button_text='Add row',
                             enable_events=True,
-                            key="-ADD ZERNIKE ROW-"),
+                            key="-ADD ZERNIKE ROW-")],
+                    [Text('Add or complete a order: ', size=(24, 1)),
                      Button(
                          tooltip='Click to add a radial order',
-                         button_text='Add/Complete radial order',
+                         button_text='Add/Complete order',
                          enable_events=True,
-                         key="-ADD ZERNIKE RADIAL ORDER-")]],
-                      font=self.font_titles,
-                      relief=RELIEF_SUNKEN,
-                      key='-ZERNIKE ACTIONS FRAME-')]),
+                         key="-ADD ZERNIKE RADIAL ORDER-")],
+                    [Text('Paste Zernike coefficients: ', size=(24, 1)),
+                     Button(
+                         tooltip='Click to paste Zernike coefficients',
+                         button_text='Paste coefficients',
+                         enable_events=True,
+                         key="PASTE ZERNIKES")],
+                ],
+                       font=self.font_titles, relief=RELIEF_SUNKEN, key='-ZERNIKE ACTIONS FRAME-')]],
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='ZERNIKE FRAME', expand_y=True)],
             [
-                Button('Paste Zernike', tooltip='Click to paste Zernike coefficients', key='PASTE ZERNIKES'),
                 Submit(tooltip='Click to submit (debug)', key='-SUBMIT ZERNIKES-'),
                 Button('Exit', key='-EXIT ZERNIKES-')
             ]

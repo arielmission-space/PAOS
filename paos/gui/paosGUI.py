@@ -620,8 +620,8 @@ class PaosGUI(SimpleGUI):
             config.write(cf)
         return
 
-    def draw_surface(self, retval_list, groups, figure_agg, image_key, surface_key, scale_key, range_key=None,
-                     zoom=1):
+    def draw_surface(self, retval_list, groups, figure_agg, image_key, surface_key, scale_key,
+                     zoom_key='', range_key=None):
         """
         Given a list of simulation output dictionaries, the names to associate to each simulation, the Figure element
         to draw on and its key, the key for the surface to plot and the plot scale, plots at the given optical surface
@@ -641,6 +641,8 @@ class PaosGUI(SimpleGUI):
             key associated to the surface to plot
         scale_key: str
             plot scale. Can be either 'linear' or 'log'
+        zoom_key: str
+            key for the surface zoom factor
         range_key: str
             range of simulations to plot.
             Examples:
@@ -648,8 +650,6 @@ class PaosGUI(SimpleGUI):
             1) '0,10' means that the first ten simulations are plotted
             If the number of simulations to plot is greater than len(retval_list), plots all the simulations and
             nothing bad happens
-        zoom: scalar
-            the surface zoom factor: more increases the axis limits
 
         Returns
         -------
@@ -666,7 +666,7 @@ class PaosGUI(SimpleGUI):
         # Close all previous plots
         plt.close('all')
 
-        zoom = getfloat(zoom)
+        zoom = getfloat(self.values[zoom_key])
         if np.isnan(zoom):
             logger.warning('The input zoom value is not a scalar')
             zoom = 1
@@ -828,30 +828,40 @@ class PaosGUI(SimpleGUI):
         ]
         # Define fields layout
         fields_layout = [
-            [Column(layout=list(itertools.chain(
-                [self.add_heading(self.field_data.keys())],
-                [self.chain_widgets(r, ['', ''], prefix='f') for r in range(1, self.nrows_field + 1)])),
-                scrollable=True, vertical_scroll_only=True, expand_x=True, expand_y=True, key='fields')],
-            [Text(' ')],
-            [Frame('Fields Actions', layout=[
-                [Button(tooltip='Click to add field row', button_text='Add Field', enable_events=True,
-                        key="-ADD FIELD-")]
-            ],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='FIELDS ACTIONS FRAME')]
+            [Frame('Fields Setup', layout=[
+                [Text('', size=(24, 1))],
+                [Column(layout=list(itertools.chain(
+                    [self.add_heading(self.field_data.keys())],
+                    [self.chain_widgets(r, ['', ''], prefix='f') for r in range(1, self.nrows_field + 1)])),
+                    scrollable=True, vertical_scroll_only=True, expand_x=True, expand_y=True, key='fields')],
+                [Text(' ')],
+                [Frame('Fields Actions', layout=[
+                    [Text('Add a field: ', size=(24, 1)),
+                     Button(tooltip='Click to add field row', button_text='Add Field', enable_events=True,
+                            key="-ADD FIELD-")]
+                ],
+                       font=self.font_titles, relief=RELIEF_SUNKEN, key='FIELDS ACTIONS FRAME')]],
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='FIELDS FRAME', expand_x=True, expand_y=True,
+                   element_justification='top')],
         ]
         # Define lens data layout
         lens_data_layout = [
-            [Column(layout=list(itertools.chain(
-                [self.add_heading(self.lens_data.keys())],
-                [[Text('')]],
-                [self.chain_widgets(r, [item for key, item in self.lens_data.items()], prefix='l')
-                 for r in range(1, self.nrows_ld + 1)])),
-                scrollable=True, expand_x=True, expand_y=True, key='lenses')],
-            [Text(' ')],
-            [Frame('Lens Data Actions', layout=[
-                [Button(tooltip='Click to add surface row', button_text='Add Surface', enable_events=True,
-                        key="-ADD SURFACE-")]],
-                   font=self.font_titles, relief=RELIEF_SUNKEN, key='LENS DATA ACTIONS FRAME')]
+            [Frame('Lens Data Setup', layout=[
+                [Text('', size=(24, 1))],
+                [Column(layout=list(itertools.chain(
+                    [self.add_heading(self.lens_data.keys())],
+                    [[Text('')]],
+                    [self.chain_widgets(r, [item for key, item in self.lens_data.items()], prefix='l')
+                     for r in range(1, self.nrows_ld + 1)])),
+                    scrollable=True, expand_x=True, expand_y=True, key='lenses')],
+                [Text(' ')],
+                [Frame('Lens Data Actions', layout=[
+                    [Text('Add a surface: ', size=(24, 1)),
+                     Button(tooltip='Click to add surface row', button_text='Add Surface', enable_events=True,
+                            key="-ADD SURFACE-")]],
+                       font=self.font_titles, relief=RELIEF_SUNKEN, key='LENS DATA ACTIONS FRAME')]],
+                   font=self.font_titles, relief=RELIEF_SUNKEN, key='FIELDS FRAME', expand_x=True, expand_y=True,
+                   element_justification='top')],
         ]
         # Define launcher layout
         launcher_layout = [
@@ -1124,7 +1134,6 @@ class PaosGUI(SimpleGUI):
         raytrace_log = ''
         fig_agg, fig_agg_nwl, fig_agg_wfe = None, None, None
         idx_nwl, idx_wfe = [], []
-        save_to_ini_file = False
 
         # ------ Instantiate more local variables for dynamic interface ------ #
         aperture_tab_visible = False
@@ -1160,17 +1169,8 @@ class PaosGUI(SimpleGUI):
 
             # ------- Save (optional) and properly close the current window ------#
             if self.event in (WINDOW_CLOSED, WINDOW_CLOSE_ATTEMPTED_EVENT, 'Exit', '-EXIT-'):
-                # Save back to the configuration file
-                if save_to_ini_file:
-                    self.to_ini()
                 # Clear simulation outputs
-                del self.retval, self.figure
-                self.retval, self.figure = {}, None
-                self.retval_list.clear()
-                self.figure_list_nwl.clear()
-                self.figure_list_wfe.clear()
-                for image_key in ['-IMAGE-', '-IMAGE (nwl)-', '-IMAGE (wfe)-']:
-                    self.clear_image(self.window[image_key])
+                self.reset_simulation()
                 # Close the current window
                 self.close_window()
                 break
@@ -1546,8 +1546,7 @@ class PaosGUI(SimpleGUI):
                     continue
                 self.figure = self.draw_surface(
                     retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg,
-                    image_key='-IMAGE-', surface_key='S#', scale_key='Ima scale',
-                    zoom=getfloat(self.values['Surface zoom']))
+                    image_key='-IMAGE-', surface_key='S#', scale_key='Ima scale', zoom_key='Surface zoom')
 
             elif self.event == '-PLOT (nwl)-':
                 if pop != 'nwl' or not self.retval_list:
@@ -1556,7 +1555,7 @@ class PaosGUI(SimpleGUI):
                 self.figure_list_nwl, idx_nwl = self.draw_surface(
                     retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg_nwl,
                     image_key='-IMAGE (nwl)-', surface_key='S# (nwl)', scale_key='Ima scale (nwl)',
-                    range_key='RANGE (nwl)', zoom=getfloat(self.values['Surface zoom (nwl)']))
+                    zoom_key='Surface zoom (nwl)', range_key='RANGE (nwl)')
 
             elif self.event == '-PLOT (wfe)-':
                 if pop != 'wfe' or not self.retval_list:
@@ -1565,7 +1564,7 @@ class PaosGUI(SimpleGUI):
                 self.figure_list_wfe, idx_wfe = self.draw_surface(
                     retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg_wfe,
                     image_key='-IMAGE (wfe)-', surface_key='S# (wfe)', scale_key='Ima scale (wfe)',
-                    range_key='RANGE (wfe)', zoom=getfloat(self.values['Surface zoom (wfe)']))
+                    zoom_key='Surface zoom (wfe)', range_key='RANGE (wfe)')
 
             elif self.event == '-DISPLAY PLOT-':
                 # Draw the figure canvas
@@ -1634,11 +1633,6 @@ class PaosGUI(SimpleGUI):
             elif self.event == '-TO CLIPBOARD-':
                 self.copy_to_clipboard(dictionary=self.save_to_dict(show=False))
 
-            # ------- Save to configuration file ------#
-            elif self.event in ['Save', '-SAVE-']:
-                # Update the Save switch
-                save_to_ini_file = True
-
             # ------- Display a Open File popup window with text entry field and browse button ------#
             elif self.event == 'Open':
                 # Get the new configuration file path
@@ -1653,7 +1647,7 @@ class PaosGUI(SimpleGUI):
                 PaosGUI(passvalue=self.passvalue)()
 
             # ------- Display a Save As popup window with text entry field and browse button ------#
-            elif self.event == 'Save As':
+            elif self.event in ['Save', '-SAVE-', 'Save As']:
                 # Get the file path to save to
                 filename = popup_get_file('Choose file (INI) to save to', save_as=True, keep_on_top=True)
                 if filename is None:

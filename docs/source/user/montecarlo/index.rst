@@ -62,7 +62,7 @@ Structural, Thermal and Optical Performance (STOP) analysis.
 `PAOS` was used to simulate the wavefront propagation through the OGSE module at :math:`500 nm`, where
 diffraction effects are smallest. To simulate the OGSE beam, the `Ariel` primary mirror M1 was illuminated with a perfect
 beam with footprint :math:`1/4` the M1 diameter and the OGSE beam expander was modeled as a lens doublet giving an
-expansion :math:`4`.
+expansion of :math:`4`.
 
 Below, we report the histogram of aperture sizes that give an EE :math:`\sim 90 \%` at the OGSE exit pupil. The
 difference between these aperture sizes and the TA rEE requirement informs on how aberrated the OGSE beam can be.

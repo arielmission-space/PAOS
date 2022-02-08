@@ -17,25 +17,23 @@
 
 # -- Project information -----------------------------------------------------
 from datetime import date
-
-project = 'PAOS'
-author = 'Andrea Bocchieri, Enzo Pascale'
-copyright = '2020-{:d}, {}'.format(date.today().year, author)
-
-# The full version, including alpha/beta/rc tags
 import os
 import sys
 
+# The full version, including alpha/beta/rc tags
 # sys.path.insert(0, os.path.abspath('../../'))
 current_dir = os.path.dirname(__file__)
 target_dir = os.path.abspath(os.path.join(current_dir, "../../"))
 sys.path.insert(0, target_dir)
 print('-------------', target_dir)
 
-from paos.__version__ import __version__
+from paos import __version__, __author__, __pkg_name__
 
 # __version__ = Version()
 release = version = str(__version__)
+
+project = __pkg_name__.upper()
+copyright = '2020-{:d}, {}'.format(date.today().year, __author__)
 
 # -- General configuration ---------------------------------------------------
 
@@ -53,7 +51,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx.ext.autosummary',
               'sphinx.ext.githubpages',
-              'nbsphinx',
+              # 'nbsphinx',
               'jupyter_sphinx',
               'matplotlib.sphinxext.plot_directive',
               'sphinx_rtd_theme',
@@ -90,7 +88,7 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/dev', None),
     'numpy': ('https://numpy.org/devdocs', None),
     'matplotlib': ('https://matplotlib.org', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+    'scipy': ('https://scipy.github.io/devdocs/', None),
     'astropy': ('https://docs.astropy.org/en/latest/', None),
     'h5py': ('https://docs.h5py.org/en/latest/', None)
 }

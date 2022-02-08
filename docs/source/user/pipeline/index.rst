@@ -38,6 +38,6 @@ and the spectral resolution. `PAOS` will then automatically create a wavelength 
                             # or 'wl_grid': '3.9,7.8,5'
                             'plot': True,
                             'loglevel': 'info',
-                            'n_jobs': 2,
+                            'n_jobs': 1,
                             'store_keys': 'amplitude,dx,dy,wl',
                             'return': False})

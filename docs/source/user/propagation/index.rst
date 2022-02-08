@@ -231,6 +231,55 @@ gives the following transformation:
     \frac{1}{q_2} = \frac{C + D/q_1}{A + B/q_1}
     :label:
 
+
+Example
+~~~~~~~~~~~~~
+
+Code example to use :class:`~paos.paos_wfo.WFO` to estimate Gaussian beam properties for a given beam with diameter
+:math:`d = 1.0` m, before and after inserting a Paraxial lens with focal length :math:`f = 1.0` m, and after
+propagating to the lens focus.
+
+.. jupyter-execute::
+        :stderr:
+
+        from paos.paos_wfo import WFO
+
+        beam_diameter = 1.0  # m
+        wavelength = 3.0e-6
+        grid_size = 512
+        zoom = 4
+
+        wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
+
+        print('Pilot Gaussian beam properties\n')
+
+        print('Before lens\n')
+        print(f'Beam waist: {wfo.w0:.1e}')
+        print(f'Beam waist at current beam position: {wfo.wz:.1f}')
+        print(f'z-coordinate of the beam waist: {wfo.zw0:.1f}')
+        print(f'Rayleigh distance: {wfo.zr:.1e}')
+        print(f'Focal ratio: {wfo.fratio}')
+
+        fl = 1.0  # m
+        wfo.lens(lens_fl=fl)
+
+        print('\nAfter lens\n')
+        print(f'Beam waist: {wfo.w0:.1e}')
+        print(f'Beam waist at current beam position: {wfo.wz:.1f}')
+        print(f'z-coordinate of the beam waist: {wfo.zw0:.1f}')
+        print(f'Rayleigh distance: {wfo.zr:.1e}')
+        print(f'Focal ratio: {wfo.fratio:.1f}')
+
+        wfo.propagate(dz=fl)
+
+        print('\nAfter propagation to lens focus\n')
+        print(f'Beam waist: {wfo.w0:.1e}')
+        print(f'Beam waist at current beam position: {wfo.wz:.1e}')
+        print(f'z-coordinate of the beam waist: {wfo.zw0:.1f}')
+        print(f'Rayleigh distance: {wfo.zr:.1e}')
+        print(f'Focal ratio: {wfo.fratio:.1f}')
+
+
 Gaussian beam magnification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -285,10 +334,15 @@ Code example to use :class:`~paos.paos_wfo.WFO` to simulate a magnification of t
         zoom = 4
 
         wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
+
+        print('Before magnification\n')
+        print(f'Beam waist: {wfo.w0}')
+
         Ms, Mt = 1.0, 3.0
         wfo.Magnification(Ms, Mt)
 
-        print(wfo.wz)
+        print('\nAfter magnification\n')
+        print(f'Beam waist: {wfo.w0}')
 
 As a result, the semi-diameter of the beam increases three-fold.
 
@@ -328,7 +382,8 @@ Moreover, since :math:`\lambda_{2} = \lambda_{1} n_2/n_1`, it follows that
 Example
 ~~~~~~~~~~~~~
 
-Code example to use :class:`~paos.paos_wfo.WFO` to simulate a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.5`.
+Code example to use :class:`~paos.paos_wfo.WFO` to simulate a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.5`,
+to point out the change in distance to focus.
 
 .. jupyter-execute::
         :stderr:
@@ -341,13 +396,17 @@ Code example to use :class:`~paos.paos_wfo.WFO` to simulate a change of medium f
         zoom = 4
 
         wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
-        zr1 = wfo.zr
+        fl = 1.0  # m
+        wfo.lens(lens_fl=fl)
+
+        print('Before medium change\n')
+        print(f'Distance to focus: {wfo.distancetofocus:.1f}')
 
         n1, n2 = 1.0, 1.5
         wfo.ChangeMedium(n1n2=n1/n2)
-        zr2 = wfo.zr
 
-        print(zr2/zr1)
+        print('\nAfter medium change\n')
+        print(f'Distance to focus: {wfo.distancetofocus:.1f}')
 
 .. _Wavefront propagation:
 
@@ -424,11 +483,11 @@ Code example to use :class:`~paos.paos_wfo.WFO` to propagate the beam over a thi
         from paos.paos_wfo import WFO
 
         wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
-        print(f'Initial beam position, beam semi diameter: {wfo.z, wfo.wz}')
+        print(f'Initial beam position: {wfo.z}')
 
         thickness = 10.0e-3  # m
         wfo.propagate(dz = thickness)
-        print(f'Final beam position, beam semi diameter: ({wfo.z}, {wfo.wz:.6f})')
+        print(f'Final beam position: {wfo.z}')
 
 The current beam position along the z-axis is now updated.
 
@@ -649,9 +708,13 @@ Code example to use :class:`~paos.paos_wfo.WFO` to simulate an aperture stop.
         from paos.paos_wfo import WFO
 
         wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
+
+        print('Before stop\n')
         print(f'Total throughput: {np.sum(wfo.amplitude**2)}')
 
         wfo.make_stop()
+
+        print('\nAfter stop\n')
         print(f'Total throughput: {np.sum(wfo.amplitude**2)}')
 
 

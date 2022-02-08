@@ -8,6 +8,9 @@ Validation
 a library of optical propagation procedures and functions for the IDL (Interactive Data Language), Python,
 and Matlab environments.
 
+HST optical chain
+------------------
+
 The validation has been carried out using the Hubble Space Telescope (HST) optical chain as described in one of PROPER
 example prescriptions. The corresponding configuration file is provided in the `PAOS` package for reproducibility.
 
@@ -30,15 +33,13 @@ Below, we show the plots for the squared amplitude of the wavefront at all surfa
 
    `PAOS HST propagation`
 
+Comparing the outputs
+-----------------------
+
 For the validation, we compared the amplitude (:numref:`Amplitude_comparison`), phase (:numref:`Phase_comparison`) and
 PSF (:numref:`PSF_comparison`) at the HST focus as obtained by `PROPER` and `PAOS`, along with their differences.
 The comparison shows excellent agreement, and small discrepancies (PSF: :math:`< 10 ^{-10}`) between the two codes are
 mostly due to aliasing from the aperture masks.
-
-.. note::
-    The phase convention used in the two codes differs by a sign, therefore in the comparison the `PAOS` phase is
-    multiplied by :math:`-1`. Moreover, the maximum value of the difference is due to individual aliased pixels far from the
-    beam axis.
 
 .. _Amplitude_comparison:
 .. figure:: Amplitude_comparison.png
@@ -53,6 +54,11 @@ mostly due to aliasing from the aperture masks.
    :align: center
 
    `Phase comparison`
+
+.. note::
+    The phase convention used in the two codes differs by a sign, therefore in the comparison the `PAOS` phase is
+    multiplied by :math:`-1`. Moreover, the maximum value of the difference is due to individual aliased pixels far from the
+    beam axis.
 
 .. _Psf_comparison:
 .. figure:: Psf_comparison.png

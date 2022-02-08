@@ -11,6 +11,7 @@ Welcome to PAOS's documentation!
     Introduction <intro>
     Installation <installation>
     User Guide <user/index>
+    Developer Guide <developer/index>
     Validation <validation/index>
     Ariel <ariel/index>
     API Guide <api/modules>

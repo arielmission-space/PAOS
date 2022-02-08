@@ -4,7 +4,7 @@ from datetime import date
 from .__version__ import __version__
 
 __pkg_name__ = 'paos'
-__author__ = "Andrea Bocchieri, Enzo Pascale"
+__author__ = "Andrea Bocchieri, Enzo Pascale, Lorenzo V. Mugnai"
 __description__ = "The Physical Ariel Optics Simulator"
 __url__ = "https://github.com/arielmission-space/PAOS"
 __license__ = "BSD-3-Clause"
