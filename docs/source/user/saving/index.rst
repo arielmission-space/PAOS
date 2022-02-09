@@ -62,22 +62,13 @@ Code example to use :func:`~paos.paos_saveoutput.save_output` to save the POP si
 The user can select to save only the relevant dictionary keys, here 'wfo' (the complex wavefront array), 'dx' (the
 sampling along the horizontal axis), 'dy' (the sampling along the vertical axis).
 
-.. jupyter-execute::
-        :hide-code:
-        :stderr:
-        :hide-output:
-
-        from paos.paos_parseconfig import parse_config
-        from paos.paos_run import run
-
-        pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('../lens data/Ariel_AIRS-CH1.ini')
-        ret_val = run(pup_diameter, 1.0e-6 * wavelengths[0], parameters['grid_size'], parameters['zoom'], fields[0], opt_chains[0])
-
-.. jupyter-execute::
-        :stderr:
+.. code-block:: python
 
         from paos.paos_saveoutput import save_output
-        save_output(ret_val, '../output/test.h5', keys_to_keep=['wfo', 'dx', 'dy'], overwrite=True)
+        save_output(ret_val,
+                    file_name='path/to/hdf5',
+                    keys_to_keep=['wfo', 'dx', 'dy'],
+                    overwrite=True)
 
 Save datacube
 -----------------
@@ -106,30 +97,12 @@ simulations done at different wavelengths.
 The user can select to save only the relevant dictionary keys, here 'amplitude' (the wavefront amplitude), 'dx' (the
 sampling along the horizontal axis), 'dy' (the sampling along the vertical axis).
 
-.. jupyter-execute::
-        :hide-code:
-        :stderr:
-        :hide-output:
-
-        from joblib import Parallel, delayed
-        from tqdm import tqdm
-
-        ret_val_list = Parallel(n_jobs=2)(delayed(run)(pup_diameter, 1.0e-6 * wavelength, parameters['grid_size'],
-                       parameters['zoom'], fields[0], opt_chain) for wavelength, opt_chain in tqdm(zip(wavelengths, opt_chains)))
-
-.. jupyter-execute::
-        :stderr:
-
-        print(f'Saving wavelengths: {wavelengths}')
-        group_names = list(map(str, wavelengths))
-
-.. jupyter-execute::
-        :stderr:
+.. code-block:: python
 
         from paos.paos_saveoutput import save_datacube
 
         save_datacube(retval_list=ret_val_list,
-              file_name='../output/test.h5',
-              group_names=group_names,
-              keys_to_keep=['amplitude', 'dx', 'dy'],
-              overwrite=True)
+                      file_name='path/to/hdf5',
+                      group_names=['2.5', '3.0'],
+                      keys_to_keep=['amplitude', 'dx', 'dy'],
+                      overwrite=True)

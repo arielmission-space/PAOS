@@ -3,7 +3,7 @@
 Monte Carlo simulations
 ========================
 
-`PAOS` is designed to easily accomodate customized simulations such as Monte Carlo runs to test the performance of
+`PAOS` is designed to easily accommodate customized simulations such as Monte Carlo runs to test the performance of
 an optical system with varying parameters. This is particularly useful as it overcomes one major drawback from
 using commercial propagation software such as Zemax OpticStudio, which requires preliminary knowledge of
 Zemax Programming Language (ZPL). Instead, `PAOS` can be used `out of the box` as a standard Python

@@ -62,8 +62,8 @@ the projections of the physical apertures/obscurations, which is used to perform
 optical system like the Ariel Telescope without incurring in phase aberrations that are large enough to cause
 aliasing in the computational grid.
 
-`PAOS` automizes the choice of algorithm to propagate the wavefront in near-field and far-field condition by using the
-properties of the pilot beam, an analitically-traced on-axis Gaussian beam (see :ref:`Gaussian beams`).
+`PAOS` automatizes the choice of algorithm to propagate the wavefront in near-field and far-field condition by using the
+properties of the pilot beam, an analytically-traced on-axis Gaussian beam (see :ref:`Gaussian beams`).
 `PAOS` also supports the propagation through refractive media (see later in :ref:`Materials description`) and is
 designed to facilitate Monte Carlo simulations for e.g. performance estimation for an ensemble of wavefront error
 realizations, compatible with an optical performance requirement (see later in :ref:`Monte Carlo simulations`).

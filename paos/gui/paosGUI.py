@@ -1383,7 +1383,6 @@ class PaosGUI(SimpleGUI):
 
             # ------- Run the POP ------#
             elif self.event == '-POP-':
-                print(self.values['select wl'])
                 if self.values[self.values['select wl'][0]] == '':
                     logger.debug(f'Invalid wavelength. Continuing..')
                     continue

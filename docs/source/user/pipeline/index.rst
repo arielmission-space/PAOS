@@ -27,17 +27,16 @@ Code example to the method :func:`~paos.paos_pipeline.pipeline` to run a simulat
 Using the option 'wl_grid' instead of 'wavelengths', the user can define the minimum wavelength, the maximum wavelength
 and the spectral resolution. `PAOS` will then automatically create a wavelength grid to perform the POP.
 
-.. jupyter-execute::
-        :stderr:
+.. code-block:: python
 
         from paos.paos_pipeline import pipeline
 
-        pipeline(passvalue={'conf':'../lens data/Ariel_AIRS-CH1.ini',
-                            'output': '../output/test.h5',
+        pipeline(passvalue={'conf':'path/to/ini/file',
+                            'output': 'path/to/hdf5',
                             'wavelengths': '3.9,7.8',
                             # or 'wl_grid': '3.9,7.8,5'
                             'plot': True,
                             'loglevel': 'info',
-                            'n_jobs': 1,
+                            'n_jobs': 2,
                             'store_keys': 'amplitude,dx,dy,wl',
                             'return': False})

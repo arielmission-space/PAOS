@@ -352,7 +352,6 @@ on a light ray.
 .. jupyter-execute::
 
         from paos.paos_abcd import ABCD
-        from paos.paos_abcd import ABCD
         abcd = ABCD(M=2.0)
         print(abcd.ABCD)
 

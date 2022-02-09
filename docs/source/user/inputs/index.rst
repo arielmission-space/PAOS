@@ -13,7 +13,7 @@ Its two pillars are
     A GUI to dynamically modify the configuration file and launch instant POP simulations
 
 This structure allows the user to write configuration files from scratch or edit existing ones in a dynamic way, and
-to launch automized POP simulations that reflect the edits without requiring advanced programming skills.
+to launch automatized POP simulations that reflect the edits without requiring advanced programming skills.
 
 From a broad perspective, this input system has two advantages:
 

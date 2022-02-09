@@ -98,7 +98,7 @@ of a sequence of Zernike polynomials as
     W(\rho, \theta) = \sum_{n, m} C_{n}^{m} Z_{n}^{m} (\rho, \theta)
     :label: Zernike_series
 
-where :math:`C_{n}^{m}` and coefficient of the Zernike polynomial :math:`Z_{n}^{m} (\rho, \theta)`.
+where :math:`C_{n}^{m}` are the coefficient of the Zernike polynomial :math:`Z_{n}^{m} (\rho, \theta)`.
 
 The first three terms in :eq:`Zernike_series` describe Piston and Tilt aberrations and can be neglected.
 Non-normalised Zernike polynomials are defined in `PAOS` as:
