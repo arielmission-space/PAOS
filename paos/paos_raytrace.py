@@ -1,6 +1,6 @@
 import numpy as np
 from .paos_coordinatebreak import coordinate_break
-from .paos_config import logger
+from paos import logger
 
 
 def raytrace(field, opt_chain, x=0.0, y=0.0):

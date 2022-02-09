@@ -18,7 +18,7 @@ import io
 
 from paos.paos_plotpop import simple_plot, plot_psf_xsec
 from paos import save_datacube
-from paos.paos_config import logger
+from paos import logger
 
 
 class SimpleGUI:

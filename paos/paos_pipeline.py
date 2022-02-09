@@ -2,7 +2,7 @@ import os
 import numpy as np
 import logging
 from .log import setLogLevel
-from paos.paos_config import logger
+from paos import logger
 
 from paos.paos_parseconfig import parse_config
 from paos.paos_raytrace import raytrace

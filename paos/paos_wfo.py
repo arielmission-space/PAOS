@@ -1,7 +1,7 @@
 import numpy as np
 import photutils
 from .paos_zernike import Zernike
-from .paos_config import logger
+from paos import logger
 
 
 class WFO(object):

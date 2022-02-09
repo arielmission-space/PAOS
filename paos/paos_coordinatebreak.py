@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.spatial.transform import Rotation as R
-from .paos_config import logger
+from paos import logger
 
 
 def coordinate_break(vt, vs, xdec, ydec, xrot, yrot, zrot, order=0):

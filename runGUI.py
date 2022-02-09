@@ -2,10 +2,10 @@ import os
 import logging
 import argparse
 
-from paos.paos_config import __version__ as version
 from paos.gui.paosGUI import PaosGUI
+from paos import __version__ as version
+from paos import logger
 from paos.log import addLogFile, setLogLevel
-from paos.paos_config import logger
 
 
 def main():

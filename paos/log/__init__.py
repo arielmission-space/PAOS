@@ -33,7 +33,7 @@
 
 
 import logging
-from ..paos_config import __pkg_name__
+from paos import __pkg_name__
 
 last_log = logging.INFO
 

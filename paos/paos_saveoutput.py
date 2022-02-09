@@ -2,10 +2,9 @@ import datetime
 import h5py
 import os
 from copy import deepcopy as dc
-
 import numpy as np
 
-from .paos_config import __author__, __version__, logger
+from paos import __author__, __version__, logger
 
 
 def remove_keys(dictionary, keys):

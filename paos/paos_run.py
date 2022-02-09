@@ -5,7 +5,7 @@ import gc
 from .paos_wfo import WFO
 from .paos_abcd import ABCD
 from .paos_coordinatebreak import coordinate_break
-from .paos_config import logger
+from paos import logger
 
 
 def push_results(wfo):

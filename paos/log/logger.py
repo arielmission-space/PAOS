@@ -66,7 +66,7 @@
 
 import logging
 from decorator import decorator
-from ..paos_config import __pkg_name__
+from paos import __pkg_name__
 
 __all__ = ['Logger']
 

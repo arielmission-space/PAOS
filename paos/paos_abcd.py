@@ -1,5 +1,5 @@
 import numpy as np
-from .paos_config import logger
+from paos import logger
 
 
 class ABCD(object):

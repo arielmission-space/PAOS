@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from paos.paos_config import logger
+from paos import logger
 from paos.paos_plotpop import do_legend
 
 

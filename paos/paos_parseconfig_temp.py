@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from .paos_abcd import ABCD
 from .util.material import Material
-from .paos_config import logger
+from paos import logger
 
 
 def read_config(filename):

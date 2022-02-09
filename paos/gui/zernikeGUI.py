@@ -10,7 +10,7 @@ from PySimpleGUI import popup
 
 from paos import Zernike
 from paos.gui.simpleGUI import SimpleGUI
-from paos.paos_config import logger
+from paos import logger
 
 
 class ZernikeGUI(SimpleGUI):

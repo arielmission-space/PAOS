@@ -3,7 +3,7 @@ import logging
 import paos.__version__ as version
 from paos.log import addLogFile, setLogLevel
 from paos.paos_pipeline import pipeline
-from paos.paos_config import logger
+from paos import logger
 
 
 def main():

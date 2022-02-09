@@ -29,8 +29,7 @@ from paos.paos_parseconfig import getfloat
 from paos.gui.simpleGUI import SimpleGUI
 from paos.gui.zernikeGUI import ZernikeGUI
 from paos.log import setLogLevel
-from paos.paos_config import __pkg_name__, __author__, __url__, __version__
-from paos.paos_config import base_dir, logger
+from paos import __pkg_name__, __author__, __url__, __version__, base_dir, logger
 
 
 class PaosGUI(SimpleGUI):

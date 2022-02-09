@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Ellipse, Circle, Rectangle
 from matplotlib import ticker as ticks
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from .paos_config import logger
+from paos import logger
 
 
 def do_legend(axis, ncol=1):

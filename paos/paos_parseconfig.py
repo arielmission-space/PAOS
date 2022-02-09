@@ -6,7 +6,7 @@ from typing import List
 
 from .paos_abcd import ABCD
 from .util.material import Material
-from .paos_config import logger
+from paos import logger
 
 
 def getfloat(value):
