@@ -60,4 +60,4 @@ import matplotlib.pyplot as plt
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rc('lines', linewidth=1.5)
 plt.rc('axes', axisbelow=True, titleweight='bold', labelcolor='dimgray', labelweight='bold')
-plt.rc('font', size=16)
+plt.rc('font', size=14)
