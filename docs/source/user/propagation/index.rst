@@ -5,7 +5,7 @@ POP description
 
 Brief description of some concepts of physical optics wavefront propagation (POP) and how they are implemented in `PAOS`.
 
-In `PAOS`, this is handled by the class :class:`~paos.paos_wfo.WFO`.
+In `PAOS`, this is handled by the class :class:`~paos.classes.wfo.WFO`.
 
 
 General diffraction
@@ -82,7 +82,7 @@ that can be solved as
 Example
 ~~~~~~~~~~~~~
 
-Code example to use :func:`~paos.paos_coordinatebreak.coordinate_break` to simulate a coordinate break where the input
+Code example to use :func:`~paos.core.coordinateBreak.coordinate_break` to simulate a coordinate break where the input
 field is centered on the origin and has null angles :math:`u_{s}` and :math:`u_{t}` and is subsequently decentered on
 the Y axis by :math:`y_{dec} = 10.0 \ \textrm{mm}` and rotated around the X axis by :math:`x_{rot} = 0.1 ^{\circ}`.
 
@@ -101,7 +101,7 @@ the Y axis by :math:`y_{dec} = 10.0 \ \textrm{mm}` and rotated around the X axis
 .. jupyter-execute::
 
         import numpy as np
-        from paos.paos_coordinatebreak import coordinate_break
+        from paos.core.coordinateBreak import coordinate_break
 
         field = {'us': 0.0, 'ut': 0.0}
         vt = np.array([0.0, field['ut']])
@@ -235,14 +235,14 @@ gives the following transformation:
 Example
 ~~~~~~~~~~~~~
 
-Code example to use :class:`~paos.paos_wfo.WFO` to estimate Gaussian beam properties for a given beam with diameter
+Code example to use :class:`~paos.classes.wfo.WFO` to estimate Gaussian beam properties for a given beam with diameter
 :math:`d = 1.0` m, before and after inserting a Paraxial lens with focal length :math:`f = 1.0` m, and after
 propagating to the lens focus.
 
 .. jupyter-execute::
         :stderr:
 
-        from paos.paos_wfo import WFO
+        from paos.classes.wfo import WFO
 
         beam_diameter = 1.0  # m
         wavelength = 3.0e-6
@@ -320,13 +320,13 @@ for the Rayleigh distance, the Gaussian beam waist and the distance to focus.
 Example
 ~~~~~~~~~~~~~
 
-Code example to use :class:`~paos.paos_wfo.WFO` to simulate a magnification of the beam for the tangential direction
+Code example to use :class:`~paos.classes.wfo.WFO` to simulate a magnification of the beam for the tangential direction
 :math:`M_t = 3.0`, while keeping the sagittal direction unchanged (:math:`M_s = 1.0`).
 
 .. jupyter-execute::
         :stderr:
 
-        from paos.paos_wfo import WFO
+        from paos.classes.wfo import WFO
 
         beam_diameter = 1.0  # m
         wavelength = 3.0e-6
@@ -382,13 +382,13 @@ Moreover, since :math:`\lambda_{2} = \lambda_{1} n_2/n_1`, it follows that
 Example
 ~~~~~~~~~~~~~
 
-Code example to use :class:`~paos.paos_wfo.WFO` to simulate a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.5`,
+Code example to use :class:`~paos.classes.wfo.WFO` to simulate a change of medium from :math:`n_1 = 1.0` to :math:`n_2 = 1.5`,
 to point out the change in distance to focus.
 
 .. jupyter-execute::
         :stderr:
 
-        from paos.paos_wfo import WFO
+        from paos.classes.wfo import WFO
 
         beam_diameter = 1.0  # m
         wavelength = 3.0e-6
@@ -475,12 +475,12 @@ Using these primitive operators, `PAOS` implements all possible propagations:
 Example
 ~~~~~~~~~~~~~
 
-Code example to use :class:`~paos.paos_wfo.WFO` to propagate the beam over a thickness of :math:`10.0 \ \textrm{mm}`.
+Code example to use :class:`~paos.classes.wfo.WFO` to propagate the beam over a thickness of :math:`10.0 \ \textrm{mm}`.
 
 .. jupyter-execute::
         :stderr:
 
-        from paos.paos_wfo import WFO
+        from paos.classes.wfo import WFO
 
         wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
         print(f'Initial beam position: {wfo.z}')
@@ -655,12 +655,12 @@ Supported aperture shapes are elliptical, circular or rectangular.
 Example
 ~~~~~~~~~~~~~
 
-Code example to use :class:`~paos.paos_wfo.WFO` to simulate the beam propagation through an elliptical aperture with semi-major
+Code example to use :class:`~paos.classes.wfo.WFO` to simulate the beam propagation through an elliptical aperture with semi-major
 axes :math:`x_{rad} = 0.55` and :math:`y_{rad} = 0.365`, positioned at :math:`x_{dec} = 0.0`, :math:`y_{dec} = 0.0`.
 
 .. jupyter-execute::
 
-        from paos.paos_wfo import WFO
+        from paos.classes.wfo import WFO
 
         xrad = 0.55  # m
         yrad = 0.365
@@ -700,12 +700,12 @@ The field stop limits the field of view of an optical instrument.
 Example
 ~~~~~~~~~~~~~
 
-Code example to use :class:`~paos.paos_wfo.WFO` to simulate an aperture stop.
+Code example to use :class:`~paos.classes.wfo.WFO` to simulate an aperture stop.
 
 .. jupyter-execute::
 
         import numpy as np
-        from paos.paos_wfo import WFO
+        from paos.classes.wfo import WFO
 
         wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
 
@@ -746,7 +746,7 @@ Once the initialization is completed, `PAOS` repeats these actions in a loop:
 Example
 ~~~~~~~~~~~~~
 
-Code example to use :class:`~paos.paos_wfo.WFO` to simulate a simple propagation loop that involves key actions such as
+Code example to use :class:`~paos.classes.wfo.WFO` to simulate a simple propagation loop that involves key actions such as
 applying a circular aperture, the throughput normalization, applying a Paraxial lens with focal length
 :math:`f=1.0` m, and propagating to the lens focus.
 
@@ -754,6 +754,7 @@ applying a circular aperture, the throughput normalization, applying a Paraxial 
         :stderr:
 
         import matplotlib.pyplot as plt
+        from paos.classes.wfo import WFO
 
         fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
         wfo = paos.WFO(beam_diameter, wavelength, grid_size, zoom)

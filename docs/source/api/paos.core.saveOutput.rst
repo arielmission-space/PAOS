@@ -1,7 +1,7 @@
-paos.paos\_parseconfig module
+paos.core.saveOutput module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: paos.paos_parseconfig
+.. automodule:: paos.core.saveOutput
     :members:
     :undoc-members:
     :show-inheritance:

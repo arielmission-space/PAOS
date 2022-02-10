@@ -41,7 +41,7 @@ def pipeline(passvalue):
     Examples
     --------
 
-    >>> from paos.paos_pipeline import pipeline
+    >>> from paos.core.pipeline import pipeline
     >>> pipeline(passvalue={'conf':'path/to/conf/file',
     >>>                     'output': 'path/to/output/file',
     >>>                     'wavelengths': '1.95,3.9',

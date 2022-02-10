@@ -66,9 +66,9 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import parse_config
-    >>> from paos.paos_run import run
-    >>> from paos.paos_plotpop import simple_plot
+    >>> from paos.core.parseConfig import parse_config
+    >>> from paos.core.run import run
+    >>> from paos.core.plot import simple_plot
     >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/ini/file')
     >>> ret_val = run(pup_diameter, 1.0e-6 * wavelengths[0], parameters['grid size'],
     >>>              parameters['zoom'], fields[0], opt_chains[0])
@@ -224,9 +224,9 @@ def plot_pop(retval, ima_scale='log', ncols=2, figname=None, options=dict()):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import parse_config
-    >>> from paos.paos_run import run
-    >>> from paos.paos_plotpop import plot_pop
+    >>> from paos.core.parseConfig import parse_config
+    >>> from paos.core.run import run
+    >>> from paos.core.plot import plot_pop
     >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/ini/file')
     >>> ret_val = run(pup_diameter, 1.0e-6 * wavelengths[0], parameters['grid size'],
     >>>              parameters['zoom'], fields[0], opt_chains[0])
@@ -305,9 +305,9 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard', 
     --------
 
     >>> import matplotlib.pyplot as plt
-    >>> from paos.paos_parseconfig import parse_config
-    >>> from paos.paos_run import run
-    >>> from paos.paos_plotpop import plot_psf_xsec
+    >>> from paos.core.parseConfig import parse_config
+    >>> from paos.core.run import run
+    >>> from paos.core.plot import plot_psf_xsec
     >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('/path/to/config/file')
     >>> wl_idx = 0  # choose the first wavelength
     >>> wavelength, opt_chain = wavelengths[wl_idx], opt_chains[wl_idx]

@@ -1,7 +1,7 @@
-paos.paos\_coordinatebreak module
+paos.core.pipeline module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: paos.paos_coordinatebreak
+.. automodule:: paos.core.pipeline
     :members:
     :undoc-members:
     :show-inheritance:

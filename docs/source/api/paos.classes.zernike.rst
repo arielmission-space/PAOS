@@ -1,7 +1,7 @@
-paos.paos\_zernike module
+paos.classes.zernike module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: paos.paos_zernike
+.. automodule:: paos.classes.zernike
    :members:
    :undoc-members:
    :show-inheritance:

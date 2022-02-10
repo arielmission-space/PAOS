@@ -1,7 +1,7 @@
-paos.paos\_abcd module
+paos.core.plot module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: paos.paos_abcd
+.. automodule:: paos.core.plot
     :members:
     :undoc-members:
     :show-inheritance:

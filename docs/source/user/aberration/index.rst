@@ -5,7 +5,7 @@ Aberration description
 
 Brief description of wavefront error (WFE) modelling and how it is implemented in `PAOS`.
 
-In `PAOS`, this is handled by the class :class:`~paos.paos_zernike.Zernike`.
+In `PAOS`, this is handled by the class :class:`~paos.classes.zernike.Zernike`.
 
 Introduction
 --------------

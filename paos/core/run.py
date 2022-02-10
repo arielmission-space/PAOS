@@ -41,7 +41,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
     field: dictionary
         contains the slopes in the tangential and sagittal planes as field={'vt': slopey, 'vs': slopex}
     opt_chain: list
-        the list of the optical elements parsed by paos.paos_parseconfig.ParseConfig
+        the list of the optical elements parsed by paos.core.parseConfig.parse_config
     
     Returns
     -------
@@ -51,9 +51,9 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import parse_config
-    >>> from paos.paos_run import run
-    >>> from paos.paos_plotpop import simple_plot
+    >>> from paos.core.parseConfig import parse_config
+    >>> from paos.core.run import run
+    >>> from paos.core.plot import simple_plot
     >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/conf/file')
     >>> ret_val = run(pup_diameter, 1.0e-6 * wavelength, parameters['grid_size'], parameters['zoom'], fields[0], opt_chain)
 

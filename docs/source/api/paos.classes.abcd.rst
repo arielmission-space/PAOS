@@ -1,7 +1,7 @@
-paos.paos\_raytrace module
+paos.classes.abcd module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: paos.paos_raytrace
+.. automodule:: paos.classes.abcd
     :members:
     :undoc-members:
     :show-inheritance:

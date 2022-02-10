@@ -9,13 +9,13 @@ the main POP simulation results.
 Base plot
 -------------
 
-The base plot method, :func:`~paos.paos_plotpop.simple_plot`, receives as input the POP output dictionary and the
+The base plot method, :func:`~paos.core.plot.simple_plot`, receives as input the POP output dictionary and the
 dictionary key of one optical surface and plots the squared amplitude of the wavefront at the given optical surface.
 
 Example
 ~~~~~~~~~
 
-Code example to use :func:`~paos.paos_plotpop.simple_plot` to plot the expected PSF at the image plane of the
+Code example to use :func:`~paos.core.plot.simple_plot` to plot the expected PSF at the image plane of the
 EXCITE optical chain.
 
 .. jupyter-execute::
@@ -23,15 +23,15 @@ EXCITE optical chain.
         :stderr:
         :hide-output:
 
-        from paos.paos_parseconfig import parse_config
-        from paos.paos_run import run
+        from paos.core.parseConfig import parse_config
+        from paos.core.run import run
         pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('../lens data/Excite_TEL.ini')
         ret_val = run(pup_diameter, 1.0e-6 * wavelengths[0], parameters['grid_size'], parameters['zoom'], fields[0], opt_chains[0])
 
 .. jupyter-execute::
 
         import matplotlib.pyplot as plt
-        from paos.paos_plotpop import simple_plot
+        from paos.core.plot import simple_plot
 
         fig = plt.figure(figsize=(8, 8))
         ax = fig.add_subplot(1,1,1)
@@ -41,11 +41,11 @@ EXCITE optical chain.
 
         plt.show()
 
-The cross-sections for this PSF can be plotted using the method :func:`~paos.paos_plotpop.plot_psf_xsec`, as shown below.
+The cross-sections for this PSF can be plotted using the method :func:`~paos.core.plot.plot_psf_xsec`, as shown below.
 
 .. jupyter-execute::
 
-        from paos.paos_plotpop import plot_psf_xsec
+        from paos.core.plot import plot_psf_xsec
 
         fig = plt.figure(figsize=(9, 8))
         ax = fig.add_subplot(1,1,1)
@@ -59,17 +59,17 @@ The cross-sections for this PSF can be plotted using the method :func:`~paos.pao
 POP plot
 ------------
 
-The POP plot method, :func:`~paos.paos_plotpop.plot_pop`, receives as input the POP output dictionary plots the squared
+The POP plot method, :func:`~paos.core.plot.plot_pop`, receives as input the POP output dictionary plots the squared
 amplitude of the wavefront at all available optical surfaces.
 
 Example
 ~~~~~~~~~
 
-Code example to use :func:`~paos.paos_plotpop.plot_pop` to plot the squared amplitude of the wavefront at all surfaces
+Code example to use :func:`~paos.core.plot.plot_pop` to plot the squared amplitude of the wavefront at all surfaces
 of the EXCITE optical chain.
 
 .. jupyter-execute::
 
-        from paos.paos_plotpop import plot_pop
+        from paos.core.plot import plot_pop
         plot_pop(ret_val, ima_scale='log', ncols=2)
 

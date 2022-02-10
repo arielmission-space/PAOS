@@ -1,7 +1,7 @@
-paos.gui.paosGUI module
+paos.gui.simpleGui module
 ===========================
 
-.. automodule:: paos.gui.paosGUI
+.. automodule:: paos.gui.simpleGui
    :members:
    :undoc-members:
    :show-inheritance:

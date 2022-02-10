@@ -31,7 +31,7 @@ class ABCD(object):
     Examples
     --------
 
-    >>> from paos.paos_abcd import ABCD
+    >>> from paos.classes.abcd import ABCD
     >>> thickness = 2.695  # mm
     >>> radius = 31.850  # mm
     >>> n1, n2 = 1.0, 1.5

@@ -27,8 +27,8 @@ def raytrace(field, opt_chain, x=0.0, y=0.0):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import parse_config
-    >>> from paos.paos_raytrace import raytrace
+    >>> from paos.core.parseConfig import parse_config
+    >>> from paos.core.raytrace import raytrace
     >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/conf/file')
     >>> raytrace(fields[0], opt_chains[0])
 

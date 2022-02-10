@@ -14,7 +14,7 @@ easily run in parallel by leveraging standard Python libraries such as joblib an
 Multi-wavelength simulations
 ------------------------------
 
-`PAOS` uses the method :func:`~paos.paos_parseconfig.parse_config` to parse the .ini configuration file and return a
+`PAOS` uses the method :func:`~paos.core.parseConfig.parse_config` to parse the .ini configuration file and return a
 list of optical chains, where each list entry is a dictionary of the optical surfaces in the file, estimated at the
 given wavelength.
 

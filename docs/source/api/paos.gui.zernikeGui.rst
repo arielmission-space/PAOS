@@ -1,7 +1,7 @@
-paos.gui.simpleGUI module
+paos.gui.zernikeGui module
 ===========================
 
-.. automodule:: paos.gui.simpleGUI
+.. automodule:: paos.gui.zernikeGui
    :members:
    :undoc-members:
    :show-inheritance:

@@ -7,9 +7,9 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   paos.gui.simpleGUI
-   paos.gui.zernikeGUI
-   paos.gui.paosGUI
+   paos.gui.simpleGui
+   paos.gui.zernikeGui
+   paos.gui.paosGui
 
 Module contents
 ---------------

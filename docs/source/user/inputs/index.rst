@@ -322,7 +322,7 @@ Below we report a snapshot of the first lens data section from the Ariel AIRS CH
 Parse configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`PAOS` implements the method :func:`~paos.paos_parseconfig.parse_config` that parses the .ini configuration file, prepares the
+`PAOS` implements the method :func:`~paos.core.parseConfig.parse_config` that parses the .ini configuration file, prepares the
 simulation run and returns the simulation parameters and the optical chain. This method can be called as in the example
 below.
 
@@ -332,7 +332,7 @@ Code example to parse a `PAOS` configuration file.
 
 .. code-block:: python
 
-        from paos.paos_parseconfig import parse_config
+        from paos.core.parseConfig import parse_config
         pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/ini/file')
 
 

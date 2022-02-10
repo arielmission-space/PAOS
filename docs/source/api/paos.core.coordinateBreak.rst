@@ -1,7 +1,7 @@
-paos.paos\_saveoutput module
+paos.core.coordinateBreak module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: paos.paos_saveoutput
+.. automodule:: paos.core.coordinateBreak
     :members:
     :undoc-members:
     :show-inheritance:

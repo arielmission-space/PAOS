@@ -1,7 +1,7 @@
-paos.paos\_plotpop module
+paos.core.run module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: paos.paos_plotpop
+.. automodule:: paos.core.run
     :members:
     :undoc-members:
     :show-inheritance:

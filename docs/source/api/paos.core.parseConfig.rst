@@ -1,7 +1,7 @@
-paos.paos\_run module
+paos.core.parseConfig module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: paos.paos_run
+.. automodule:: paos.core.parseConfig
     :members:
     :undoc-members:
     :show-inheritance:

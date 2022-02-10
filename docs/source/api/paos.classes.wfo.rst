@@ -1,7 +1,7 @@
-paos.paos\_wfo module
+paos.classes.wfo module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: paos.paos_wfo
+.. automodule:: paos.classes.wfo
    :members:
    :undoc-members:
    :show-inheritance:

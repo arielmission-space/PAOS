@@ -25,7 +25,7 @@ def remove_keys(dictionary, keys):
 
     Examples
     -------
-    >>> from paos.paos_saveoutput import remove_keys
+    >>> from paos.core.saveOutput import remove_keys
     >>> my_dict = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
     >>> print(my_dict)
     >>> keys_to_drop = ['a', 'c', 'e']
@@ -187,9 +187,9 @@ def save_output(retval, file_name, keys_to_keep=None, overwrite=True):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import parse_config
-    >>> from paos.paos_run import run
-    >>> from paos.paos_saveoutput import save_output
+    >>> from paos.core.parseConfig import parse_config
+    >>> from paos.core.run import run
+    >>> from paos.core.saveOutput import save_output
     >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/ini/file')
     >>> ret_val = run(pup_diameter, 1.0e-6 * wavelengths[0], parameters['grid size'],
     >>>              parameters['zoom'], fields[0], opt_chains[0])
@@ -249,9 +249,9 @@ def save_datacube(retval_list, file_name, group_names, keys_to_keep=None, overwr
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import parse_config
-    >>> from paos.paos_run import run
-    >>> from paos.paos_saveoutput import save_datacube
+    >>> from paos.core.parseConfig import parse_config
+    >>> from paos.core.run import run
+    >>> from paos.core.saveOutput import save_datacube
     >>> from joblib import Parallel, delayed
     >>> from tqdm import tqdm
     >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/ini/file')
