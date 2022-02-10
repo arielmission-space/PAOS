@@ -9,7 +9,7 @@ from PySimpleGUI import Window, WINDOW_CLOSED, WINDOW_CLOSE_ATTEMPTED_EVENT, TIM
 from PySimpleGUI import popup
 
 from paos import Zernike
-from paos.gui.simpleGUI import SimpleGUI
+from paos.gui.simpleGui import SimpleGUI
 from paos import logger
 
 

@@ -1,5 +1,5 @@
 import numpy as np
-from paos.core.paos_coordinatebreak import coordinate_break
+from paos.core.coordinateBreak import coordinate_break
 from paos import logger
 
 

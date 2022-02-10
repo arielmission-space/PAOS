@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from paos import logger
-from paos.core.paos_plotpop import do_legend
+from paos.core.plot import do_legend
 
 
 class Material:

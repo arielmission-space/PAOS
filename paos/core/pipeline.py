@@ -4,11 +4,11 @@ import logging
 from paos.log import setLogLevel
 from paos import logger
 
-from paos.core.paos_parseconfig import parse_config
-from paos.core.paos_raytrace import raytrace
-from paos.core.paos_run import run
-from paos.core.paos_saveoutput import save_datacube
-from paos.core.paos_plotpop import plot_pop
+from paos.core.parseConfig import parse_config
+from paos.core.raytrace import raytrace
+from paos.core.run import run
+from paos.core.saveOutput import save_datacube
+from paos.core.plot import plot_pop
 
 from pathlib import Path
 from joblib import Parallel, delayed

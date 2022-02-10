@@ -1,6 +1,6 @@
 import numpy as np
 import photutils
-from paos.classes.paos_zernike import Zernike
+from paos.classes.zernike import Zernike
 from paos import logger
 
 

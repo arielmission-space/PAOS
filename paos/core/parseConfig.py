@@ -4,7 +4,7 @@ import os
 import sys
 from typing import List
 
-from paos.classes.paos_abcd import ABCD
+from paos.classes.abcd import ABCD
 from paos.util.material import Material
 from paos import logger
 
