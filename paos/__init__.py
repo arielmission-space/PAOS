@@ -9,6 +9,7 @@ __description__ = "The Physical Ariel Optics Simulator"
 __url__ = "https://github.com/arielmission-space/PAOS"
 __license__ = "BSD-3-Clause"
 __copyright__ = '2020-{:d}, {}'.format(date.today().year, __author__)
+__email__ = 'andrea.bocchieri@uniroma1.it'
 
 try:
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
