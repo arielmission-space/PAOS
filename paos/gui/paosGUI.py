@@ -25,7 +25,7 @@ from tqdm import tqdm
 from matplotlib import pyplot as plt
 
 from paos import parse_config, raytrace, run
-from paos.paos_parseconfig import getfloat
+from paos.core.paos_parseconfig import getfloat
 from paos.gui.simpleGUI import SimpleGUI
 from paos.gui.zernikeGUI import ZernikeGUI
 from paos.log import setLogLevel

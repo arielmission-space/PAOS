@@ -27,7 +27,7 @@ with open("README.md", "r") as fh:
 provides = [get_info("paos/__init__.py", 'pkg_name'), ]
 console_scripts = [
     'paos=paos.paos:main',
-    'paosgui=paos.runGUI:main [GUI]'
+    'paosgui=paos.paosgui:main'
 ]
 
 # TODO: separate requirements from setup.py

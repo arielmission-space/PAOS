@@ -7,7 +7,7 @@ import sys
 from tkinter import Tk
 from typing import List
 
-from PySimpleGUI import Checkbox, Text, InputText, InputCombo, Column, Canvas, Frame, ProgressBar
+from PySimpleGUI import Checkbox, Text, InputText, Column, Canvas, Frame, ProgressBar
 from PySimpleGUI import Window
 from PySimpleGUI import clipboard_set
 from PySimpleGUI import pin
@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasAgg, FigureCanvasTkAgg
 import io
 
-from paos.paos_plotpop import simple_plot, plot_psf_xsec
+from paos.core.paos_plotpop import simple_plot, plot_psf_xsec
 from paos import save_datacube
 from paos import logger
 

@@ -2,9 +2,9 @@ import numpy as np
 from copy import deepcopy
 import gc
 
-from .paos_wfo import WFO
-from .paos_abcd import ABCD
-from .paos_coordinatebreak import coordinate_break
+from paos.classes.paos_wfo import WFO
+from paos.classes.paos_abcd import ABCD
+from paos.core.paos_coordinatebreak import coordinate_break
 from paos import logger
 
 

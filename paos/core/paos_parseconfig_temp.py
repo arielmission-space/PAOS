@@ -1,8 +1,8 @@
 import os, sys
 import numpy as np
 import pandas as pd
-from .paos_abcd import ABCD
-from .util.material import Material
+from paos.classes.paos_abcd import ABCD
+from paos.util.material import Material
 from paos import logger
 
 

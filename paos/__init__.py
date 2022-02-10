@@ -44,16 +44,16 @@ from paos.log import setLogLevel, addLogFile
 setLogLevel(logging.INFO)
 addLogFile(level=logging.INFO)
 
-from .paos_wfo import WFO
-from .paos_abcd import ABCD
-from .paos_zernike import Zernike
+from paos.classes.paos_wfo import WFO
+from paos.classes.paos_abcd import ABCD
+from paos.classes.paos_zernike import Zernike
 
-from .paos_parseconfig import parse_config
-from .paos_coordinatebreak import coordinate_break
-from .paos_raytrace import raytrace
-from .paos_plotpop import plot_pop
-from .paos_saveoutput import save_output, save_datacube
-from .paos_run import run
+from paos.core.paos_parseconfig import parse_config
+from paos.core.paos_coordinatebreak import coordinate_break
+from paos.core.paos_raytrace import raytrace
+from paos.core.paos_plotpop import plot_pop
+from paos.core.paos_saveoutput import save_output, save_datacube
+from paos.core.paos_run import run
 
 # initialise plotter
 import matplotlib.pyplot as plt
