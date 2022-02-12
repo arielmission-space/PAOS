@@ -153,7 +153,9 @@ def pipeline(passvalue):
     logger.info('Save POP simulation output .h5 file to {}'.format(passvalue['output']))
     group_tags = list(map(str, wavelengths))
     logger.debug('group tags: {}'.format(group_tags))
-    store_keys = passvalue['store_keys'].split(',')
+    store_keys = None
+    if passvalue['store_keys'] is not None:
+        store_keys = passvalue['store_keys'].split(',')
     logger.debug('Store keys: {}'.format(store_keys))
     save_datacube(retval, passvalue['output'], group_tags, keys_to_keep=store_keys,
                   overwrite=True)
