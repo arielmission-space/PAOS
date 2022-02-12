@@ -16,7 +16,7 @@ Then use pip as
 
 To build the html documentation, Sphinx is needed. To install the dependencies run
 
-    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables
+    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx
 
 Then move into the `docs` directory and run
 
@@ -29,7 +29,7 @@ Open `index.html` to read the documentation.
 
 To build the pdf version of the documentation, Sphinx is needed. To install the dependencies run
 
-    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables
+    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx
 
 Then move into the `docs` directory and run
 
