@@ -16,7 +16,7 @@ Then use pip as
 
 To build the html documentation, Sphinx is needed. To install the dependencies run
 
-    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx
+    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx sphinx-material
 
 Then move into the `docs` directory and run
 
@@ -27,9 +27,23 @@ Open `index.html` to read the documentation.
 
 ### pdf documentation
 
+#### requirements
+
+To compile the documentation in .pdf format, a LaTex compiler is needed. 
+
+To install `pdflatex` run
+
+    pip install pdflatex
+
+In case you are missing a LaTex installation from your computer, or some packages are missing, run 
+
+    sudo apt-get install latexmk texlive texlive-formats-extra
+
+#### build pdf
+
 To build the pdf version of the documentation, Sphinx is needed. To install the dependencies run
 
-    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx
+    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx sphinx-material
 
 Then move into the `docs` directory and run
 
