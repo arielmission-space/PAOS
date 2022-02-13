@@ -2,7 +2,7 @@ import os
 import logging
 import argparse
 
-from paos.gui.paosGui import PaosGUI
+from paos.gui.paosGui import PaosGui
 from paos import __version__ as version
 from paos import logger
 from paos.log import addLogFile, setLogLevel
@@ -38,7 +38,7 @@ def main():
         else:
             addLogFile()
 
-    PaosGUI(passvalue=passvalue)()
+    PaosGui(passvalue=passvalue)()
 
     logger.info('PAOS GUI exited')
     return

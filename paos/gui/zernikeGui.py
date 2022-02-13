@@ -9,11 +9,11 @@ from PySimpleGUI import Window, WINDOW_CLOSED, WINDOW_CLOSE_ATTEMPTED_EVENT, TIM
 from PySimpleGUI import popup
 
 from paos import Zernike
-from paos.gui.simpleGui import SimpleGUI
+from paos.gui.simpleGui import SimpleGui
 from paos import logger
 
 
-class ZernikeGUI(SimpleGUI):
+class ZernikeGui(SimpleGui):
     """
     Generates the Zernike editor for the main `PAOS` GUI as a secondary GUI window
 

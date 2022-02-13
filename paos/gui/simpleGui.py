@@ -21,7 +21,7 @@ from paos import save_datacube
 from paos import logger
 
 
-class SimpleGUI:
+class SimpleGui:
     """
     Base class for the Graphical User Interface (GUI) for `PAOS`, built using the publicly available library PySimpleGUI
     """
@@ -508,7 +508,7 @@ class SimpleGUI:
         return
 
     @staticmethod
-    def chain_widgets(row, input_list, prefix, disabled_list=[]):
+    def chain_widgets(row, input_list, prefix, disabled_list=None):
         """
         Given the row in the GUI editor, an input list and the key prefix, returns a list of widgets
 
@@ -528,6 +528,8 @@ class SimpleGUI:
         out: List[Text, List[Checkbox or Input or Column or Combo]]
             list of widgets
         """
+        if disabled_list is None:
+            disabled_list = []
         row_widget = [Text(row, size=(6, 1), key=f'row idx {row}')]
         keys = [f'{prefix}_({row},{i})' for i in range(len(input_list))]
 

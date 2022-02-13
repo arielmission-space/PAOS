@@ -26,13 +26,13 @@ from matplotlib import pyplot as plt
 
 from paos import parse_config, raytrace, run
 from paos.core.parseConfig import getfloat
-from paos.gui.simpleGui import SimpleGUI
-from paos.gui.zernikeGui import ZernikeGUI
+from paos.gui.simpleGui import SimpleGui
+from paos.gui.zernikeGui import ZernikeGui
 from paos.log import setLogLevel
-from paos import __pkg_name__, __author__, __url__, __version__, base_dir, logger
+from paos import __pkg_name__, __author__, __url__, __version__, local_dir, logger
 
 
-class PaosGUI(SimpleGUI):
+class PaosGui(SimpleGui):
     """
     Generates the Graphical User Interface (GUI) for `PAOS`, built using the publicly available library PySimpleGUI
 
@@ -48,9 +48,9 @@ class PaosGUI(SimpleGUI):
 
     Example
     -------
-    >>> from paos.gui.paosGUI import PaosGUI
+    >>> from paos.gui.paosGui import PaosGui
     >>> passvalue = {'conf': '/path/to/ini/file/', 'debug': False}
-    >>> PaosGUI(passvalue=passvalue)()
+    >>> PaosGui(passvalue=passvalue)()
 
     Note
     ----
@@ -118,7 +118,7 @@ class PaosGUI(SimpleGUI):
 
         # ------ Define fallback configuration file ------ #
         if 'conf' not in self.passvalue.keys() or self.passvalue['conf'] is None:
-            self.passvalue['conf'] = os.path.join(base_dir, 'lens data', 'template.ini')
+            self.passvalue['conf'] = os.path.join(local_dir, 'lens data', 'template.ini')
 
         # ------ Instantiate some more global variables (for dynamic updates) ------ #
         self.disable_wfe = True
@@ -297,7 +297,7 @@ class PaosGUI(SimpleGUI):
 
     def update_headings(self, row):
         """
-        Updates the displayed headers according to the rules set in :class:`~PaosGUI.par_heading_rules`
+        Updates the displayed headers according to the rules set in :class:`~PaosGui.par_heading_rules`
 
         Parameters
         ----------
@@ -362,7 +362,7 @@ class PaosGUI(SimpleGUI):
 
         return item
 
-    def chain_widgets(self, row, input_list, prefix):
+    def chain_widgets(self, row, input_list, prefix, disabled_list=None):
         """
         Given the row in the GUI lens data editor, an input list and a prefix, returns a list of widgets to fill a GUI
         editor data row
@@ -375,6 +375,8 @@ class PaosGUI(SimpleGUI):
             items list with which to fill the new row
         prefix: str
             prefix to indicate which kind of widgets list must be returned
+        disabled_list: list[bool]
+            from base method. Not used here
 
         Returns
         -------
@@ -1294,7 +1296,7 @@ class PaosGUI(SimpleGUI):
                     if action == 'OK':
                         key = 'lens_{:02d}'.format(int(row))
                         # Launch the Zernike GUI editor
-                        zernike = ZernikeGUI(config=self.config, values=self.values, row=row, key=key)()
+                        zernike = ZernikeGui(config=self.config, values=self.values, row=row, key=key)()
                         if key in self.config.keys():
                             # Update the zernike values in the config object
                             self.config[key].update(zernike)
@@ -1642,7 +1644,7 @@ class PaosGUI(SimpleGUI):
                 # Close the current window
                 self.close_window()
                 # Relaunch the GUI for the new configuration file
-                PaosGUI(passvalue=self.passvalue)()
+                PaosGui(passvalue=self.passvalue)()
 
             # ------- Display a Save As popup window with text entry field and browse button ------#
             elif self.event in ['Save', '-SAVE-', 'Save As']:

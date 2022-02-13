@@ -31,6 +31,9 @@ if base_dir is not None and os.path.exists(os.path.join(base_dir, ".git")):
 else:
     __commit__ = None
 
+# initialise local dir
+local_dir = os.path.abspath('.')
+
 # initialise logger
 import logging
 
