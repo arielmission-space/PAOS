@@ -43,7 +43,7 @@ materials = {
                  'D0': 5.5400E-005}
              },
 
-    'BK7': {'source': 'not provided',
+    'BK7': {'source': 'catalog ADEPT-INFRARED.AGF',
             'Tref': 20.0,
             'sellmeier': {
                 'K1': 1.03961212E+000,
@@ -57,7 +57,21 @@ materials = {
                 'D0': 1.8600E-006}
             },
 
-    'SF11': {'source': 'not provided',
+    'SF6': {'source': 'catalog SCHOTT.AGF',
+            'Tref': 20.0,
+            'sellmeier': {
+                'K1': 1.724484820E+000,
+                'L1': 1.348719470E-002,
+                'K2': 3.901048890E-001,
+                'L2': 5.693180950E-002,
+                'K3': 1.045728580E+000,
+                'L3': 1.185571850E+002
+            },
+            'Tmodel': {
+                'D0': 6.69000000E-006}
+            },
+
+    'SF11': {'source': 'catalog ADEPT-INFRARED.AGF',
              'Tref': 20.0,
              'sellmeier': {
                  'K1': 1.73848403E+000,
