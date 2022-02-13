@@ -13,7 +13,7 @@ def do_legend(axis, ncol=1):
 
     Parameters
     ----------
-    axis: '~matplotlib.pyplot.axis'
+    axis: :class:`~matplotlib.axes.Axes`
         An instance of matplotlib axis
     ncol: int
         The number of legend columns
@@ -80,7 +80,7 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
     >>> plt.show()
 
     """
-    global ap, wx, wy
+    ap, wx, wy = None, None, None
     logger.trace('plotting S{:02d}'.format(key))
 
     if key in options.keys() and 'pixel_units' in options[key].keys():
@@ -322,8 +322,6 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard', 
     logger.trace('plotting S{:02d}'.format(key))
 
     wx, wy = None, None
-    plot_scale, airy_scale = None, None
-    x_label = None
 
     if item['wz'] < 0.005:
         # Use microns

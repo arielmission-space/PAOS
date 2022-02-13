@@ -42,7 +42,7 @@ def parse_config(filename):
     Examples
     --------
 
-    >>> from paos.paos_parseconfig import parse_config
+    >>> from paos.core.parseConfig import parse_config
     >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/ini/file')
 
     """
