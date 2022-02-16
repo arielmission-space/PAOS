@@ -281,7 +281,7 @@ class PaosGui(SimpleGui):
             the desired list of headers
         """
 
-        headings = []
+        headings = ['Par1', 'Par2', 'Par3', 'Par4', 'Par5', 'Par6', 'Par7', 'Par8']
         if surface_type in ['INIT', 'Standard']:
             headings = ['', '', '', '', '', '', '', '']
         elif surface_type == 'Coordinate Break':
@@ -521,6 +521,9 @@ class PaosGui(SimpleGui):
         # Reset progress bars
         _ = self.reset_progress_bar(self.window['progbar (nwl)'])
         _ = self.reset_progress_bar(self.window['progbar (wfe)'])
+        # Reset stoplights color
+        for key in ['POP-STATE', 'PLOT-STATE', 'PLOT-STATE (nwl)', 'PLOT-STATE (wfe)']:
+            self.window[key].update(text_color='red')
         return
 
     def save_to_dict(self, show=True):
@@ -885,8 +888,7 @@ class PaosGui(SimpleGui):
                 list(itertools.chain(
                     [Frame('Run and Save', layout=[
                         [Text('Run a diagnostic raytrace')],
-                        [Button(tooltip='Launch raytrace', button_text='Raytrace', enable_events=True,
-                                key="-RAYTRACE-")],
+                        [Button(tooltip='Launch raytrace', button_text='Raytrace', enable_events=True, key="-RAYTRACE-")],
                         [Column(layout=[
                             [Multiline(key='raytrace log', font=self.font_small, autoscroll=True, size=(90, 20),
                                        pad=(0, (15, 0)), disabled=False)]],
@@ -895,7 +897,8 @@ class PaosGui(SimpleGui):
                                 key="-SAVE RAYTRACE-")],
                         [Text('', size=(6, 1))],
                         [Text('Run the POP: ', size=(30, 1)),
-                         Button(tooltip='Launch POP', button_text='POP', enable_events=True, key="-POP-")],
+                         Button(tooltip='Launch POP', button_text='POP', enable_events=True, key="-POP-"),
+                         Text(' ' + self.symbol_state, font=("Tahoma", 20), text_color='red', key='POP-STATE')],
                         [Text('Save the POP output: ', size=(30, 1)),
                          Button(tooltip='Save the POP output', button_text='Save POP', enable_events=True,
                                 key="-SAVE POP-")],
@@ -909,8 +912,8 @@ class PaosGui(SimpleGui):
                          InputCombo(tooltip='Color scale', values=['linear scale', 'log scale'],
                                     default_value='log scale', key="Ima scale")],
                         [Text('Plot surface: ', size=(30, 1)),
-                         Button(tooltip='Plot', button_text='Plot', enable_events=True,
-                                key="-PLOT-")],
+                         Button(tooltip='Plot', button_text='Plot', enable_events=True, key="-PLOT-"),
+                         Text(' ' + self.symbol_state, font=("Tahoma", 20), text_color='red', key='PLOT-STATE')],
                         [Text('Save the Plots', size=(30, 1)),
                          Button(tooltip='Save the plot', button_text='Save Plot', enable_events=True,
                                 key="-SAVE FIG-")]],
@@ -966,8 +969,8 @@ class PaosGui(SimpleGui):
                              InputCombo(tooltip='Color scale', values=['linear scale', 'log scale'],
                                         default_value='log scale', key="Ima scale (nwl)")],
                             [Text('Plot surface: ', size=(30, 1)),
-                             Button(tooltip='Plot', button_text='Plot', enable_events=True,
-                                    key="-PLOT (nwl)-")],
+                             Button(tooltip='Plot', button_text='Plot', enable_events=True, key="-PLOT (nwl)-"),
+                             Text(' ' + self.symbol_state, font=("Tahoma", 20), text_color='red', key='PLOT-STATE (nwl)')],
                             [Text('Figure prefix: ', size=(30, 1)),
                              InputText(tooltip='Figure prefix', default_text='Plot', key="Fig prefix (nwl)")],
                             [Text('Save the Plots', size=(30, 1)),
@@ -1037,8 +1040,8 @@ class PaosGui(SimpleGui):
                              InputCombo(tooltip='Color scale', values=['linear scale', 'log scale'],
                                         default_value='log scale', key="Ima scale (wfe)")],
                             [Text('Plot surface: ', size=(30, 1)),
-                             Button(tooltip='Plot', button_text='Plot', enable_events=True,
-                                    key="-PLOT (wfe)-")],
+                             Button(tooltip='Plot', button_text='Plot', enable_events=True, key="-PLOT (wfe)-"),
+                             Text(' ' + self.symbol_state, font=("Tahoma", 20), text_color='red', key='PLOT-STATE (wfe)')],
                             [Text('Figure prefix: ', size=(30, 1)),
                              InputText(tooltip='Figure prefix', default_text='Plot', key="Fig prefix (wfe)")],
                             [Text('Save the Plots', size=(30, 1)),
@@ -1248,10 +1251,11 @@ class PaosGui(SimpleGui):
                 # Add the new optical surface and update surface count
                 self.nrows_ld = self.add_row('lenses')
                 self.ld_keys.append(f'S{self.nrows_ld}')
+                # Ignore newly added surface for precaution
+                self.window[f'Ignore_({self.nrows_ld},6)'].update(True)
                 # Update 'select surface' InputCombo widget in the Launcher and Monte Carlo Tabs
-                self.window["S#"].update(self.ld_keys)
-                self.window["S# (nwl)"].update(self.ld_keys)
-                self.window["S# (wfe)"].update(self.ld_keys)
+                for key in ["S#", "S# (nwl)", "S# (wfe)"]:
+                    self.window[key].update(self.ld_keys[-1], values=self.ld_keys)
                 # Update the 'lenses' Column scrollbar
                 self.update_column_scrollbar(window=self.window, col_key='lenses')
 
@@ -1402,6 +1406,8 @@ class PaosGui(SimpleGui):
                 self.retval_list = [self.retval]
                 # For later plotting
                 pop = 'simple'
+                # Update stoplight color
+                self.window['POP-STATE'].update(text_color='green')
 
             # ------- Run the POP (nwl) ------#
             elif self.event == '-POP (nwl)-':
@@ -1547,6 +1553,9 @@ class PaosGui(SimpleGui):
                 self.figure = self.draw_surface(
                     retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg,
                     image_key='-IMAGE-', surface_key='S#', scale_key='Ima scale', zoom_key='Surface zoom')
+                # Update stoplight color
+                if self.figure is not None:
+                    self.window['PLOT-STATE'].update(text_color='green')
 
             elif self.event == '-PLOT (nwl)-':
                 if pop != 'nwl' or not self.retval_list:
@@ -1556,6 +1565,9 @@ class PaosGui(SimpleGui):
                     retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg_nwl,
                     image_key='-IMAGE (nwl)-', surface_key='S# (nwl)', scale_key='Ima scale (nwl)',
                     zoom_key='Surface zoom (nwl)', range_key='RANGE (nwl)')
+                # Update stoplight color
+                if self.figure_list_nwl:
+                    self.window['PLOT-STATE (nwl)'].update(text_color='green')
 
             elif self.event == '-PLOT (wfe)-':
                 if pop != 'wfe' or not self.retval_list:
@@ -1565,6 +1577,9 @@ class PaosGui(SimpleGui):
                     retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg_wfe,
                     image_key='-IMAGE (wfe)-', surface_key='S# (wfe)', scale_key='Ima scale (wfe)',
                     zoom_key='Surface zoom (wfe)', range_key='RANGE (wfe)')
+                # Update stoplight color
+                if self.figure_list_wfe:
+                    self.window['PLOT-STATE (wfe)'].update(text_color='green')
 
             elif self.event == '-DISPLAY PLOT-':
                 # Draw the figure canvas

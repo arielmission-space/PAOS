@@ -7,7 +7,7 @@ import sys
 from tkinter import Tk
 from typing import List
 
-from PySimpleGUI import Checkbox, Text, InputText, Column, Canvas, Frame, ProgressBar
+from PySimpleGUI import Checkbox, Text, InputText, Column, Canvas, Frame, ProgressBar, popup_quick_message
 from PySimpleGUI import Window
 from PySimpleGUI import clipboard_set
 from PySimpleGUI import pin
@@ -53,6 +53,13 @@ class SimpleGui:
         self.symbol_up = '▲'
         self.symbol_down = '▼'
         self.symbol_disabled = '...'
+        self.symbol_state = '●'
+
+        # ------ Quick Message Definition ------ #
+        w, h = Window.get_screen_size()
+        popup_quick_message('Hang on for a moment, this will take a bit to create....',
+                            auto_close=True, non_blocking=True, keep_on_top=True,
+                            auto_close_duration=2, location=(int(0.4 * w), int(0.1 * h)))
 
     @staticmethod
     def add_heading(headings, size=(24, 2)):
