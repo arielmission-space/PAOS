@@ -44,9 +44,8 @@ The recommended way to access this dataset is using the astropy method :func:`~a
 
         import os
         from astropy.io import ascii
-        from paos import base_dir
 
-        wfe_file = os.path.join(base_dir, 'wfe data', 'wfe_realization_SN20210914.csv')
+        wfe_file = os.path.join('path/to/wfe_file.csv')
         wfe = ascii.read(wfe_file)
 
 The whole set provides an effective way to test subsystems optical performances ahead of a measurement of the
