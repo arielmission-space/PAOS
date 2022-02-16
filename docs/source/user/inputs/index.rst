@@ -351,7 +351,7 @@ Run it with the `help` flag to read the available options:
 
 .. code-block:: bash
 
-   $ python runGUI.py --help
+   $ paosgui --help
 
 .. _GUI command line flags:
 

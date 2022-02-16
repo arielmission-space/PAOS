@@ -84,11 +84,6 @@ back to :ref:`Parse configuration file`).
         :stderr:
         :hide-output:
 
-        import os, sys
-        paospath = "~/git/PAOS"
-        if not os.path.expanduser(paospath) in sys.path:
-            sys.path.append( os.path.expanduser(paospath) )
-
         from paos.core.parseConfig import parse_config
         pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('../lens data/lens_file_TA_Ground.ini')
 

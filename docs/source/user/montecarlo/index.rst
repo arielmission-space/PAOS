@@ -44,11 +44,10 @@ The recommended way to access this dataset is using the astropy method :func:`~a
 
         import os
         from astropy.io import ascii
+        from paos import base_dir
 
-        paospath = "~/git/PAOS"
-
-        wfe_folder = os.path.join(os.path.expanduser(paospath), 'wfe data')
-        wfe = ascii.read(os.path.join(wfe_folder, 'wfe_realization_SN20210914.csv'))
+        wfe_file = os.path.join(base_dir, 'wfe data', 'wfe_realization_SN20210914.csv')
+        wfe = ascii.read(wfe_file)
 
 The whole set provides an effective way to test subsystems optical performances ahead of a measurement of the
 surface deviation of the Ariel telescope assembly (TA).

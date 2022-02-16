@@ -29,7 +29,7 @@ from paos.core.parseConfig import getfloat
 from paos.gui.simpleGui import SimpleGui
 from paos.gui.zernikeGui import ZernikeGui
 from paos.log import setLogLevel
-from paos import __pkg_name__, __author__, __url__, __version__, local_dir, logger
+from paos import __pkg_name__, __author__, __url__, __version__, base_dir, logger
 
 
 class PaosGui(SimpleGui):
@@ -118,7 +118,7 @@ class PaosGui(SimpleGui):
 
         # ------ Define fallback configuration file ------ #
         if 'conf' not in self.passvalue.keys() or self.passvalue['conf'] is None:
-            self.passvalue['conf'] = os.path.join(local_dir, 'lens data', 'template.ini')
+            self.passvalue['conf'] = os.path.join(base_dir, 'lens data', 'template.ini')
 
         # ------ Instantiate some more global variables (for dynamic updates) ------ #
         self.disable_wfe = True

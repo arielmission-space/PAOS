@@ -81,18 +81,6 @@ Code example to use :class:`~paos.util.material.Material` to estimate and plot t
 crown glass (known as `BK7`) for a range of wavelengths from the visible to the infra-red.
 
 .. jupyter-execute::
-        :hide-code:
-        :stderr:
-        :hide-output:
-
-        import os, sys
-        paospath = "~/git/PAOS"
-        if not os.path.expanduser(paospath) in sys.path:
-            sys.path.append( os.path.expanduser(paospath) )
-
-        import paos
-
-.. jupyter-execute::
 
         import numpy as np
         import matplotlib.pyplot as plt

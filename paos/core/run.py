@@ -55,7 +55,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
     >>> from paos.core.run import run
     >>> from paos.core.plot import simple_plot
     >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/conf/file')
-    >>> ret_val = run(pup_diameter, 1.0e-6 * wavelength, parameters['grid_size'], parameters['zoom'], fields[0], opt_chain)
+    >>> ret_val = run(pup_diameter, 1.0e-6 * wavelengths[0], parameters['grid_size'], parameters['zoom'], fields[0], opt_chains[0])
 
     """
 

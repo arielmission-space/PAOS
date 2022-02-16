@@ -91,11 +91,6 @@ the Y axis by :math:`y_{dec} = 10.0 \ \textrm{mm}` and rotated around the X axis
         :stderr:
         :hide-output:
 
-        import os, sys
-        paospath = "~/git/PAOS"
-        if not os.path.expanduser(paospath) in sys.path:
-            sys.path.append( os.path.expanduser(paospath) )
-
         import paos
 
 .. jupyter-execute::

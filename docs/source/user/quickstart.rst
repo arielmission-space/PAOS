@@ -15,7 +15,7 @@ Run it with the `help` flag to read the available options:
 
 .. code-block:: bash
 
-   $ python paos.py --help
+   $ paos --help
 
 The main command line flags are listed in :numref:`Main command line flags`.
 

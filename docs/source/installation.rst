@@ -1,38 +1,117 @@
 .. _installation:
 
-Installation
-============
+`PAOS` package installation
+====================================
 
-The following notes guide you toward the installation of PAOS.
+.. _install pip:
+
+Install with pip
+-------------------
+
+.. warning::
+    `PAOS` is not on Pypi yet. Please proceed with the installation from Git.
+
+The `PAOS` package is hosted on Pypi repository. You can install it by
+
+.. code-block:: console
+
+    pip install paos
+
+.. _install git:
 
 Install from git
 -------------------
-You can clone `PAOS` from our main git repository.
+You can clone `PAOS` from our main git repository
 
-.. code-block:: bash
+.. code-block:: console
 
-    $ git clone https://github.com/arielmission-space/PAOS
+    git clone https://github.com/arielmission-space/PAOS.git
 
-Then, move into the `PAOS` folder.
+Move into the `PAOS` folder
 
-.. code-block:: bash
+.. code-block:: console
 
-    $ cd /your_path/PAOS
+    cd /your_path/PAOS
 
-Prepare the run
------------------
+Then, just do
 
-If you want to use `PAOS` in a python shell or jupyter notebook, you may need to add to PYTHONPATH
-the path to local `PAOS` path.
+.. code-block:: console
 
-This can be done as in the below code example.
+    pip install .
 
-.. jupyter-execute::
-        :stderr:
+To test for correct setup you can do
 
-        import os, sys
-        paospath = "~/git/PAOS"
-        if not os.path.expanduser(paospath) in sys.path:
-            sys.path.append( os.path.expanduser(paospath) )
+.. code-block:: console
 
-        import paos
+    python -c "import paos"
+
+If no errors appeared then it was successfully installed.
+
+Additionally the `paos` program should now be available in the command line
+
+.. code-block:: console
+
+    paos
+
+and the `paos` GUI (see :ref:`GUI editor`) can be accessed calling
+
+.. code-block:: console
+
+    paosgui
+
+Uninstall `PAOS`
+-------------------
+
+`PAOS` is installed in your system as a standard python package:
+you can uninstall it from your Environment as
+
+.. code-block:: console
+
+    pip uninstall paos
+
+
+Update `PAOS`
+---------------
+
+If you have installed `PAOS` using Pip, now you can update the package simply as
+
+.. code-block:: console
+
+    pip install paos --upgrade
+
+If you have installed `PAOS` from GitHub, you can download or pull a newer version of `PAOS` over the old one, replacing all modified data.
+
+Then you have to place yourself inside the installation directory with the console
+
+.. code-block:: console
+
+    cd /your_path/PAOS
+
+Now you can update `PAOS` simply as
+
+.. code-block:: console
+
+    pip install . --upgrade
+
+or simply
+
+.. code-block:: console
+
+    pip install .
+
+Modify `PAOS`
+---------------
+
+You can modify `PAOS` main code, editing as you prefer, but in order to make the changes effective
+
+.. code-block:: console
+
+    pip install . --upgrade
+
+or simply
+
+.. code-block:: console
+
+    pip install .
+
+To produce new `PAOS` functionalities and contribute to the code, please see :ref:`Developer Guide`.
