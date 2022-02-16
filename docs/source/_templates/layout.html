@@ -1,0 +1,9 @@
+{# Import the theme's layout. #}
+{% extends '!layout.html' %}
+
+{%- block extrahead %}
+{# Add custom things to the head HTML tag #}
+<link rel="stylesheet" href="{{ pathto('_static/paos.css', 1) }}" type="text/css" />
+{# Call the parent block #}
+{{ super() }}
+{%- endblock %}

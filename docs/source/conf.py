@@ -137,8 +137,7 @@ html_theme_options = {
 }
 
 html_static_path = ['_static']
-html_logo = "_static/paos_logo.jpg"
-# html_favicon = ""
+html_logo = "_static/paos_logo.svg"
 
 html_show_sourcelink = False
 
@@ -175,9 +174,7 @@ plot_html_show_formats = False
 plot_html_show_source_link = False
 
 
-def setup(app):
-    app.add_css_file('_static/paos.css')
-
+html_css_files = ['_static/paos.css']
 
 numfig = True
 
@@ -210,7 +207,6 @@ latex_elements = {
     'maketitle': MAKETITLE,
     # Latex figure (float) alignment
     #
-    # 'figure_align': 'htbp',
     'sphinxsetup': \
         'hmargin={0.7in,0.7in}, vmargin={1in,1in}, \
         verbatimwithframe=true, \
