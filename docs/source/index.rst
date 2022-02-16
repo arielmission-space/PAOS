@@ -17,3 +17,4 @@ Welcome to PAOS's documentation!
     API Guide <api/modules>
     License <license>
     Acknowledgments <acknowledgements>
+    Changelog <CHANGELOG>

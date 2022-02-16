@@ -88,37 +88,9 @@ This allows performing a large number of detailed analyses, both on the instrume
     `PAOS` is still under development. If you have any issue or find any bug, please report it to the developers.
 
 
-Citing
---------
+Cite
+-----
 If you use this software or its products, please cite (Bocchieri A. - `PAOS` - *in prep*).
-
-
-.. _changelog:
-
-Changelog
----------
-
-.. _Changelog_table:
-
-.. list-table:: Changelog table
-   :widths: 15 20 70
-   :header-rows: 1
-
-   * - Version
-     - Date
-     - Changes
-   * - 0.0.2
-     - 15/09/2021
-     - Setting up new `PAOS` repository
-   * - 0.0.2.1
-     - 20/10/2021
-     - First documented `PAOS` release
-   * - 0.0.3
-     - 23/12/2021
-     - Added support for optical materials
-   * - 0.0.4
-     - 22/01/2022
-     - Changed configuration file to .ini
 
 .. tip::
     Please note that `PAOS` does not implement an automatic updating system.
