@@ -219,7 +219,7 @@ latex_elements = {
 
 }
 
-latex_logo = '_static/paos_logo.jpg'
+latex_logo = '_static/paos.jpg'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
