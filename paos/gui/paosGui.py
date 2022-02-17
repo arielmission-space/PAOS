@@ -25,6 +25,7 @@ from tqdm import tqdm
 from matplotlib import pyplot as plt
 
 from paos import parse_config, raytrace, run
+from paos.core.plot import plot_surface
 from paos.core.parseConfig import getfloat
 from paos.gui.simpleGui import SimpleGui
 from paos.gui.zernikeGui import ZernikeGui
@@ -721,7 +722,7 @@ class PaosGui(SimpleGui):
                     break
                 # Plot
                 logger.debug(f'Plotting POP for group {group}')
-                figure_list.append(self.plot_surface(key, ret, ima_scale, zoom))
+                figure_list.append(plot_surface(key, ret, ima_scale, zoom))
                 # Get the index of the plotted figures
                 idx.append(j)
                 j += 1
@@ -737,7 +738,7 @@ class PaosGui(SimpleGui):
                 logger.error('Surface not present in POP output: it was either ignored or simply not saved')
                 return
             # Plot
-            fig = self.plot_surface(key, ret, ima_scale, zoom)
+            fig = plot_surface(key, ret, ima_scale, zoom)
             return fig
 
     def display_plot_slide(self, figure_list, figure_agg, image_key, slider_key):

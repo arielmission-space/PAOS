@@ -428,3 +428,49 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard', 
     axis.grid()
 
     return
+
+
+def plot_surface(key, retval, ima_scale, zoom=1, figname=None):
+    """
+    Given the optical surface key, the POP output dictionary and the image scale, plots the squared amplitude
+    of the wavefront at the given surface (cross-sections and 2D plot)
+
+    Parameters
+    ----------
+    key: int
+        the key index associated to the optical surface
+    retval: dict
+        the POP output dictionary
+    ima_scale: str
+        the image scale. Can be either 'linear' or 'log'
+    zoom: scalar
+        the surface zoom factor: more increases the axis limits
+    figname: str
+        name of figure to save
+
+    Returns
+    -------
+    out: :class:`~matplotlib.figure.Figure`
+        the figure with the squared amplitude of the wavefront at the given surface
+
+    """
+
+    fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+    # Xsec plot
+    plot_psf_xsec(fig=fig, axis=axs[0], key=key, item=retval[key], ima_scale=ima_scale, surface_zoom=zoom)
+    # 2D plot
+    simple_plot(fig=fig, axis=axs[1], key=key, item=retval[key], ima_scale=ima_scale,
+                options={key: {'surface_zoom': zoom}})
+    fig.suptitle(axs[0].get_title(), fontsize=20)
+    axs[0].set_title('X-sec view')
+    axs[1].set_title('2D view')
+    fig.tight_layout()
+
+    if figname is not None:
+        fig.savefig(figname, bbox_inches='tight', dpi=150)
+        plt.close()
+    else:
+        fig.tight_layout()
+        plt.show()
+
+    return fig
