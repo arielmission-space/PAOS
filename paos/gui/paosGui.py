@@ -13,7 +13,7 @@ import copy
 import numpy as np
 
 from PySimpleGUI import Checkbox, Text, InputText, InputCombo, Multiline, Listbox, Button, Column, Menu, Frame, Tab, \
-    TabGroup, Input, Combo, popup_get_folder, Image, Slider
+    TabGroup, Input, Combo, popup_get_folder, Image, Slider, theme_input_background_color
 from PySimpleGUI import Submit
 from PySimpleGUI import Window, WINDOW_CLOSED, WINDOW_CLOSE_ATTEMPTED_EVENT
 from PySimpleGUI import main_global_pysimplegui_settings, RELIEF_RIDGE, RELIEF_SUNKEN, TIMEOUT_KEY
@@ -294,6 +294,29 @@ class PaosGui(SimpleGui):
             headings = ['Wavelength', 'Ordering', 'Normalization', 'Radius of S.A.', 'Origin', '', '', '']
 
         return headings
+
+    def highlight_row(self, row):
+        """
+        Highlights the elements in the currently selected row
+
+        Parameters
+        ----------
+        row: int
+            row corresponding to the optical surface in the GUI lens data editor
+
+        Returns
+        -------
+        out: None
+            highlights the row elements
+        """
+        for r, surface in enumerate(self.ld_keys):
+            background_color = 'yellow' if r + 1 == row else theme_input_background_color()
+            for col, key in enumerate(self.lens_data.keys()):
+                try:
+                    self.window[f'{key}_({r+1},{col})'].update(background_color=background_color)
+                except:
+                    pass
+        return
 
     def update_headings(self, row):
         """
@@ -1184,6 +1207,7 @@ class PaosGui(SimpleGui):
                 cell = re.findall('[0-9]+', elem_key.partition('_')[-1])
                 row, col = tuple(map(int, cell))
                 self.update_headings(row)
+                self.highlight_row(row)
 
             # ------- Display a popup window with the output dictionary ------#
             elif self.event == '-SHOW DICT-':
