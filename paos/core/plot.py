@@ -31,7 +31,7 @@ def do_legend(axis, ncol=1):
     return
 
 
-def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
+def simple_plot(fig, axis, key, item, ima_scale, origin='lower', options=dict()):
     """
     Given the POP simulation output dict, plots the squared amplitude of the
     wavefront at the given optical surface.
@@ -48,6 +48,8 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
         optical surface dict
     ima_scale: str
         plot color map scale, can be either 'linear' or 'log'
+    origin: str
+        matplotlib plot origin. Defaults to 'lower'
     options: dict
         dict containing the options to override the plotting default for one or more surfaces, specified by the
         dictionary key. Available options are the surface scale, an option to display physical units, the surface
@@ -111,10 +113,10 @@ def simple_plot(fig, axis, key, item, ima_scale, options=dict()):
 
     if ima_scale == 'log':
         ima /= ima.max()
-        im = axis.imshow(10 * np.ma.log10(ima), origin='lower', vmin=-20, vmax=0)
+        im = axis.imshow(10 * np.ma.log10(ima), origin=origin, vmin=-20, vmax=0)
         cbar_label = 'power/pix [db]'
     elif ima_scale == 'linear':
-        im = axis.imshow(ima, origin='lower')
+        im = axis.imshow(ima, origin=origin)
         cbar_label = 'power/pix'
     else:
         logger.error('ima_scale shall be either log or linear')
@@ -430,7 +432,7 @@ def plot_psf_xsec(fig, axis, key, item, ima_scale='linear', x_units='standard', 
     return
 
 
-def plot_surface(key, retval, ima_scale, zoom=1, figname=None):
+def plot_surface(key, retval, ima_scale, origin='lower', zoom=1, figname=None):
     """
     Given the optical surface key, the POP output dictionary and the image scale, plots the squared amplitude
     of the wavefront at the given surface (cross-sections and 2D plot)
@@ -443,6 +445,8 @@ def plot_surface(key, retval, ima_scale, zoom=1, figname=None):
         the POP output dictionary
     ima_scale: str
         the image scale. Can be either 'linear' or 'log'
+    origin: str
+        matplotlib plot origin. Defaults to 'lower'
     zoom: scalar
         the surface zoom factor: more increases the axis limits
     figname: str
@@ -459,7 +463,7 @@ def plot_surface(key, retval, ima_scale, zoom=1, figname=None):
     # Xsec plot
     plot_psf_xsec(fig=fig, axis=axs[0], key=key, item=retval[key], ima_scale=ima_scale, surface_zoom=zoom)
     # 2D plot
-    simple_plot(fig=fig, axis=axs[1], key=key, item=retval[key], ima_scale=ima_scale,
+    simple_plot(fig=fig, axis=axs[1], key=key, item=retval[key], ima_scale=ima_scale, origin=origin,
                 options={key: {'surface_zoom': zoom}})
     fig.suptitle(axs[0].get_title(), fontsize=20)
     axs[0].set_title('X-sec view')
