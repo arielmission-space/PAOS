@@ -31,7 +31,7 @@ def do_legend(axis, ncol=1):
     return
 
 
-def simple_plot(fig, axis, key, item, ima_scale, origin='lower', options=dict()):
+def simple_plot(fig, axis, key, item, ima_scale, origin='lower', cmap='viridis', options=dict()):
     """
     Given the POP simulation output dict, plots the squared amplitude of the
     wavefront at the given optical surface.
@@ -50,8 +50,10 @@ def simple_plot(fig, axis, key, item, ima_scale, origin='lower', options=dict())
         plot color map scale, can be either 'linear' or 'log'
     origin: str
         matplotlib plot origin. Defaults to 'lower'
+    cmap: str
+        matplotlib plot color map. Defaults to 'viridis'
     options: dict
-        dict containing the options to override the plotting default for one or more surfaces, specified by the
+        dictionary containing the options to override the plotting default for one or more surfaces, specified by the
         dictionary key. Available options are the surface scale, an option to display physical units, the surface
         zoom(out) and the plot scale.
         Examples:
@@ -113,10 +115,10 @@ def simple_plot(fig, axis, key, item, ima_scale, origin='lower', options=dict())
 
     if ima_scale == 'log':
         ima /= ima.max()
-        im = axis.imshow(10 * np.ma.log10(ima), origin=origin, vmin=-20, vmax=0)
+        im = axis.imshow(10 * np.ma.log10(ima), origin=origin, vmin=-20, vmax=0, cmap=plt.get_cmap(cmap))
         cbar_label = 'power/pix [db]'
     elif ima_scale == 'linear':
-        im = axis.imshow(ima, origin=origin)
+        im = axis.imshow(ima, origin=origin, cmap=plt.get_cmap(cmap))
         cbar_label = 'power/pix'
     else:
         logger.error('ima_scale shall be either log or linear')
