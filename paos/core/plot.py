@@ -469,8 +469,5 @@ def plot_surface(key, retval, ima_scale, zoom=1, figname=None):
     if figname is not None:
         fig.savefig(figname, bbox_inches='tight', dpi=150)
         plt.close()
-    else:
-        fig.tight_layout()
-        plt.show()
 
     return fig

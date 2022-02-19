@@ -50,9 +50,9 @@ class SimpleGui:
         self.right_click_menu_def = ['', ['Nothing', 'Version', 'Exit']]
 
         # ------ Symbols Definition ------ #
-        self.symbol_up = '▲'
-        self.symbol_down = '▼'
-        self.symbol_disabled = '...'
+        self.triangle_right = '▶'
+        self.triangle_down = '▼'
+        self.symbol_disabled = '◯'
         self.symbol_state = '●'
 
         # ------ Quick Message Definition ------ #
@@ -533,7 +533,7 @@ class SimpleGui:
         visible = not visible
         self.window[key].update(visible=visible)
         # Update the triangle symbol
-        self.window[event].update(self.symbol_down if visible else self.symbol_up)
+        self.window[event].update(self.triangle_down if visible else self.triangle_right)
 
         return visible
 

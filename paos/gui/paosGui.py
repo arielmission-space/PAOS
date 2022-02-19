@@ -13,7 +13,7 @@ import copy
 import numpy as np
 
 from PySimpleGUI import Checkbox, Text, InputText, InputCombo, Multiline, Listbox, Button, Column, Menu, Frame, Tab, \
-    TabGroup, Input, Combo, popup_get_folder, Image, Slider, theme_input_background_color
+    TabGroup, Input, Combo, popup_get_folder, Image, Slider, RELIEF_FLAT
 from PySimpleGUI import Submit
 from PySimpleGUI import Window, WINDOW_CLOSED, WINDOW_CLOSE_ATTEMPTED_EVENT
 from PySimpleGUI import main_global_pysimplegui_settings, RELIEF_RIDGE, RELIEF_SUNKEN, TIMEOUT_KEY
@@ -255,7 +255,7 @@ class PaosGui(SimpleGui):
         cell = re.findall('[0-9]+', key.partition('_')[-1])
         row, col = tuple(map(int, cell))
 
-        button_symbol = self.symbol_disabled if disabled else self.symbol_up
+        button_symbol = self.symbol_disabled if disabled else self.triangle_right
         text_color = 'gray' if disabled else 'yellow'
         surface_tab_layout = Column(layout=[
             [Button(button_symbol, enable_events=True, disabled=disabled,
@@ -296,28 +296,27 @@ class PaosGui(SimpleGui):
 
         return headings
 
-    def highlight_row(self, row):
+    def highlight_row(self, row, selected_row):
         """
         Highlights the elements in the currently selected row
 
         Parameters
         ----------
+        selected_row
         row: int
             row corresponding to the optical surface in the GUI lens data editor
 
         Returns
         -------
-        out: None
-            highlights the row elements
+        out: int
+            the highlighted row index
         """
-        for r, surface in enumerate(self.ld_keys):
-            background_color = 'yellow' if r + 1 == row else theme_input_background_color()
-            for col, key in enumerate(self.lens_data.keys()):
-                try:
-                    self.window[f'{key}_({r+1},{col})'].update(background_color=background_color)
-                except:
-                    pass
-        return
+        if selected_row is not None:
+            self.window[f"lenses_{selected_row:02d}"].Widget.config(relief=RELIEF_FLAT)
+
+        self.window[f"lenses_{row:02d}"].Widget.config(relief=RELIEF_SUNKEN)
+
+        return row
 
     def update_headings(self, row):
         """
@@ -475,8 +474,15 @@ class PaosGui(SimpleGui):
             logger.error('Key error')
 
         nrows += 1
+
+        if column_key == 'lenses':
+            new_row = [[Frame('', layout=[self.chain_widgets(nrows, input_list, prefix)],
+                              key=f"{column_key}_{nrows:02d}", relief=RELIEF_FLAT)]]
+        else:
+            new_row = [self.chain_widgets(nrows, input_list, prefix)]
+
         # Extend the Column layout
-        self.window.extend_layout(self.window[column_key], [self.chain_widgets(nrows, input_list, prefix)])
+        self.window.extend_layout(self.window[column_key], new_row)
         self.window[column_key].update()
 
         if column_key == 'lenses':
@@ -513,7 +519,7 @@ class PaosGui(SimpleGui):
         self.window['-FRAME TITLE MC (wfe)-'].update(text_color=self.disable_wfe_color)
 
         if self.disable_wfe:
-            self.window['-OPEN FRAME MC (wfe)-'].update(self.symbol_up)
+            self.window['-OPEN FRAME MC (wfe)-'].update(self.triangle_right)
             self.window['FRAME MC (wfe)'].update(visible=False)
             self.update_column_scrollbar(window=self.window, col_key='MC LAUNCHER COL')
 
@@ -543,10 +549,11 @@ class PaosGui(SimpleGui):
         plt.close('all')
         _ = gc.collect()
         # Reset progress bars
+        _ = self.reset_progress_bar(self.window['progbar'])
         _ = self.reset_progress_bar(self.window['progbar (nwl)'])
         _ = self.reset_progress_bar(self.window['progbar (wfe)'])
         # Reset stoplights color
-        for key in ['POP-STATE', 'PLOT-STATE', 'PLOT-STATE (nwl)', 'PLOT-STATE (wfe)']:
+        for key in ['PLOT-STATE', 'PLOT-STATE (nwl)', 'PLOT-STATE (wfe)']:
             self.window[key].update(text_color='red')
         return
 
@@ -634,9 +641,7 @@ class PaosGui(SimpleGui):
         config = self.to_configparser(dictionary=self.save_to_dict(show=False))
 
         if filename is not None:
-            if not os.path.exists(filename) or not os.path.isfile(filename):
-                logger.error(f'Input file {filename} does not exist or is not a file. Quitting..')
-                sys.exit()
+            pass
         elif temporary:
             self.temporary_config = filename = \
                 os.path.join(os.path.dirname(self.passvalue['conf']),
@@ -879,7 +884,9 @@ class PaosGui(SimpleGui):
                 [Column(layout=list(itertools.chain(
                     [self.add_heading(self.lens_data.keys())],
                     [[Text('')]],
-                    [self.chain_widgets(r, [item for key, item in self.lens_data.items()], prefix='l')
+                    [[Frame('',
+                            layout=[self.chain_widgets(r, [item for key, item in self.lens_data.items()], prefix='l')],
+                            key=f"lenses_{r:02d}", relief=RELIEF_FLAT)]
                      for r in range(1, self.nrows_ld + 1)])),
                     scrollable=True, expand_x=True, expand_y=True, key='lenses')],
                 [Text(' ')],
@@ -912,7 +919,8 @@ class PaosGui(SimpleGui):
                 list(itertools.chain(
                     [Frame('Run and Save', layout=[
                         [Text('Run a diagnostic raytrace')],
-                        [Button(tooltip='Launch raytrace', button_text='Raytrace', enable_events=True, key="-RAYTRACE-")],
+                        [Button(tooltip='Launch raytrace', button_text='Raytrace', enable_events=True,
+                                key="-RAYTRACE-")],
                         [Column(layout=[
                             [Multiline(key='raytrace log', font=self.font_small, autoscroll=True, size=(90, 20),
                                        pad=(0, (15, 0)), disabled=False)]],
@@ -922,7 +930,8 @@ class PaosGui(SimpleGui):
                         [Text('', size=(6, 1))],
                         [Text('Run the POP: ', size=(30, 1)),
                          Button(tooltip='Launch POP', button_text='POP', enable_events=True, key="-POP-"),
-                         Text(' ' + self.symbol_state, font=("Tahoma", 20), text_color='red', key='POP-STATE')],
+                         ProgressBar(max_value=10, orientation='horizontal', size=(20, 8), border_width=2,
+                                     key='progbar', metadata=0, bar_color=('Yellow', 'Gray'))],
                         [Text('Save the POP output: ', size=(30, 1)),
                          Button(tooltip='Save the POP output', button_text='Save POP', enable_events=True,
                                 key="-SAVE POP-")],
@@ -956,7 +965,7 @@ class PaosGui(SimpleGui):
         monte_carlo_layout = [
             [Column(layout=[
                 [Text('', size=(6, 1))],
-                [Button(self.symbol_up, enable_events=True, disabled=False,
+                [Button(self.triangle_right, enable_events=True, disabled=False,
                         key='-OPEN FRAME MC (nwl)-', font=self.font_small, size=(2, 1)),
                  Text('MC Wavelengths', size=(20, 1), text_color='yellow', key='-FRAME TITLE MC (nwl)-',
                       font=self.font_titles, relief=RELIEF_SUNKEN)],
@@ -976,7 +985,7 @@ class PaosGui(SimpleGui):
                             [Text('Run the multi-wl POP: ', size=(30, 1)),
                              Button(tooltip='Launch POP', button_text='POP', enable_events=True,
                                     key="-POP (nwl)-"),
-                             ProgressBar(max_value=20, orientation='horizontal', size=(40, 8), border_width=2,
+                             ProgressBar(max_value=10, orientation='horizontal', size=(20, 8), border_width=2,
                                          key='progbar (nwl)', metadata=0, bar_color=('Yellow', 'Gray'))],
                             [Text('Save the POP output: ', size=(30, 1)),
                              Button(tooltip='Save the POP output', button_text='Save POP', enable_events=True,
@@ -994,7 +1003,8 @@ class PaosGui(SimpleGui):
                                         default_value='log scale', key="Ima scale (nwl)")],
                             [Text('Plot surface: ', size=(30, 1)),
                              Button(tooltip='Plot', button_text='Plot', enable_events=True, key="-PLOT (nwl)-"),
-                             Text(' ' + self.symbol_state, font=("Tahoma", 20), text_color='red', key='PLOT-STATE (nwl)')],
+                             Text(' ' + self.symbol_state, font=("Tahoma", 20), text_color='red',
+                                  key='PLOT-STATE (nwl)')],
                             [Text('Figure prefix: ', size=(30, 1)),
                              InputText(tooltip='Figure prefix', default_text='Plot', key="Fig prefix (nwl)")],
                             [Text('Save the Plots', size=(30, 1)),
@@ -1015,7 +1025,7 @@ class PaosGui(SimpleGui):
                     ))
                 ], key='FRAME MC (nwl)')]])],
                 [Text('', size=(6, 2))],
-                [Button(self.symbol_up, enable_events=True, disabled=self.disable_wfe,
+                [Button(self.triangle_right, enable_events=True, disabled=self.disable_wfe,
                         key='-OPEN FRAME MC (wfe)-', font=self.font_small, size=(2, 1)),
                  Text('MC Wavefront error', size=(20, 1), text_color=self.disable_wfe_color,
                       key="-FRAME TITLE MC (wfe)-", font=self.font_titles, relief=RELIEF_SUNKEN)],
@@ -1047,7 +1057,7 @@ class PaosGui(SimpleGui):
                              InputText(tooltip='Index of Zernike', default_text='', key="NSURF (wfe)")],
                             [Text('Run the POP for each wfe: ', size=(30, 1)),
                              Button(tooltip='Launch POP', button_text='POP', enable_events=True, key="-POP (wfe)-"),
-                             ProgressBar(max_value=20, orientation='horizontal', size=(40, 8), border_width=2,
+                             ProgressBar(max_value=10, orientation='horizontal', size=(20, 8), border_width=2,
                                          key='progbar (wfe)', metadata=0, bar_color=('Yellow', 'Gray'))],
                             [Text('Save the POP output: ', size=(30, 1)),
                              Button(tooltip='Save the POP output', button_text='Save POP', enable_events=True,
@@ -1065,7 +1075,8 @@ class PaosGui(SimpleGui):
                                         default_value='log scale', key="Ima scale (wfe)")],
                             [Text('Plot surface: ', size=(30, 1)),
                              Button(tooltip='Plot', button_text='Plot', enable_events=True, key="-PLOT (wfe)-"),
-                             Text(' ' + self.symbol_state, font=("Tahoma", 20), text_color='red', key='PLOT-STATE (wfe)')],
+                             Text(' ' + self.symbol_state, font=("Tahoma", 20), text_color='red',
+                                  key='PLOT-STATE (wfe)')],
                             [Text('Figure prefix: ', size=(30, 1)),
                              InputText(tooltip='Figure prefix', default_text='Plot', key="Fig prefix (wfe)")],
                             [Text('Save the Plots', size=(30, 1)),
@@ -1168,6 +1179,7 @@ class PaosGui(SimpleGui):
         mc_wavelengths_frame_visible = False
         mc_wfe_frame_visible = False
         wfe_realizations_file = None
+        selected_row = None
 
         pop = ''
 
@@ -1208,7 +1220,7 @@ class PaosGui(SimpleGui):
                 cell = re.findall('[0-9]+', elem_key.partition('_')[-1])
                 row, col = tuple(map(int, cell))
                 self.update_headings(row)
-                self.highlight_row(row)
+                selected_row = self.highlight_row(row, selected_row)
 
             # ------- Display a popup window with the output dictionary ------#
             elif self.event == '-SHOW DICT-':
@@ -1308,7 +1320,7 @@ class PaosGui(SimpleGui):
                     if key == 'aperture':
                         item_column_key = f'-OPEN TAB APERTURE-({row},{c})'
                         # Update triangle symbol
-                        self.window[item_column_key].update(self.symbol_disabled if disabled else self.symbol_up)
+                        self.window[item_column_key].update(self.symbol_disabled if disabled else self.triangle_right)
                         title_column_key = f'LD_Tab_Title_({row},8)'
                         text_color = 'gray' if disabled else 'yellow'
                         # Update aperture text color
@@ -1355,6 +1367,8 @@ class PaosGui(SimpleGui):
                     # Update the raytrace log Column
                     raytrace_log = ''
                     self.window['raytrace log'].update(raytrace_log)
+                # Reset progress bar
+                _ = self.reset_progress_bar(self.window['progbar'])
                 _ = gc.collect()
 
             # ------- Update 'Select field' Listbox widget in MC Wavelengths frame ------#
@@ -1417,6 +1431,7 @@ class PaosGui(SimpleGui):
                     logger.debug(f'Invalid wavelength. Continuing..')
                     continue
                 self.reset_simulation()
+                progbar = self.window['progbar']
                 # Get the wavelength and the field indexes from the respective Listbox widgets
                 n_wl, = self.window['select wl'].GetIndexes()
                 n_field, = self.window['select field'].GetIndexes()
@@ -1431,8 +1446,9 @@ class PaosGui(SimpleGui):
                 self.retval_list = [self.retval]
                 # For later plotting
                 pop = 'simple'
-                # Update stoplight color
-                self.window['POP-STATE'].update(text_color='green')
+                # Update progress bar
+                progbar.metadata = progbar.Size[0]
+                progbar.update_bar(progbar.metadata)
 
             # ------- Run the POP (nwl) ------#
             elif self.event == '-POP (nwl)-':
@@ -1456,6 +1472,7 @@ class PaosGui(SimpleGui):
                         delayed(run)(pup_diameter, 1.0e-6 * wavelength, parameters['grid_size'], parameters['zoom'],
                                      field, opt_chain)
                         for wavelength, opt_chain in tqdm(zip(wl_batch, opt_batch))))
+                    # Update progress bar
                     progress = np.ceil(progbar_nwl.Size[0] * len(wl_batch) / len(wavelengths))
                     progbar_nwl.metadata += progress
                     progbar_nwl.update_bar(progbar_nwl.metadata)
@@ -1529,6 +1546,7 @@ class PaosGui(SimpleGui):
                         delayed(run)(pup_diameter, 1.0e-6 * wavelength, parameters['grid_size'], parameters['zoom'],
                                      field, o_chain)
                         for o_chain in tqdm(opt_batch)))
+                    # Update progress bar
                     progress = np.ceil(progbar_wfe.Size[0] * len(opt_batch) / len(opt))
                     progbar_wfe.metadata += progress
                     progbar_wfe.update_bar(progbar_wfe.metadata)
