@@ -727,7 +727,7 @@ class PaosGui(SimpleGui):
                     break
                 # Plot
                 logger.debug(f'Plotting POP for group {group}')
-                figure_list.append(plot_surface(key, ret, ima_scale, zoom))
+                figure_list.append(plot_surface(key=key, retval=ret, ima_scale=ima_scale, zoom=zoom))
                 # Get the index of the plotted figures
                 idx.append(j)
                 j += 1
@@ -743,7 +743,7 @@ class PaosGui(SimpleGui):
                 logger.error('Surface not present in POP output: it was either ignored or simply not saved')
                 return
             # Plot
-            fig = plot_surface(key, ret, ima_scale, zoom)
+            fig = plot_surface(key=key, retval=ret, ima_scale=ima_scale, zoom=zoom)
             return fig
 
     def display_plot_slide(self, figure_list, figure_agg, image_key, slider_key):
