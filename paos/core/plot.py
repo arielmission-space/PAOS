@@ -55,12 +55,13 @@ def simple_plot(fig, axis, key, item, ima_scale, origin='lower', cmap='viridis',
     options: dict
         dictionary containing the options to override the plotting default for one or more surfaces, specified by the
         dictionary key. Available options are the surface scale, an option to display physical units, the surface
-        zoom(out) and the plot scale.
+        zoom(out), the plot scale and whether to plot dark rings in correspondance to the zeros of the Airy diffraction
+        pattern.
         Examples:
         0) options={4: {'ima_scale':'linear'}}
         1) options={4: {'surface_scale':60, 'ima_scale':'linear'}}
         2) options={4: {'surface_scale':21, 'pixel_units':True, 'ima_scale':'linear'}}
-        3) options={4: {'surface_zoom':2, 'ima_scale':'log'}}
+        3) options={4: {'surface_zoom':2, 'ima_scale':'log', 'dark_rings': False}}
 
     Returns
     -------
@@ -92,6 +93,12 @@ def simple_plot(fig, axis, key, item, ima_scale, origin='lower', cmap='viridis',
         pixel_units = options[key]['pixel_units']
     else:
         pixel_units = False
+
+    if key in options.keys() and 'dark_rings' in options[key].keys():
+        assert isinstance(options[key]['dark_rings'], bool), 'dark_rings must be boolean'
+        dark_rings = options[key]['dark_rings']
+    else:
+        dark_rings = True
 
     if item['wz'] < 0.005:
         # Use microns
@@ -158,7 +165,7 @@ def simple_plot(fig, axis, key, item, ima_scale, origin='lower', cmap='viridis',
     beam_radius = scale * item['wz']
     airy_radius = 1.22 * scale * item['fratio'] * item['wl']
 
-    if np.isfinite(airy_radius):
+    if np.isfinite(airy_radius) and dark_rings:
         for airy_scale in [1.22, 2.23, 3.24, 4.24, 5.24]:
             arad = airy_radius * airy_scale / 1.22
             width = 2.0 * arad / (scale * item['dx']) if pixel_units else 2.0 * arad
