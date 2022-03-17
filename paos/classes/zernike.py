@@ -177,7 +177,19 @@ class Zernike:
             c = (1 + np.sign(m)) / 2
             return (a - b - c).astype(int) + 1
         elif ordering == 'noll':
-            raise NameError("Noll ordering not supported.")
+            _p = np.zeros(n.size, dtype=np.int)
+            for idx, (_m, _n) in enumerate(zip(m, n)):
+                if _m > 0.0 and (_n % 4 in [0, 1]):
+                    _p[idx] = 0
+                elif _m < 0.0 and (_n % 4 in [2, 3]):
+                    _p[idx] = 0
+                elif _m >= 0.0 and (_n % 4 in [2, 3]):
+                    _p[idx] = 1
+                elif _m <= 0.0 and (_n % 4 in [0, 1]):
+                    _p[idx] = 1
+                else:
+                    raise ValueError("Invalid (m,n) in Noll indexing.")
+            return (n * (n + 1) / 2 + np.abs(m) + _p).astype(np.int)
         else:
             raise NameError("Ordering not supported.")
 

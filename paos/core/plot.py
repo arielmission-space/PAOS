@@ -271,7 +271,7 @@ def plot_pop(retval, ima_scale='log', ncols=2, figname=None, options=dict()):
             j = k // ncols
             axis = ax[j, i]
 
-        simple_plot(fig, axis, key, item, ima_scale, options)
+        simple_plot(fig=fig, axis=axis, key=key, item=item, ima_scale=ima_scale, options=options)
 
         if n_subplots % ncols and k == n_subplots - 1:
             for col in range(i + 1, ncols):
