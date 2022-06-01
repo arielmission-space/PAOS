@@ -119,11 +119,10 @@ def pipeline(passvalue):
             logger.debug('Wfe realization file: {}; column: {}'.format(
                 wfe_file, column))
             wfe = ascii.read(wfe_file)
-            optc[key]['Zwavelength'] = 1.0e-9
             optc[key]['Zordering'] = 'standard'
             optc[key]['Znormalize'] = 'True'
             optc[key]['Zorigin'] = 'x'
-            Ck = wfe['col%i' % (float(column) + 4)].data
+            Ck = wfe['col%i' % (float(column) + 4)].data * 1.0e-9
             optc[key]['Z'] = np.append(np.zeros(3), Ck)
             logger.debug('Wfe coefficients: {}'.format(optc[key]['Z']))
 
