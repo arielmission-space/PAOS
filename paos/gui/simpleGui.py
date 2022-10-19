@@ -199,8 +199,7 @@ class SimpleGui:
 
         return config
 
-    @staticmethod
-    def to_hdf5(retval_list, groups, keys_to_keep=None):
+    def to_hdf5(self, retval_list, groups, keys_to_keep=None):
         """
         Given the POP output dictionary list, the names for each simulation (saving groups) and the keys to store,
         opens a popup to get the output file name and then dumps the simulation outputs to a hdf5 file.
@@ -229,7 +228,9 @@ class SimpleGui:
             return
 
         # Get the file path to save to
-        filename = popup_get_file('Choose file (HDF5) to save to', save_as=True, keep_on_top=True)
+        filename = popup_get_file('Choose file (HDF5) to save to', default_path=self.passvalue['output'],
+                                  default_extension='.h5', save_as=True,
+                                  keep_on_top=True)
 
         if filename is None:
             logger.debug('Pressed Cancel. Continuing...')

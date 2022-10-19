@@ -25,14 +25,15 @@ def main():
 
     args = parser.parse_args()
     passvalue = {'conf': args.conf,
-                 'debug': args.debug}
+                 'debug': args.debug,
+                 'output': args.output}
 
     if args.debug:
         setLogLevel(logging.DEBUG)
 
     if args.log:
         if isinstance(args.output, str):
-            log_filename = "{}/test.log".format(os.path.dirname(args.output))
+            log_filename = "{}/paos.log".format(os.path.dirname(args.output))
             logger.info('log file name: {}'.format(log_filename))
             addLogFile(fname=log_filename)
         else:

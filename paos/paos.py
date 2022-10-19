@@ -69,7 +69,7 @@ def main():
         setLogLevel(logging.DEBUG)
     if args.log:
         if isinstance(args.output, str):
-            fname = "{}/test.log".format(os.path.dirname(args.output))
+            fname = "{}/paos.log".format(os.path.dirname(args.output))
             logger.info('log file name: {}'.format(fname))
             addLogFile(fname=fname)
         else:
