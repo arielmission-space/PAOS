@@ -224,7 +224,7 @@ class SimpleGui:
             keys_to_keep = ['amplitude', 'dx', 'dy', 'wl']
 
         if not retval_list:
-            logger.debug('Run POP first')
+            logger.error('Run POP first')
             return
 
         # Get the file path to save to
@@ -233,11 +233,11 @@ class SimpleGui:
                                   keep_on_top=True)
 
         if filename is None:
-            logger.debug('Pressed Cancel. Continuing...')
+            logger.warning('Pressed Cancel. Continuing...')
             return
 
         if not filename.endswith(('.HDF5', '.hdf5', '.H5', '.h5')):
-            logger.warning('Saving file format not provided. Defaulting to .h5')
+            logger.debug('Saving file format not provided. Defaulting to .h5')
             filename = ''.join([filename, '.h5'])
 
         # Save the POP output to the specified .hdf5 file
@@ -264,18 +264,18 @@ class SimpleGui:
         """
 
         if text_list == '':
-            logger.debug('Perform raytrace first')
+            logger.error('Perform raytrace first')
             return
 
         # Get the file path to save to
         filename = popup_get_file('Choose file (TXT) to save to', save_as=True, keep_on_top=True)
 
         if filename is None:
-            logger.debug('Pressed Cancel. Continuing...')
+            logger.warning('Pressed Cancel. Continuing...')
             return
 
         if not filename.endswith(('.TXT', '.txt')):
-            logger.warning('Saving file format not provided. Defaulting to .txt')
+            logger.debug('Saving file format not provided. Defaulting to .txt')
             filename = ''.join([filename, '.txt'])
 
         # Save the text list to the specified .txt file
@@ -377,7 +377,7 @@ class SimpleGui:
 
         """
         if figure is None:
-            logger.debug('Create plot first')
+            logger.error('Create plot first')
             return
 
         if filename is None:
@@ -385,11 +385,11 @@ class SimpleGui:
             filename = popup_get_file('Choose file (PNG, JPG) to save to', save_as=True, keep_on_top=True)
 
             if filename is None:
-                logger.debug('Pressed Cancel. Continuing...')
+                logger.warning('Pressed Cancel. Continuing...')
                 return
 
             if not filename.endswith(('.PNG', '.png', '.JPG', '.jpg')):
-                logger.warning('Saving file format not provided. Defaulting to .png')
+                logger.debug('Saving file format not provided. Defaulting to .png')
                 filename = ''.join([filename, '.png'])
 
         # Save the plot to the specified .png or .jpg file
@@ -598,7 +598,7 @@ class SimpleGui:
                 keys.append(key)
 
         if '' in col_values:
-            logger.error('Invalid wavelength in column. Continuing..')
+            logger.warning('Invalid wavelength in column. Continuing..')
             return
 
         col_values = list(map(float, col_values))

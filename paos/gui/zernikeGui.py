@@ -109,7 +109,7 @@ class ZernikeGui(SimpleGui):
             self.zernike['z'] = ['0']
         self.max_rows = len(self.zernike['zindex'])
         if len(self.zernike['z']) != self.max_rows:
-            logger.error('Input zernike index and zernike coefficients differ in length. Quitting...')
+            logger.critical('Input zernike index and zernike coefficients differ in length. Quitting...')
             sys.exit()
 
         # Get the Zernike parameters from the main GUI window (wavelength, ordering, normalization, radius of support
@@ -121,7 +121,7 @@ class ZernikeGui(SimpleGui):
                 self.par[c] = self.values[par_key]
         wavelength, self.ordering, normalization, radius, origin = self.par
         if self.ordering == '':
-            logger.warning('Zernike ordering is not defined. Defaulting to ordering=standard.')
+            logger.debug('Zernike ordering is not defined. Defaulting to ordering=standard.')
             self.ordering = 'standard'
         assert self.ordering in ['ansi', 'standard', 'noll', 'fringe'], f'ordering {self.ordering} not supported'
 
@@ -205,7 +205,7 @@ class ZernikeGui(SimpleGui):
             event, values = self.window.read(timeout=1000)
             if event == TIMEOUT_KEY:
                 continue
-            logger.debug('============ Event = {} =============='.format(event))
+            logger.trace('============ Event = {} =============='.format(event))
             elem = self.window.find_element_with_focus()
             elem_key = elem.Key if (elem is not None and isinstance(elem.Key, (str, tuple))) else (0, 0)
 
@@ -230,7 +230,7 @@ class ZernikeGui(SimpleGui):
                 # Find current position in the Zernike tab
                 row, col = re.findall('[0-9]+', elem_key.partition('_')[-1])
                 if self.headings[int(col)] != 'Z':
-                    logger.debug('The user shall select any cell from from the Z column. Skipping..')
+                    logger.error('The user shall select any cell from from the Z column. Skipping..')
                     continue
                 # Get the text from the clipboard
                 text = self.get_clipboard_text()
@@ -249,7 +249,7 @@ class ZernikeGui(SimpleGui):
             elif event == '-ADD ZERNIKE RADIAL ORDER-':
                 # Check ordering
                 if self.ordering not in ['ansi', 'standard']:
-                    logger.debug('Not supported with {} as ordering. Skipping..'.format(self.ordering.capitalize()))
+                    logger.error('Not supported with {} as ordering. Skipping..'.format(self.ordering.capitalize()))
                     continue
                 # Get azimuthal and radial orders and closing order condition
                 m, n = Zernike.j2mn(N=self.max_rows, ordering=self.ordering)
