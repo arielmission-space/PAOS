@@ -768,7 +768,7 @@ class PaosGui(SimpleGui):
 
         """
         if not figure_list:
-            logger.warning('Plot POP first')
+            logger.error('Plot first')
             return
         if figure_agg is not None:
             # Reset figure canvas

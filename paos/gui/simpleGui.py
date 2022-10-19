@@ -324,18 +324,22 @@ class SimpleGui:
             The figure canvas
 
         """
-        if figure is not None:
-            plt.close('all')  # erases previously drawn plots
-            canvas = FigureCanvasAgg(figure)
-            buf = io.BytesIO()
-            canvas.print_figure(buf, format='png')
-            if buf is not None:
-                buf.seek(0)
-                element.update(data=buf.read())
-                element.update(visible=True)
-                return canvas
-            else:
-                return None
+
+        if figure is None:
+            logger.error('Plot first')
+            return
+
+        plt.close('all')  # erases previously drawn plots
+        canvas = FigureCanvasAgg(figure)
+        buf = io.BytesIO()
+        canvas.print_figure(buf, format='png')
+        if buf is not None:
+            buf.seek(0)
+            element.update(data=buf.read())
+            element.update(visible=True)
+            return canvas
+        else:
+            return None
 
     @staticmethod
     def clear_image(element):
