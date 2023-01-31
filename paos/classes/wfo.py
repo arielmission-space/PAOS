@@ -9,13 +9,13 @@ class WFO(object):
     Physical optics wavefront propagation.
     Implements the paraxial theory described in
     `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_
-    
+
     All units are meters.
-    
+
     Parameters
     ----------
     beam_diameter: scalar
-        the input beam diameter. Note that the input beam is always circular, regardless of 
+        the input beam diameter. Note that the input beam is always circular, regardless of
         whatever non-circular apodization the input pupil might apply.
     wl: scalar
         the wavelength
@@ -28,9 +28,11 @@ class WFO(object):
     ----------
     wl: scalar
         the wavelength
-    z: scalar
-        current beam position along the z-axis (propagation axis).
+    zx: scalar
+        current beam position along the z-axis (propagation axis), sagittal component.
         Initial value is 0
+    zy: scalar
+        current beam position along the z-axis (propagation axis), tangential component.
     w0: scalar
         pilot Gaussian beam waist.
         Initial value is beam_diameter/2
@@ -63,11 +65,11 @@ class WFO(object):
     extent: tuple
         the physical coordinates of the wavefront bounding box (xmin, xmax, ymin, ymax).
         Can be used directly in im.set_extent.
-        
+
     Returns
     -------
     out: an instance of wfo
-    
+
     Example
     -------
     >>> import paos
@@ -97,16 +99,22 @@ class WFO(object):
         assert wl > 0, 'a wavelength should be positive'
 
         self._wl = wl
-        self._z = 0.0  # current beam z coordinate
-        self._w0 = beam_diameter / 2.0  # beam waist
-        self._zw0 = 0.0  # beam waist z coordinate
-        self._zr = np.pi * self.w0 ** 2 / wl  # Rayleigh distance
+        self._z_x = 0.0  # current beam z coordinate, sagittal plane
+        self._z_y = 0.0  # current beam z coordinate, tangential plane
+        self._w0_x = beam_diameter / 2.0  # beam waist, sagittal plane
+        self._w0_y = beam_diameter / 2.0  # beam waist, tangential plane
+        self._zw0_x = 0.0  # beam waist z coordinate, sagittal plane
+        self._zw0_y = 0.0  # beam waist z coordinate, tangential plane
+        self._zr_x = np.pi * self.w0_x ** 2 / wl  # Rayleigh distance, sagittal plane
+        self._zr_y = np.pi * self.w0_y ** 2 / wl  # Rayleigh distance, tangential plane
 
         self._rayleigh_factor = 2.0
         self._dx = beam_diameter * zoom / grid_size  # pixel size
         self._dy = beam_diameter * zoom / grid_size  # pixel size
-        self._C = 0.0  # beam curvature, start with a planar wf
-        self._fratio = np.inf  # Gaussian beam f-ratio
+        self._C_x = 0.0  # beam curvature, start with a planar wf, sagittal plane
+        self._C_y = 0.0  # beam curvature, start with a planar wf, tangential plane
+        self._fratio_x = np.inf  # Gaussian beam f-ratio, sagittal plane
+        self._fratio_y = np.inf  # Gaussian beam f-ratio, tangential plane
 
         grid_size = np.uint(grid_size)
         self._wfo = np.ones((grid_size, grid_size), dtype=np.complex128)
@@ -116,20 +124,36 @@ class WFO(object):
         return self._wl
 
     @property
-    def z(self):
-        return self._z
+    def z_x(self):
+        return self._z_x
 
     @property
-    def w0(self):
-        return self._w0
+    def z_y(self):
+        return self._z_y
 
     @property
-    def zw0(self):
-        return self._zw0
+    def w0_x(self):
+        return self._w0_x
 
     @property
-    def zr(self):
-        return self._zr
+    def w0_y(self):
+        return self._w0_y
+
+    @property
+    def zw0_x(self):
+        return self._zw0_x
+
+    @property
+    def zw0_y(self):
+        return self._zw0_y
+
+    @property
+    def zr_x(self):
+        return self._zr_x
+
+    @property
+    def zr_y(self):
+        return self._zr_y
 
     @property
     def rayleigh_factor(self):
@@ -144,12 +168,20 @@ class WFO(object):
         return self._dy
 
     @property
-    def C(self):
-        return self._C
+    def C_x(self):
+        return self._C_x
 
     @property
-    def fratio(self):
-        return self._fratio
+    def C_y(self):
+        return self._C_y
+
+    @property
+    def fratio_x(self):
+        return self._fratio_x
+
+    @property
+    def fratio_y(self):
+        return self._fratio_y
 
     @property
     def wfo(self):
@@ -164,12 +196,20 @@ class WFO(object):
         return np.angle(self._wfo)
 
     @property
-    def wz(self):
-        return self.w0 * np.sqrt(1.0 + ((self.z - self.zw0) / self.zr) ** 2)
+    def wz_x(self):
+        return self.w0_x * np.sqrt(1.0 + ((self.z_x - self.zw0_x) / self.zr_x) ** 2)
 
     @property
-    def distancetofocus(self):
-        return self.zw0 - self.z
+    def wz_y(self):
+        return self.w0_y * np.sqrt(1.0 + ((self.z_y - self.zw0_y) / self.zr_y) ** 2)
+
+    @property
+    def distancetofocus_x(self):
+        return self.zw0_x - self.z_x
+
+    @property
+    def distancetofocus_y(self):
+        return self.zw0_y - self.z_y
 
     @property
     def extent(self):
@@ -178,7 +218,7 @@ class WFO(object):
 
     def make_stop(self):
         """
-        Make current surface a stop. 
+        Make current surface a stop.
         Stop here just means that the wf at current position is normalised to unit energy.
         """
         norm2 = np.sum(np.abs(self._wfo) ** 2)
@@ -188,7 +228,7 @@ class WFO(object):
                  shape='elliptical', tilt=None, obscuration=False):
         """
         Apply aperture mask
-        
+
         Parameters
         ----------
         xc: scalar
@@ -250,90 +290,124 @@ class WFO(object):
 
         return aperture
 
-    def insideout(self, z=None):
+    def insideout(self, z_x=None, z_y=None):
         """
-        Check if z position is within the Rayleigh distance
-        
+        Check if z position is within the Rayleigh distance.
+        Both sagittal and tangential planes are checked.
+
         Parameters
         ----------
-        z: scalar
-            beam coordinate long propagation axis
-            
+        z_x: scalar
+            beam coordinate along propagation axis, sagittal plane
+        z_y: scalar
+            beam coordinate along propagation axis, tangential plane
+
         Returns
         -------
             out: string
                 'I' if :math:`|z - z_{w0}| < z_{r}` else 'O'
         """
-        if z is None:
-            delta_z = self.z - self.zw0
+        if z_x is None:
+            delta_z_x = self.z_x - self.zw0_x
         else:
-            delta_z = z - self.zw0
+            delta_z_x = z_x - self.zw0_x
 
-        if np.abs(delta_z) < self.rayleigh_factor * self.zr:
-            return 'I'
+        if z_y is None:
+            delta_z_y = self.z_y - self.zw0_y
         else:
-            return 'O'
+            delta_z_y = z_y - self.zw0_y
+
+        if np.abs(delta_z_x) < self.rayleigh_factor * self.zr_x:
+            insideout_x = 'I'
+        else:
+            insideout_x = 'O'
+
+        if np.abs(delta_z_y) < self.rayleigh_factor * self.zr_y:
+            insideout_y = 'I'
+        else:
+            insideout_y = 'O'
+
+        assert insideout_x == insideout_y, 'Sagittal and tangential planes are not in the same state'
+        return insideout_x
 
     def lens(self, lens_fl):
         """
         Apply wavefront phase from paraxial lens
-        
+
         Parameters
         ----------
         lens_fl: scalar
             Lens focal length. Positive for converging lenses. Negative for diverging lenses.
-        
+
         Note
         ----------
             A paraxial lens imposes a quadratic phase shift.
         """
 
-        wz = self.w0 * np.sqrt(1.0 + ((self.z - self.zw0) / self.zr) ** 2)
-        delta_z = self.z - self.zw0
+        wz_x = self.w0_x * np.sqrt(1.0 + ((self.z_x - self.zw0_x) / self.zr_x) ** 2)
+        wz_y = self.w0_y * np.sqrt(1.0 + ((self.z_y - self.zw0_y) / self.zr_y) ** 2)
+        delta_z_x = self.z_x - self.zw0_x
+        delta_z_y = self.z_y - self.zw0_y
 
         propagator = self.insideout()
 
         # estimate Gaussian beam curvature after lens
-        gCobj = delta_z / (delta_z ** 2 + self.zr ** 2)  # Gaussian beam curvature before lens
-        gCima = gCobj - 1.0 / lens_fl  # Gaussian beam curvature after lens
+        gCobj_x = delta_z_x / (delta_z_x ** 2 + self.zr_x ** 2)  # Gaussian beam curvature before lens. Sagittal plane
+        gCobj_y = delta_z_y / (delta_z_y ** 2 + self.zr_y ** 2)  # Gaussian beam curvature before lens. Tangential plane
+        gCima_x = gCobj_x - 1.0 / lens_fl  # Gaussian beam curvature after lens. Sagittal plane
+        gCima_y = gCobj_y - 1.0 / lens_fl  # Gaussian beam curvature after lens. Tangential plane
 
         # update Gaussian beam parameters
-        self._w0 = wz / np.sqrt(1.0 + (np.pi * wz ** 2 * gCima / self.wl) ** 2)
-        self._zw0 = -gCima / (gCima ** 2 + (self.wl / (np.pi * wz ** 2)) ** 2) + self.z
-        self._zr = np.pi * self.w0 ** 2 / self.wl
+        self._w0_x = wz_x / np.sqrt(1.0 + (np.pi * wz_x ** 2 * gCima_x / self.wl) ** 2)
+        self._w0_y = wz_y / np.sqrt(1.0 + (np.pi * wz_y ** 2 * gCima_y / self.wl) ** 2)
+        self._zw0_x = -gCima_x / (gCima_x ** 2 + (self.wl / (np.pi * wz_x ** 2)) ** 2) + self.z_x
+        self._zw0_y = -gCima_y / (gCima_y ** 2 + (self.wl / (np.pi * wz_y ** 2)) ** 2) + self.z_y
+        self._zr_x = np.pi * self.w0_x ** 2 / self.wl
+        self._zr_y = np.pi * self.w0_y ** 2 / self.wl
 
         propagator = propagator + self.insideout()
 
-        if propagator[0] == 'I' or self.C == 0.0:
-            Cobj = 0.0
+        if propagator[0] == 'I' or self.C_x == 0.0:
+            Cobj_x = Cobj_y = 0.0
         else:
-            Cobj = 1 / delta_z
+            Cobj_x = 1 / delta_z_x
+            Cobj_y = 1 / delta_z_y
 
-        delta_z = self.z - self.zw0
+        delta_z_x = self.z_x - self.zw0_x
+        delta_z_y = self.z_y - self.zw0_y
 
         if propagator[1] == 'I':
-            Cima = 0.0
+            Cima_x = Cima_y = 0.0
         else:
-            Cima = 1 / delta_z
+            Cima_x = 1 / delta_z_x
+            Cima_y = 1 / delta_z_y
 
-        self._C = Cima
+        self._C_x = Cima_x
+        self._C_y = Cima_y
 
         if propagator == 'II':
-            lens_phase = 1.0 / lens_fl
+            lens_phase_x = lens_phase_y = 1.0 / lens_fl
         elif propagator == 'IO':
-            lens_phase = 1 / lens_fl + Cima
+            lens_phase_x = 1 / lens_fl + Cima_x
+            lens_phase_y = 1 / lens_fl + Cima_y
         elif propagator == 'OI':
-            lens_phase = 1.0 / lens_fl - Cobj
+            lens_phase_x = 1.0 / lens_fl - Cobj_x
+            lens_phase_y = 1.0 / lens_fl - Cobj_y
         elif propagator == 'OO':
-            lens_phase = 1.0 / lens_fl - Cobj + Cima
+            lens_phase_x = 1.0 / lens_fl - Cobj_x + Cima_x
+            lens_phase_y = 1.0 / lens_fl - Cobj_y + Cima_y
+        else:
+            logger.error('Propagation direction not defined.')
+            raise ValueError('Propagation direction not defined.')
 
         x = (np.arange(self._wfo.shape[1]) - self._wfo.shape[1] // 2) * self.dx
         y = (np.arange(self._wfo.shape[0]) - self._wfo.shape[0] // 2) * self.dy
 
         xx, yy = np.meshgrid(x, y)
-        qphase = -(xx ** 2 + yy ** 2) * (0.5 * lens_phase / self.wl)
+        qphase = -(xx ** 2 * lens_phase_x + yy ** 2 * lens_phase_y) * (0.5 / self.wl)
 
-        self._fratio = np.abs(delta_z) / (2 * wz)
+        self._fratio_x = np.abs(delta_z_x) / (2 * wz_x)
+        self._fratio_y = np.abs(delta_z_y) / (2 * wz_y)
         self._wfo = self._wfo * np.exp(2.0j * np.pi * qphase)
 
     def Magnification(self, My, Mx=None):
@@ -363,27 +437,35 @@ class WFO(object):
         self._dx *= Mx
         self._dy *= My
 
-        if np.abs(Mx - 1.0) < 1.0e-8 or Mx is None:
+        if np.abs(Mx - 1.0) < 1.0e-8 or Mx is None or np.abs(My - 1.0) < 1.0e-8 or My is None:
             logger.trace('Does not do anything if magnification x is close to unity.')
             return
 
         logger.warning("Gaussian beam magnification is implemented, but has not been tested.")
 
         # Current distance to focus (before magnification)
-        delta_z = self.z - self.zw0
+        delta_z_x = self.z_x - self.zw0_x
+        delta_z_y = self.z_y - self.zw0_y
         # Current w(z) (before magnification)
-        wz = self.w0 * np.sqrt(1.0 + ((self.z - self.zw0) / self.zr) ** 2)
+        wz_x = self.w0_x * np.sqrt(1.0 + ((self.z_x - self.zw0_x) / self.zr_x) ** 2)
+        wz_y = self.w0_y * np.sqrt(1.0 + ((self.z_y - self.zw0_y) / self.zr_y) ** 2)
 
         # Apply magnification following ABCD Gaussian beam prescription
-        # i.e. w'(z) = Mx*w(z), R'(z) = Mx**2 * R(z)  
+        # i.e. w'(z) = Mx*w(z), R'(z) = Mx**2 * R(z)
 
-        delta_z *= Mx ** 2
-        wz *= Mx
-        self._w0 *= Mx  # From Eq 56, Lawrence (1992)
-        self._zr *= Mx ** 2
-        self._zw0 = self.z - delta_z
-        self._fratio = np.abs(delta_z) / (2 * wz)
-    
+        delta_z_x *= Mx ** 2
+        delta_z_y *= My ** 2
+        wz_x *= Mx
+        wz_y *= My
+        self._w0_x *= Mx  # From Eq 56, Lawrence (1992)
+        self._w0_y *= My  # From Eq 56, Lawrence (1992)
+        self._zr_x *= Mx ** 2
+        self._zr_y *= My ** 2
+        self._zw0_x = self.z_x - delta_z_x
+        self._zw0_y = self.z_y - delta_z_y
+        self._fratio_x = np.abs(delta_z_x) / (2 * wz_x)
+        self._fratio_y = np.abs(delta_z_y) / (2 * wz_y)
+
     def ChangeMedium(self, n1n2):
         """
         Given the ratio of refractive indices n1/n2 for light propagating from a medium with refractive index n1,
@@ -401,30 +483,37 @@ class WFO(object):
 
         """
         _n1n2 = np.abs(n1n2)
-        
-        # Current distance to focus (before magnification)
-        delta_z = self.z - self.zw0
-        
-        delta_z /= n1n2
-        self._zr /= n1n2
-        self._wl *= n1n2
-        self._zw0 = self.z - delta_z
-        self._fratio /= n1n2
 
-    def ptp(self, dz):
+        # Current distance to focus (before magnification)
+        delta_z_x = self.z_x - self.zw0_x
+        delta_z_y = self.z_y - self.zw0_y
+
+        delta_z_x /= n1n2
+        delta_z_y /= n1n2
+        self._zr_x /= n1n2
+        self._zr_y /= n1n2
+        self._wl *= n1n2
+        self._zw0_x = self.z_x - delta_z_x
+        self._zw0_y = self.z_y - delta_z_y
+        self._fratio_x /= n1n2
+        self._fratio_y /= n1n2
+
+    def ptp(self, dz_x, dz_y):
         """
         Plane-to-plane (far field) wavefront propagator
-        
+
         Parameters
         ----------
-        dz: scalar
-            propagation distance
+        dz_x: scalar
+            propagation distance for sagittal component
+        dz_y: scalar
+            propagation distance for tangential component
         """
-        if np.abs(dz) < 0.001 * self.wl:
+        if np.abs(dz_x) < 0.001 * self.wl or np.abs(dz_y) < 0.001 * self.wl:
             logger.debug('Thickness smaller than 1/1000 wavelength. Returning..')
             return
 
-        if self.C != 0:
+        if self.C_x != 0 or self.C_y != 0:
             logger.error("PTP wavefront should be planar")
             raise ValueError("PTP wavefront should be planar")
 
@@ -433,31 +522,35 @@ class WFO(object):
         fx = np.fft.fftfreq(wf.shape[1], d=self.dx)
         fy = np.fft.fftfreq(wf.shape[0], d=self.dy)
         fxx, fyy = np.meshgrid(fx, fy)
-        qphase = (np.pi * self.wl * dz) * (fxx ** 2 + fyy ** 2)
+        qphase = (np.pi * self.wl) * (dz_x * fxx ** 2 + dz_y * fyy ** 2)
         wf = np.fft.ifft2(np.exp(-1.0j * qphase) * wf, norm="ortho")
 
-        self._z = self._z + dz
+        self._z_x = self._z_x + dz_x
+        self._z_y = self._z_y + dz_y
 
         self._wfo = np.fft.fftshift(wf)
 
-    def stw(self, dz):
+    def stw(self, dz_x, dz_y):
         """
         Spherical-to-waist (near field to far field) wavefront propagator
-        
+
         Parameters
         ----------
-        dz: scalar
-            propagation distance
+        dz_x: scalar
+            propagation distance for sagittal component
+        dz_y: scalar
+            propagation distance for tangential component
         """
-        if np.abs(dz) < 0.001 * self.wl:
+
+        if np.abs(dz_x) < 0.001 * self.wl or np.abs(dz_y) < 0.001 * self.wl:
             logger.debug('Thickness smaller than 1/1000 wavelength. Returning..')
             return
 
-        if self.C == 0.0:
+        if self.C_x == 0.0 or self.C_y == 0.0:
             logger.error('STW wavefront should not be planar')
             raise ValueError('STW wavefront should not be planar')
 
-        s = 'forward' if dz >= 0 else 'reverse'
+        s = 'forward' if dz_x >= 0 else 'reverse'
 
         wf = np.fft.ifftshift(self._wfo)
         if s == 'forward':
@@ -469,79 +562,95 @@ class WFO(object):
         fy = np.fft.fftfreq(wf.shape[0], d=self.dy)
         fxx, fyy = np.meshgrid(fx, fy)
 
-        qphase = (np.pi * self.wl * dz) * (fxx ** 2 + fyy ** 2)
+        qphase = (np.pi * self.wl) * (dz_x * fxx ** 2 + dz_y * fyy ** 2)
 
-        self._z = self._z + dz
-        self._C = 0.0
-        self._dx = (fx[1] - fx[0]) * self.wl * np.abs(dz)
-        self._dy = (fy[1] - fy[0]) * self.wl * np.abs(dz)
+        self._z_x = self._z_x + dz_x
+        self._z_y = self._z_y + dz_y
+        self._C_x = 0.0
+        self._C_y = 0.0
+        self._dx = (fx[1] - fx[0]) * self.wl * np.abs(dz_x)
+        self._dy = (fy[1] - fy[0]) * self.wl * np.abs(dz_y)
         self._wfo = np.fft.fftshift(np.exp(1.0j * qphase) * wf)
 
-    def wts(self, dz):
+    def wts(self, dz_x, dz_y):
         """
         Waist-to-spherical (far field to near field) wavefront propagator
-        
+
         Parameters
         ----------
-        dz: scalar
-            propagation distance
+        dz_x: scalar
+            propagation distance for sagittal component
+        dz_y: scalar
+            propagation distance for tangential component
         """
-        if np.abs(dz) < 0.001 * self.wl:
+
+        if np.abs(dz_x) < 0.001 * self.wl or np.abs(dz_y) < 0.001 * self.wl:
             logger.debug('Thickness smaller than 1/1000 wavelength. Returning..')
             return
 
-        if self.C != 0.0:
+        if self.C_x != 0.0 or self.C_y != 0.0:
             logger.error('WTS wavefront should be planar')
             raise ValueError('WTS wavefront should be planar')
 
-        s = 'forward' if dz >= 0 else 'reverse'
+        s = 'forward' if dz_x >= 0 else 'reverse'
 
         x = (np.arange(self._wfo.shape[1]) - self._wfo.shape[1] // 2) * self.dx
         y = (np.arange(self._wfo.shape[0]) - self._wfo.shape[0] // 2) * self.dy
 
         xx, yy = np.meshgrid(x, y)
-        qphase = (np.pi / (dz * self.wl)) * (xx ** 2 + yy ** 2)
+        qphase = (np.pi / self.wl) * (xx ** 2 / dz_x + yy ** 2 / dz_y)
         wf = np.fft.ifftshift(np.exp(1.0j * qphase) * self._wfo)
         if s == 'forward':
             wf = np.fft.fft2(wf, norm="ortho")
         elif s == 'reverse':
             wf = np.fft.ifft2(wf, norm="ortho")
 
-        self._z = self._z + dz
-        self._C = 1 / (self.z - self.zw0)
-        self._dx = self.wl * np.abs(dz) / (wf.shape[1] * self.dx)
-        self._dy = self.wl * np.abs(dz) / (wf.shape[1] * self.dy)
+        self._z_x = self._z_x + dz_x
+        self._z_y = self._z_y + dz_y
+        self._C_x = 1 / (self.z_x - self.zw0_x)
+        self._C_y = 1 / (self.z_y - self.zw0_y)
+        self._dx = self.wl * np.abs(dz_x) / (wf.shape[1] * self.dx)
+        self._dy = self.wl * np.abs(dz_y) / (wf.shape[1] * self.dy)
         self._wfo = np.fft.fftshift(wf)
 
-    def propagate(self, dz):
+    def propagate(self, dz_x, dz_y):
         """
         Wavefront propagator. Selects the appropriate propagation primitive and applies the wf propagation
-        
+
         Parameters
         ----------
-        dz: scalar
-            propagation distance
+        dz_x: scalar
+            propagation distance for sagittal component
+        dz_y: scalar
+            propagation distance for tangential component
         """
-        propagator = self.insideout() + self.insideout(self.z + dz)
-        z1 = self.z
-        z2 = self.z + dz
+
+        assert np.sign(dz_x) == np.sign(dz_y), 'Sagittal and tangential propagation distances must have the same sign.'
+
+        insideout = self.insideout(self.z_x + dz_x, self.z_y + dz_y)
+        propagator = self.insideout() + insideout
+
+        z1_x = self.z_x
+        z1_y = self.z_y
+        z2_x = self.z_x + dz_x
+        z2_y = self.z_y + dz_y
 
         if propagator == 'II':
-            self.ptp(dz)
+            self.ptp(dz_x, dz_y)
         elif propagator == 'OI':
-            self.stw(self.zw0 - z1)
-            self.ptp(z2 - self.zw0)
+            self.stw(self.zw0_x - z1_x, self.zw0_y - z1_y)
+            self.ptp(z2_x - self.zw0_x, z2_y - self.zw0_y)
         elif propagator == 'IO':
-            self.ptp(self.zw0 - z1)
-            self.wts(z2 - self.zw0)
+            self.ptp(self.zw0_x - z1_x, self.zw0_y - z1_y)
+            self.wts(z2_x - self.zw0_x, z2_y - self.zw0_y)
         elif propagator == 'OO':
-            self.stw(self.zw0 - z1)
-            self.wts(z2 - self.zw0)
+            self.stw(self.zw0_x - z1_x, self.zw0_y - z1_y)
+            self.wts(z2_x - self.zw0_x, z2_y - self.zw0_y)
 
     def zernikes(self, index, Z, ordering, normalize, radius, offset=0.0, origin='x'):
         """
         Add a WFE represented by a Zernike expansion
-        
+
         Parameters
         ----------
         index: array of integers

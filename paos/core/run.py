@@ -135,7 +135,8 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         Mt = item['ABCDt'].M
         
         fl = np.inf if (item['ABCDt'].power == 0) else item['ABCDt'].cout / item['ABCDt'].power
-        T = item['ABCDt'].cout * item['ABCDt'].thickness
+        Ty = item['ABCDt'].cout * item['ABCDt'].thickness
+        Tx = item['ABCDs'].cout * item['ABCDs'].thickness
         n1n2 = item['ABCDt'].n1n2
         logger.trace('n1n2: {:.4f}'.format(n1n2))
 
@@ -151,9 +152,9 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
             logger.trace('Apply lens')
             wfo.lens(fl)
 
-        if np.isfinite(T) and np.abs(T) > 1e-10:
-            logger.trace('Apply propagation thickness: T: {:.4f}'.format(T))
-            wfo.propagate(T)
+        if np.isfinite(Tx) and np.abs(Tx) > 1e-10 and np.isfinite(Ty) and np.abs(Ty) > 1e-10:
+            logger.trace('Apply propagation thickness: Tx: {:.4f}, Ty: {:.4f}'.format(Tx, Ty))
+            wfo.propagate(Tx, Ty)
 
         vt = item['ABCDt']() @ vt
         vs = item['ABCDs']() @ vs
