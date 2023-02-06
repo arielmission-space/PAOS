@@ -39,9 +39,6 @@ last_log = logging.INFO
 
 from .logger import Logger, traced, generate_logger_name
 
-logging.TRACE = logging.DEBUG + 5
-logging.addLevelName(logging.TRACE, 'TRACE')
-
 
 def trace(self, message, *args, **kws):
     """

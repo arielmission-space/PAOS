@@ -49,6 +49,12 @@ def main():
                         action='store_true')
 
     args = parser.parse_args()
+
+    if args.output is None:
+        """Defaults to the same directory as the configuration file. 
+        The output file name is the same as the configuration file name with the extension .h5"""
+        args.output = os.path.join(os.path.dirname(args.conf), Path(args.conf).stem + '.h5')
+
     passvalue = {'conf': args.conf,
                  'output': args.output,
                  'light_output': args.light_output,
@@ -69,7 +75,8 @@ def main():
         setLogLevel(logging.DEBUG)
     if args.log:
         if isinstance(args.output, str):
-            fname = "{}/test.log".format(os.path.dirname(args.output))
+            input_fname = Path(args.conf).stem
+            fname = f"{os.path.dirname(args.output)}/{input_fname}.log"
             logger.info('log file name: {}'.format(fname))
             addLogFile(fname=fname)
         else:

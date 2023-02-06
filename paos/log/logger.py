@@ -73,10 +73,43 @@ __all__ = ['Logger']
 root_logger = logging.getLogger(__pkg_name__)
 root_logger.propagate = False
 
+logging.TRACE = logging.DEBUG + 1
+logging.addLevelName(logging.TRACE, 'TRACE')
 
-formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
+
+class CustomFormatter(logging.Formatter):
+    """Custom formatter for logging.
+    Different colors propagate to the terminal depending on the level of the log.
+    """
+
+    grey = "\x1b[38;20m"
+    green = "\x1b[32;20m"
+    brown = "\x1b[0;33m"
+    blue = "\x1b[34;20m"
+    yellow = "\x1b[33;20m"
+    red = "\x1b[31;20m"
+    bold_red = "\x1b[31;1m"
+    reset = "\x1b[0m"
+    format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+    FORMATS = {
+        logging.DEBUG: grey + format + reset,
+        logging.INFO: green + format + reset,
+        logging.TRACE: grey + format + reset,
+        logging.WARNING: yellow + format + reset,
+        logging.ERROR: red + format + reset,
+        logging.CRITICAL: bold_red + format + reset
+    }
+
+    def format(self, record):
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt)
+        return formatter.format(record)
+
+
+# formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()
-ch.setFormatter(formatter)
+ch.setFormatter(CustomFormatter())
 ch.setLevel(logging.DEBUG)
 root_logger.addHandler(ch)
 root_logger.setLevel(logging.DEBUG)

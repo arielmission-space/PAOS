@@ -768,7 +768,7 @@ class PaosGui(SimpleGui):
 
         """
         if not figure_list:
-            logger.debug('Plot POP first')
+            logger.error('Plot first')
             return
         if figure_agg is not None:
             # Reset figure canvas
@@ -1189,7 +1189,7 @@ class PaosGui(SimpleGui):
             self.event, self.values = self.window.read(timeout=1000)
             if self.event == TIMEOUT_KEY:
                 continue
-            logger.debug(f'============ Event = {self.event} ==============')
+            logger.trace(f'============ Event = {self.event} ==============')
 
             # ------- Save to temporary configuration file ------#
             self.to_ini(temporary=True)
@@ -1231,7 +1231,7 @@ class PaosGui(SimpleGui):
             elif self.event == '-PASTE WL-':
                 # Check if focus is on a wavelength input cell
                 if not elem_key.startswith('w'):
-                    logger.debug('Wavelength cell not selected. Skipping..')
+                    logger.warning('Wavelength cell not selected. Skipping..')
                     continue
                 # Get text from the clipboard
                 text = self.get_clipboard_text()
@@ -1428,7 +1428,7 @@ class PaosGui(SimpleGui):
             # ------- Run the POP ------#
             elif self.event == '-POP-':
                 if self.values[self.values['select wl'][0]] == '':
-                    logger.debug(f'Invalid wavelength. Continuing..')
+                    logger.error(f'Invalid wavelength. Continuing..')
                     continue
                 self.reset_simulation()
                 progbar = self.window['progbar']
@@ -1488,7 +1488,7 @@ class PaosGui(SimpleGui):
             elif self.event == '-IMPORT WFE-':
                 wfe_realizations_file = popup_get_file('Choose wavefront error (CSV) file', keep_on_top=True)
                 if wfe_realizations_file is None:
-                    logger.debug('Pressed Cancel. Continuing...')
+                    logger.warning('Pressed Cancel. Continuing...')
                     continue
 
             # ------- Run the POP (wfe) ------#
@@ -1499,16 +1499,16 @@ class PaosGui(SimpleGui):
                 # Get the Zernike surface index
                 surf = self.values['NSURF (wfe)']
                 if surf == '':
-                    logger.debug('The indicated surface index is not valid. Continuing...')
+                    logger.warning('The indicated surface index is not valid. Continuing...')
                     continue
                 elif self.values[f'SurfaceType_({int(surf)},0)'] != 'Zernike':
-                    logger.debug('The indicated surface index does not belong to a Zernike surface. Continuing...')
+                    logger.warning('The indicated surface index does not belong to a Zernike surface. Continuing...')
                     continue
                 elif self.values[f'Ignore_({int(surf)},6)']:
-                    logger.debug('Zernike surface is currently ignored. Continuing...')
+                    logger.warning('Zernike surface is currently ignored. Continuing...')
                     continue
                 elif wfe_realizations_file is None:
-                    logger.debug('Import Wavefront error table first')
+                    logger.error('Import Wavefront error table first')
                     continue
                 # Read the wfe table
                 wfe = ascii.read(wfe_realizations_file)
@@ -1567,7 +1567,7 @@ class PaosGui(SimpleGui):
             # ------- Save the output of the POP ------#
             elif self.event == '-SAVE POP-':
                 if pop != 'simple' or not self.retval_list:
-                    logger.debug('Run POP first')
+                    logger.error('Run POP first')
                     continue
                 # Save the POP output
                 self.to_hdf5(self.retval_list, self.saving_groups)
@@ -1575,7 +1575,7 @@ class PaosGui(SimpleGui):
             # ------- Save the output of the POP (nwl) ------#
             elif self.event == '-SAVE POP (nwl)-':
                 if pop != 'nwl' or not self.retval_list:
-                    logger.debug('Run POP (nwl) first')
+                    logger.error('Run POP (nwl) first')
                     continue
                 # Save the POP output
                 self.to_hdf5(self.retval_list, self.saving_groups)
@@ -1583,7 +1583,7 @@ class PaosGui(SimpleGui):
             # ------- Save the output of the POP (wfe) ------#
             elif self.event == '-SAVE POP (wfe)-':
                 if pop != 'wfe' or not self.retval_list:
-                    logger.debug('Run POP (wfe) first')
+                    logger.error('Run POP (wfe) first')
                     continue
                 # Save the POP output
                 self.to_hdf5(self.retval_list, self.saving_groups)
@@ -1591,7 +1591,7 @@ class PaosGui(SimpleGui):
             # ------- Plot at the given optical surface ------#
             elif self.event == '-PLOT-':
                 if pop != 'simple' or not self.retval_list:
-                    logger.debug('Run POP first')
+                    logger.error('Run POP first')
                     continue
                 self.figure = self.draw_surface(
                     retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg,
@@ -1602,7 +1602,7 @@ class PaosGui(SimpleGui):
 
             elif self.event == '-PLOT (nwl)-':
                 if pop != 'nwl' or not self.retval_list:
-                    logger.debug('Run POP (nwl) first')
+                    logger.error('Run POP (nwl) first')
                     continue
                 self.figure_list_nwl, idx_nwl = self.draw_surface(
                     retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg_nwl,
@@ -1614,7 +1614,7 @@ class PaosGui(SimpleGui):
 
             elif self.event == '-PLOT (wfe)-':
                 if pop != 'wfe' or not self.retval_list:
-                    logger.debug('Run POP (wfe) first')
+                    logger.error('Run POP (wfe) first')
                     continue
                 self.figure_list_wfe, idx_wfe = self.draw_surface(
                     retval_list=self.retval_list, groups=self.saving_groups, figure_agg=fig_agg_wfe,
@@ -1652,12 +1652,12 @@ class PaosGui(SimpleGui):
             # ------- Save the Plot (nwl) ------#
             elif self.event == '-SAVE FIG (nwl)-':
                 if not self.figure_list_nwl:
-                    logger.debug('Create plot first')
+                    logger.error('Create plot first')
                     continue
                 # Get the folder to save to
                 folder = popup_get_folder('Choose folder to save to', keep_on_top=True)
                 if folder is None:
-                    logger.debug('Pressed Cancel. Continuing...')
+                    logger.warning('Pressed Cancel. Continuing...')
                     continue
                 for wl, figure in zip(np.array(self.saving_groups)[idx_nwl], np.array(self.figure_list_nwl)):
                     filename = os.path.join(folder, f'{self.values["Fig prefix (nwl)"]}_{self.values["S# (nwl)"]}_'
@@ -1668,12 +1668,12 @@ class PaosGui(SimpleGui):
             # ------- Save the Plot (wfe) ------#
             elif self.event == '-SAVE FIG (wfe)-':
                 if not self.figure_list_wfe:
-                    logger.debug('Create plot first')
+                    logger.error('Create plot first')
                     continue
                 # Get the folder to save to
                 folder = popup_get_folder('Choose folder to save to', keep_on_top=True)
                 if folder is None:
-                    logger.debug('Pressed Cancel. Continuing...')
+                    logger.warning('Pressed Cancel. Continuing...')
                     continue
                 for n, figure in zip(np.array(self.saving_groups)[idx_wfe], np.array(self.figure_list_wfe)):
                     filename = os.path.join(folder, f'{self.values["Fig prefix (wfe)"]}_{self.values["S# (wfe)"]}_'
@@ -1696,7 +1696,7 @@ class PaosGui(SimpleGui):
                 # Get the new configuration file path
                 filename = popup_get_file('Choose configuration (INI) file', keep_on_top=True)
                 if filename is None:
-                    logger.debug('Pressed Cancel. Continuing...')
+                    logger.warning('Pressed Cancel. Continuing...')
                     continue
                 self.passvalue['conf'] = filename
                 # Close the current window
@@ -1709,10 +1709,10 @@ class PaosGui(SimpleGui):
                 # Get the file path to save to
                 filename = popup_get_file('Choose file (INI) to save to', save_as=True, keep_on_top=True)
                 if filename is None:
-                    logger.debug('Pressed Cancel. Continuing...')
+                    logger.warning('Pressed Cancel. Continuing...')
                     continue
                 if not filename.endswith(('.INI', '.ini')):
-                    logger.warning('Saving file format not provided. Defaulting to .ini')
+                    logger.debug('Saving file format not provided. Defaulting to .ini')
                     filename = ''.join([filename, '.ini'])
                 # Save as a new configuration file
                 self.to_ini(filename=filename)
