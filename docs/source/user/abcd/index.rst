@@ -434,7 +434,7 @@ The prism is :math:`t = 2.0 \ \textrm{mm}` thick and has a refractive index of :
         theta_4 = np.deg2rad(-30.0)
 
         A = np.cos(theta_2) * np.cos(theta_4) / (np.cos(theta_1) * np.cos(theta_3))
-        B = np.cos(theta_1) * np.cos(theta_4) / (np.cos(theta_2) * np.cos(theta_3)) / n
+        B = thickness * np.cos(theta_1) * np.cos(theta_4) / (np.cos(theta_2) * np.cos(theta_3)) / n
         C = 0.0
         D = 1.0 / A
 
