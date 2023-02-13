@@ -67,6 +67,9 @@ def parse_config(filename):
     if dtmp not in allowed_zoom_val:
         raise ValueError('Zoom value not allowed. Allowed values are',
                          allowed_zoom_val)
+    elif dtmp == 1:
+        logger.warning('Zoom value is 1, i.e. the beam width occupies the whole of the grid width. '
+                       'This will result a PSF that is not Nyquist sampled.')
     parameters['zoom'] = dtmp
 
     lens_unit = config['general'].get('lens_unit', '')
