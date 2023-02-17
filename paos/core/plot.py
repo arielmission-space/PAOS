@@ -278,7 +278,7 @@ def plot_pop(retval, ima_scale='log', ncols=2, figname=None, options=dict()):
                 ax[j, col].set_visible(False)
 
     if figname is not None:
-        fig.savefig(figname, bbox_inches='tight', dpi=150)
+        fig.savefig(figname, bbox_inches='tight', dpi=300)
         plt.close()
     else:
         fig.tight_layout()

@@ -549,7 +549,7 @@ class WFO(object):
         Z : array of floats
             The coefficients of the Zernike polynomials in meters
         ordering: string
-            Can be 'ansi', 'noll', 'fringe'
+            Can be 'ansi', 'noll', 'fringe', or 'standard'.
         normalize: bool
             Polynomials are normalised to RMS=1 if True, or to unity at radius if false
         radius: float
