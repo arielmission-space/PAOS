@@ -1,6 +1,7 @@
 import numpy as np
-from paos.core.coordinateBreak import coordinate_break
+
 from paos import logger
+from paos.core.coordinateBreak import coordinate_break
 
 
 def raytrace(field, opt_chain, x=0.0, y=0.0):
@@ -33,17 +34,26 @@ def raytrace(field, opt_chain, x=0.0, y=0.0):
     >>> raytrace(fields[0], opt_chains[0])
 
     """
-    vt = np.array([y, field['ut']])
-    vs = np.array([x, field['us']])
+    vt = np.array([y, field["ut"]])
+    vs = np.array([x, field["us"]])
     ostr = []
     for key, item in opt_chain.items():
-        if item['type'] == 'Coordinate Break':
-            vt, vs = coordinate_break(vt, vs, item['xdec'], item['ydec'], item['xrot'], item['yrot'], 0.0)
+        if item["type"] == "Coordinate Break":
+            vt, vs = coordinate_break(
+                vt,
+                vs,
+                item["xdec"],
+                item["ydec"],
+                item["xrot"],
+                item["yrot"],
+                0.0,
+            )
 
-        vt = item['ABCDt']() @ vt
-        vs = item['ABCDs']() @ vs
+        vt = item["ABCDt"]() @ vt
+        vs = item["ABCDs"]() @ vs
         _ostr_ = "S{:02d} - {:15s} y:{:7.3f}mm ut:{:10.3e} rad x:{:7.3f}mm us:{:10.3e} rad".format(
-            key, item['name'], 1000 * vt[0], vt[1], 1000 * vs[0], vs[1])
+            key, item["name"], 1000 * vt[0], vt[1], 1000 * vs[0], vs[1]
+        )
         logger.debug(_ostr_)
         ostr.append(_ostr_)
 

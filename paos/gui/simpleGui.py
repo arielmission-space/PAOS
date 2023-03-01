@@ -1,5 +1,6 @@
 import configparser
 import gc
+import io
 import itertools
 import os
 import re
@@ -7,18 +8,26 @@ import sys
 from tkinter import Tk
 from typing import List
 
-from PySimpleGUI import Checkbox, Text, InputText, Column, Canvas, Frame, ProgressBar, popup_quick_message
-from PySimpleGUI import Window
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from PySimpleGUI import Canvas
+from PySimpleGUI import Checkbox
 from PySimpleGUI import clipboard_set
+from PySimpleGUI import Column
+from PySimpleGUI import Frame
+from PySimpleGUI import InputText
 from PySimpleGUI import pin
 from PySimpleGUI import popup_get_file
-from matplotlib import pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasAgg, FigureCanvasTkAgg
-import io
+from PySimpleGUI import popup_quick_message
+from PySimpleGUI import ProgressBar
+from PySimpleGUI import Text
+from PySimpleGUI import Window
 
-from paos.core.plot import simple_plot, plot_psf_xsec
-from paos import save_datacube
 from paos import logger
+from paos import save_datacube
+from paos.core.plot import plot_psf_xsec
+from paos.core.plot import simple_plot
 
 
 class SimpleGui:
@@ -43,23 +52,33 @@ class SimpleGui:
         self.font_underlined = ("Courier New underline", 16)
 
         # ------ Menu Definition ------ #
-        self.menu_def = [['&File', ['&Open', '&Save', '&Save As', 'Global Settings', '&Exit']],
-                         ['&Help', '&About'], ]
+        self.menu_def = [
+            [
+                "&File",
+                ["&Open", "&Save", "&Save As", "Global Settings", "&Exit"],
+            ],
+            ["&Help", "&About"],
+        ]
 
         # ------ Right Click Menu Definition ------ #
-        self.right_click_menu_def = ['', ['Nothing', 'Version', 'Exit']]
+        self.right_click_menu_def = ["", ["Nothing", "Version", "Exit"]]
 
         # ------ Symbols Definition ------ #
-        self.triangle_right = '▶'
-        self.triangle_down = '▼'
-        self.symbol_disabled = '◯'
-        self.symbol_state = '●'
+        self.triangle_right = "▶"
+        self.triangle_down = "▼"
+        self.symbol_disabled = "◯"
+        self.symbol_state = "●"
 
         # ------ Quick Message Definition ------ #
         w, h = Window.get_screen_size()
-        popup_quick_message('Hang on for a moment, this will take a bit to create....',
-                            auto_close=True, non_blocking=True, keep_on_top=True,
-                            auto_close_duration=2, location=(int(0.4 * w), int(0.1 * h)))
+        popup_quick_message(
+            "Hang on for a moment, this will take a bit to create....",
+            auto_close=True,
+            non_blocking=True,
+            keep_on_top=True,
+            auto_close_duration=2,
+            location=(int(0.4 * w), int(0.1 * h)),
+        )
 
     @staticmethod
     def add_heading(headings, size=(24, 2)):
@@ -83,7 +102,7 @@ class SimpleGui:
         headings_list = []
         for i, head in enumerate(headings):
             headings_list.append(Text(head, key=head, size=size))
-        return list(itertools.chain([Text(' ' * 8)], headings_list))
+        return list(itertools.chain([Text(" " * 8)], headings_list))
 
     @staticmethod
     def collapse_frame(title, layout, key):
@@ -161,8 +180,8 @@ class SimpleGui:
         """
         root = Tk()
         root.withdraw()
-        text = root.clipboard_get().replace('\n', ',').split(',')
-        text = text if text[-1] != '' else text[:-1]
+        text = root.clipboard_get().replace("\n", ",").split(",")
+        text = text if text[-1] != "" else text[:-1]
         return text
 
     @staticmethod
@@ -192,9 +211,11 @@ class SimpleGui:
                         elif isinstance(subitem, (float, bool)):
                             subitem = str(subitem)
                         elif isinstance(subitem, (tuple, list)):
-                            subitem = ','.join(subitem)
+                            subitem = ",".join(subitem)
                         else:
-                            raise NotImplementedError('item type not supported')
+                            raise NotImplementedError(
+                                "item type not supported"
+                            )
                     config.set(key, subkey, subitem)
 
         return config
@@ -221,28 +242,38 @@ class SimpleGui:
         """
 
         if keys_to_keep is None:
-            keys_to_keep = ['amplitude', 'dx', 'dy', 'wl']
+            keys_to_keep = ["amplitude", "dx", "dy", "wl"]
 
         if not retval_list:
-            logger.error('Run POP first')
+            logger.error("Run POP first")
             return
 
         # Get the file path to save to
-        filename = popup_get_file('Choose file (HDF5) to save to', default_path=self.passvalue['output'],
-                                  default_extension='.h5', save_as=True,
-                                  keep_on_top=True)
+        filename = popup_get_file(
+            "Choose file (HDF5) to save to",
+            default_path=self.passvalue["output"],
+            default_extension=".h5",
+            save_as=True,
+            keep_on_top=True,
+        )
 
         if filename is None:
-            logger.warning('Pressed Cancel. Continuing...')
+            logger.warning("Pressed Cancel. Continuing...")
             return
 
-        if not filename.endswith(('.HDF5', '.hdf5', '.H5', '.h5')):
-            logger.debug('Saving file format not provided. Defaulting to .h5')
-            filename = ''.join([filename, '.h5'])
+        if not filename.endswith((".HDF5", ".hdf5", ".H5", ".h5")):
+            logger.debug("Saving file format not provided. Defaulting to .h5")
+            filename = "".join([filename, ".h5"])
 
         # Save the POP output to the specified .hdf5 file
         tags = list(map(str, groups))
-        save_datacube(retval_list, filename, tags, keys_to_keep=keys_to_keep, overwrite=True)
+        save_datacube(
+            retval_list,
+            filename,
+            tags,
+            keys_to_keep=keys_to_keep,
+            overwrite=True,
+        )
         return
 
     @staticmethod
@@ -263,24 +294,26 @@ class SimpleGui:
 
         """
 
-        if text_list == '':
-            logger.error('Perform raytrace first')
+        if text_list == "":
+            logger.error("Perform raytrace first")
             return
 
         # Get the file path to save to
-        filename = popup_get_file('Choose file (TXT) to save to', save_as=True, keep_on_top=True)
+        filename = popup_get_file(
+            "Choose file (TXT) to save to", save_as=True, keep_on_top=True
+        )
 
         if filename is None:
-            logger.warning('Pressed Cancel. Continuing...')
+            logger.warning("Pressed Cancel. Continuing...")
             return
 
-        if not filename.endswith(('.TXT', '.txt')):
-            logger.debug('Saving file format not provided. Defaulting to .txt')
-            filename = ''.join([filename, '.txt'])
+        if not filename.endswith((".TXT", ".txt")):
+            logger.debug("Saving file format not provided. Defaulting to .txt")
+            filename = "".join([filename, ".txt"])
 
         # Save the text list to the specified .txt file
-        with open(filename, "wt") as f:
-            f.write('\n'.join(text_list))
+        with open(filename, "w") as f:
+            f.write("\n".join(text_list))
         return
 
     @staticmethod
@@ -303,7 +336,9 @@ class SimpleGui:
         """
         figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
         figure_canvas_agg.draw()
-        figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
+        figure_canvas_agg.get_tk_widget().pack(
+            side="top", fill="both", expand=1
+        )
         return figure_canvas_agg
 
     @staticmethod
@@ -326,13 +361,13 @@ class SimpleGui:
         """
 
         if figure is None:
-            logger.error('Plot first')
+            logger.error("Plot first")
             return
 
-        plt.close('all')  # erases previously drawn plots
+        plt.close("all")  # erases previously drawn plots
         canvas = FigureCanvasAgg(figure)
         buf = io.BytesIO()
-        canvas.print_figure(buf, format='png')
+        canvas.print_figure(buf, format="png")
         if buf is not None:
             buf.seek(0)
             element.update(data=buf.read())
@@ -356,7 +391,7 @@ class SimpleGui:
         out: None
             clears an Image widget
         """
-        logger.debug('Clearing image')
+        logger.debug("Clearing image")
         element.update()
         element.update(visible=False)
 
@@ -381,25 +416,31 @@ class SimpleGui:
 
         """
         if figure is None:
-            logger.error('Create plot first')
+            logger.error("Create plot first")
             return
 
         if filename is None:
             # Get the file path to save to
-            filename = popup_get_file('Choose file (PNG, JPG) to save to', save_as=True, keep_on_top=True)
+            filename = popup_get_file(
+                "Choose file (PNG, JPG) to save to",
+                save_as=True,
+                keep_on_top=True,
+            )
 
             if filename is None:
-                logger.warning('Pressed Cancel. Continuing...')
+                logger.warning("Pressed Cancel. Continuing...")
                 return
 
-            if not filename.endswith(('.PNG', '.png', '.JPG', '.jpg')):
-                logger.debug('Saving file format not provided. Defaulting to .png')
-                filename = ''.join([filename, '.png'])
+            if not filename.endswith((".PNG", ".png", ".JPG", ".jpg")):
+                logger.debug(
+                    "Saving file format not provided. Defaulting to .png"
+                )
+                filename = "".join([filename, ".png"])
 
         # Save the plot to the specified .png or .jpg file
-        figure.savefig(filename, bbox_inches='tight', dpi=150)
+        figure.savefig(filename, bbox_inches="tight", dpi=150)
 
-        logger.debug(f'Saved figure to {filename}')
+        logger.debug(f"Saved figure to {filename}")
 
         return
 
@@ -423,7 +464,9 @@ class SimpleGui:
         return progress_bar
 
     @staticmethod
-    def move_with_arrow_keys(window, event, values, elem_key, max_rows, max_cols):
+    def move_with_arrow_keys(
+        window, event, values, elem_key, max_rows, max_cols
+    ):
         """
         Given the current GUI window, the latest event, the dictionary containing the window values, the dictionary key
         for the cell with focus and the maximum sizes for the current table editor, this method sets the focus on
@@ -449,23 +492,25 @@ class SimpleGui:
         out: int
             The row number corresponding to where the current focus is
         """
-        current_cell = re.findall('[0-9]+', elem_key.partition('_')[-1])
+        current_cell = re.findall("[0-9]+", elem_key.partition("_")[-1])
         r, c = tuple(map(int, current_cell))
 
-        if event.startswith('Down'):
+        if event.startswith("Down"):
             r = r + 1 * (r < max_rows)
-        elif event.startswith('Left'):
+        elif event.startswith("Left"):
             c = c - 1 * (c > 0)
-        elif event.startswith('Right'):
+        elif event.startswith("Right"):
             c = c + 1 * (c < max_cols - 1)
-        elif event.startswith('Up'):
+        elif event.startswith("Up"):
             r = r - 1 * (r > 0) if r > 1 else 1
 
         # if the current cell changed, set focus on new cell
         if current_cell != (r, c):
             for key in values.keys():
-                if key.endswith(f'({r},{c})'):
-                    window[key].set_focus()  # set the focus on the element moved to
+                if key.endswith(f"({r},{c})"):
+                    window[
+                        key
+                    ].set_focus()  # set the focus on the element moved to
                     window[key].update()
         return r
 
@@ -505,16 +550,28 @@ class SimpleGui:
         """
         if disabled_list is None:
             disabled_list = []
-        row_widget = [Text(row, size=(6, 1), key=f'row idx {row}')]
-        keys = [f'{prefix}_({row},{i})' for i in range(len(input_list))]
+        row_widget = [Text(row, size=(6, 1), key=f"row idx {row}")]
+        keys = [f"{prefix}_({row},{i})" for i in range(len(input_list))]
 
         if not disabled_list:
             disabled_list = [False for _ in input_list]
 
-        return list(itertools.chain(row_widget,
-                                    [InputText(default_text=value, key=key, size=(24, 2), disabled=disabled)
-                                     for value, key, disabled in zip(input_list, keys, disabled_list)]
-                                    ))
+        return list(
+            itertools.chain(
+                row_widget,
+                [
+                    InputText(
+                        default_text=value,
+                        key=key,
+                        size=(24, 2),
+                        disabled=disabled,
+                    )
+                    for value, key, disabled in zip(
+                        input_list, keys, disabled_list
+                    )
+                ],
+            )
+        )
 
     def make_visible(self, event, visible, key):
         """
@@ -538,7 +595,9 @@ class SimpleGui:
         visible = not visible
         self.window[key].update(visible=visible)
         # Update the triangle symbol
-        self.window[event].update(self.triangle_down if visible else self.triangle_right)
+        self.window[event].update(
+            self.triangle_down if visible else self.triangle_right
+        )
 
         return visible
 
@@ -554,15 +613,19 @@ class SimpleGui:
 
         # ------ Remove temporary config ------ #
         if self.temporary_config is not None:
-            if not os.path.exists(self.temporary_config) or not os.path.isfile(self.temporary_config):
-                logger.error(f'Input temporary file {self.temporary_config} does not exist or is not a file. '
-                             f'Quitting..')
+            if not os.path.exists(self.temporary_config) or not os.path.isfile(
+                self.temporary_config
+            ):
+                logger.error(
+                    f"Input temporary file {self.temporary_config} does not exist or is not a file. "
+                    f"Quitting.."
+                )
                 sys.exit()
-            logger.info('Removing temporary .ini configuration file')
+            logger.info("Removing temporary .ini configuration file")
             os.remove(self.temporary_config)
 
         # ------ Close plots ------ #
-        plt.close('all')
+        plt.close("all")
 
         # ------ Close Window ------ #
         self.window.close()
@@ -601,8 +664,8 @@ class SimpleGui:
                 col_values.append(item)
                 keys.append(key)
 
-        if '' in col_values:
-            logger.warning('Invalid wavelength in column. Continuing..')
+        if "" in col_values:
+            logger.warning("Invalid wavelength in column. Continuing..")
             return
 
         col_values = list(map(float, col_values))

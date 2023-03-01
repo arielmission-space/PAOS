@@ -66,5 +66,3 @@ mostly due to aliasing from the aperture masks.
    :align: center
 
    `PSF comparison`
-
-

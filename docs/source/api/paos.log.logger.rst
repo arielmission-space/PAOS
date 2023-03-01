@@ -5,4 +5,3 @@ paos.log.logger module
    :members:
    :undoc-members:
    :show-inheritance:
-

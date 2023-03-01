@@ -1,8 +1,9 @@
 import numpy as np
+
 from paos import logger
 
 
-class ABCD(object):
+class ABCD:
     """
     ABCD matrix class for paraxial ray tracing.
 
@@ -19,9 +20,9 @@ class ABCD(object):
         from a medium with refractive index n1, into a medium
         with refractive index n2
     c : scalar
-        speed of light. Can take values +1 for light travelling left-to-right (+Z), 
+        speed of light. Can take values +1 for light travelling left-to-right (+Z),
         and -1 for light travelling right-to-left (-Z)
-        
+
     Note
     ----------
     The class properties can differ from the value of the parameters used at
@@ -49,7 +50,7 @@ class ABCD(object):
         thickness: scalar
             optical thickness. It is positive from left to right. Default is 0.0
         curvature: scalar
-            inverse of the radius of curvature: it is positive if the center of curvature 
+            inverse of the radius of curvature: it is positive if the center of curvature
             lies on the right. If n1=n2, the parameter is assumed describing
             a thin lens of focal ratio fl=1/curvature. Default is 0.0
         n1: scalar
@@ -58,7 +59,7 @@ class ABCD(object):
             refractive index of the second medium. Default is 1.0
         M: scalar
             optical magnification. Default is 1.0
-        
+
         Note
         -----
         Light is assumed to be propagating from a medium with refractive index n1
@@ -66,14 +67,18 @@ class ABCD(object):
 
         Note
         -----
-        The refractive indices are assumed to be positive when light propagates 
-        from left to right (+Z), and negative when light propagates from right 
+        The refractive indices are assumed to be positive when light propagates
+        from left to right (+Z), and negative when light propagates from right
         to left (-Z)
         """
 
         if n1 == 0 or n2 == 0 or M == 0:
-            logger.error('Refractive index and magnification shall not be zero')
-            raise ValueError('Refractive index and magnification shall not be zero')
+            logger.error(
+                "Refractive index and magnification shall not be zero"
+            )
+            raise ValueError(
+                "Refractive index and magnification shall not be zero"
+            )
 
         T = np.array([[1.0, thickness], [0, 1.0]])
 

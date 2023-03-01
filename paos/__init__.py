@@ -1,15 +1,16 @@
+import importlib.metadata as metadata
 import os
 from datetime import date
 
 from .__version__ import __version__
 
-__pkg_name__ = 'paos'
-__author__ = "Andrea Bocchieri, Enzo Pascale, Lorenzo V. Mugnai"
-__description__ = "The Physical Ariel Optics Simulator"
-__url__ = "https://github.com/arielmission-space/PAOS"
-__license__ = "BSD-3-Clause"
-__copyright__ = '2020-{:d}, {}'.format(date.today().year, __author__)
-__email__ = 'andrea.bocchieri@uniroma1.it'
+# load package info
+__pkg_name__ = metadata.metadata("paos")["Name"]
+__url__ = metadata.metadata("paos")["Project-URL"]
+__author__ = metadata.metadata("paos")["Author"]
+__email__ = metadata.metadata("paos")["Author_email"]
+__license__ = metadata.metadata("paos")["license"]
+__summary__ = metadata.metadata("paos")["Summary"]
 
 try:
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,7 +36,7 @@ else:
 import logging
 
 logger = logging.getLogger(__pkg_name__)
-logger.info(f'code version {__version__}')
+logger.info(f"code version {__version__}")
 
 from paos.log import setLogLevel, addLogFile
 
@@ -58,7 +59,13 @@ from paos.core.run import run
 # initialise plotter
 import matplotlib.pyplot as plt
 
-plt.rcParams['figure.facecolor'] = 'white'
-plt.rc('lines', linewidth=1.5)
-plt.rc('axes', axisbelow=True, titleweight='bold', labelcolor='dimgray', labelweight='bold')
-plt.rc('font', size=14)
+plt.rcParams["figure.facecolor"] = "white"
+plt.rc("lines", linewidth=1.5)
+plt.rc(
+    "axes",
+    axisbelow=True,
+    titleweight="bold",
+    labelcolor="dimgray",
+    labelweight="bold",
+)
+plt.rc("font", size=14)
