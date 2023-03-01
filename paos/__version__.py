@@ -1,1 +1,3 @@
-__version__ = release = '0.0.4'
+import importlib.metadata as metadata
+
+__version__ = release = metadata.version("paos")
