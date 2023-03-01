@@ -44,7 +44,7 @@ def simple_plot(
     ima_scale,
     origin="lower",
     cmap="viridis",
-    options=dict(),
+    options={},
 ):
     """
     Given the POP simulation output dict, plots the squared amplitude of the
@@ -260,7 +260,7 @@ def simple_plot(
     return
 
 
-def plot_pop(retval, ima_scale="log", ncols=2, figname=None, options=dict()):
+def plot_pop(retval, ima_scale="log", ncols=2, figname=None, options={}):
     """
     Given the POP simulation output dict, plots the squared amplitude of the
     wavefront at all the optical surfaces.

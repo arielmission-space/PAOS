@@ -63,7 +63,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
 
     assert isinstance(opt_chain, dict), "opt_chain must be a dict"
 
-    retval = dict()
+    retval = {}
 
     vt = np.array([0.0, field["ut"]])
     vs = np.array([0.0, field["us"]])
