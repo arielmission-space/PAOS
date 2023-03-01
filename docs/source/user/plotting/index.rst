@@ -72,4 +72,3 @@ of the EXCITE optical chain.
 
         from paos.core.plot import plot_pop
         plot_pop(ret_val, ima_scale='log', ncols=2)
-

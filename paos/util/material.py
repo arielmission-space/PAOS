@@ -1,5 +1,6 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
 from paos import logger
 from paos.core.plot import do_legend
 
@@ -28,7 +29,8 @@ class Material:
 
         if materials is None:
             from .lib import materials
-            logger.debug('Using default library of optical materials')
+
+            logger.debug("Using default library of optical materials")
         self.materials = materials
 
     def sellmeier(self, par):
@@ -51,10 +53,10 @@ class Material:
         out: scalar or array (same shape as wl)
             the refractive index
         """
-        wl2 = self.wl ** 2
-        n2_1 = par['K1'] * wl2 / (wl2 - par['L1'])
-        n2_1 += par['K2'] * wl2 / (wl2 - par['L2'])
-        n2_1 += par['K3'] * wl2 / (wl2 - par['L3'])
+        wl2 = self.wl**2
+        n2_1 = par["K1"] * wl2 / (wl2 - par["L1"])
+        n2_1 += par["K2"] * wl2 / (wl2 - par["L2"])
+        n2_1 += par["K3"] * wl2 / (wl2 - par["L3"])
 
         return np.sqrt(n2_1 + 1.0)
 
@@ -64,7 +66,7 @@ class Material:
         Estimate the change in the glass absolute index of refraction with temperature as
 
         :math:`n(\\Delta T) = \\Delta n_{abs} + n`
-        
+
         where
 
         :math:`\\Delta n_{abs} = \\frac{n^2 - 1}{2 n} D_0 \\Delta T`
@@ -84,7 +86,7 @@ class Material:
         out: scalar or array (same shape as n)
             the scaled relative index
         """
-        dnabs = (n ** 2 - 1.0) / (2.0 * n) * D0 * delta_T
+        dnabs = (n**2 - 1.0) / (2.0 * n) * D0 * delta_T
 
         return n + dnabs
 
@@ -120,9 +122,13 @@ class Material:
         2) `PAOS` can easily model systems used in a vacuum by changing the air pressure to zero
         """
 
-        wl2 = self.wl ** 2
+        wl2 = self.wl**2
 
-        nref = 1.0 + 1.0e-8 * (6432.8 + 2949810.0 * wl2 / (146.0 * wl2 - 1.0) + 25540.0 * wl2 / (41.0 * wl2 - 1.0))
+        nref = 1.0 + 1.0e-8 * (
+            6432.8
+            + 2949810.0 * wl2 / (146.0 * wl2 - 1.0)
+            + 25540.0 * wl2 / (41.0 * wl2 - 1.0)
+        )
         nair = 1.0 + (nref - 1.0) * P / (1.0 + 3.4785e-3 * (T - 15))
 
         return nair
@@ -146,13 +152,19 @@ class Material:
 
         name = name.upper()
         if name not in self.materials.keys():
-            logger.error(f'Glass {name} currently not supported.')
+            logger.error(f"Glass {name} currently not supported.")
 
         material = self.materials[name]
         logger.debug(f'Glass name: {name} -- T ref: {material["Tref"]}')
 
-        nmat0 = self.sellmeier(par=material['sellmeier']) * self.nair(T=material['Tref'], P=self.Pambient)
-        nmat = self.nT(n=nmat0, D0=material['Tmodel']['D0'], delta_T=self.Tambient - material['Tref'])
+        nmat0 = self.sellmeier(par=material["sellmeier"]) * self.nair(
+            T=material["Tref"], P=self.Pambient
+        )
+        nmat = self.nT(
+            n=nmat0,
+            D0=material["Tmodel"]["D0"],
+            delta_T=self.Tambient - material["Tref"],
+        )
 
         return nmat0, nmat
 
@@ -197,7 +209,7 @@ class Material:
 
         figsize = (8 * ncols, 6 * nrows)
         fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
-        fig.patch.set_facecolor('white')
+        fig.patch.set_facecolor("white")
         plt.subplots_adjust(hspace=0.3, wspace=0.5)
 
         for k, name in enumerate(material_list):
@@ -213,12 +225,12 @@ class Material:
 
             nmat0, nmat = self.nmat(name)
 
-            axis.plot(self.wl, nmat0, '--', label=r'T$_{ref}$')
-            axis.plot(self.wl, nmat, label=r'T$_{oper}$')
+            axis.plot(self.wl, nmat0, "--", label=r"T$_{ref}$")
+            axis.plot(self.wl, nmat, label=r"T$_{oper}$")
             axis.set_title(name)
             do_legend(axis=axis, ncol=2)
-            axis.set_xlabel('Wavelength [micron]')
-            axis.set_ylabel('Relative index')
+            axis.set_xlabel("Wavelength [micron]")
+            axis.set_ylabel("Relative index")
             axis.grid()
 
             if n_subplots % ncols and k == n_subplots - 1:
@@ -226,7 +238,7 @@ class Material:
                     ax[j, col].set_visible(False)
 
         if figname is not None:
-            fig.savefig(figname, bbox_inches='tight', dpi=150)
+            fig.savefig(figname, bbox_inches="tight", dpi=150)
             plt.close()
         else:
             fig.tight_layout()

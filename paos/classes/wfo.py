@@ -1,21 +1,22 @@
 import numpy as np
 import photutils
-from paos.classes.zernike import Zernike
+
 from paos import logger
+from paos.classes.zernike import Zernike
 
 
-class WFO(object):
+class WFO:
     """
     Physical optics wavefront propagation.
     Implements the paraxial theory described in
     `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_
-    
+
     All units are meters.
-    
+
     Parameters
     ----------
     beam_diameter: scalar
-        the input beam diameter. Note that the input beam is always circular, regardless of 
+        the input beam diameter. Note that the input beam is always circular, regardless of
         whatever non-circular apodization the input pupil might apply.
     wl: scalar
         the wavelength
@@ -63,11 +64,11 @@ class WFO(object):
     extent: tuple
         the physical coordinates of the wavefront bounding box (xmin, xmax, ymin, ymax).
         Can be used directly in im.set_extent.
-        
+
     Returns
     -------
     out: an instance of wfo
-    
+
     Example
     -------
     >>> import paos
@@ -92,15 +93,15 @@ class WFO(object):
     def __init__(self, beam_diameter, wl, grid_size, zoom):
 
         assert np.log2(grid_size).is_integer(), "Grid size should be 2**n"
-        assert zoom > 0, 'zoom factor should be positive'
-        assert beam_diameter > 0, 'beam diameter should be positive'
-        assert wl > 0, 'a wavelength should be positive'
+        assert zoom > 0, "zoom factor should be positive"
+        assert beam_diameter > 0, "beam diameter should be positive"
+        assert wl > 0, "a wavelength should be positive"
 
         self._wl = wl
         self._z = 0.0  # current beam z coordinate
         self._w0 = beam_diameter / 2.0  # beam waist
         self._zw0 = 0.0  # beam waist z coordinate
-        self._zr = np.pi * self.w0 ** 2 / wl  # Rayleigh distance
+        self._zr = np.pi * self.w0**2 / wl  # Rayleigh distance
 
         self._rayleigh_factor = 2.0
         self._dx = beam_diameter * zoom / grid_size  # pixel size
@@ -173,22 +174,35 @@ class WFO(object):
 
     @property
     def extent(self):
-        return (-self._wfo.shape[1] // 2 * self.dx, (self._wfo.shape[1] // 2 - 1) * self.dx,
-                -self._wfo.shape[0] // 2 * self.dy, (self._wfo.shape[0] // 2 - 1) * self.dy)
+        return (
+            -self._wfo.shape[1] // 2 * self.dx,
+            (self._wfo.shape[1] // 2 - 1) * self.dx,
+            -self._wfo.shape[0] // 2 * self.dy,
+            (self._wfo.shape[0] // 2 - 1) * self.dy,
+        )
 
     def make_stop(self):
         """
-        Make current surface a stop. 
+        Make current surface a stop.
         Stop here just means that the wf at current position is normalised to unit energy.
         """
         norm2 = np.sum(np.abs(self._wfo) ** 2)
         self._wfo /= np.sqrt(norm2)
 
-    def aperture(self, xc, yc, hx=None, hy=None, r=None,
-                 shape='elliptical', tilt=None, obscuration=False):
+    def aperture(
+        self,
+        xc,
+        yc,
+        hx=None,
+        hy=None,
+        r=None,
+        shape="elliptical",
+        tilt=None,
+        obscuration=False,
+    ):
         """
         Apply aperture mask
-        
+
         Parameters
         ----------
         xc: scalar
@@ -211,37 +225,45 @@ class WFO(object):
         ixc = xc / self.dx + self._wfo.shape[1] / 2
         iyc = yc / self.dy + self._wfo.shape[0] / 2
 
-        if shape == 'elliptical':
+        if shape == "elliptical":
             if hx is None or hy is None:
-                logger.error('Semi major/minor axes not defined')
-                raise AssertionError('Semi major/minor axes not defined')
+                logger.error("Semi major/minor axes not defined")
+                raise AssertionError("Semi major/minor axes not defined")
             ihx = hx / self.dx
             ihy = hy / self.dy
             theta = 0.0 if tilt is None else np.deg2rad(tilt)
-            aperture = photutils.aperture.EllipticalAperture((ixc, iyc), ihx, ihy, theta=theta)
-            mask = aperture.to_mask(method='exact').to_image(self._wfo.shape)
-        elif shape == 'circular':
+            aperture = photutils.aperture.EllipticalAperture(
+                (ixc, iyc), ihx, ihy, theta=theta
+            )
+            mask = aperture.to_mask(method="exact").to_image(self._wfo.shape)
+        elif shape == "circular":
             if r is None:
-                logger.error('Radius not defined')
-                raise AssertionError('Radius not defined')
+                logger.error("Radius not defined")
+                raise AssertionError("Radius not defined")
             ihx = r / self.dx
             ihy = r / self.dy
             theta = 0.0
-            aperture = photutils.aperture.EllipticalAperture((ixc, iyc), ihx, ihy, theta=theta)
-            mask = aperture.to_mask(method='exact').to_image(self._wfo.shape)
-        elif shape == 'rectangular':
+            aperture = photutils.aperture.EllipticalAperture(
+                (ixc, iyc), ihx, ihy, theta=theta
+            )
+            mask = aperture.to_mask(method="exact").to_image(self._wfo.shape)
+        elif shape == "rectangular":
             if hx is None or hy is None:
-                logger.error('Semi major/minor axes not defined')
-                raise AssertionError('Semi major/minor axes not defined')
+                logger.error("Semi major/minor axes not defined")
+                raise AssertionError("Semi major/minor axes not defined")
             ihx = hx / self.dx
             ihy = hy / self.dy
             theta = 0.0 if tilt is None else np.deg2rad(tilt)
-            aperture = photutils.aperture.RectangularAperture((ixc, iyc), ihx, ihy, theta=theta)
+            aperture = photutils.aperture.RectangularAperture(
+                (ixc, iyc), ihx, ihy, theta=theta
+            )
             # Exact method not implemented in photutils 1.0.2
-            mask = aperture.to_mask(method='subpixel', subpixels=32).to_image(self._wfo.shape)
+            mask = aperture.to_mask(method="subpixel", subpixels=32).to_image(
+                self._wfo.shape
+            )
         else:
-            logger.error('Aperture {:s} not defined yet.'.format(shape))
-            raise ValueError('Aperture {:s} not defined yet.'.format(shape))
+            logger.error("Aperture {:s} not defined yet.".format(shape))
+            raise ValueError("Aperture {:s} not defined yet.".format(shape))
 
         if obscuration:
             self._wfo *= 1 - mask
@@ -253,12 +275,12 @@ class WFO(object):
     def insideout(self, z=None):
         """
         Check if z position is within the Rayleigh distance
-        
+
         Parameters
         ----------
         z: scalar
             beam coordinate long propagation axis
-            
+
         Returns
         -------
             out: string
@@ -270,19 +292,19 @@ class WFO(object):
             delta_z = z - self.zw0
 
         if np.abs(delta_z) < self.rayleigh_factor * self.zr:
-            return 'I'
+            return "I"
         else:
-            return 'O'
+            return "O"
 
     def lens(self, lens_fl):
         """
         Apply wavefront phase from paraxial lens
-        
+
         Parameters
         ----------
         lens_fl: scalar
             Lens focal length. Positive for converging lenses. Negative for diverging lenses.
-        
+
         Note
         ----------
             A paraxial lens imposes a quadratic phase shift.
@@ -294,44 +316,48 @@ class WFO(object):
         propagator = self.insideout()
 
         # estimate Gaussian beam curvature after lens
-        gCobj = delta_z / (delta_z ** 2 + self.zr ** 2)  # Gaussian beam curvature before lens
+        gCobj = delta_z / (
+            delta_z**2 + self.zr**2
+        )  # Gaussian beam curvature before lens
         gCima = gCobj - 1.0 / lens_fl  # Gaussian beam curvature after lens
 
         # update Gaussian beam parameters
-        self._w0 = wz / np.sqrt(1.0 + (np.pi * wz ** 2 * gCima / self.wl) ** 2)
-        self._zw0 = -gCima / (gCima ** 2 + (self.wl / (np.pi * wz ** 2)) ** 2) + self.z
-        self._zr = np.pi * self.w0 ** 2 / self.wl
+        self._w0 = wz / np.sqrt(1.0 + (np.pi * wz**2 * gCima / self.wl) ** 2)
+        self._zw0 = (
+            -gCima / (gCima**2 + (self.wl / (np.pi * wz**2)) ** 2) + self.z
+        )
+        self._zr = np.pi * self.w0**2 / self.wl
 
         propagator = propagator + self.insideout()
 
-        if propagator[0] == 'I' or self.C == 0.0:
+        if propagator[0] == "I" or self.C == 0.0:
             Cobj = 0.0
         else:
             Cobj = 1 / delta_z
 
         delta_z = self.z - self.zw0
 
-        if propagator[1] == 'I':
+        if propagator[1] == "I":
             Cima = 0.0
         else:
             Cima = 1 / delta_z
 
         self._C = Cima
 
-        if propagator == 'II':
+        if propagator == "II":
             lens_phase = 1.0 / lens_fl
-        elif propagator == 'IO':
+        elif propagator == "IO":
             lens_phase = 1 / lens_fl + Cima
-        elif propagator == 'OI':
+        elif propagator == "OI":
             lens_phase = 1.0 / lens_fl - Cobj
-        elif propagator == 'OO':
+        elif propagator == "OO":
             lens_phase = 1.0 / lens_fl - Cobj + Cima
 
         x = (np.arange(self._wfo.shape[1]) - self._wfo.shape[1] // 2) * self.dx
         y = (np.arange(self._wfo.shape[0]) - self._wfo.shape[0] // 2) * self.dy
 
         xx, yy = np.meshgrid(x, y)
-        qphase = -(xx ** 2 + yy ** 2) * (0.5 * lens_phase / self.wl)
+        qphase = -(xx**2 + yy**2) * (0.5 * lens_phase / self.wl)
 
         self._fratio = np.abs(delta_z) / (2 * wz)
         self._wfo = self._wfo * np.exp(2.0j * np.pi * qphase)
@@ -357,17 +383,21 @@ class WFO(object):
         if Mx is None:
             Mx = My
 
-        assert Mx > 0.0, 'Negative magnification not implemented yet.'
-        assert My > 0.0, 'Negative magnification not implemented yet.'
+        assert Mx > 0.0, "Negative magnification not implemented yet."
+        assert My > 0.0, "Negative magnification not implemented yet."
 
         self._dx *= Mx
         self._dy *= My
 
         if np.abs(Mx - 1.0) < 1.0e-8 or Mx is None:
-            logger.trace('Does not do anything if magnification x is close to unity.')
+            logger.trace(
+                "Does not do anything if magnification x is close to unity."
+            )
             return
 
-        logger.warning("Gaussian beam magnification is implemented, but has not been tested.")
+        logger.warning(
+            "Gaussian beam magnification is implemented, but has not been tested."
+        )
 
         # Current distance to focus (before magnification)
         delta_z = self.z - self.zw0
@@ -375,15 +405,15 @@ class WFO(object):
         wz = self.w0 * np.sqrt(1.0 + ((self.z - self.zw0) / self.zr) ** 2)
 
         # Apply magnification following ABCD Gaussian beam prescription
-        # i.e. w'(z) = Mx*w(z), R'(z) = Mx**2 * R(z)  
+        # i.e. w'(z) = Mx*w(z), R'(z) = Mx**2 * R(z)
 
-        delta_z *= Mx ** 2
+        delta_z *= Mx**2
         wz *= Mx
         self._w0 *= Mx  # From Eq 56, Lawrence (1992)
-        self._zr *= Mx ** 2
+        self._zr *= Mx**2
         self._zw0 = self.z - delta_z
         self._fratio = np.abs(delta_z) / (2 * wz)
-    
+
     def ChangeMedium(self, n1n2):
         """
         Given the ratio of refractive indices n1/n2 for light propagating from a medium with refractive index n1,
@@ -401,10 +431,10 @@ class WFO(object):
 
         """
         _n1n2 = np.abs(n1n2)
-        
+
         # Current distance to focus (before magnification)
         delta_z = self.z - self.zw0
-        
+
         delta_z /= n1n2
         self._zr /= n1n2
         self._wl *= n1n2
@@ -414,14 +444,16 @@ class WFO(object):
     def ptp(self, dz):
         """
         Plane-to-plane (far field) wavefront propagator
-        
+
         Parameters
         ----------
         dz: scalar
             propagation distance
         """
         if np.abs(dz) < 0.001 * self.wl:
-            logger.debug('Thickness smaller than 1/1000 wavelength. Returning..')
+            logger.debug(
+                "Thickness smaller than 1/1000 wavelength. Returning.."
+            )
             return
 
         if self.C != 0:
@@ -433,7 +465,7 @@ class WFO(object):
         fx = np.fft.fftfreq(wf.shape[1], d=self.dx)
         fy = np.fft.fftfreq(wf.shape[0], d=self.dy)
         fxx, fyy = np.meshgrid(fx, fy)
-        qphase = (np.pi * self.wl * dz) * (fxx ** 2 + fyy ** 2)
+        qphase = (np.pi * self.wl * dz) * (fxx**2 + fyy**2)
         wf = np.fft.ifft2(np.exp(-1.0j * qphase) * wf, norm="ortho")
 
         self._z = self._z + dz
@@ -443,33 +475,35 @@ class WFO(object):
     def stw(self, dz):
         """
         Spherical-to-waist (near field to far field) wavefront propagator
-        
+
         Parameters
         ----------
         dz: scalar
             propagation distance
         """
         if np.abs(dz) < 0.001 * self.wl:
-            logger.debug('Thickness smaller than 1/1000 wavelength. Returning..')
+            logger.debug(
+                "Thickness smaller than 1/1000 wavelength. Returning.."
+            )
             return
 
         if self.C == 0.0:
-            logger.error('STW wavefront should not be planar')
-            raise ValueError('STW wavefront should not be planar')
+            logger.error("STW wavefront should not be planar")
+            raise ValueError("STW wavefront should not be planar")
 
-        s = 'forward' if dz >= 0 else 'reverse'
+        s = "forward" if dz >= 0 else "reverse"
 
         wf = np.fft.ifftshift(self._wfo)
-        if s == 'forward':
+        if s == "forward":
             wf = np.fft.fft2(wf, norm="ortho")
-        elif s == 'reverse':
+        elif s == "reverse":
             wf = np.fft.ifft2(wf, norm="ortho")
 
         fx = np.fft.fftfreq(wf.shape[1], d=self.dx)
         fy = np.fft.fftfreq(wf.shape[0], d=self.dy)
         fxx, fyy = np.meshgrid(fx, fy)
 
-        qphase = (np.pi * self.wl * dz) * (fxx ** 2 + fyy ** 2)
+        qphase = (np.pi * self.wl * dz) * (fxx**2 + fyy**2)
 
         self._z = self._z + dz
         self._C = 0.0
@@ -480,31 +514,33 @@ class WFO(object):
     def wts(self, dz):
         """
         Waist-to-spherical (far field to near field) wavefront propagator
-        
+
         Parameters
         ----------
         dz: scalar
             propagation distance
         """
         if np.abs(dz) < 0.001 * self.wl:
-            logger.debug('Thickness smaller than 1/1000 wavelength. Returning..')
+            logger.debug(
+                "Thickness smaller than 1/1000 wavelength. Returning.."
+            )
             return
 
         if self.C != 0.0:
-            logger.error('WTS wavefront should be planar')
-            raise ValueError('WTS wavefront should be planar')
+            logger.error("WTS wavefront should be planar")
+            raise ValueError("WTS wavefront should be planar")
 
-        s = 'forward' if dz >= 0 else 'reverse'
+        s = "forward" if dz >= 0 else "reverse"
 
         x = (np.arange(self._wfo.shape[1]) - self._wfo.shape[1] // 2) * self.dx
         y = (np.arange(self._wfo.shape[0]) - self._wfo.shape[0] // 2) * self.dy
 
         xx, yy = np.meshgrid(x, y)
-        qphase = (np.pi / (dz * self.wl)) * (xx ** 2 + yy ** 2)
+        qphase = (np.pi / (dz * self.wl)) * (xx**2 + yy**2)
         wf = np.fft.ifftshift(np.exp(1.0j * qphase) * self._wfo)
-        if s == 'forward':
+        if s == "forward":
             wf = np.fft.fft2(wf, norm="ortho")
-        elif s == 'reverse':
+        elif s == "reverse":
             wf = np.fft.ifft2(wf, norm="ortho")
 
         self._z = self._z + dz
@@ -516,7 +552,7 @@ class WFO(object):
     def propagate(self, dz):
         """
         Wavefront propagator. Selects the appropriate propagation primitive and applies the wf propagation
-        
+
         Parameters
         ----------
         dz: scalar
@@ -526,22 +562,24 @@ class WFO(object):
         z1 = self.z
         z2 = self.z + dz
 
-        if propagator == 'II':
+        if propagator == "II":
             self.ptp(dz)
-        elif propagator == 'OI':
+        elif propagator == "OI":
             self.stw(self.zw0 - z1)
             self.ptp(z2 - self.zw0)
-        elif propagator == 'IO':
+        elif propagator == "IO":
             self.ptp(self.zw0 - z1)
             self.wts(z2 - self.zw0)
-        elif propagator == 'OO':
+        elif propagator == "OO":
             self.stw(self.zw0 - z1)
             self.wts(z2 - self.zw0)
 
-    def zernikes(self, index, Z, ordering, normalize, radius, offset=0.0, origin='x'):
+    def zernikes(
+        self, index, Z, ordering, normalize, radius, offset=0.0, origin="x"
+    ):
         """
         Add a WFE represented by a Zernike expansion
-        
+
         Parameters
         ----------
         index: array of integers
@@ -565,25 +603,39 @@ class WFO(object):
         out: masked array
             the WFE
         """
-        assert not np.any(np.diff(index) - 1), "Zernike sequence should be continuous"
+        assert not np.any(
+            np.diff(index) - 1
+        ), "Zernike sequence should be continuous"
 
         x = (np.arange(self._wfo.shape[1]) - self._wfo.shape[1] // 2) * self.dx
         y = (np.arange(self._wfo.shape[0]) - self._wfo.shape[0] // 2) * self.dy
 
         xx, yy = np.meshgrid(x, y)
-        rho = np.sqrt(xx ** 2 + yy ** 2) / radius
+        rho = np.sqrt(xx**2 + yy**2) / radius
 
-        if origin == 'x':
+        if origin == "x":
             phi = np.arctan2(yy, xx) + np.deg2rad(offset)
-        elif origin == 'y':
+        elif origin == "y":
             phi = np.arctan2(xx, yy) + np.deg2rad(offset)
         else:
-            logger.error('Origin {} not recognised. Origin shall be either x or y'.format(origin))
-            raise ValueError('Origin {} not recognised. Origin shall be either x or y'.format(origin))
-        zernike = Zernike(len(index), rho, phi, ordering=ordering, normalize=normalize)
+            logger.error(
+                "Origin {} not recognised. Origin shall be either x or y".format(
+                    origin
+                )
+            )
+            raise ValueError(
+                "Origin {} not recognised. Origin shall be either x or y".format(
+                    origin
+                )
+            )
+        zernike = Zernike(
+            len(index), rho, phi, ordering=ordering, normalize=normalize
+        )
         zer = zernike()
         wfe = (zer.T * Z).T.sum(axis=0)
-        self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * wfe / self._wl).filled(0)
+        self._wfo = self._wfo * np.exp(
+            2.0 * np.pi * 1j * wfe / self._wl
+        ).filled(0)
 
         return wfe
 

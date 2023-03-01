@@ -30,9 +30,8 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
 import logging
+
 from paos import __pkg_name__
 
 last_log = logging.INFO
@@ -66,6 +65,7 @@ def setLogLevel(level, log_id=0):
     """
     global last_log
     from .logger import root_logger
+
     root_logger.handlers[log_id].setLevel(level)
     last_log = level
 
@@ -113,11 +113,13 @@ def addHandler(handler):
 
     """
     from .logger import root_logger
+
     root_logger.addHandler(handler)
 
 
-def addLogFile(fname='{}.log'.format(__pkg_name__), reset=False,
-               level=logging.DEBUG):
+def addLogFile(
+    fname="{}.log".format(__pkg_name__), reset=False, level=logging.DEBUG
+):
     """
     It adds a log file to the handlers list.
 
@@ -132,13 +134,15 @@ def addLogFile(fname='{}.log'.format(__pkg_name__), reset=False,
     """
     if reset:
         import os
+
         try:
             os.remove(fname)
         except OSError:
             pass
     file_handler = logging.FileHandler(fname)
     formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     file_handler.setFormatter(formatter)
     file_handler.setLevel(level)
     addHandler(file_handler)

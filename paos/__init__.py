@@ -1,6 +1,6 @@
+import importlib.metadata as metadata
 import os
 from datetime import date
-import importlib.metadata as metadata
 
 from .__version__ import __version__
 
@@ -36,7 +36,7 @@ else:
 import logging
 
 logger = logging.getLogger(__pkg_name__)
-logger.info(f'code version {__version__}')
+logger.info(f"code version {__version__}")
 
 from paos.log import setLogLevel, addLogFile
 
@@ -59,7 +59,13 @@ from paos.core.run import run
 # initialise plotter
 import matplotlib.pyplot as plt
 
-plt.rcParams['figure.facecolor'] = 'white'
-plt.rc('lines', linewidth=1.5)
-plt.rc('axes', axisbelow=True, titleweight='bold', labelcolor='dimgray', labelweight='bold')
-plt.rc('font', size=14)
+plt.rcParams["figure.facecolor"] = "white"
+plt.rc("lines", linewidth=1.5)
+plt.rc(
+    "axes",
+    axisbelow=True,
+    titleweight="bold",
+    labelcolor="dimgray",
+    labelweight="bold",
+)
+plt.rc("font", size=14)

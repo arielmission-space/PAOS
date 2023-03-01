@@ -73,7 +73,3 @@ assembly or launch and cool-down to operating temperatures. These simulations co
 best strategy to optimize the telescope focussing ahead of payload delivery, ensuring that the
 optical system stays focussed and satisfies the requirement on the maximum amplitude of the
 wavefront aberrations during the measurements.
-
-
-
-
