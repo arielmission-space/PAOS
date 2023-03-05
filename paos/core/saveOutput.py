@@ -1,10 +1,13 @@
 import datetime
-import h5py
 import os
 from copy import deepcopy as dc
+
+import h5py
 import numpy as np
 
-from paos import __author__, __version__, logger
+from paos import __author__
+from paos import __version__
+from paos import logger
 
 
 def remove_keys(dictionary, keys):
@@ -34,7 +37,7 @@ def remove_keys(dictionary, keys):
 
     """
     for k in keys:
-        dictionary.pop(k, 'key not found')
+        dictionary.pop(k, "key not found")
     return
 
 
@@ -63,19 +66,20 @@ def save_recursively_to_hdf5(dictionary, outgroup):
         elif isinstance(data, (str, int, float, tuple)):
             outgroup.create_dataset(key, data=data)
         elif isinstance(data, np.ndarray):
-            outgroup.create_dataset(key, data=data,
-                                    shape=data.shape,
-                                    dtype=data.dtype)
+            outgroup.create_dataset(
+                key, data=data, shape=data.shape, dtype=data.dtype
+            )
         elif isinstance(data, list):
             asciiList = [n.encode("ascii", "ignore") for n in data]
-            outgroup.create_dataset(key, data=asciiList,
-                                    shape=(len(asciiList), 1), dtype='S10')
+            outgroup.create_dataset(
+                key, data=asciiList, shape=(len(asciiList), 1), dtype="S10"
+            )
         elif data is None:
-            logger.warning('key {} is None'.format(key))
+            logger.warning("key {} is None".format(key))
             continue
         else:
-            logger.error('data type for {} not supported'.format(key))
-            raise NameError('data type not supported')
+            logger.error("data type for {} not supported".format(key))
+            raise NameError("data type not supported")
 
 
 def save_info(file_name, out):
@@ -100,16 +104,17 @@ def save_info(file_name, out):
 
     """
 
-    attrs = {'file_name': file_name,
-             'file_time': datetime.datetime.now().isoformat(),
-             'creator': __author__,
-             'program_name': __package__.upper(),
-             'program_version': __version__,
-             'HDF5_Version': h5py.version.hdf5_version,
-             'h5py_version': h5py.version.version,
-             }
+    attrs = {
+        "file_name": file_name,
+        "file_time": datetime.datetime.now().isoformat(),
+        "creator": __author__,
+        "program_name": __package__.upper(),
+        "program_version": __version__,
+        "HDF5_Version": h5py.version.hdf5_version,
+        "h5py_version": h5py.version.version,
+    }
 
-    info_group = out.create_group('info')
+    info_group = out.create_group("info")
     save_recursively_to_hdf5(attrs, info_group)
 
     return
@@ -138,16 +143,16 @@ def save_retval(retval, keys_to_keep, out):
 
     for index in retval.keys():
 
-        group_name = 'S{:02d}'.format(index)
-        logger.trace('saving {}'.format(group_name))
+        group_name = "S{:02d}".format(index)
+        logger.trace("saving {}".format(group_name))
 
         item = dc(retval[index])
 
-        if item['aperture'] is not None:
-            item['aperture'] = item['aperture'].__dict__
+        if item["aperture"] is not None:
+            item["aperture"] = item["aperture"].__dict__
 
-        item['ABCDs'] = item['ABCDs'].__dict__
-        item['ABCDt'] = item['ABCDt'].__dict__
+        item["ABCDs"] = item["ABCDs"].__dict__
+        item["ABCDt"] = item["ABCDt"].__dict__
 
         if keys_to_keep is None:
             keys_to_keep = item.keys()
@@ -199,26 +204,30 @@ def save_output(retval, file_name, keys_to_keep=None, overwrite=True):
     assert isinstance(retval, dict), "parameter retval must be a dict"
     assert isinstance(file_name, str), "parameter file_name must be a string"
     if keys_to_keep is not None:
-        assert isinstance(keys_to_keep, list), "parameter keys_to_keep must be a list of strings"
+        assert isinstance(
+            keys_to_keep, list
+        ), "parameter keys_to_keep must be a list of strings"
 
-    logger.info('saving {} started...'.format(file_name))
+    logger.info("saving {} started...".format(file_name))
 
     if overwrite:
-        logger.info('removing old file')
+        logger.info("removing old file")
         if os.path.isfile(file_name):
             os.remove(file_name)
 
-    with h5py.File(file_name, 'a') as out:
+    with h5py.File(file_name, "a") as out:
 
         save_info(file_name, out)
         save_retval(retval, keys_to_keep, out)
 
-    logger.info('saving ended.')
+    logger.info("saving ended.")
 
     return
 
 
-def save_datacube(retval_list, file_name, group_names, keys_to_keep=None, overwrite=True):
+def save_datacube(
+    retval_list, file_name, group_names, keys_to_keep=None, overwrite=True
+):
     """
     Given a list of dictionaries with POP simulation output, a hdf5 file name, a list of
     identifiers to tag each simulation and the keys to store at each surface, it saves the
@@ -263,31 +272,37 @@ def save_datacube(retval_list, file_name, group_names, keys_to_keep=None, overwr
 
     """
 
-    assert isinstance(retval_list, list), "parameter retval_list must be a list"
+    assert isinstance(
+        retval_list, list
+    ), "parameter retval_list must be a list"
     assert isinstance(file_name, str), "parameter file_name must be a string"
-    assert isinstance(group_names, list), "parameter group_names must be a list of strings"
+    assert isinstance(
+        group_names, list
+    ), "parameter group_names must be a list of strings"
 
     if keys_to_keep is not None:
-        assert isinstance(keys_to_keep, list), "parameter keys_to_keep must be a list of strings"
+        assert isinstance(
+            keys_to_keep, list
+        ), "parameter keys_to_keep must be a list of strings"
 
-    logger.info('Saving {} started...'.format(file_name))
+    logger.info("Saving {} started...".format(file_name))
 
     if overwrite:
-        logger.info('Remove old file')
+        logger.info("Remove old file")
         if os.path.exists(file_name) and os.path.isfile(file_name):
             os.remove(file_name)
 
-    with h5py.File(file_name, 'a') as cube:
+    with h5py.File(file_name, "a") as cube:
 
         save_info(file_name, cube)
 
         for group_name, retval in zip(group_names, retval_list):
 
             out = cube.create_group(group_name)
-            logger.trace('saving group {}'.format(out))
+            logger.trace("saving group {}".format(out))
 
             save_retval(retval, keys_to_keep, out)
 
-    logger.info('Saving ended.')
+    logger.info("Saving ended.")
 
     return

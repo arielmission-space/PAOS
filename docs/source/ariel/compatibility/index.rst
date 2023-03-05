@@ -53,6 +53,3 @@ of the instruments using representative aberrated PSFs. For more details, please
 documentation <https://github.com/arielmission-space/ExoSim2.0>`_ and the paper
 `Sarkar, S., Pascale, E., Papageorgiou, A. et al. ExoSim: the Exoplanet Observation Simulator. Exp Astron 51, 287–317 (2021)
 <https://doi.org/10.1007/s10686-020-09690-9>`_
-
-
-

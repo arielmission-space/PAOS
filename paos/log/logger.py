@@ -62,19 +62,19 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
 import logging
+
 from decorator import decorator
+
 from paos import __pkg_name__
 
-__all__ = ['Logger']
+__all__ = ["Logger"]
 
 root_logger = logging.getLogger(__pkg_name__)
 root_logger.propagate = False
 
 logging.TRACE = logging.DEBUG + 1
-logging.addLevelName(logging.TRACE, 'TRACE')
+logging.addLevelName(logging.TRACE, "TRACE")
 
 
 class CustomFormatter(logging.Formatter):
@@ -98,7 +98,7 @@ class CustomFormatter(logging.Formatter):
         logging.TRACE: grey + format + reset,
         logging.WARNING: yellow + format + reset,
         logging.ERROR: red + format + reset,
-        logging.CRITICAL: bold_red + format + reset
+        logging.CRITICAL: bold_red + format + reset,
     }
 
     def format(self, record):
@@ -134,9 +134,10 @@ class Logger:
         Produces the logger name and store it inside the class.
         The logger name is the name of the class that inherits this Logger class.
         """
-        self._log_name = '{}.{}'.format(__pkg_name__, self.__class__.__name__)
+        self._log_name = "{}.{}".format(__pkg_name__, self.__class__.__name__)
         self._logger = logging.getLogger(
-            '{}.{}'.format(__pkg_name__, self.__class__.__name__))
+            "{}.{}".format(__pkg_name__, self.__class__.__name__)
+        )
 
     def info(self, message, *args, **kwargs):
         """
@@ -182,16 +183,16 @@ class Logger:
 
 
 @decorator
-def traced(obj,*args, **kwargs):
+def traced(obj, *args, **kwargs):
     """
     Decorator to attach to functions and methods to log at TRACE level.
     Trace level produced a log anytime a function or a method is entered and exited.
     """
     logger = logging.getLogger(generate_logger_name(obj))
 
-    logger.trace('called')
+    logger.trace("called")
     value = obj(*args, **kwargs)
-    logger.trace('exited')
+    logger.trace("exited")
 
     return value
 
@@ -211,5 +212,6 @@ def generate_logger_name(obj):
         logger name
     """
     parent_logger_name = obj.__module__
-    return "%s.%s" % (
-        parent_logger_name, getattr(obj, "__qualname__", obj.__name__))
+    return "{}.{}".format(
+        parent_logger_name, getattr(obj, "__qualname__", obj.__name__)
+    )
