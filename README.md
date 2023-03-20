@@ -1,13 +1,14 @@
 # `PAOS`
-The Physical `Ariel` Optics Simulator
 
-## How to install 
+The Physical Optics Simulator
+
+## How to install
 
 `PAOS` is compatible with Python 3.8.
 
-To install from source, clone the repository and move inside the directory. 
-Then use pip as 
-    
+To install from source, clone the repository and move inside the directory.
+Then use pip as
+
     pip install .
 
 ## How to build the documentation
@@ -22,20 +23,20 @@ Then move into the `docs` directory and run
 
     make html
 
-The documentation will be produced into the `build/html` directory inside `docs`. 
+The documentation will be produced into the `build/html` directory inside `docs`.
 Open `index.html` to read the documentation.
 
 ### pdf documentation
 
 #### requirements
 
-To compile the documentation in .pdf format, a LaTex compiler is needed. 
+To compile the documentation in .pdf format, a LaTex compiler is needed.
 
 To install `pdflatex` run
 
     pip install pdflatex
 
-In case you are missing a LaTex installation from your computer, or some packages are missing, run 
+In case you are missing a LaTex installation from your computer, or some packages are missing, run
 
     sudo apt-get install latexmk texlive texlive-formats-extra
 
@@ -49,8 +50,8 @@ Then move into the `docs` directory and run
 
     make latexpdf
 
-Doing so, the documentation is compiled by `pdflatex` and stored into the `build/latex` directory inside `docs`. 
+Doing so, the documentation is compiled by `pdflatex` and stored into the `build/latex` directory inside `docs`.
 Open `paos.pdf` to read the documentation.
 
-Please refer to the [official sphinx documentation](https://www.sphinx-doc.org/en/master/usage/configuration.html#latex-options) 
+Please refer to the [official sphinx documentation](https://www.sphinx-doc.org/en/master/usage/configuration.html#latex-options)
 for a different LaTex compiler.
