@@ -2530,7 +2530,7 @@ class PaosGui(SimpleGui):
 
         # ------ Window creation ------ #
         self.window = Window(
-            "PAOS Configuration GUI",
+            "PAOS GUI",
             layout,
             default_element_size=(12, 1),
             element_padding=(1, 1),
@@ -2829,6 +2829,8 @@ class PaosGui(SimpleGui):
 
             # ------- Update 'Select wavelength' or 'Select field' Listbox widget in the Launcher tab ------#
             elif self.event in ["select wl", "select field"]:
+                # Update stoplight color
+                self.window["PLOT-STATE"].update(text_color="red")
                 # Reset previous outputs
                 del self.retval, self.figure
                 self.retval, self.figure = {}, None
@@ -2845,6 +2847,8 @@ class PaosGui(SimpleGui):
 
             # ------- Update 'Select field' Listbox widget in MC Wavelengths frame ------#
             elif self.event == "select field (nwl)":
+                # Update stoplight color
+                self.window["PLOT-STATE (nwl)"].update(text_color="red")
                 # Reset POP simulation output
                 self.retval_list.clear()
                 # Reset figure
@@ -2857,6 +2861,8 @@ class PaosGui(SimpleGui):
 
             # ------- Update 'Select wavelength' or 'Select field' Listbox widget in MC Wavefront error frame ------#
             elif self.event in ["select wl (wfe)", "select field (wfe)"]:
+                # Update stoplight color
+                self.window["PLOT-STATE (wfe)"].update(text_color="red")
                 # Reset POP simulation output
                 self.retval_list.clear()
                 # Reset figures
@@ -3305,7 +3311,7 @@ class PaosGui(SimpleGui):
             # ------- Display a popup window with the GUI values given as a flat dictionary ------#
             elif self.event == "-SUBMIT-":
                 popup(
-                    f"PAOS Configuration GUI v{__version__}",
+                    f"PAOS GUI v{__version__}",
                     f'You clicked on the "{self.event}" button',
                     f"The values are {self.values}",
                     keep_on_top=True,
@@ -3365,7 +3371,7 @@ class PaosGui(SimpleGui):
 
             # ------- Display a popup window with the `PAOS` GUI info ------#
             elif self.event == "About":
-                popup(f"PAOS Configuration GUI v{__version__}")
+                popup(f"PAOS GUI v{__version__}")
 
         # Exit the `PAOS` GUI for good
         sys.exit()
