@@ -12,7 +12,7 @@ from paos.util.material import Material
 
 def getfloat(value):
     try:
-        return np.float(value)
+        return np.float64(value)
     except:
         return np.nan
 
@@ -174,11 +174,11 @@ def parse_config(filename):
                 _data_["Zorigin"] = element.get("Par5", "x")
 
                 _data_["Zindex"] = np.fromstring(
-                    element.get("Zindex", ""), sep=",", dtype=np.int
+                    element.get("Zindex", ""), sep=",", dtype=np.int64
                 )
                 _data_["Z"] = (
                     np.fromstring(
-                        element.get("Z", ""), sep=",", dtype=np.float
+                        element.get("Z", ""), sep=",", dtype=np.float64
                     )
                     * wave
                 )

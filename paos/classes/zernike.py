@@ -79,7 +79,7 @@ class Zernike:
                 for m, n in zip(self.m, self.n)
             ]
         else:
-            self.norm = np.ones(self.N, dtype=np.float)
+            self.norm = np.ones(self.N, dtype=np.float64)
 
         mask = rho > 1.0
         if isinstance(rho, np.ma.MaskedArray):
@@ -192,7 +192,7 @@ class Zernike:
             c = (1 + np.sign(m)) / 2
             return (a - b - c).astype(int) + 1
         elif ordering == "noll":
-            _p = np.zeros(n.size, dtype=np.int)
+            _p = np.zeros(n.size, dtype=np.int64)
             for idx, (_m, _n) in enumerate(zip(m, n)):
                 if _m > 0.0 and (_n % 4 in [0, 1]):
                     _p[idx] = 0
@@ -204,7 +204,7 @@ class Zernike:
                     _p[idx] = 1
                 else:
                     raise ValueError("Invalid (m,n) in Noll indexing.")
-            return (n * (n + 1) / 2 + np.abs(m) + _p).astype(np.int)
+            return (n * (n + 1) / 2 + np.abs(m) + _p).astype(np.int64)
         else:
             raise NameError("Ordering not supported.")
 

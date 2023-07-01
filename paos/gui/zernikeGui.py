@@ -299,9 +299,9 @@ class ZernikeGui(SimpleGui):
                 )
             ],
             [
-                Submit(
-                    tooltip="Click to submit (debug)", key="-SUBMIT ZERNIKES-"
-                ),
+                # Submit(
+                #     tooltip="Click to submit (debug)", key="-SUBMIT ZERNIKES-"
+                # ),
                 Button("Exit", key="-EXIT ZERNIKES-"),
             ],
         ]
