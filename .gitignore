@@ -287,3 +287,6 @@ fabric.properties
 # PAOS Specific
 notebook/data
 notebook/plots
+
+# deleteme folders
+*deleteme
