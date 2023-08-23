@@ -6,10 +6,11 @@ from .__version__ import __version__
 
 # load package info
 __pkg_name__ = metadata.metadata("paos")["Name"]
-__url__ = metadata.metadata("paos")["Project-URL"]
+__url__ = metadata.metadata("paos")["Home-page"]
 __author__ = metadata.metadata("paos")["Author"]
 __email__ = metadata.metadata("paos")["Author_email"]
 __license__ = metadata.metadata("paos")["license"]
+__copyright__ = "2021-{:d}, {}".format(date.today().year, __author__)
 __summary__ = metadata.metadata("paos")["Summary"]
 
 try:

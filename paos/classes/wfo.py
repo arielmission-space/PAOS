@@ -585,17 +585,17 @@ class WFO:
         index: array of integers
             Sequence of zernikes to use. It should be a continuous sequence.
         Z : array of floats
-            The coefficients of the Zernike polynomials in meters
+            The coefficients of the Zernike polynomials in meters.
         ordering: string
-            Can be 'ansi', 'noll', 'fringe'
+            Can be 'ansi', 'noll', 'fringe', or 'standard'.
         normalize: bool
-            Polynomials are normalised to RMS=1 if True, or to unity at radius if false
+            Polynomials are normalised to RMS=1 if True, or to unity at radius if False.
         radius: float
-            the radius of the circular aperture over which the polynomials are calculated
+            The radius of the circular aperture over which the polynomials are calculated.
         offset: float
-            angular offset in degrees
+            Angular offset in degrees.
         origin: string
-            angles measured counter-clockwise positive from x axis by default (origin='x').
+            Angles measured counter-clockwise positive from x axis by default (origin='x').
             Set origin='y' for angles measured clockwise-positive from the y-axis.
 
         Returns

@@ -153,8 +153,8 @@ class PaosGui(SimpleGui):
                     "",
                     "rectangular aperture",
                     "rectangular obscuration",
-                    "circular aperture",
-                    "circular obscuration",
+                    # "circular aperture",
+                    # "circular obscuration",
                     "elliptical aperture",
                     "elliptical obscuration",
                 ],
@@ -240,7 +240,7 @@ class PaosGui(SimpleGui):
                         key
                     ].getboolean("ignore"):
                         self.disable_wfe = False
-        self.disable_wfe_color = "gray" if self.disable_wfe else "yellow"
+        self.disable_wfe_color = "gray" if self.disable_wfe else "blue"
 
     def get_widget(self, value, key, item, size=(24, 2)):
         """
@@ -734,7 +734,7 @@ class PaosGui(SimpleGui):
                     disable_wfe.append(False)
 
         self.disable_wfe = False if False in disable_wfe else True
-        self.disable_wfe_color = "gray" if self.disable_wfe else "yellow"
+        self.disable_wfe_color = "gray" if self.disable_wfe else "blue"
 
         self.window["-OPEN FRAME MC (wfe)-"].update(disabled=self.disable_wfe)
         self.window["-FRAME TITLE MC (wfe)-"].update(
@@ -1684,7 +1684,7 @@ class PaosGui(SimpleGui):
                             Text(
                                 "MC Wavelengths",
                                 size=(20, 1),
-                                text_color="yellow",
+                                text_color="blue",
                                 key="-FRAME TITLE MC (nwl)-",
                                 font=self.font_titles,
                                 relief=RELIEF_SUNKEN,
@@ -2508,17 +2508,17 @@ class PaosGui(SimpleGui):
                 )
             ],
             [
-                Submit(tooltip="Click to submit (debug)", key="-SUBMIT-"),
-                Button(
-                    tooltip="Click to show dict",
-                    button_text="Show Dict",
-                    key="-SHOW DICT-",
-                ),
-                Button(
-                    tooltip="Click to copy dict to clipboard",
-                    button_text="Copy to clipboard",
-                    key="-TO CLIPBOARD-",
-                ),
+                # Submit(tooltip="Click to submit (debug)", key="-SUBMIT-"),
+                # Button(
+                #     tooltip="Click to show dict",
+                #     button_text="Show Dict",
+                #     key="-SHOW DICT-",
+                # ),
+                # Button(
+                #     tooltip="Click to copy dict to clipboard",
+                #     button_text="Copy to clipboard",
+                #     key="-TO CLIPBOARD-",
+                # ),
                 Button(
                     tooltip="Save to ini file",
                     button_text="Save",
@@ -2530,7 +2530,7 @@ class PaosGui(SimpleGui):
 
         # ------ Window creation ------ #
         self.window = Window(
-            "PAOS Configuration GUI",
+            "PAOS GUI",
             layout,
             default_element_size=(12, 1),
             element_padding=(1, 1),
@@ -2548,7 +2548,7 @@ class PaosGui(SimpleGui):
 
         # ------ Cursors definition ------ #
         self.window["-ADD SURFACE-"].set_cursor(cursor="hand1")
-        self.window["-SHOW DICT-"].set_cursor(cursor="target")
+        # self.window["-SHOW DICT-"].set_cursor(cursor="target")
         self.window["-LINK-"].set_cursor(cursor="trek")
         self.window["-CREDITS-"].set_cursor(cursor="boat")
         self.window["-PAOS VERSION-"].set_cursor(cursor="coffee_mug")
@@ -2642,10 +2642,10 @@ class PaosGui(SimpleGui):
                 self.update_headings(row)
                 selected_row = self.highlight_row(row, selected_row)
 
-            # ------- Display a popup window with the output dictionary ------#
-            elif self.event == "-SHOW DICT-":
-                # Show GUI window contents as a dict
-                self.save_to_dict(show=True)
+            # # ------- Display a popup window with the output dictionary ------#
+            # elif self.event == "-SHOW DICT-":
+            #     # Show GUI window contents as a dict
+            #     self.save_to_dict(show=True)
 
             # ------- Paste from the clipboard to the desired wavelength input cells ------#
             elif self.event == "-PASTE WL-":
@@ -2829,6 +2829,8 @@ class PaosGui(SimpleGui):
 
             # ------- Update 'Select wavelength' or 'Select field' Listbox widget in the Launcher tab ------#
             elif self.event in ["select wl", "select field"]:
+                # Update stoplight color
+                self.window["PLOT-STATE"].update(text_color="red")
                 # Reset previous outputs
                 del self.retval, self.figure
                 self.retval, self.figure = {}, None
@@ -2845,6 +2847,8 @@ class PaosGui(SimpleGui):
 
             # ------- Update 'Select field' Listbox widget in MC Wavelengths frame ------#
             elif self.event == "select field (nwl)":
+                # Update stoplight color
+                self.window["PLOT-STATE (nwl)"].update(text_color="red")
                 # Reset POP simulation output
                 self.retval_list.clear()
                 # Reset figure
@@ -2857,6 +2861,8 @@ class PaosGui(SimpleGui):
 
             # ------- Update 'Select wavelength' or 'Select field' Listbox widget in MC Wavefront error frame ------#
             elif self.event in ["select wl (wfe)", "select field (wfe)"]:
+                # Update stoplight color
+                self.window["PLOT-STATE (wfe)"].update(text_color="red")
                 # Reset POP simulation output
                 self.retval_list.clear()
                 # Reset figures
@@ -3302,20 +3308,20 @@ class PaosGui(SimpleGui):
                     # Save the plot to the specified .png or .jpg file
                     self.save_figure(figure, filename)
 
-            # ------- Display a popup window with the GUI values given as a flat dictionary ------#
-            elif self.event == "-SUBMIT-":
-                popup(
-                    f"PAOS Configuration GUI v{__version__}",
-                    f'You clicked on the "{self.event}" button',
-                    f"The values are {self.values}",
-                    keep_on_top=True,
-                )
+            # # ------- Display a popup window with the GUI values given as a flat dictionary ------#
+            # elif self.event == "-SUBMIT-":
+            #     popup(
+            #         f"PAOS GUI v{__version__}",
+            #         f'You clicked on the "{self.event}" button',
+            #         f"The values are {self.values}",
+            #         keep_on_top=True,
+            #     )
 
-            # ------- Copy the relevant data from the GUI to the local clipboard ------#
-            elif self.event == "-TO CLIPBOARD-":
-                self.copy_to_clipboard(
-                    dictionary=self.save_to_dict(show=False)
-                )
+            # # ------- Copy the relevant data from the GUI to the local clipboard ------#
+            # elif self.event == "-TO CLIPBOARD-":
+            #     self.copy_to_clipboard(
+            #         dictionary=self.save_to_dict(show=False)
+            #     )
 
             # ------- Display a Open File popup window with text entry field and browse button ------#
             elif self.event == "Open":
@@ -3365,7 +3371,7 @@ class PaosGui(SimpleGui):
 
             # ------- Display a popup window with the `PAOS` GUI info ------#
             elif self.event == "About":
-                popup(f"PAOS Configuration GUI v{__version__}")
+                popup(f"PAOS GUI v{__version__}")
 
         # Exit the `PAOS` GUI for good
         sys.exit()

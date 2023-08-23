@@ -78,7 +78,7 @@ This allows performing a large number of detailed analyses, both on the instrume
 
 
 .. note::
-    `PAOS` v 0.0.4 works on Python 3+
+    `PAOS` v0.0.4 and above works on Python 3+
 
     .. image:: _static/python-logo.png
         :width: 300
