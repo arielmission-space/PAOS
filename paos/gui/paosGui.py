@@ -424,10 +424,10 @@ class PaosGui(SimpleGui):
             headings = ["", "", "", "", "", "", "", ""]
         elif surface_type == "Coordinate Break":
             headings = [
-                "Xtilt",
-                "Ytilt",
                 "Xdecenter",
                 "Ydecenter",
+                "Xtilt",
+                "Ytilt",
                 "",
                 "",
                 "",
