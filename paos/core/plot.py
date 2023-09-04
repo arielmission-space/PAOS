@@ -549,7 +549,7 @@ def plot_psf_xsec(
     axis.set_yscale(ima_scale)
     axis.set_xlim(-plot_scale * surface_zoom, plot_scale * surface_zoom)
 
-    do_legend(axis=axis, ncol=3)
+    do_legend(axis=axis, ncol=3 if item["wz"] < 0.005 else 2)
     axis.grid()
 
     return
