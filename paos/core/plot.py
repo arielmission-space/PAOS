@@ -228,7 +228,7 @@ def simple_plot(
         and np.isfinite(airy_radius)
     ):
         plot_scale = 5.24 * airy_radius / 1.22  # 5th Airy null
-    elif not item["aperture"] is None:
+    elif item["aperture"] is not None:
         plot_scale = max(wx / 2, wy / 2)
     else:
         plot_scale = beam_radius
@@ -452,7 +452,7 @@ def plot_psf_xsec(
         and np.isfinite(airy_radius)
     ):
         plot_scale = 5.24 * airy_radius / 1.22  # 5th Airy null
-    elif not item["aperture"] is None:
+    elif item["aperture"] is not None:
         plot_scale = max(wx / 2, wy / 2)
     else:
         plot_scale = beam_radius
@@ -487,8 +487,8 @@ def plot_psf_xsec(
             x_label = r"1 /F$\lambda$"
 
         # Plot Airy X and Y cross-sections
-        axis.plot(x_i, airy[Npt // 2, ...], color="green", label="Airy X-cut")
-        axis.plot(y_i, airy[..., Npt // 2], color="cyan", label="Airy Y-cut")
+        axis.plot(x_i, airy[Npt // 2, ...], color="C4", label="Airy X-cut", linestyle="--")
+        axis.plot(y_i, airy[..., Npt // 2], color="C5", label="Airy Y-cut", linestyle="--")
         axis.set_ylim(1.0e-10, airy.max())
 
         # plot vertical lines to mark the positions of the Airy dark rings and set the axis ticks
@@ -514,19 +514,20 @@ def plot_psf_xsec(
             axis.set_xticks(list(x_ticks) + [0.0])
 
     # Plot ima X, Y, 45 deg and 135 deg cross-sections
-    axis.plot(x_i, ima[Npt // 2, ...], "r", label="X-cut")
-    axis.plot(y_i, ima[..., Npt // 2], "b", label="Y-cut")
+    axis.plot(x_i, ima[Npt // 2, ...], "C0", label="X-cut")
+    axis.plot(y_i, ima[..., Npt // 2], "C1", label="Y-cut")
+
+    c = np.sqrt(x_i**2 + y_i**2) * np.sign(x_i)
     axis.plot(
-        np.sqrt(x_i**2 + y_i**2) * np.sign(x_i),
+        c,
         ima[cross_idx, cross_idx],
-        "--r",
+        "C2",
         label=r"45$^\circ$-cut",
     )
     axis.plot(
-        np.sqrt(x_i**2 + y_i**2) * np.sign(x_i)
-        + 0.5 * np.sqrt((x_i[1] - x_i[0]) * (y_i[1] - y_i[0])),
+        c + 0.5 * np.sqrt((x_i[1] - x_i[0]) * (y_i[1] - y_i[0])),
         ima[cross_idx, cross_idx[::-1]],
-        "--b",
+        "C3",
         label=r"135$^\circ$-cut",
     )
 
@@ -548,7 +549,7 @@ def plot_psf_xsec(
     axis.set_yscale(ima_scale)
     axis.set_xlim(-plot_scale * surface_zoom, plot_scale * surface_zoom)
 
-    do_legend(axis=axis)
+    do_legend(axis=axis, ncol=3 if item["wz"] < 0.005 else 2)
     axis.grid()
 
     return
