@@ -41,8 +41,6 @@ logger.info(f"code version {__version__}")
 
 from paos.log import setLogLevel, addLogFile
 
-# setLogLevel(logging.TRACE)
-# setLogLevel(logging.DEBUG)
 setLogLevel(logging.INFO)
 addLogFile(level=logging.INFO)
 

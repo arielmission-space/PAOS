@@ -73,9 +73,6 @@ __all__ = ["Logger"]
 root_logger = logging.getLogger(__pkg_name__)
 root_logger.propagate = False
 
-logging.TRACE = logging.DEBUG + 1
-logging.addLevelName(logging.TRACE, "TRACE")
-
 
 class CustomFormatter(logging.Formatter):
     """Custom formatter for logging.
@@ -93,12 +90,12 @@ class CustomFormatter(logging.Formatter):
     format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
     FORMATS = {
-        logging.DEBUG: grey + format + reset,
-        logging.INFO: green + format + reset,
-        logging.TRACE: grey + format + reset,
-        logging.WARNING: yellow + format + reset,
-        logging.ERROR: red + format + reset,
-        logging.CRITICAL: bold_red + format + reset,
+        10: grey + format + reset,
+        15: grey + format + reset,
+        20: green + format + reset,
+        30: yellow + format + reset,
+        40: red + format + reset,
+        50: bold_red + format + reset,
     }
 
     def format(self, record):
