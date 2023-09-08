@@ -32,12 +32,15 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import logging
 
+from .logger import generate_logger_name
+from .logger import Logger
+from .logger import traced
 from paos import __pkg_name__
 
 last_log = logging.INFO
 
-from .logger import Logger, traced, generate_logger_name
-
+logging.TRACE = 15
+logging.addLevelName(logging.TRACE, "TRACE")
 
 def trace(self, message, *args, **kws):
     """
