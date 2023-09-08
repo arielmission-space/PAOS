@@ -752,7 +752,7 @@ applying a circular aperture, the throughput normalization, applying a Paraxial 
         from paos.classes.wfo import WFO
 
         fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
-        wfo = paos.WFO(beam_diameter, wavelength, grid_size, zoom)
+        wfo = WFO(beam_diameter, wavelength, grid_size, zoom)
 
         wfo.aperture(xc=xdec, yc=ydec, r=beam_diameter/2, shape='circular')
         wfo.make_stop()
