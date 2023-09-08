@@ -41,5 +41,32 @@ logger.info(f"code version {__version__}")
 
 from paos.log import setLogLevel, addLogFile
 
+# setLogLevel(logging.TRACE)
+# setLogLevel(logging.DEBUG)
 setLogLevel(logging.INFO)
 addLogFile(level=logging.INFO)
+
+from paos.classes.wfo import WFO
+from paos.classes.abcd import ABCD
+from paos.classes.zernike import Zernike
+
+from paos.core.parseConfig import parse_config
+from paos.core.coordinateBreak import coordinate_break
+from paos.core.raytrace import raytrace
+from paos.core.plot import plot_pop
+from paos.core.saveOutput import save_output, save_datacube
+from paos.core.run import run
+
+# initialise plotter
+import matplotlib.pyplot as plt
+
+plt.rcParams["figure.facecolor"] = "white"
+plt.rc("lines", linewidth=1.5)
+plt.rc(
+    "axes",
+    axisbelow=True,
+    titleweight="bold",
+    labelcolor="dimgray",
+    labelweight="bold",
+)
+plt.rc("font", size=14)
