@@ -189,6 +189,10 @@ class PaosGui(SimpleGui):
         # ------ Instantiate some more global variables (for running simulations and plotting) ------ #
         self.retval, self.retval_list, self.saving_groups = {}, [], []
         self.figure, self.figure_list_nwl, self.figure_list_wfe = None, [], []
+        
+        self.surface_zoom = None
+        self.surface_number = None
+        self.surface_scale = ""
 
     def init_window(self):
         """
@@ -1567,6 +1571,7 @@ class PaosGui(SimpleGui):
                                                     tooltip="Surface zoom",
                                                     default_text="1",
                                                     key="Surface zoom",
+                                                    enable_events=True,
                                                 ),
                                             ],
                                             [
@@ -1579,6 +1584,7 @@ class PaosGui(SimpleGui):
                                                     values=self.ld_keys,
                                                     default_value=f"S{self.nrows_ld}",
                                                     key="S#",
+                                                    enable_events=True,
                                                 ),
                                             ],
                                             [
@@ -1594,6 +1600,7 @@ class PaosGui(SimpleGui):
                                                     ],
                                                     default_value="log scale",
                                                     key="Ima scale",
+                                                    enable_events=True,
                                                 ),
                                             ],
                                             [
@@ -2827,6 +2834,20 @@ class PaosGui(SimpleGui):
             ):
                 self.update_wfe_frame()
 
+            # ------- Update the stoplight color when the user changes the input ------#
+            elif self.event in ["Surface zoom", "S#", "Ima scale"]:
+                if np.logical_or.reduce((
+                    self.values["Surface zoom"] != self.surface_zoom,
+                    self.values["S#"] != self.surface_number,
+                    self.values["Ima scale"] != self.surface_scale,
+                )):
+                    # Update stoplight color
+                    self.window["PLOT-STATE"].update(text_color="red")
+                    # Reset previous outputs
+                    self.figure = None
+                    # Reset figure canvas
+                    self.clear_image(self.window["-IMAGE-"])
+
             # ------- Update 'Select wavelength' or 'Select field' Listbox widget in the Launcher tab ------#
             elif self.event in ["select wl", "select field"]:
                 # Update stoplight color
@@ -3180,6 +3201,11 @@ class PaosGui(SimpleGui):
                 # Update stoplight color
                 if self.figure is not None:
                     self.window["PLOT-STATE"].update(text_color="green")
+                
+                # Save the current values
+                self.surface_zoom = self.values["Surface zoom"]
+                self.surface_number = self.values["S#"]
+                self.surface_scale = self.values["Ima scale"]
 
             elif self.event == "-PLOT (nwl)-":
                 if pop != "nwl" or not self.retval_list:
