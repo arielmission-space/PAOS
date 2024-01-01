@@ -361,15 +361,15 @@ Run it with the `help` flag to read the available options:
 
    * - flag
      - description
-   * - -h, --help
+   * - ``-h``, ``--help``
      - show this help message and exit
-   * - -c, --configuration
+   * - ``-c``, ``--configuration``
      - Input configuration file to pass
-   * - -o, --output
+   * - ``-o``, ``--output``
      - Output file path
-   * - -d, --debug
+   * - ``-d``, ``--debug``
      - Debug mode screen
-   * - -l, --log
+   * - ``-l``, ``--logger``
      - Store the log output on file
 
 Where the configuration file shall be an `.ini` file (see :ref:`Configuration file`). If no configuration file is
