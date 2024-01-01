@@ -1,4 +1,6 @@
-``PAOS`` API Documentation
+.. _API guide:
+
+API guide
 ===========================
 
 .. toctree::

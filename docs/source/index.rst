@@ -1,8 +1,8 @@
 .. _index:
 
-==================================
-Welcome to `PAOS`'s documentation!
-==================================
+====================================
+Welcome to ``PAOS``'s documentation!
+====================================
 
 **Version**: |version|
 
@@ -35,9 +35,16 @@ Want to install it? Head here: :ref:`installation`
 
 Want to jump into the ``PAOS`` program? Head here: :ref:`User guide`
 
-Want to collaborate? Head here: :ref:`Developer Guide`
+Want to know more about the code? Head here: :ref:`API guide`
+
+Want to collaborate? Head here: :ref:`Developer guide`
 
 -----------------------------------
+
+Curious about the license? Head here: :ref:`license`
+
+Curious about the project history? Head here: :ref:`changelog`
+
 
 .. toctree::
     :hidden:

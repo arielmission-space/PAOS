@@ -7,7 +7,7 @@ Monte Carlo simulations
 an optical system with varying parameters. This is particularly useful as it overcomes one major drawback from
 using commercial propagation software such as Zemax OpticStudio, which requires preliminary knowledge of
 Zemax Programming Language (ZPL). Instead, ``PAOS`` can be used `out of the box` as a standard Python
-library, interleaved with user-written code to suit a specific simulation. Moreover, `PAOS`'s routines can be
+library, interleaved with user-written code to suit a specific simulation. Moreover, ``PAOS``'s routines can be
 easily run in parallel by leveraging standard Python libraries such as joblib and tqdm, for computational efficiency.
 
 

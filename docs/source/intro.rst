@@ -74,4 +74,4 @@ realizations, compatible with an optical performance requirement (see later in :
 
 In short, ``PAOS`` can study the effect of diffraction and aberrations impacting the optical performance and related systematics.
 This allows performing a large number of detailed analyses, both on the instrument side and on the optimization of the
-`Ariel` mission (see later in :ref:`Ariel`).
+`Ariel` mission.

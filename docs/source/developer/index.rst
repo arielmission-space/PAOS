@@ -1,7 +1,7 @@
-.. _Developer Guide:
+.. _Developer guide:
 
 ===================================
-Developer Guide
+Developer guide
 ===================================
 
 In this section we report some general guidelines for contributing to ``PAOS`` development.
@@ -91,7 +91,7 @@ The code is hosted on GitHub (https://github.com/arielmission-space/PAOS) and st
 
 The source has two main branches:
 
-+ ``master``
++ ``main``
 
   branch for stable and releases. It is the public branch and should be handled carefully.
 + ``develop``
@@ -147,7 +147,7 @@ When the code is ready, a pull_ request can be raised.
 
     `Forking and pulling`
 
-.. _ExoSim2.0: https://github.com/arielmission-space/ExoSim2.0
+.. _ExoSim2.0: https://exosim2-public.readthedocs.io/en/latest/
 .. _TauREx3: https://taurex3-public.readthedocs.io/en/latest/
 .. _Pep8: https://www.python.org/dev/peps/pep-0008/
 .. _Zen: https://www.python.org/dev/peps/pep-0020/
