@@ -9,9 +9,9 @@ Install with pip
 -------------------
 
 .. warning::
-    `PAOS` is not on Pypi yet. Please proceed with the installation from Git.
+    `PAOS` is not on PyPI yet. Please proceed with the installation from Git.
 
-The `PAOS` package is hosted on Pypi repository. You can install it by
+The `PAOS` package is hosted on PyPI repository. You can install it by
 
 .. code-block:: console
 

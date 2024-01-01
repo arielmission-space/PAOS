@@ -65,12 +65,8 @@ autodoc_default_options = {
     #    'exclude-members': '__weakref__'
 }
 napoleon_use_ivar = True
-autodoc_typehints = (
-    "description"  # show type hints in doc body instead of signature
-)
-autoclass_content = (
-    "both"  # get docstring from class level and init simultaneously
-)
+autodoc_typehints = "description"  # show type hints in doc body instead of signature
+autoclass_content = "both"  # get docstring from class level and init simultaneously
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -168,7 +164,9 @@ if "sphinx.ext.pngmath" in extensions:
     pngmath_dvipng_args = ["-gamma", "1.5", "-D", "96", "-bg", "Transparent"]
 
 # mathjax_path = "scipy-mathjax/MathJax.js?config=scipy-mathjax"
-mathjax_path = "https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+mathjax_path = (
+    "https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+)
 
 plot_html_show_formats = False
 plot_html_show_source_link = False
@@ -223,7 +221,7 @@ latex_documents = [
         master_doc,
         "paos.tex",
         "PAOS Manual",
-        "Andrea Bocchieri, Enzo Pascale",
+        "Andrea Bocchieri, Lorenzo V. Mugnai, Enzo Pascale",
         "manual",
     )
 ]
@@ -231,6 +229,4 @@ latex_documents = [
 # This will ensure that your package is importable by any IPython kernels, as they will inherit the environment
 # variables from the main Sphinx process.
 package_path = os.path.abspath("../..")
-os.environ["PYTHONPATH"] = ":".join(
-    (package_path, os.environ.get("PYTHONPATH", ""))
-)
+os.environ["PYTHONPATH"] = ":".join((package_path, os.environ.get("PYTHONPATH", "")))
