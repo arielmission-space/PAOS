@@ -34,8 +34,10 @@ Each functionality has a self-consistent example to run in python console or jup
 Have a good read. Feedback is highly appreciated.
 
 .. toctree::
+    :hidden:
     :name: usertoc
     :maxdepth: 1
+    :caption: Contents:
 
     Quick start <quickstart>
     Input system <inputs/index>

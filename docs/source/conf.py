@@ -25,7 +25,6 @@ print("-------------", target_dir)
 
 from paos import __version__, __author__, __pkg_name__
 
-# __version__ = Version()
 release = version = str(__version__)
 
 project = __pkg_name__.upper()
@@ -48,7 +47,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosummary",
     "sphinx.ext.githubpages",
-    # 'nbsphinx',
+    "nbsphinx",
     "jupyter_sphinx",
     "matplotlib.sphinxext.plot_directive",
     "sphinx_rtd_theme",
@@ -70,6 +69,13 @@ autoclass_content = "both"  # get docstring from class level and init simultaneo
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
+
+# The suffix(es) of source filenames.
+# You can specify multiple suffix as a list of string:
+#
+# source_suffix = ['.rst', '.md']
+source_suffix = ".rst"
+
 # The master toctree document.
 master_doc = "index"
 
@@ -99,32 +105,26 @@ intersphinx_mapping = {
 # so a file named 'default.css' will overwrite the builtin 'default.css'.
 
 # Required theme setup
-html_theme = "sphinx_material"
+html_theme = "sphinx_rtd_theme"
 
 # Set link name generated in the top bar.
 html_title = "{} v{} Manual".format(project, version)
 html_last_updated_fmt = "%b %d, %Y"
 
-# Material theme options (see theme.conf for more information)
 html_theme_options = {
-    # Set the name of the project to appear in the navigation.
-    "nav_title": "PAOS",
-    # Specify a base_url used to generate sitemap.xml. If not
-    # specified, then no sitemap will be built.
-    "base_url": "https://github.com/arielmission-space/PAOS",
-    # Set the color and the accent color
-    "color_primary": "blue-grey",
-    "color_accent": "light-blue",
-    # Set the repo location to get a badge with stats
-    "repo_url": "https://github.com/arielmission-space/PAOS",
-    "repo_name": "Git repo",
-    # Visible levels of the global TOC; -1 means unlimited
-    "globaltoc_depth": 2,
-    # If False, expand all TOC entries
-    "globaltoc_collapse": True,
-    # If True, show hidden TOC entries
-    "globaltoc_includehidden": False,
-    # 'html_prettify': True,
+    "collapse_navigation": False,
+    "sticky_navigation": True,
+    "navigation_depth": 4,
+    "includehidden": True,
+    "titles_only": False,
+}
+
+html_context = {
+    "display_github": True,
+    "github_user": "arielmission-space",
+    "github_repo": "PAOS",
+    "github_version": "main",
+    "conf_py_path": "/docs/source/",
 }
 
 html_static_path = ["_static"]
@@ -133,9 +133,9 @@ html_logo = "_static/paos_logo.svg"
 html_show_sourcelink = False
 
 html_additional_pages = {
-    "index": "index.html",
-    "user/index": "user_index.html",
-    "ariel/index": "ariel.html",
+    "index.rst": "index.html",
+    "user/index.rst": "user_index.html",
+    "ariel/index.rst": "ariel.html",
 }
 
 html_use_modindex = True

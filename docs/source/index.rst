@@ -5,8 +5,10 @@ Welcome to PAOS's documentation!
 ================================
 
 .. toctree::
+    :hidden:
     :name: contentstoc
     :maxdepth: 1
+    :caption: Contents:
 
     Introduction <intro>
     Installation <installation>
@@ -18,3 +20,4 @@ Welcome to PAOS's documentation!
     License <license>
     Acknowledgments <acknowledgements>
     Changelog <CHANGELOG>
+    Project Page <https://github.com/arielmission-space/PAOS/>

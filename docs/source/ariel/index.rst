@@ -12,8 +12,10 @@ In particular, we discuss:
 #. how `PAOS` is compatible with other `Ariel` simulators (:ref:`Compatibility of PAOS`)
 
 .. toctree::
+    :hidden:
     :name: arieltoc
     :maxdepth: 1
+    :caption: Contents:
 
     Use of PAOS <usage/index>
     Compatibility with other simulators <compatibility/index>
