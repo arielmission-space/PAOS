@@ -45,6 +45,13 @@ Curious about the license? Head here: :ref:`license`
 
 Curious about the project history? Head here: :ref:`changelog`
 
+Acknowledgements
+================
+
+The development of :code:``PAOS`` has been possible thanks to Andrea Bocchieri, Lorenzo V. Mugnai, and Enzo Pascale.
+
+Their work was supported by the Italian Space Agency (ASI) with Ariel grant n. 2021.5.HH.0.
+
 
 .. toctree::
     :hidden:
@@ -58,6 +65,5 @@ Curious about the project history? Head here: :ref:`changelog`
     Developer Guide <developer/index>
     API Guide <api/modules>
     License <license>
-    Acknowledgments <acknowledgements>
     Changelog <CHANGELOG>
     Project Page <https://github.com/arielmission-space/PAOS/>
