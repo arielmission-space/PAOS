@@ -27,19 +27,19 @@ The main command line flags are listed in :numref:`Main command line flags`.
 
    * - flag
      - description
-   * - -h, --help
+   * - ``-h``, ``--help``
      - show this help message and exit
-   * - -c, --configuration
+   * - ``-c``, ``--configuration``
      - Input configuration file to pass
-   * - -o, --output
+   * - ``-o``, ``--output``
      - Output file
-   * - -p, --plot
+   * - ``-p``, ``--plot``
      - Save output plots
-   * - -n, --nThreads
+   * - ``-n``, ``--nThreads``
      - Number of threads for parallel processing
-   * - -d, --debug
+   * - ``-d``, ``--debug``
      - Debug mode screen
-   * - -l, --log
+   * - ``-l``, ``--logger``
      - Store the log output on file
 
 Where the configuration file shall be an `.ini` file and the output file an `.h5` file (see later in :ref:`h5`).
@@ -62,11 +62,11 @@ Other option flags may be given to run specific simulations, as detailed in :num
 
    * - flag
      - description
-   * - -wl, --wavelength
+   * - ``-wl``, ``--wavelength``
      - A list of specific wavelengths at which to run the simulation
-   * - -wlg, --wavelength_grid
+   * - ``-wlg``, ``--wavelength_grid``
      - A list with min wl, max wl, spectral resolution to build a wavelength grid
-   * - -wfe, --wfe_simulation
+   * - ``-wfe``, ``--wfe_simulation``
      - A list with wfe realization file and column to simulate an aberration
 
 To have a lighter output please use the option flags listed in :numref:`Lighter output flags`.
@@ -79,9 +79,9 @@ To have a lighter output please use the option flags listed in :numref:`Lighter 
 
    * - flag
      - description
-   * - -keys, --keys_to_keep
+   * - ``-keys``, ``--keys_to_keep``
      - A list with the output dictionary keys to save
-   * - -lo, --light_output
+   * - ``-lo``, ``--light_output``
      - Save only at last optical surface
 
 To activate `-lo` no argument is needed.
@@ -120,8 +120,7 @@ For more information on how to produce a similar output file, see :ref:`Saving r
 The baseline plot
 ------------------
 
-An important part of understanding the ``PAOS`` output is to look at the default plot, as in :numref:`defaultplot`,
-which shows the PSF, i.e. the squared amplitude of the complex wavefront, at the `AIRS-CH0` focal plane.
+As part of the output, ``PAOS`` can plot the squared amplitude of the complex wavefront at a given point along the optical path (the focal plane in the case shown in :numref:`defaultplot`).
 
 .. _defaultplot:
 
@@ -135,6 +134,6 @@ The title of the plot features the optical surface name, the focal number, the G
 simulation wavelength and the total optical throughput that reaches the surface.
 
 The color scale can be either linear or logarithmic. The x and y axes are in physical units, e.g. micron.
-For reference, dark circular rings are superimposed on the first five zeros of the circular Airy function.
+For reference, black rings mark the first five zeros of the circular Airy function.
 
 For more information on how to produce a similar plot, see :ref:`Plotting results`.
