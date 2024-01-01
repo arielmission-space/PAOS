@@ -36,6 +36,11 @@ Changed
 ^^^^^^^^^
 - Changed configuration file to .ini
 
+1.0.0 [01/07/2023]
+--------------------
+
+``PAOS`` production ready
+
 
 .. _Unreleased: https://github.com/arielmission-space/PAOS/
 .. _keepachangelog: https://keepachangelog.com/en/1.0.0/
