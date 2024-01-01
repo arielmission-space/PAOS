@@ -1,18 +1,7 @@
-paos.log package
-==================
+Logger (``paos.log.logger``)
+============================
 
-Submodules
-----------
-
-.. toctree::
-   :maxdepth: 4
-
-   paos.log.logger
-
-Module contents
----------------
-
-.. automodule:: paos.log
+.. automodule:: paos.log.logger
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,7 +1,13 @@
-API Guide
-==============
+``PAOS`` API Documentation
+===========================
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
-   paos
+   paos.classes.abcd
+   paos.classes.wfo
+   paos.classes.zernike
+   paos.core
+   paos.gui
+   paos.util
+   paos.log

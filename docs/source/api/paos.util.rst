@@ -1,18 +1,7 @@
-paos.util package
-==================
+Material (``paos.util.material``)
+=================================
 
-Submodules
-----------
-
-.. toctree::
-   :maxdepth: 4
-
-   paos.util.material
-
-Module contents
----------------
-
-.. automodule:: paos.util
+.. automodule:: paos.util.material
    :members:
    :undoc-members:
    :show-inheritance:
