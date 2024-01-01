@@ -59,8 +59,6 @@ Their work was supported by the Italian Space Agency (ASI) with Ariel grant n. 2
     :maxdepth: 1
     :caption: Contents:
 
-    Introduction <intro>
-    Installation <installation>
     User Guide <user/index>
     Developer Guide <developer/index>
     API Guide <api/modules>
