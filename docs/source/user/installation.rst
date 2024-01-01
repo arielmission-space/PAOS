@@ -21,7 +21,7 @@ The ``PAOS`` package is hosted on PyPI repository. You can install it by
 
 Install from git
 -------------------
-You can clone ``PAOS`` from our main git repository
+You can clone ``PAOS`` from its git repository
 
 .. code-block:: console
 
