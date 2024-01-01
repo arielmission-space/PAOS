@@ -1,7 +1,7 @@
-`PAOS` package
-==============
+``PAOS`` package
+================
 
-In the following you find the documentation for the main classes and modules defined in `PAOS`.
+In the following you find the documentation for the main classes and modules defined in ``PAOS``.
 
 Modules
 --------------

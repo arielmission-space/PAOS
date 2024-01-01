@@ -3,10 +3,10 @@
 ABCD description
 =======================
 
-`PAOS` implements the paraxial theory described in
+``PAOS`` implements the paraxial theory described in
 `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_.
 
-In `PAOS`, this is handled by the class :class:`~paos.classes.abcd.ABCD`.
+In ``PAOS``, this is handled by the class :class:`~paos.classes.abcd.ABCD`.
 
 .. _Paraxial region:
 
@@ -23,7 +23,7 @@ sines and tangents.
 Optical coordinates
 -----------------------
 
-The `PAOS` code implementation assumes optical coordinates as defined in :numref:`coordinates_def`.
+The ``PAOS`` code implementation assumes optical coordinates as defined in :numref:`coordinates_def`.
 
 .. _coordinates_def:
 
@@ -65,11 +65,11 @@ Paraxial ray tracing can be done using ABCD matrices (see later in :ref:`Optical
     In the sagittal plane, the same equation apply, modified when necessary when cylindrical symmetry is violated.
     The relevant vector is :math:`\vec{v_{s}}=(x, u_{x})`.
 
-`PAOS` implements the function :func:`~paos.core.raytrace.raytrace` to perform a diagnostic Paraxial ray-tracing of an optical
+``PAOS`` implements the function :func:`~paos.core.raytrace.raytrace` to perform a diagnostic Paraxial ray-tracing of an optical
 system, given the input fields and the optical chain. This function then prints the ray positions and slopes in the
 tangential and sagittal planes for each surface of the optical chain.
 
-Several Python codes exist that can implement a fully fledged ray-tracing. In a next `PAOS` version we will add support
+Several Python codes exist that can implement a fully fledged ray-tracing. In a next ``PAOS`` version we will add support
 for using one of such codes as an external library to be able to get the expected map of aberrations produced by the
 realistic elements of the `Ariel` optical chain (e.g. mirrors)
 

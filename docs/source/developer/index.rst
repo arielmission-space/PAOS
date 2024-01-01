@@ -4,14 +4,14 @@
 Developer Guide
 ===================================
 
-In this section we report some general guidelines for contributing to `PAOS` development.
+In this section we report some general guidelines for contributing to ``PAOS`` development.
 
 The section is inspired by the package ExoSim2.0_.
 
 
 Coding conventions
 -----------------------
-The `PAOS` code has been developed following the PeP8_ standard and the python Zen_.
+The ``PAOS`` code has been developed following the PeP8_ standard and the python Zen_.
 
 .. jupyter-execute::
 
@@ -19,7 +19,7 @@ The `PAOS` code has been developed following the PeP8_ standard and the python Z
 
 Documentation
 -----------------------
-Every `PAOS` function or class should be documented using docstrings which follow numpydoc_ structure.
+Every ``PAOS`` function or class should be documented using docstrings which follow numpydoc_ structure.
 This web page is written using the reStructuredText_ format, which is parsed by sphinx_.
 If you want to contribute to this documentation, please refer to sphinx_ documentation first.
 You can improve this pages by digging into the `docs` directory in the source.
@@ -60,7 +60,7 @@ To enable the log file, the user can refer to :func:`paos.log.addLogFile`.
 
 .. note::
 
-    The logger implemented in `PAOS` is inspired by the logging classes in ExoSim2.0_, which is originally inspired
+    The logger implemented in ``PAOS`` is inspired by the logging classes in ExoSim2.0_, which is originally inspired
     by the ones in TauREx3_ (developed by Ahmed Al-Refaie).
 
 The user can also set the level of the printed messaged using :func:`paos.log.setLogLevel`, or enable or disable the

@@ -3,9 +3,9 @@
 Aberration description
 =======================
 
-Brief description of wavefront error (WFE) modelling and how it is implemented in `PAOS`.
+Brief description of wavefront error (WFE) modelling and how it is implemented in ``PAOS``.
 
-In `PAOS`, this is handled by the class :class:`~paos.classes.zernike.Zernike`.
+In ``PAOS``, this is handled by the class :class:`~paos.classes.zernike.Zernike`.
 
 Introduction
 --------------
@@ -24,7 +24,7 @@ Useful concepts to estimate image quality such as
 #. :ref:`Strehl ratio`
 #. :ref:`Encircled energy`
 
-are discussed in the following sections for reference, although they are not implemented in the main `PAOS` code.
+are discussed in the following sections for reference, although they are not implemented in the main ``PAOS`` code.
 
 .. _Strehl ratio:
 
@@ -88,7 +88,7 @@ and in black for the diffraction limited PSF.
 Optical aberrations
 ---------------------
 
-`PAOS` models an optical aberration using a series of Zernike polynomials, up to a specified radial order.
+``PAOS`` models an optical aberration using a series of Zernike polynomials, up to a specified radial order.
 
 Following `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_, the function
 describing an arbitrary wavefront wavefront in polar coordinates W(:math:`r, \theta`) can be expanded in terms
@@ -101,7 +101,7 @@ of a sequence of Zernike polynomials as
 where :math:`C_{n}^{m}` are the coefficient of the Zernike polynomial :math:`Z_{n}^{m} (\rho, \theta)`.
 
 The first three terms in :eq:`Zernike_series` describe Piston and Tilt aberrations and can be neglected.
-Non-normalised Zernike polynomials are defined in `PAOS` as:
+Non-normalised Zernike polynomials are defined in ``PAOS`` as:
 
 .. _Zernike_pol:
 
@@ -123,7 +123,7 @@ where the radial polynomial is normalized such that :math:`R_{n}^{m}(\rho = 1) =
 with :math:`\delta_{mn}` the Kroneker delta function, and the average operator :math:`\left<\right>` is intended
 over the pupil.
 
-Using polar elliptical coordinates allows `PAOS` to describe pupils that are elliptical in shape as well as circular:
+Using polar elliptical coordinates allows ``PAOS`` to describe pupils that are elliptical in shape as well as circular:
 
 .. math::
     \rho^{2} = \frac{x_{pup}^{2}}{a^{2}} + \frac{y_{pup}^{2}}{b^{2}}
@@ -143,7 +143,7 @@ aberration associated with some of them is also provided (figure taken from `Lak
 
    `Zernike polynomials surface plots`
 
-`PAOS` can generate both ortho-normal polynomials and orthogonal polynomials and the ordering can be either ANSI
+``PAOS`` can generate both ortho-normal polynomials and orthogonal polynomials and the ordering can be either ANSI
 (default), or Noll, or Fringe, or Standard (see e.g. `Born and Wolf, Principles of Optics, (1999) <https://doi.org/10.1017/CBO9781139644181>`_).
 
 Example of an aberrated pupil
@@ -175,4 +175,4 @@ Optical elements exhibit surface roughness, i.e. medium to high frequency defect
 (e.g. using diamond turning machines). The resulting aberrations can be described as a zero-mean random Gaussian
 field with variance :math:`\sigma_{G}`.
 
-Surface roughness is not yet developed in the main `PAOS` code.
+Surface roughness is not yet developed in the main ``PAOS`` code.

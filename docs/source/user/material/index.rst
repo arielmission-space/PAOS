@@ -3,9 +3,9 @@
 Materials description
 =======================
 
-Brief description of dispersion of light by optical materials and how it is implemented in `PAOS`.
+Brief description of dispersion of light by optical materials and how it is implemented in ``PAOS``.
 
-In `PAOS`, this is handled by the class :class:`~paos.util.material.Material`.
+In ``PAOS``, this is handled by the class :class:`~paos.util.material.Material`.
 
 Light dispersion
 ------------------
@@ -36,7 +36,7 @@ For air and optical glasses, for visible and infra-red light refraction indices 
 
 while for ultraviolet the opposite behaviour is typically the case (anomalous dispersion).
 
-See later in :ref:`Supported materials` for the dispersion behaviour of supported optical materials in `PAOS`.
+See later in :ref:`Supported materials` for the dispersion behaviour of supported optical materials in ``PAOS``.
 
 .. _Sellmeier:
 
@@ -57,7 +57,7 @@ Physically, each term of the sum represents an absorption resonance of strength 
 :math:`\sqrt{L_i}`. Close to each absorption peak, a more precise model of dispersion is required to avoid non-physical
 values.
 
-`PAOS` implements the Sellmeier 1 equation (Zemax OpticStudio :math:`^{©}` notation) to estimate the index of refraction
+``PAOS`` implements the Sellmeier 1 equation (Zemax OpticStudio :math:`^{©}` notation) to estimate the index of refraction
 relative to air for a particular optical glass at the glass reference temperature and pressure
 
 .. math::
@@ -114,14 +114,14 @@ temperature.
 The temperature coefficient values can be given as absolute (as measured under vacuum) and relative (as measured
 at ambient air (dry air at standard pressure).
 
-`PAOS` estimates the air reference index of refraction as
+``PAOS`` estimates the air reference index of refraction as
 
 .. math::
     n_{ref} = 1.0 + 1.0 \cdot 10^{-8} \left(6432.8 + \frac{2949810 \lambda^2}{146 \lambda^2 - 1} + 25540 \frac{\lambda^2}{41 \lambda^2 - 1}\right)
     :label:
 
 where :math:`\lambda` is in units of micron, at the reference temperature :math:`T = 15 ^{\circ} C` and standard pressure.
-Under different temperatures and pressures, `PAOS` rescales this reference index using this formula
+Under different temperatures and pressures, ``PAOS`` rescales this reference index using this formula
 
 .. math::
     n_{air} = 1 + \frac{P \left(n_{ref} - 1\right)} {1.0 + 3.4785 \cdot 10^{-3} (T - 15)}
@@ -134,7 +134,7 @@ The absolute temperature coefficient for a different medium can be calculated fr
     \frac{d n}{d T}, \textrm{absolute} =  \frac{d n}{d T}, \textrm{relative} + n \left(\frac{d n}{d T}, \textrm{air}\right)
     :label:
 
-`PAOS` calculates the refractive index of an optical material at a given pressure and temperature as
+``PAOS`` calculates the refractive index of an optical material at a given pressure and temperature as
 
 .. math::
     n(\Delta T) = \frac{n^2 - 1}{2 n} D_0 \Delta T + n
@@ -167,7 +167,7 @@ glass (known as `BK7`) for a given wavelength at reference and operating tempera
 Pressure and refractive index
 -----------------------------------
 
-Note also that `PAOS` can easily model systems used in a vacuum by changing the air pressure to zero.
+Note also that ``PAOS`` can easily model systems used in a vacuum by changing the air pressure to zero.
 
 Example
 ~~~~~~~~~~
@@ -190,7 +190,7 @@ Note the non-negligible difference in the resulting refractive indexes.
 Supported materials
 -------------------------
 
-`PAOS` supports a variety of optical materials (list is still updating), among which:
+``PAOS`` supports a variety of optical materials (list is still updating), among which:
 
 #. CAF2 (calcium fluoride)
 #. SAPPHIRE (mainly aluminium oxide (:math:`\alpha-Al_2 O_3`) )

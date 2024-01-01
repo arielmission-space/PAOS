@@ -4,12 +4,12 @@
 Quick start
 =======================
 
-Short explanation on how to quickly run `PAOS` and have its output stored in a convenient file.
+Short explanation on how to quickly run ``PAOS`` and have its output stored in a convenient file.
 
 Running PAOS from terminal
 ------------------------------
 
-The quickest way to run `PAOS` is from terminal.
+The quickest way to run ``PAOS`` is from terminal.
 
 Run it with the `help` flag to read the available options:
 
@@ -47,7 +47,7 @@ Where the configuration file shall be an `.ini` file and the output file an `.h5
 
 .. note::
 
-    `PAOS` implements the `log` submodule which makes use of the python standard module logging for output information.
+    ``PAOS`` implements the `log` submodule which makes use of the python standard module logging for output information.
     Top-level details of the calculation are output at level logging.INFO, while details of the propagation through
     each optical plane and debugging messages are printed at level logging.DEBUG. The latter can be accessed by setting
     the flag `-d`, as explained above. Set the flag `-l` to redirect the logger output to a .log textfile.
@@ -91,7 +91,7 @@ To activate `-lo` no argument is needed.
 The output file
 -----------------
 
-`PAOS` stores its main output product to a HDF5_ file (extension is `.h5` or `.hdf5`) such as that shown in :numref:`mainoutput`.
+``PAOS`` stores its main output product to a HDF5_ file (extension is `.h5` or `.hdf5`) such as that shown in :numref:`mainoutput`.
 To open it, please choose your favourite viewer (e.g. HDFView_, HDFCompass_) or API (e.g. Cpp_, FORTRAN_ and Python_).
 
 .. _mainoutput:
@@ -120,7 +120,7 @@ For more information on how to produce a similar output file, see :ref:`Saving r
 The baseline plot
 ------------------
 
-An important part of understanding the `PAOS` output is to look at the default plot, as in :numref:`defaultplot`,
+An important part of understanding the ``PAOS`` output is to look at the default plot, as in :numref:`defaultplot`,
 which shows the PSF, i.e. the squared amplitude of the complex wavefront, at the `AIRS-CH0` focal plane.
 
 .. _defaultplot:

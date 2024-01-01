@@ -3,7 +3,7 @@
 Saving results
 =======================
 
-`PAOS` implements different saving routines, summarized here, that can be used to save the main POP simulation results.
+``PAOS`` implements different saving routines, summarized here, that can be used to save the main POP simulation results.
 
 Save output
 ----------------------------
@@ -39,7 +39,7 @@ The 'info' folder contains the data that are needed for traceability and version
 This includes:
 
 #. The HDF5 package version
-#. The `PAOS` creator names
+#. The ``PAOS`` creator names
 #. The saving path
 #. The saving time in human readable format
 #. The h5py version

@@ -4,7 +4,7 @@
 Compatibility of `PAOS`
 =======================
 
-`PAOS` is compatible with existing `Ariel` simulators, such as
+``PAOS`` is compatible with existing `Ariel` simulators, such as
 
 #. :ref:`ArielRad`
 #. :ref:`Exosim`
@@ -29,7 +29,7 @@ of resources across the payload. For more details, please refer to the
 `ArielRad documentation <https://github.com/arielmission-space/ArielRad2>`_ and the paper
 `L. V. Mugnai, et al. ArielRad: the Ariel radiometric model. Exp Astron 50, 303–328 (2020) <https://doi.org/10.1007/s10686-020-09676-7>`_;.
 
-`PAOS` can produce representative aberrated PSFs for every `Ariel` wavelength and focal plane from which the
+``PAOS`` can produce representative aberrated PSFs for every `Ariel` wavelength and focal plane from which the
 optical efficiency :math:`\eta_{opt}` can be estimated, i.e. the fraction of photons that enter the telescope and
 are transferred to the detector focal planes. `ArielRad` can use this estimates to update its current
 signal estimates and noise budget, ensuring that the `Ariel` mission always has updated and realistic information
@@ -48,7 +48,7 @@ photometric uncertainties arising from the jitter of the line of sight, or from 
 the host star.
 
 `ExoSim2.0`, a refactored version of `ExoSim`, is currently being developed, with in-place infrastructure to
-load and use PSFs created with `PAOS`. This allows `ExoSim2.0` to produce realistic images on the focal planes
+load and use PSFs created with ``PAOS``. This allows `ExoSim2.0` to produce realistic images on the focal planes
 of the instruments using representative aberrated PSFs. For more details, please refer to the `ExoSim2.0
 documentation <https://github.com/arielmission-space/ExoSim2.0>`_ and the paper
 `Sarkar, S., Pascale, E., Papageorgiou, A. et al. ExoSim: the Exoplanet Observation Simulator. Exp Astron 51, 287–317 (2021)

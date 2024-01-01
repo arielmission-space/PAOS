@@ -4,12 +4,12 @@
 Ariel
 =======================
 
-This section describes `PAOS` in the context of the `Ariel` space mission.
+This section describes ``PAOS`` in the context of the `Ariel` space mission.
 
 In particular, we discuss:
 
-#. which are the main use cases of `PAOS` for `Ariel` (:ref:`Use of PAOS`)
-#. how `PAOS` is compatible with other `Ariel` simulators (:ref:`Compatibility of PAOS`)
+#. which are the main use cases of ``PAOS`` for `Ariel` (:ref:`Use of PAOS`)
+#. how ``PAOS`` is compatible with other `Ariel` simulators (:ref:`Compatibility of PAOS`)
 
 .. toctree::
     :hidden:

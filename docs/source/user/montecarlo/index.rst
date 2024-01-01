@@ -3,10 +3,10 @@
 Monte Carlo simulations
 ========================
 
-`PAOS` is designed to easily accommodate customized simulations such as Monte Carlo runs to test the performance of
+``PAOS`` is designed to easily accommodate customized simulations such as Monte Carlo runs to test the performance of
 an optical system with varying parameters. This is particularly useful as it overcomes one major drawback from
 using commercial propagation software such as Zemax OpticStudio, which requires preliminary knowledge of
-Zemax Programming Language (ZPL). Instead, `PAOS` can be used `out of the box` as a standard Python
+Zemax Programming Language (ZPL). Instead, ``PAOS`` can be used `out of the box` as a standard Python
 library, interleaved with user-written code to suit a specific simulation. Moreover, `PAOS`'s routines can be
 easily run in parallel by leveraging standard Python libraries such as joblib and tqdm, for computational efficiency.
 
@@ -14,7 +14,7 @@ easily run in parallel by leveraging standard Python libraries such as joblib an
 Multi-wavelength simulations
 ------------------------------
 
-`PAOS` uses the method :func:`~paos.core.parseConfig.parse_config` to parse the .ini configuration file and return a
+``PAOS`` uses the method :func:`~paos.core.parseConfig.parse_config` to parse the .ini configuration file and return a
 list of optical chains, where each list entry is a dictionary of the optical surfaces in the file, estimated at the
 given wavelength.
 
@@ -26,8 +26,8 @@ for systems with optical diaphragms and variations in effective focal ratio for 
 Wavefront error simulations
 ----------------------------------
 
-`PAOS` can be used to evaluate the performance of an optical system for a given number of wavefront error realizations,
-to test the compatibility of the aberrated PSFs with some performance requirement. For instance, `PAOS` provides an
+``PAOS`` can be used to evaluate the performance of an optical system for a given number of wavefront error realizations,
+to test the compatibility of the aberrated PSFs with some performance requirement. For instance, ``PAOS`` provides an
 ensemble of wavefront error realizations (see :numref:`wfe_realizations`) that are compatible or nearly compatible with
 the encircled energy (EE) requirement at the `Ariel` telescope exit pupil.
 
@@ -57,7 +57,7 @@ bench and spectrometers. To account for gravity effect (`potato chip`), vertical
 root mean square (r.m.s.) as a rough estimate that will be replaced in the future with an input from
 Structural, Thermal and Optical Performance (STOP) analysis.
 
-`PAOS` was used to simulate the wavefront propagation through the OGSE module at :math:`500 nm`, where
+``PAOS`` was used to simulate the wavefront propagation through the OGSE module at :math:`500 nm`, where
 diffraction effects are smallest. To simulate the OGSE beam, the `Ariel` primary mirror M1 was illuminated with a perfect
 beam with footprint :math:`1/4` the M1 diameter and the OGSE beam expander was modeled as a lens doublet giving an
 expansion of :math:`4`.

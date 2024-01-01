@@ -67,7 +67,7 @@ from paos.log import setLogLevel
 
 class PaosGui(SimpleGui):
     """
-    Generates the Graphical User Interface (GUI) for `PAOS`, built using the publicly available library PySimpleGUI
+    Generates the Graphical User Interface (GUI) for ``PAOS``, built using the publicly available library PySimpleGUI
 
     Parameters
     ----------
@@ -87,7 +87,7 @@ class PaosGui(SimpleGui):
 
     Note
     ----
-    The first implementation of PaosGUI is in `PAOS` v0.0.4
+    The first implementation of PaosGUI is in ``PAOS`` v0.0.4
 
     """
 
@@ -174,13 +174,8 @@ class PaosGui(SimpleGui):
         }
 
         # ------ Define fallback configuration file ------ #
-        if (
-            "conf" not in self.passvalue.keys()
-            or self.passvalue["conf"] is None
-        ):
-            self.passvalue["conf"] = os.path.join(
-                "./lens data", "template.ini"
-            )
+        if "conf" not in self.passvalue.keys() or self.passvalue["conf"] is None:
+            self.passvalue["conf"] = os.path.join("./lens data", "template.ini")
 
         # ------ Instantiate some more global variables (for dynamic updates) ------ #
         self.disable_wfe = True
@@ -189,7 +184,7 @@ class PaosGui(SimpleGui):
         # ------ Instantiate some more global variables (for running simulations and plotting) ------ #
         self.retval, self.retval_list, self.saving_groups = {}, [], []
         self.figure, self.figure_list_nwl, self.figure_list_wfe = None, [], []
-        
+
         self.surface_zoom = None
         self.surface_number = None
         self.surface_scale = ""
@@ -201,13 +196,10 @@ class PaosGui(SimpleGui):
 
         # ------ Set up the configuration file parser ------ #
         self.config = configparser.ConfigParser()
-        if (
-            "conf" in self.passvalue.keys()
-            and self.passvalue["conf"] is not None
-        ):
-            if not os.path.exists(
+        if "conf" in self.passvalue.keys() and self.passvalue["conf"] is not None:
+            if not os.path.exists(self.passvalue["conf"]) or not os.path.isfile(
                 self.passvalue["conf"]
-            ) or not os.path.isfile(self.passvalue["conf"]):
+            ):
                 logger.error(
                     f'Input file {self.passvalue["conf"]} does not exist or is not a file. Quitting..'
                 )
@@ -240,9 +232,9 @@ class PaosGui(SimpleGui):
         for key, item in self.config.items():
             if key.startswith("lens"):
                 for subkey, subitem in item.items():
-                    if subitem == "Zernike" and not self.config[
-                        key
-                    ].getboolean("ignore"):
+                    if subitem == "Zernike" and not self.config[key].getboolean(
+                        "ignore"
+                    ):
                         self.disable_wfe = False
         self.disable_wfe_color = "gray" if self.disable_wfe else "blue"
 
@@ -361,9 +353,7 @@ class PaosGui(SimpleGui):
         cell = re.findall("[0-9]+", key.partition("_")[-1])
         row, col = tuple(map(int, cell))
 
-        button_symbol = (
-            self.symbol_disabled if disabled else self.triangle_right
-        )
+        button_symbol = self.symbol_disabled if disabled else self.triangle_right
         text_color = "gray" if disabled else "yellow"
         surface_tab_layout = Column(
             layout=[
@@ -386,9 +376,7 @@ class PaosGui(SimpleGui):
                 [
                     self.collapse_frame(
                         title="",
-                        layout=[
-                            [Column(layout=self.fill_aperture_tab(row, col))]
-                        ],
+                        layout=[[Column(layout=self.fill_aperture_tab(row, col))]],
                         key=f"LD_Tab_({row},{col})",
                     )
                 ],
@@ -471,9 +459,7 @@ class PaosGui(SimpleGui):
             the highlighted row index
         """
         if selected_row is not None:
-            self.window[f"lenses_{selected_row:02d}"].Widget.config(
-                relief=RELIEF_FLAT
-            )
+            self.window[f"lenses_{selected_row:02d}"].Widget.config(relief=RELIEF_FLAT)
 
         self.window[f"lenses_{row:02d}"].Widget.config(relief=RELIEF_SUNKEN)
 
@@ -493,9 +479,7 @@ class PaosGui(SimpleGui):
         out: None
             Updates the headers
         """
-        par_headings = self.par_heading_rules(
-            self.values[f"SurfaceType_({row},0)"]
-        )
+        par_headings = self.par_heading_rules(self.values[f"SurfaceType_({row},0)"])
         old_par_headings = [
             "Par1",
             "Par2",
@@ -560,9 +544,7 @@ class PaosGui(SimpleGui):
         ):
             item = "NaN"
 
-        elif surface_type == "ABCD" and header.startswith(
-            ("Radius", "Material")
-        ):
+        elif surface_type == "ABCD" and header.startswith(("Radius", "Material")):
             item = "NaN"
 
         elif surface_type == "Zernike" and (
@@ -602,10 +584,7 @@ class PaosGui(SimpleGui):
             return list(
                 itertools.chain(
                     row_widget,
-                    [
-                        self.get_widget(value, key, item)
-                        for value in input_list
-                    ],
+                    [self.get_widget(value, key, item) for value in input_list],
                 )
             )
 
@@ -630,10 +609,7 @@ class PaosGui(SimpleGui):
             for c, name in enumerate(self.lens_data.keys()):
                 name_key = f"{name}_({row},{c})"
                 lens_dict[name_key] = None
-                if (
-                    key in self.config.keys()
-                    and name in self.config[key].keys()
-                ):
+                if key in self.config.keys() and name in self.config[key].keys():
                     if name in ["Save", "Ignore", "Stop"]:
                         lens_dict[name_key] = self.config[key].getboolean(name)
                     else:
@@ -651,9 +627,7 @@ class PaosGui(SimpleGui):
                     row_widget,
                     [
                         self.get_widget(value, key, item)
-                        for value, (key, item) in zip(
-                            input_list, lens_dict.items()
-                        )
+                        for value, (key, item) in zip(input_list, lens_dict.items())
                     ],
                 )
             )
@@ -711,9 +685,7 @@ class PaosGui(SimpleGui):
         if column_key == "lenses":
             self.config.add_section("lens_{:02d}".format(nrows))
             for c, head in enumerate(self.lens_data.keys()):
-                self.window[f"{head}_({nrows},{c})"].bind(
-                    "<Button-1>", "_LeftClick"
-                )
+                self.window[f"{head}_({nrows},{c})"].bind("<Button-1>", "_LeftClick")
 
         return nrows
 
@@ -741,16 +713,12 @@ class PaosGui(SimpleGui):
         self.disable_wfe_color = "gray" if self.disable_wfe else "blue"
 
         self.window["-OPEN FRAME MC (wfe)-"].update(disabled=self.disable_wfe)
-        self.window["-FRAME TITLE MC (wfe)-"].update(
-            text_color=self.disable_wfe_color
-        )
+        self.window["-FRAME TITLE MC (wfe)-"].update(text_color=self.disable_wfe_color)
 
         if self.disable_wfe:
             self.window["-OPEN FRAME MC (wfe)-"].update(self.triangle_right)
             self.window["FRAME MC (wfe)"].update(visible=False)
-            self.update_column_scrollbar(
-                window=self.window, col_key="MC LAUNCHER COL"
-            )
+            self.update_column_scrollbar(window=self.window, col_key="MC LAUNCHER COL")
 
         return
 
@@ -827,8 +795,7 @@ class PaosGui(SimpleGui):
         dictionary[key] = {}
         for k in range(1, self.nrows_field + 1):
             fields = [
-                self.values[f"f{k}_{c}"]
-                for c in range(len(self.field_data.keys()))
+                self.values[f"f{k}_{c}"] for c in range(len(self.field_data.keys()))
             ]
             dictionary[key][f"f{k}"] = ",".join(map(str, fields))
 
@@ -836,14 +803,12 @@ class PaosGui(SimpleGui):
         for k in range(1, self.nrows_ld + 1):
             key = "lens_{:02d}".format(k)
             dictionary[key] = {}
-            for (c, head) in enumerate(self.lens_data.keys()):
+            for c, head in enumerate(self.lens_data.keys()):
                 section = dictionary[key]
                 if head == "aperture":
                     section[head] = ",".join(
                         [
-                            self.values[
-                                f'{name_key.replace(" ", "_")}_({k},{c})'
-                            ]
+                            self.values[f'{name_key.replace(" ", "_")}_({k},{c})']
                             for name_key in self.lens_data["aperture"].keys()
                         ]
                     )
@@ -984,21 +949,15 @@ class PaosGui(SimpleGui):
                 # Plot
                 logger.debug(f"Plotting POP for group {group}")
                 figure_list.append(
-                    plot_surface(
-                        key=key, retval=ret, ima_scale=ima_scale, zoom=zoom
-                    )
+                    plot_surface(key=key, retval=ret, ima_scale=ima_scale, zoom=zoom)
                 )
                 # Get the index of the plotted figures
                 idx.append(j)
                 j += 1
             if "nwl" in image_key:
-                self.window["-Slider (nwl)-"].update(
-                    range=(0, n_max - n_min - 1)
-                )
+                self.window["-Slider (nwl)-"].update(range=(0, n_max - n_min - 1))
             elif "wfe" in image_key:
-                self.window["-Slider (wfe)-"].update(
-                    range=(0, n_max - n_min - 1)
-                )
+                self.window["-Slider (wfe)-"].update(range=(0, n_max - n_min - 1))
             return figure_list, idx
         else:
             ret = retval_list[0]
@@ -1009,14 +968,10 @@ class PaosGui(SimpleGui):
                 )
                 return
             # Plot
-            fig = plot_surface(
-                key=key, retval=ret, ima_scale=ima_scale, zoom=zoom
-            )
+            fig = plot_surface(key=key, retval=ret, ima_scale=ima_scale, zoom=zoom)
             return fig
 
-    def display_plot_slide(
-        self, figure_list, figure_agg, image_key, slider_key
-    ):
+    def display_plot_slide(self, figure_list, figure_agg, image_key, slider_key):
         """
         Given a list of figures, a figure canvas, the image key and the slider key, returns the updated Image element
 
@@ -1050,9 +1005,7 @@ class PaosGui(SimpleGui):
             figure=figure_list[n], element=self.window[image_key]
         )
         # Update the 'MC LAUNCHER COL' Column scrollbar
-        self.update_column_scrollbar(
-            window=self.window, col_key="MC LAUNCHER COL"
-        )
+        self.update_column_scrollbar(window=self.window, col_key="MC LAUNCHER COL")
         return figure_agg
 
     def make_window(self):
@@ -1121,9 +1074,7 @@ class PaosGui(SimpleGui):
                             Text("Zoom:", size=(24, 1)),
                             InputCombo(
                                 values=["1", "2", "4", "8", "16"],
-                                default_value=self.config["general"].getint(
-                                    "zoom", 4
-                                ),
+                                default_value=self.config["general"].getint("zoom", 4),
                                 key="zoom",
                                 size=(24, 1),
                             ),
@@ -1257,18 +1208,12 @@ class PaosGui(SimpleGui):
                                     Column(
                                         layout=list(
                                             itertools.chain(
-                                                [
-                                                    self.add_heading(
-                                                        self.wl_data.keys()
-                                                    )
-                                                ],
+                                                [self.add_heading(self.wl_data.keys())],
                                                 [
                                                     self.chain_widgets(
                                                         r, [""], prefix="w"
                                                     )
-                                                    for r in range(
-                                                        1, self.nrows_wl + 1
-                                                    )
+                                                    for r in range(1, self.nrows_wl + 1)
                                                 ],
                                             )
                                         ),
@@ -1301,18 +1246,10 @@ class PaosGui(SimpleGui):
                             Column(
                                 layout=list(
                                     itertools.chain(
+                                        [self.add_heading(self.field_data.keys())],
                                         [
-                                            self.add_heading(
-                                                self.field_data.keys()
-                                            )
-                                        ],
-                                        [
-                                            self.chain_widgets(
-                                                r, ["", ""], prefix="f"
-                                            )
-                                            for r in range(
-                                                1, self.nrows_field + 1
-                                            )
+                                            self.chain_widgets(r, ["", ""], prefix="f")
+                                            for r in range(1, self.nrows_field + 1)
                                         ],
                                     )
                                 ),
@@ -1364,11 +1301,7 @@ class PaosGui(SimpleGui):
                             Column(
                                 layout=list(
                                     itertools.chain(
-                                        [
-                                            self.add_heading(
-                                                self.lens_data.keys()
-                                            )
-                                        ],
+                                        [self.add_heading(self.lens_data.keys())],
                                         [[Text("")]],
                                         [
                                             [
@@ -1388,9 +1321,7 @@ class PaosGui(SimpleGui):
                                                     relief=RELIEF_FLAT,
                                                 )
                                             ]
-                                            for r in range(
-                                                1, self.nrows_ld + 1
-                                            )
+                                            for r in range(1, self.nrows_ld + 1)
                                         ],
                                     )
                                 ),
@@ -1483,11 +1414,7 @@ class PaosGui(SimpleGui):
                                     Frame(
                                         "Run and Save",
                                         layout=[
-                                            [
-                                                Text(
-                                                    "Run a diagnostic raytrace"
-                                                )
-                                            ],
+                                            [Text("Run a diagnostic raytrace")],
                                             [
                                                 Button(
                                                     tooltip="Launch raytrace",
@@ -2489,9 +2416,7 @@ class PaosGui(SimpleGui):
                 TabGroup(
                     [
                         [
-                            Tab(
-                                "General", general_layout, key="-GENERAL TAB-"
-                            ),
+                            Tab("General", general_layout, key="-GENERAL TAB-"),
                             Tab("Fields", fields_layout, key="-FIELDS TAB-"),
                             Tab(
                                 "Lens Data",
@@ -2592,7 +2517,6 @@ class PaosGui(SimpleGui):
         pop = ""
 
         while True:  # Event Loop
-
             # ------- Read the current window ------#
             self.event, self.values = self.window.read(timeout=1000)
             if self.event == TIMEOUT_KEY:
@@ -2640,10 +2564,7 @@ class PaosGui(SimpleGui):
                 break
 
             # ------- Update the headings according to mouse left click ------#
-            elif (
-                isinstance(elem_key, str)
-                and self.event == elem_key + "_LeftClick"
-            ):
+            elif isinstance(elem_key, str) and self.event == elem_key + "_LeftClick":
                 cell = re.findall("[0-9]+", elem_key.partition("_")[-1])
                 row, col = tuple(map(int, cell))
                 self.update_headings(row)
@@ -2671,27 +2592,19 @@ class PaosGui(SimpleGui):
                         self.nrows_wl = self.add_row("wavelengths")
                         self.wl_keys.append(f"w{self.nrows_wl}")
                         # Update 'select wl' Listbox widget in the launcher Tab
-                        self.window["select wl"].update(
-                            self.wl_keys, set_to_index=0
-                        )
+                        self.window["select wl"].update(self.wl_keys, set_to_index=0)
                     row += 1
                 # Update the 'wavelengths' Column scrollbar
-                self.update_column_scrollbar(
-                    window=self.window, col_key="wavelengths"
-                )
+                self.update_column_scrollbar(window=self.window, col_key="wavelengths")
                 # Update 'select wl' Listbox widget in the launcher Tab
                 self.window["select wl"].update(self.wl_keys, set_to_index=0)
                 # Update 'select wl' Listbox widget in the Monte Carlo Tab
-                self.window["select wl (wfe)"].update(
-                    self.wl_keys, set_to_index=0
-                )
+                self.window["select wl (wfe)"].update(self.wl_keys, set_to_index=0)
 
             # ------- Sort the wavelengths column in increasing order ------#
             elif self.event == "-SORT WL-":
                 # Sort and display new order
-                self.sort_column(
-                    window=self.window, values=self.values, col_key="w"
-                )
+                self.sort_column(window=self.window, values=self.values, col_key="w")
 
             # ------- Add a new wavelength input cell below those already present ------#
             elif self.event == "-ADD WAVELENGTH-":
@@ -2701,13 +2614,9 @@ class PaosGui(SimpleGui):
                 # Update 'select wl' Listbox widget in the launcher Tab
                 self.window["select wl"].update(self.wl_keys, set_to_index=0)
                 # Update 'select wl' Listbox widget in the Monte Carlo Tab
-                self.window["select wl (wfe)"].update(
-                    self.wl_keys, set_to_index=0
-                )
+                self.window["select wl (wfe)"].update(self.wl_keys, set_to_index=0)
                 # Update the 'wavelengths' Column scrollbar
-                self.update_column_scrollbar(
-                    window=self.window, col_key="wavelengths"
-                )
+                self.update_column_scrollbar(window=self.window, col_key="wavelengths")
 
             # ------- Add a new fields input row below those already present ------#
             elif self.event == "-ADD FIELD-":
@@ -2715,9 +2624,7 @@ class PaosGui(SimpleGui):
                 self.nrows_field = self.add_row("fields")
                 self.field_keys.append(f"f{self.nrows_field}")
                 # Update 'select field' Listbox widget in the launcher Tab
-                self.window["select field"].update(
-                    self.field_keys, set_to_index=0
-                )
+                self.window["select field"].update(self.field_keys, set_to_index=0)
                 # Update 'select field' Listbox widget in the Monte Carlo Tab
                 self.window["select field (nwl)"].update(
                     self.field_keys, set_to_index=0
@@ -2726,9 +2633,7 @@ class PaosGui(SimpleGui):
                     self.field_keys, set_to_index=0
                 )
                 # Update the 'fields' Column scrollbar
-                self.update_column_scrollbar(
-                    window=self.window, col_key="fields"
-                )
+                self.update_column_scrollbar(window=self.window, col_key="fields")
 
             # ------- Add a new optical surface in the lens data editor as a new row ------#
             elif self.event == "-ADD SURFACE-":
@@ -2739,13 +2644,9 @@ class PaosGui(SimpleGui):
                 self.window[f"Ignore_({self.nrows_ld},6)"].update(True)
                 # Update 'select surface' InputCombo widget in the Launcher and Monte Carlo Tabs
                 for key in ["S#", "S# (nwl)", "S# (wfe)"]:
-                    self.window[key].update(
-                        self.ld_keys[-1], values=self.ld_keys
-                    )
+                    self.window[key].update(self.ld_keys[-1], values=self.ld_keys)
                 # Update the 'lenses' Column scrollbar
-                self.update_column_scrollbar(
-                    window=self.window, col_key="lenses"
-                )
+                self.update_column_scrollbar(window=self.window, col_key="lenses")
 
             # ------- Make the aperture tab visible/invisible by clicking on the triangle symbol ------#
             elif isinstance(self.event, str) and self.event.startswith(
@@ -2759,14 +2660,10 @@ class PaosGui(SimpleGui):
                     self.event, aperture_tab_visible, aperture_tab_key
                 )
                 # Update the 'Lens data' Column scrollbar
-                self.update_column_scrollbar(
-                    window=self.window, col_key="lenses"
-                )
+                self.update_column_scrollbar(window=self.window, col_key="lenses")
 
             # ------- Assign/edit the surface type in the lens data editor ------#
-            elif isinstance(self.event, str) and self.event.startswith(
-                "SurfaceType"
-            ):
+            elif isinstance(self.event, str) and self.event.startswith("SurfaceType"):
                 # Get the current row
                 row, col = re.findall("[0-9]+", self.event)
                 surface_type_key = f"SurfaceType_({row},0)"
@@ -2783,16 +2680,12 @@ class PaosGui(SimpleGui):
                         item_column_key = f"-OPEN TAB APERTURE-({row},{c})"
                         # Update triangle symbol
                         self.window[item_column_key].update(
-                            self.symbol_disabled
-                            if disabled
-                            else self.triangle_right
+                            self.symbol_disabled if disabled else self.triangle_right
                         )
                         title_column_key = f"LD_Tab_Title_({row},8)"
                         text_color = "gray" if disabled else "yellow"
                         # Update aperture text color
-                        self.window[title_column_key].update(
-                            text_color=text_color
-                        )
+                        self.window[title_column_key].update(text_color=text_color)
                     else:
                         item_column_key = f"{key}_({row},{c})"
                     # Enable/disable the row widgets
@@ -2822,25 +2715,23 @@ class PaosGui(SimpleGui):
                                 self.config.set(key, subkey, subitem)
                         # Update the zernike ordering (relevant only if previously not indicated)
                         col = list(self.lens_data.keys()).index("Par2")
-                        self.window[f"Par2_({row},{col})"].update(
-                            zernike["ordering"]
-                        )
+                        self.window[f"Par2_({row},{col})"].update(zernike["ordering"])
                 # Enable/Disable the wfe frame
                 self.update_wfe_frame()
 
             # ------- Enable/Disable the wfe frame ------#
-            elif isinstance(self.event, str) and self.event.startswith(
-                "Ignore"
-            ):
+            elif isinstance(self.event, str) and self.event.startswith("Ignore"):
                 self.update_wfe_frame()
 
             # ------- Update the stoplight color when the user changes the input ------#
             elif self.event in ["Surface zoom", "S#", "Ima scale"]:
-                if np.logical_or.reduce((
-                    self.values["Surface zoom"] != self.surface_zoom,
-                    self.values["S#"] != self.surface_number,
-                    self.values["Ima scale"] != self.surface_scale,
-                )):
+                if np.logical_or.reduce(
+                    (
+                        self.values["Surface zoom"] != self.surface_zoom,
+                        self.values["S#"] != self.surface_number,
+                        self.values["Ima scale"] != self.surface_scale,
+                    )
+                ):
                     # Update stoplight color
                     self.window["PLOT-STATE"].update(text_color="red")
                     # Reset previous outputs
@@ -3016,9 +2907,7 @@ class PaosGui(SimpleGui):
                                 field,
                                 opt_chain,
                             )
-                            for wavelength, opt_chain in tqdm(
-                                zip(wl_batch, opt_batch)
-                            )
+                            for wavelength, opt_chain in tqdm(zip(wl_batch, opt_batch))
                         )
                     )
                     # Update progress bar
@@ -3034,9 +2923,7 @@ class PaosGui(SimpleGui):
                 )
                 # For later saving
                 self.saving_groups = wavelengths
-                self.retval_list = list(
-                    itertools.chain.from_iterable(self.retval_list)
-                )
+                self.retval_list = list(itertools.chain.from_iterable(self.retval_list))
                 # For later plotting
                 self.window["RANGE (nwl)"].update(
                     value="-".join(["0", str(len(self.retval_list))])
@@ -3133,9 +3020,7 @@ class PaosGui(SimpleGui):
                         )
                     )
                     # Update progress bar
-                    progress = np.ceil(
-                        progbar_wfe.Size[0] * len(opt_batch) / len(opt)
-                    )
+                    progress = np.ceil(progbar_wfe.Size[0] * len(opt_batch) / len(opt))
                     progbar_wfe.metadata += progress
                     progbar_wfe.update_bar(progbar_wfe.metadata)
                 logger.info(
@@ -3145,9 +3030,7 @@ class PaosGui(SimpleGui):
                 )
                 # For later saving
                 self.saving_groups = list(range(sims))
-                self.retval_list = list(
-                    itertools.chain.from_iterable(self.retval_list)
-                )
+                self.retval_list = list(itertools.chain.from_iterable(self.retval_list))
                 # For later plotting
                 self.window["RANGE (wfe)"].update(
                     value="-".join(["0", str(len(self.retval_list))])
@@ -3201,7 +3084,7 @@ class PaosGui(SimpleGui):
                 # Update stoplight color
                 if self.figure is not None:
                     self.window["PLOT-STATE"].update(text_color="green")
-                
+
                 # Save the current values
                 self.surface_zoom = self.values["Surface zoom"]
                 self.surface_number = self.values["S#"]
@@ -3249,9 +3132,7 @@ class PaosGui(SimpleGui):
                     figure=self.figure, element=self.window["-IMAGE-"]
                 )
                 # Update the 'LAUNCHER COL' Column scrollbar
-                self.update_column_scrollbar(
-                    window=self.window, col_key="LAUNCHER COL"
-                )
+                self.update_column_scrollbar(window=self.window, col_key="LAUNCHER COL")
 
             # ------- Display the plot for a given wavelength (MC) ------#
             elif self.event in ["-DISPLAY PLOT (nwl)-", "-Slider (nwl)-"]:
@@ -3292,9 +3173,7 @@ class PaosGui(SimpleGui):
                     logger.error("Create plot first")
                     continue
                 # Get the folder to save to
-                folder = popup_get_folder(
-                    "Choose folder to save to", keep_on_top=True
-                )
+                folder = popup_get_folder("Choose folder to save to", keep_on_top=True)
                 if folder is None:
                     logger.warning("Pressed Cancel. Continuing...")
                     continue
@@ -3316,9 +3195,7 @@ class PaosGui(SimpleGui):
                     logger.error("Create plot first")
                     continue
                 # Get the folder to save to
-                folder = popup_get_folder(
-                    "Choose folder to save to", keep_on_top=True
-                )
+                folder = popup_get_folder("Choose folder to save to", keep_on_top=True)
                 if folder is None:
                     logger.warning("Pressed Cancel. Continuing...")
                     continue
@@ -3376,9 +3253,7 @@ class PaosGui(SimpleGui):
                     logger.warning("Pressed Cancel. Continuing...")
                     continue
                 if not filename.endswith((".INI", ".ini")):
-                    logger.debug(
-                        "Saving file format not provided. Defaulting to .ini"
-                    )
+                    logger.debug("Saving file format not provided. Defaulting to .ini")
                     filename = "".join([filename, ".ini"])
                 # Save as a new configuration file
                 self.to_ini(filename=filename)
@@ -3395,9 +3270,9 @@ class PaosGui(SimpleGui):
             elif self.event == "-LINK-":
                 openwb(self.window["-LINK-"].DisplayText)
 
-            # ------- Display a popup window with the `PAOS` GUI info ------#
+            # ------- Display a popup window with the ``PAOS`` GUI info ------#
             elif self.event == "About":
                 popup(f"PAOS GUI v{__version__}")
 
-        # Exit the `PAOS` GUI for good
+        # Exit the ``PAOS`` GUI for good
         sys.exit()

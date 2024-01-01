@@ -13,12 +13,12 @@ to Semantic Versioning (semver_).
 0.0.2 [15/09/2021]
 ---------------------
 
-Setting up new `PAOS` repository
+Setting up new ``PAOS`` repository
 
 0.0.2.1 [20/10/2021]
 ----------------------
 
-First documented `PAOS` release
+First documented ``PAOS`` release
 
 0.0.3 [23/12/2021]
 --------------------

@@ -4,12 +4,12 @@
 User guide
 ===================================
 
-This user guide will walk you through the main `PAOS` functionalities.
+This user guide will walk you through the main ``PAOS`` functionalities.
 
 For clarity, it is divided into several sections:
 
 #. :ref:`Quick start`
-    How to launch `PAOS` from terminal shell
+    How to launch ``PAOS`` from terminal shell
 #. :ref:`Input system`
     The input system used by `PAOS`
 #. :ref:`ABCD description`
@@ -27,7 +27,7 @@ For clarity, it is divided into several sections:
 #. :ref:`Saving results`
     How to save POP results
 #. :ref:`Automatic pipeline`
-    An automated way to run `PAOS` from python console or jupyter notebook
+    An automated way to run ``PAOS`` from python console or jupyter notebook
 
 Each functionality has a self-consistent example to run in python console or jupyter notebook.
 

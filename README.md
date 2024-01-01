@@ -4,7 +4,7 @@ The Physical Optics Simulator
 
 ## How to install
 
-`PAOS` is compatible with Python 3.8 and later.
+``PAOS`` is compatible with Python 3.8 and later.
 
 To install from source, clone the repository and move inside the directory.
 Then use pip as
