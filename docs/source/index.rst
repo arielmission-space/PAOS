@@ -16,16 +16,20 @@ This guide will walk you through the ``PAOS`` code with examples and description
 
     This documentation is not completed yet. If you find any issue or difficulty, please contact the developers for help.
 
+.. important::
+
+    In case of inconsistency between the documentation and the paper, always assume that the paper is correct.
+
 .. ``PAOS`` is still under development. If you have any issue or find any bug, please report it to the developers.
 
 Cite
 -----
 
-A dedicated publication has been submitted and the related information will be published soon. In the meantime, please, send an email to the developers.
+A dedicated paper has been submitted and the related information will be published soon. In the meantime, please, send an email to the developers.
 
 .. If you use this software or its products, please cite (nasa/ads citation).
 
-.. tip::
+.. hint::
     Please note that ``PAOS`` does not implement an automatic updating system.
     Be always sure that you are using the most updated version by monitoring GitHub.
 

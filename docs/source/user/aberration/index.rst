@@ -24,7 +24,7 @@ Useful concepts to estimate image quality such as
 #. :ref:`Strehl ratio`
 #. :ref:`Encircled energy`
 
-are discussed in the following sections for reference, although they are not implemented in the main ``PAOS`` code.
+are discussed in the following sections for self-consistency.
 
 .. _Strehl ratio:
 
@@ -34,7 +34,7 @@ Strehl ratio
 For large aberrations, the image size is larger than the Airy disk. From the conservation of energy,
 the irradiance at the center of the image has to decrease when the image size increases.
 
-A useful definition for image quality is the Strehl ratio (see e.g.
+Image quality can be assessed using the Strehl ratio (see e.g.
 `Malacara-Hernández, Daniel & Malacaea-Hernandez, Zacarias & Malacara, Zacarias. (2005). Handbook of Optical Design Second Edition. <https://www.researchgate.net/publication/233842500_Handbook_of_Optical_Design_Second_Edition/citations>`_),
 i.e. the ratio of the irradiance at the center of the aberrated PSF to that of an ideal Airy function, which is
 approximated as
@@ -52,8 +52,7 @@ rms wavefront deviation. This expression is adequate to estimate the image quali
 Encircled energy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Another useful way to estimate how much an optical system deviates from optimal is to compute the radial (or encircled)
-energy distribution of the PSF.
+Another way to assess image quality is by estimating the radial (or encircled) energy distribution of the PSF.
 
 The encircled energy can be obtained from the spot diagram by counting the number of points in the
 diagram, inside of circles with different diameters. Alternatively, the fraction of the encircled energy :math:`f` in
@@ -159,9 +158,7 @@ An example of aberrated PSFs at the `Ariel` Telescope exit pupil is shown in :nu
 
    `Ariel Telescope exit pupil PSFs for different aberrations and same SFE`
 
-In this figure, the same Surface Form Error (SFE) of :math:`50 \ \textrm{nm}` root mean square (rms)
-is allocated to different optical aberrations. Starting from the top left panel (oblique Astigmatism),
-seven such simulations are shown, in ascending Ansi order.
+In this figure, the same Surface Form Error (SFE) of :math:`50 \ \textrm{nm}` is allocated to different optical aberrations. Starting from the top left panel (oblique Astigmatism), seven such simulations are shown, in ascending Ansi order.
 
 Each aberration has a different impact on optical quality, requiring a detailed analysis to translate e.g. a
 scientific requirement on optical quality into a WFE allocation.
@@ -172,7 +169,8 @@ Surface roughness
 -------------------
 
 Optical elements exhibit surface roughness, i.e. medium to high frequency defects produced during manufacturing
-(e.g. using diamond turning machines). The resulting aberrations can be described as a zero-mean random Gaussian
-field with variance :math:`\sigma_{G}`.
+(e.g. using diamond turning machines). These types of defects reduce the Strehl ratio without significantly altering the PSF's fundamental shape.
 
-Surface roughness is not yet developed in the main ``PAOS`` code.
+The resulting aberrations can be statistically described using a zero-mean random Gaussian field with variance :math:`\sigma_{G}` or relative to the spatial scales of interest using e.g. a parameterized Power Spectral Density (PSD) specification (`Church1991 <https://ui.adsabs.harvard.edu/abs/1991SPIE.1530...71C/abstract>`_).
+
+Users can easily implement this using the ``PAOS`` API if necessary, and there are potential plans for inclusion in future ``PAOS`` releases.

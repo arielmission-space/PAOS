@@ -18,17 +18,13 @@ to launch automatized POP simulations that reflect the edits without requiring a
 From a broad perspective, this input system has two advantages:
 
 #. It can be used to design and test any optical system with relative ease.
-    Outside the Ariel Consortium, ``PAOS`` is currently used to simulate the optical performance of the
-    stratospheric balloon-borne experiment EXCITE (`Tucker et al., The Exoplanet Climate Infrared TElescope (EXCITE)
-    (2018) <https://doi.org/10.1117/12.2314225>`_).
+    Outside Ariel, ``PAOS`` is currently used to simulate the optical performance of the stratospheric balloon-borne experiment `EXCITE <https://doi.org/10.1117/12.2314225>`_.
 
     .. tip::
         The interested reader may refer to the section :ref:`Plotting results` to see an example of ``PAOS`` results for
         EXCITE.
 
 #. It helped in validating the ``PAOS`` code against existing simulators.
-    .. tip::
-        The interested reader may refer to the section :ref:`Validation` to see how we validated ``PAOS`` using the Hubble optical system
 
 .. _Configuration file:
 
@@ -280,13 +276,13 @@ Standard, Paraxial Lens, ABCD and Zernike) and their required parameters.
      - Bool
      - Bool
      - None
-     - Par1 = wave (in micron)
+     - Par1 = wavelength (in micron)
 
        Par2 = ordering, can be standard, ansi, noll, fringe
 
        Par3 = Normalisation, can be True or False
 
-       Par4 = Radius of support aperture of the poly
+       Par4 = Radius of support aperture of the polynomial
 
        Par5 = origin, can be x (counterclockwise positive from x axis) or y (clockwise positive from y axis)
 

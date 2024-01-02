@@ -6,19 +6,15 @@ ABCD description
 ``PAOS`` implements the paraxial theory described in
 `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_.
 
-In ``PAOS``, this is handled by the class :class:`~paos.classes.abcd.ABCD`.
+In ``PAOS``, this is handled by the classes :class:`~paos.classes.abcd.ABCD` and :class:`~paos.classes.abcd.WFO` (see :ref:`POP description`).
 
 .. _Paraxial region:
 
 Paraxial region
 -----------------------
 
-For self-consistency, we give a definition for paraxial region, following
-`Smith, Modern Optical Engineering, Third Edition (2000) <https://spie.org/Publications/Book/387098>`_.
-
-The paraxial region of an optical system is a thin threadlike region about the optical axis
-where all the slope angles and the angles of incidence and refraction may be set equal to their
-sines and tangents.
+Following e.g. `Smith, Modern Optical Engineering, Third Edition (2000) <https://spie.org/Publications/Book/387098>`_, the paraxial region of an optical system is a thin threadlike region about the optical axis
+where all the slope angles and the angles of incidence and refraction may be set equal to their sines and tangents.
 
 Optical coordinates
 -----------------------
@@ -388,7 +384,7 @@ angles :math:`\theta_i` are as described in Fig.2 from the article, reported in 
 
 .. _prismtache:
 
-.. figure:: prism.png
+.. figure:: tache.png
    :width: 600
    :align: center
 
