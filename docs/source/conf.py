@@ -211,7 +211,7 @@ latex_elements = {
     "tableofcontents": " ",
 }
 
-latex_logo = "_static/paos.jpg"
+latex_logo = "_static/paos_logo.png"
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
