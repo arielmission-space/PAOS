@@ -109,7 +109,6 @@ Non-normalised Zernike polynomials are defined in ``PAOS`` as:
     \begin{cases}
     R_{n}^{m}(\rho) \ cos(m \phi) \  \hspace{4cm} m \geq 0   \\
     R_{n}^{-m}(\rho) \ cos(m \phi)   \hspace{3.8cm} m < 0      \\
-    0                                \hspace{6.55cm} n - m \ \textrm{is odd} \\
     \end{cases}
     :label:
 

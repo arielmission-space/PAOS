@@ -232,7 +232,10 @@ Example
 
 Code example to use :class:`~paos.classes.wfo.WFO` to estimate Gaussian beam properties for a given beam with diameter
 :math:`d = 1.0` m, before and after inserting a Paraxial lens with focal length :math:`f = 1.0` m, and after
-propagating to the lens focus.
+propagating to the lens focus. The zoom parameter is set to :math:`z = 4`.
+
+.. important::
+    The zoom parameter is the ratio between the grid's linear dimension and the beam size.
 
 .. jupyter-execute::
         :stderr:
