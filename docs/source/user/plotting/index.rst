@@ -3,7 +3,7 @@
 Plotting results
 =======================
 
-`PAOS` implements different plotting routines, summarized here, that can be used to give a complementary idea of
+``PAOS`` implements different plotting routines, summarized here, that can be used to give a complementary idea of
 the main POP simulation results.
 
 Base plot

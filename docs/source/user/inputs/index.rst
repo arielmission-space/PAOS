@@ -3,7 +3,7 @@
 Input system
 =======================
 
-`PAOS` has a generic input system to be used by anyone expert in Computer Aided Design (CAD).
+``PAOS`` has a generic input system to be used by anyone expert in Computer Aided Design (CAD).
 
 Its two pillars are
 
@@ -18,17 +18,13 @@ to launch automatized POP simulations that reflect the edits without requiring a
 From a broad perspective, this input system has two advantages:
 
 #. It can be used to design and test any optical system with relative ease.
-    Outside the Ariel Consortium, `PAOS` is currently used to simulate the optical performance of the
-    stratospheric balloon-borne experiment EXCITE (`Tucker et al., The Exoplanet Climate Infrared TElescope (EXCITE)
-    (2018) <https://doi.org/10.1117/12.2314225>`_).
+    Outside Ariel, ``PAOS`` is currently used to simulate the optical performance of the stratospheric balloon-borne experiment `EXCITE <https://doi.org/10.1117/12.2314225>`_.
 
     .. tip::
-        The interested reader may refer to the section :ref:`Plotting results` to see an example of `PAOS` results for
+        The interested reader may refer to the section :ref:`Plotting results` to see an example of ``PAOS`` results for
         EXCITE.
 
-#. It helped in validating the `PAOS` code against existing simulators.
-    .. tip::
-        The interested reader may refer to the section :ref:`Validation` to see how we validated `PAOS` using the Hubble optical system
+#. It helped in validating the ``PAOS`` code against existing simulators.
 
 .. _Configuration file:
 
@@ -46,7 +42,7 @@ The configuration file is an .ini file structured into four different sections:
 #. :ref:`lenses section`
 
 .. note::
-    `PAOS` defines units as follows:
+    ``PAOS`` defines units as follows:
 
     #. Lens units: meters
     #. Angles units: degrees
@@ -56,7 +52,7 @@ The configuration file is an .ini file structured into four different sections:
 
 General
 ^^^^^^^^^^^
-Section describing the general simulation parameters and `PAOS` units
+Section describing the general simulation parameters and ``PAOS`` units
 
 .. list-table:: General
    :widths: 40 40 100
@@ -280,13 +276,13 @@ Standard, Paraxial Lens, ABCD and Zernike) and their required parameters.
      - Bool
      - Bool
      - None
-     - Par1 = wave (in micron)
+     - Par1 = wavelength (in micron)
 
        Par2 = ordering, can be standard, ansi, noll, fringe
 
        Par3 = Normalisation, can be True or False
 
-       Par4 = Radius of support aperture of the poly
+       Par4 = Radius of support aperture of the polynomial
 
        Par5 = origin, can be x (counterclockwise positive from x axis) or y (clockwise positive from y axis)
 
@@ -322,13 +318,13 @@ Below we report a snapshot of the first lens data section from the Ariel AIRS CH
 Parse configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`PAOS` implements the method :func:`~paos.core.parseConfig.parse_config` that parses the .ini configuration file, prepares the
+``PAOS`` implements the method :func:`~paos.core.parseConfig.parse_config` that parses the .ini configuration file, prepares the
 simulation run and returns the simulation parameters and the optical chain. This method can be called as in the example
 below.
 
 Example
 ~~~~~~~~~~~
-Code example to parse a `PAOS` configuration file.
+Code example to parse a ``PAOS`` configuration file.
 
 .. code-block:: python
 
@@ -341,11 +337,11 @@ Code example to parse a `PAOS` configuration file.
 GUI editor
 ----------------------
 
-`PAOS` implements a GUI editor that allows to dynamically edit and modify the configuration file and to launch POP
-simulations. This makes it effectively the `PAOS` front-end. To achieve this, `PAOS` uses the PySimpleGui_ package,
+``PAOS`` implements a GUI editor that allows to dynamically edit and modify the configuration file and to launch POP
+simulations. This makes it effectively the ``PAOS`` front-end. To achieve this, ``PAOS`` uses the PySimpleGui_ package,
 a Python package that aims at "bridging the GUI gap between software developers and end users".
 
-The quickest way to run the `PAOS` GUI is from terminal.
+The quickest way to run the ``PAOS`` GUI is from terminal.
 
 Run it with the `help` flag to read the available options:
 
@@ -361,15 +357,15 @@ Run it with the `help` flag to read the available options:
 
    * - flag
      - description
-   * - -h, --help
+   * - ``-h``, ``--help``
      - show this help message and exit
-   * - -c, --configuration
+   * - ``-c``, ``--configuration``
      - Input configuration file to pass
-   * - -o, --output
+   * - ``-o``, ``--output``
      - Output file path
-   * - -d, --debug
+   * - ``-d``, ``--debug``
      - Debug mode screen
-   * - -l, --log
+   * - ``-l``, ``--logger``
      - Store the log output on file
 
 Where the configuration file shall be an `.ini` file (see :ref:`Configuration file`). If no configuration file is
@@ -426,7 +422,7 @@ It contains two Frames:
 
 * ``General Setup``
 
-  Displays the general simulation parameters and `PAOS` units, as defined in :ref:`general section`. The contents
+  Displays the general simulation parameters and ``PAOS`` units, as defined in :ref:`general section`. The contents
   can be altered as necessary, safe if the the cells are disabled.
 * ``Wavelength Setup``
 
@@ -457,7 +453,7 @@ The fields contents can be edited as necessary and new fields can be added by cl
 `Add Field` Button in the ``Fields Actions`` Frame.
 
 .. note::
-    While more than one field can be listed in this Tab, the current version of `PAOS` only supports simulating one
+    While more than one field can be listed in this Tab, the current version of ``PAOS`` only supports simulating one
     field at a time
 
 Below we report a snapshot of this Tab.
@@ -555,7 +551,7 @@ It contains three Frames:
   this Tab are reset, except for the raytrace output if the field has not changed.
 * ``Run and Save``
 
-  Contains Buttons to call `PAOS` methods to run the simulation.
+  Contains Buttons to call ``PAOS`` methods to run the simulation.
 
   The `Raytrace` Button runs a diagnostic ray-trace of the optical system, producing an output that is displayed
   in the Multiline element below it. This output can be saved to a text file by using the ``Save raytrace`` Button.
@@ -645,12 +641,12 @@ Therefore, the Tab contains two (collapsible) Frames, each with a layout similar
 Info Tab
 ^^^^^^^^^^^^^^^^
 
-This GUI Tab contains information about the `PAOS` creators and the GUI.
+This GUI Tab contains information about the ``PAOS`` creators and the GUI.
 
 It displays:
 
 * The author names
-* The `PAOS` version
+* The ``PAOS`` version
 * The Github repository
 * The PySimpleGui version and release
 

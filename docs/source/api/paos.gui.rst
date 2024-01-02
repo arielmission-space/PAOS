@@ -1,20 +1,26 @@
-paos.gui package
+GUI (``paos.gui``)
 ==================
 
-Submodules
-----------
+paosGui
+------------
 
-.. toctree::
-   :maxdepth: 4
+.. automodule:: paos.gui.paosGui
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-   paos.gui.simpleGui
-   paos.gui.zernikeGui
-   paos.gui.paosGui
+simpleGui
+------------
 
-Module contents
----------------
+.. automodule:: paos.gui.simpleGui
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-.. automodule:: paos.gui
+zernikeGui
+------------
+
+.. automodule:: paos.gui.zernikeGui
    :members:
    :undoc-members:
    :show-inheritance:

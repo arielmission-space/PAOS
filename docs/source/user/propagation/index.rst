@@ -3,9 +3,9 @@
 POP description
 =======================
 
-Brief description of some concepts of physical optics wavefront propagation (POP) and how they are implemented in `PAOS`.
+Brief description of some concepts of physical optics wavefront propagation (POP) and how they are implemented in ``PAOS``.
 
-In `PAOS`, this is handled by the class :class:`~paos.classes.wfo.WFO`.
+In ``PAOS``, this is handled by the class :class:`~paos.classes.wfo.WFO`.
 
 
 General diffraction
@@ -34,7 +34,7 @@ Fresnel diffraction theory requires the following conditions to be met
 #. modest numerical apertures
 #. thin optical elements
 
-`PAOS` is implemented assuming that Fresnel diffraction theory holds.
+``PAOS`` is implemented assuming that Fresnel diffraction theory holds.
 
 
 Coordinate breaks
@@ -189,7 +189,7 @@ reaches a minimum value. Since
 
 in the Rayleigh range, the phase radius is :math:`R = 2 z_R`.
 
-From the point of view of the `PAOS` code implementation, the Rayleigh distance is used to develop a concept of near- and far-field,
+From the point of view of the ``PAOS`` code implementation, the Rayleigh distance is used to develop a concept of near- and far-field,
 to define specific propagators (see :ref:`Wavefront propagation`).
 
 
@@ -232,7 +232,10 @@ Example
 
 Code example to use :class:`~paos.classes.wfo.WFO` to estimate Gaussian beam properties for a given beam with diameter
 :math:`d = 1.0` m, before and after inserting a Paraxial lens with focal length :math:`f = 1.0` m, and after
-propagating to the lens focus.
+propagating to the lens focus. The zoom parameter is set to :math:`z = 4`.
+
+.. important::
+    The zoom parameter is the ratio between the grid's linear dimension and the beam size.
 
 .. jupyter-execute::
         :stderr:
@@ -308,7 +311,7 @@ distance it follows that
 for the Rayleigh distance, the Gaussian beam waist and the distance to focus.
 
 .. note::
-    In the current version of `PAOS`, the Gaussian beam width is set along x. So, only the sagittal magnification changes
+    In the current version of ``PAOS``, the Gaussian beam width is set along x. So, only the sagittal magnification changes
     the Gaussian beam properties. A tangential magnification changes only the curvature of the
     propagating wavefront.
 
@@ -411,13 +414,13 @@ Wavefront propagation
 The methods for propagation are the hardest part of the problem of modelling the propagation through a
 well-behaved optical system. A thorough discussion of this problem is presented in
 `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_.
-Here we discuss the relevant aspects for the `PAOS` code implementation.
+Here we discuss the relevant aspects for the ``PAOS`` code implementation.
 
 Once an acceptable initial sampling condition is established and the propagation is initiated, the beam
 starts to spread due to diffraction. Therefore, to control the size of the array so that beam aliasing
 does not change much from the initial state it is important to choose the right propagator (far-field or near-field).
 
-`PAOS` propagates the pilot Gaussian beam through all optical surfaces to calculate the beam width at all points in space.
+``PAOS`` propagates the pilot Gaussian beam through all optical surfaces to calculate the beam width at all points in space.
 The Gaussian beam acts as a surrogate of the actual beam and the Gaussian beam parameters inform the POP simulation.
 In particular the :ref:`Rayleigh distance` :math:`z_R` is used to inform the choice of specific propagators.
 
@@ -454,13 +457,13 @@ Explicitly, these possibilities are:
 #. OO(:math:`z_1`, :math:`z_2`): outside RR to outside RR
 
 To move from any point in space to any other, following `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_,
-`PAOS` implements three primitive operators:
+``PAOS`` implements three primitive operators:
 
 #. plane-to-plane (PTP)
 #. waist-to-spherical (WTS)
 #. spherical-to-waist (STW)
 
-Using these primitive operators, `PAOS` implements all possible propagations:
+Using these primitive operators, ``PAOS`` implements all possible propagations:
 
 #. II(:math:`z_1`, :math:`z_2`) = PTP(:math:`z_2-z_1`)
 #. IO(:math:`z_1`, :math:`z_2`) = WTS(:math:`z_2-z(w)`) PTP(:math:`z_2-z(w)`)
@@ -609,7 +612,7 @@ and refractive surfaces), the paraxial phase effect is
 where t(x, y) is the complex transmission function. In other words, the element imposes a quadratic phase shift.
 The phase shift depends on initial and final position with respect to the Rayleigh range (see :ref:`Wavefront propagation`).
 
-As usual, in `PAOS` this is informed by the Gaussian beam parameters. The code implementation consists of four
+As usual, in ``PAOS`` this is informed by the Gaussian beam parameters. The code implementation consists of four
 steps:
 
 #. estimate the Gaussian beam curvature after the element (object space) using Eq. :eq:`eq:radius`
@@ -617,7 +620,7 @@ steps:
 #. estimate the Gaussian beam curvature after the element (image space)
 #. check the final position
 
-By combining the result of the second and the fourth step, `PAOS` selects the propagator (see :ref:`Wavefront propagation`).
+By combining the result of the second and the fourth step, ``PAOS`` selects the propagator (see :ref:`Wavefront propagation`).
 and the phase shift is imposed accordingly by defining a phase bias
 (see `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_):
 
@@ -639,7 +642,7 @@ Apertures
 The actual wavefront propagated through an optical system intersects real optical elements (e.g. mirrors, lenses, slits)
 and can be obstructed by an object causing an obscuration.
 
-For each one of these cases, `PAOS` implements an appropriate aperture mask. The aperture must be projected on the plane
+For each one of these cases, ``PAOS`` implements an appropriate aperture mask. The aperture must be projected on the plane
 orthogonal to the beam. If the aperture is (:math:`y_c, \phi_x, \phi_y`), the aperture should be set as
 
 .. math::
@@ -690,7 +693,7 @@ It is often the boundary of the primary mirror. An aperture stop has an importan
 
 The field stop limits the field of view of an optical instrument.
 
-`PAOS` implements a generic stop normalizing the wavefront at the current position to unit energy.
+``PAOS`` implements a generic stop normalizing the wavefront at the current position to unit energy.
 
 Example
 ~~~~~~~~~~~~~
@@ -716,23 +719,24 @@ Code example to use :class:`~paos.classes.wfo.WFO` to simulate an aperture stop.
 POP propagation loop
 --------------------------
 
-`PAOS` implements the POP simulation through all elements of an optical system.
+``PAOS`` implements the POP simulation through all elements of an optical system.
 The simulation run is implemented in a single loop.
 
-At first, `PAOS` initializes the beam at the centre of the aperture.
+At first, ``PAOS`` initializes the beam at the centre of the aperture.
 Then, it initializes the ABCD matrix.
 
-Once the initialization is completed, `PAOS` repeats these actions in a loop:
+Once the initialization is completed, ``PAOS`` repeats these actions in a loop:
 
 #. Apply coordinate break
 #. Apply aperture
 #. Apply stop
 #. Apply aberration (see :ref:`Aberration description`)
-#. Apply ABCD matrix and update
+#. Save wavefront properties
 #. Apply magnification
+#. Apply medium change
 #. Apply lens
-#. Apply propagation thickness
-#. Update ABCD matrix
+#. Apply propagation by thickness
+#. Update ray vectors and ABCD matrices (and save them)
 #. Repeat over all optical elements
 
 .. note::

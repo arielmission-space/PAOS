@@ -21,7 +21,7 @@ from paos.gui.simpleGui import SimpleGui
 
 class ZernikeGui(SimpleGui):
     """
-    Generates the Zernike editor for the main `PAOS` GUI as a secondary GUI window
+    Generates the Zernike editor for the main ``PAOS`` GUI as a secondary GUI window
 
     Parameters
     ----------
@@ -102,7 +102,7 @@ class ZernikeGui(SimpleGui):
 
     def make_window(self):
         """
-        Generates the Zernike GUI window (secondary window to the main `PAOS` GUI window).
+        Generates the Zernike GUI window (secondary window to the main ``PAOS`` GUI window).
         The layout is composed of only one Tab, with four headers: 'Zindex', 'Z', 'm', 'n'.
         'Zindex' contains the index j for each Zernike coefficient (starting from 0), 'Z' contains the Zernike
         coefficients, 'm' contains the azimuthal number and 'n' the radial number for the Zernike coefficients
@@ -121,9 +121,7 @@ class ZernikeGui(SimpleGui):
                 self.config[self.key]["zindex"],
                 self.config[self.key]["z"],
             )
-            self.zernike["zindex"] = (
-                zindex.split(",") if zindex != "" else ["0"]
-            )
+            self.zernike["zindex"] = zindex.split(",") if zindex != "" else ["0"]
             self.zernike["z"] = z.split(",") if z != "" else ["0"]
         else:
             self.zernike["zindex"] = ["0"]
@@ -182,9 +180,7 @@ class ZernikeGui(SimpleGui):
                                 [Text("", size=(6, 1))],
                                 [
                                     Text(
-                                        "Normalization: {}".format(
-                                            normalization
-                                        ),
+                                        "Normalization: {}".format(normalization),
                                         key="normalization",
                                     )
                                 ],
@@ -226,9 +222,7 @@ class ZernikeGui(SimpleGui):
                                                 row=i + 1,
                                                 input_list=[
                                                     r,
-                                                    float(
-                                                        self.zernike["z"][i]
-                                                    ),
+                                                    float(self.zernike["z"][i]),
                                                     int(m[i]),
                                                     int(n[i]),
                                                 ],
@@ -333,9 +327,7 @@ class ZernikeGui(SimpleGui):
             event, values = self.window.read(timeout=1000)
             if event == TIMEOUT_KEY:
                 continue
-            logger.trace(
-                "============ Event = {} ==============".format(event)
-            )
+            logger.trace("============ Event = {} ==============".format(event))
             elem = self.window.find_element_with_focus()
             elem_key = (
                 elem.Key
@@ -371,9 +363,7 @@ class ZernikeGui(SimpleGui):
                     ordering=self.ordering,
                 )
                 # Update the 'zernike' Column scrollbar
-                self.update_column_scrollbar(
-                    window=self.window, col_key="zernike"
-                )
+                self.update_column_scrollbar(window=self.window, col_key="zernike")
 
             # ------- Paste from the clipboard to the desired Zernike coefficients 'Z' input cell and below ------#
             elif event == "PASTE ZERNIKES":
@@ -398,9 +388,7 @@ class ZernikeGui(SimpleGui):
                         )
                     row += 1
                 # Update the Zernike tab scrollbar
-                self.update_column_scrollbar(
-                    window=self.window, col_key="zernike"
-                )
+                self.update_column_scrollbar(window=self.window, col_key="zernike")
 
             # ------- Add a radial order to the current Zernike tab by adding rows until the order is closed ------#
             elif event == "-ADD ZERNIKE RADIAL ORDER-":
@@ -444,9 +432,7 @@ class ZernikeGui(SimpleGui):
                         ordering=self.ordering,
                     )
                 # Update the Zernike tab scrollbar
-                self.update_column_scrollbar(
-                    window=self.window, col_key="zernike"
-                )
+                self.update_column_scrollbar(window=self.window, col_key="zernike")
 
             # ------- Display a popup window with the Zernike GUI values given as a flat dictionary ------#
             elif event == "-SUBMIT ZERNIKES-":

@@ -1,5 +1,5 @@
 """
-Dictionary for optical materials for use in `PAOS`.
+Dictionary for optical materials for use in ``PAOS``.
 """
 
 materials = {

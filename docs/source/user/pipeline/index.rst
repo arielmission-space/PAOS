@@ -25,7 +25,7 @@ Code example to the method :func:`~paos.core.pipeline.pipeline` to run a simulat
 :math:`w_1 = 3.9` and :math:`w_1 = 7.8` micron, using the configuration file for AIRS-CH1.
 
 Using the option 'wl_grid' instead of 'wavelengths', the user can define the minimum wavelength, the maximum wavelength
-and the spectral resolution. `PAOS` will then automatically create a wavelength grid to perform the POP.
+and the spectral resolution. ``PAOS`` will then automatically create a wavelength grid to perform the POP.
 
 .. code-block:: python
 

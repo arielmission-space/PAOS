@@ -119,7 +119,7 @@ class Material:
         Note
         ----
         1) Air at the system temperature and pressure is defined to be 1.0, all other indices are relative
-        2) `PAOS` can easily model systems used in a vacuum by changing the air pressure to zero
+        2) ``PAOS`` can easily model systems used in a vacuum by changing the air pressure to zero
         """
 
         wl2 = self.wl**2
@@ -213,7 +213,6 @@ class Material:
         plt.subplots_adjust(hspace=0.3, wspace=0.5)
 
         for k, name in enumerate(material_list):
-
             if n_subplots == 1:
                 axis = ax
             elif n_subplots == 2:

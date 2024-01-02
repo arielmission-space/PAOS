@@ -1,5 +1,5 @@
-paos.classes.abcd module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ABCD (``paos.classes.abcd``)
+============================
 
 .. automodule:: paos.classes.abcd
     :members:

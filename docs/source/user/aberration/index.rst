@@ -3,9 +3,9 @@
 Aberration description
 =======================
 
-Brief description of wavefront error (WFE) modelling and how it is implemented in `PAOS`.
+Brief description of wavefront error (WFE) modelling and how it is implemented in ``PAOS``.
 
-In `PAOS`, this is handled by the class :class:`~paos.classes.zernike.Zernike`.
+In ``PAOS``, this is handled by the class :class:`~paos.classes.zernike.Zernike`.
 
 Introduction
 --------------
@@ -24,7 +24,7 @@ Useful concepts to estimate image quality such as
 #. :ref:`Strehl ratio`
 #. :ref:`Encircled energy`
 
-are discussed in the following sections for reference, although they are not implemented in the main `PAOS` code.
+are discussed in the following sections for self-consistency.
 
 .. _Strehl ratio:
 
@@ -34,7 +34,7 @@ Strehl ratio
 For large aberrations, the image size is larger than the Airy disk. From the conservation of energy,
 the irradiance at the center of the image has to decrease when the image size increases.
 
-A useful definition for image quality is the Strehl ratio (see e.g.
+Image quality can be assessed using the Strehl ratio (see e.g.
 `Malacara-Hernández, Daniel & Malacaea-Hernandez, Zacarias & Malacara, Zacarias. (2005). Handbook of Optical Design Second Edition. <https://www.researchgate.net/publication/233842500_Handbook_of_Optical_Design_Second_Edition/citations>`_),
 i.e. the ratio of the irradiance at the center of the aberrated PSF to that of an ideal Airy function, which is
 approximated as
@@ -52,8 +52,7 @@ rms wavefront deviation. This expression is adequate to estimate the image quali
 Encircled energy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Another useful way to estimate how much an optical system deviates from optimal is to compute the radial (or encircled)
-energy distribution of the PSF.
+Another way to assess image quality is by estimating the radial (or encircled) energy distribution of the PSF.
 
 The encircled energy can be obtained from the spot diagram by counting the number of points in the
 diagram, inside of circles with different diameters. Alternatively, the fraction of the encircled energy :math:`f` in
@@ -88,7 +87,7 @@ and in black for the diffraction limited PSF.
 Optical aberrations
 ---------------------
 
-`PAOS` models an optical aberration using a series of Zernike polynomials, up to a specified radial order.
+``PAOS`` models an optical aberration using a series of Zernike polynomials, up to a specified radial order.
 
 Following `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_, the function
 describing an arbitrary wavefront wavefront in polar coordinates W(:math:`r, \theta`) can be expanded in terms
@@ -101,7 +100,7 @@ of a sequence of Zernike polynomials as
 where :math:`C_{n}^{m}` are the coefficient of the Zernike polynomial :math:`Z_{n}^{m} (\rho, \theta)`.
 
 The first three terms in :eq:`Zernike_series` describe Piston and Tilt aberrations and can be neglected.
-Non-normalised Zernike polynomials are defined in `PAOS` as:
+Non-normalised Zernike polynomials are defined in ``PAOS`` as:
 
 .. _Zernike_pol:
 
@@ -110,7 +109,6 @@ Non-normalised Zernike polynomials are defined in `PAOS` as:
     \begin{cases}
     R_{n}^{m}(\rho) \ cos(m \phi) \  \hspace{4cm} m \geq 0   \\
     R_{n}^{-m}(\rho) \ cos(m \phi)   \hspace{3.8cm} m < 0      \\
-    0                                \hspace{6.55cm} n - m \ \textrm{is odd} \\
     \end{cases}
     :label:
 
@@ -123,7 +121,7 @@ where the radial polynomial is normalized such that :math:`R_{n}^{m}(\rho = 1) =
 with :math:`\delta_{mn}` the Kroneker delta function, and the average operator :math:`\left<\right>` is intended
 over the pupil.
 
-Using polar elliptical coordinates allows `PAOS` to describe pupils that are elliptical in shape as well as circular:
+Using polar elliptical coordinates allows ``PAOS`` to describe pupils that are elliptical in shape as well as circular:
 
 .. math::
     \rho^{2} = \frac{x_{pup}^{2}}{a^{2}} + \frac{y_{pup}^{2}}{b^{2}}
@@ -143,7 +141,7 @@ aberration associated with some of them is also provided (figure taken from `Lak
 
    `Zernike polynomials surface plots`
 
-`PAOS` can generate both ortho-normal polynomials and orthogonal polynomials and the ordering can be either ANSI
+``PAOS`` can generate both ortho-normal polynomials and orthogonal polynomials and the ordering can be either ANSI
 (default), or Noll, or Fringe, or Standard (see e.g. `Born and Wolf, Principles of Optics, (1999) <https://doi.org/10.1017/CBO9781139644181>`_).
 
 Example of an aberrated pupil
@@ -159,9 +157,7 @@ An example of aberrated PSFs at the `Ariel` Telescope exit pupil is shown in :nu
 
    `Ariel Telescope exit pupil PSFs for different aberrations and same SFE`
 
-In this figure, the same Surface Form Error (SFE) of :math:`50 \ \textrm{nm}` root mean square (rms)
-is allocated to different optical aberrations. Starting from the top left panel (oblique Astigmatism),
-seven such simulations are shown, in ascending Ansi order.
+In this figure, the same Surface Form Error (SFE) of :math:`50 \ \textrm{nm}` is allocated to different optical aberrations. Starting from the top left panel (oblique Astigmatism), seven such simulations are shown, in ascending Ansi order.
 
 Each aberration has a different impact on optical quality, requiring a detailed analysis to translate e.g. a
 scientific requirement on optical quality into a WFE allocation.
@@ -172,7 +168,8 @@ Surface roughness
 -------------------
 
 Optical elements exhibit surface roughness, i.e. medium to high frequency defects produced during manufacturing
-(e.g. using diamond turning machines). The resulting aberrations can be described as a zero-mean random Gaussian
-field with variance :math:`\sigma_{G}`.
+(e.g. using diamond turning machines). These types of defects reduce the Strehl ratio without significantly altering the PSF's fundamental shape.
 
-Surface roughness is not yet developed in the main `PAOS` code.
+The resulting aberrations can be statistically described using a zero-mean random Gaussian field with variance :math:`\sigma_{G}` or relative to the spatial scales of interest using e.g. a parameterized Power Spectral Density (PSD) specification (`Church1991 <https://ui.adsabs.harvard.edu/abs/1991SPIE.1530...71C/abstract>`_).
+
+Users can easily implement this using the ``PAOS`` API if necessary, and there are potential plans for inclusion in future ``PAOS`` releases.

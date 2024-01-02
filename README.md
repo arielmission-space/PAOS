@@ -4,7 +4,7 @@ The Physical Optics Simulator
 
 ## How to install
 
-`PAOS` is compatible with Python 3.8 and later.
+``PAOS`` is compatible with Python 3.8 and later.
 
 To install from source, clone the repository and move inside the directory.
 Then use pip as
@@ -17,7 +17,7 @@ Then use pip as
 
 To build the html documentation, Sphinx is needed. To install the dependencies run
 
-    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx sphinx-material ipykernel
+    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx ipykernel
 
 Then move into the `docs` directory and run
 
@@ -44,7 +44,7 @@ In case you are missing a LaTex installation from your computer, or some package
 
 To build the pdf version of the documentation, Sphinx is needed. To install the dependencies run
 
-    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx sphinx-material ipykernel
+    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx ipykernel
 
 Then move into the `docs` directory and run
 

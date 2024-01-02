@@ -32,7 +32,7 @@ from paos.core.plot import simple_plot
 
 class SimpleGui:
     """
-    Base class for the Graphical User Interface (GUI) for `PAOS`, built using the publicly available library PySimpleGUI
+    Base class for the Graphical User Interface (GUI) for ``PAOS``, built using the publicly available library PySimpleGUI
     """
 
     def __init__(self):
@@ -213,9 +213,7 @@ class SimpleGui:
                         elif isinstance(subitem, (tuple, list)):
                             subitem = ",".join(subitem)
                         else:
-                            raise NotImplementedError(
-                                "item type not supported"
-                            )
+                            raise NotImplementedError("item type not supported")
                     config.set(key, subkey, subitem)
 
         return config
@@ -336,9 +334,7 @@ class SimpleGui:
         """
         figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
         figure_canvas_agg.draw()
-        figure_canvas_agg.get_tk_widget().pack(
-            side="top", fill="both", expand=1
-        )
+        figure_canvas_agg.get_tk_widget().pack(side="top", fill="both", expand=1)
         return figure_canvas_agg
 
     @staticmethod
@@ -432,9 +428,7 @@ class SimpleGui:
                 return
 
             if not filename.endswith((".PNG", ".png", ".JPG", ".jpg")):
-                logger.debug(
-                    "Saving file format not provided. Defaulting to .png"
-                )
+                logger.debug("Saving file format not provided. Defaulting to .png")
                 filename = "".join([filename, ".png"])
 
         # Save the plot to the specified .png or .jpg file
@@ -464,9 +458,7 @@ class SimpleGui:
         return progress_bar
 
     @staticmethod
-    def move_with_arrow_keys(
-        window, event, values, elem_key, max_rows, max_cols
-    ):
+    def move_with_arrow_keys(window, event, values, elem_key, max_rows, max_cols):
         """
         Given the current GUI window, the latest event, the dictionary containing the window values, the dictionary key
         for the cell with focus and the maximum sizes for the current table editor, this method sets the focus on
@@ -508,9 +500,7 @@ class SimpleGui:
         if current_cell != (r, c):
             for key in values.keys():
                 if key.endswith(f"({r},{c})"):
-                    window[
-                        key
-                    ].set_focus()  # set the focus on the element moved to
+                    window[key].set_focus()  # set the focus on the element moved to
                     window[key].update()
         return r
 
@@ -566,9 +556,7 @@ class SimpleGui:
                         size=(24, 2),
                         disabled=disabled,
                     )
-                    for value, key, disabled in zip(
-                        input_list, keys, disabled_list
-                    )
+                    for value, key, disabled in zip(input_list, keys, disabled_list)
                 ],
             )
         )

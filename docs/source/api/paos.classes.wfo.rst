@@ -1,5 +1,5 @@
-paos.classes.wfo module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+WFO (``paos.classes.wfo``)
+==========================
 
 .. automodule:: paos.classes.wfo
    :members:

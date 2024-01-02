@@ -1,42 +1,18 @@
 .. _User guide:
 
-===================================
 User guide
-===================================
+===============
 
-This user guide will walk you through the main `PAOS` functionalities.
+This guide covers the general installation, as well as the use of ``PAOS`` as a standalone program and as a library.
 
-For clarity, it is divided into several sections:
-
-#. :ref:`Quick start`
-    How to launch `PAOS` from terminal shell
-#. :ref:`Input system`
-    The input system used by `PAOS`
-#. :ref:`ABCD description`
-    ABCD matrix theory and how it is implemented in `PAOS`
-#. :ref:`POP description`
-    Physical Optics Propagation and how it is implemented in `PAOS`
-#. :ref:`Aberration description`
-    Wavefront aberrations and how they are implemented in `PAOS`
-#. :ref:`Materials description`
-    Optical materials and how they are implemented in `PAOS`
-#. :ref:`Monte Carlo simulations`
-    How to perform Monte Carlo simulations using `PAOS`
-#. :ref:`Plotting results`
-    How to plot POP results
-#. :ref:`Saving results`
-    How to save POP results
-#. :ref:`Automatic pipeline`
-    An automated way to run `PAOS` from python console or jupyter notebook
-
-Each functionality has a self-consistent example to run in python console or jupyter notebook.
-
-Have a good read. Feedback is highly appreciated.
 
 .. toctree::
     :name: usertoc
-    :maxdepth: 1
+    :maxdepth: 2
+    :caption: Contents:
 
+    Introduction <introduction>
+    Installation <installation>
     Quick start <quickstart>
     Input system <inputs/index>
     ABCD description <abcd/index>

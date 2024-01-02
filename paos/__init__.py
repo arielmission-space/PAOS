@@ -39,10 +39,12 @@ import logging
 logger = logging.getLogger(__pkg_name__)
 logger.info(f"code version {__version__}")
 
-from paos.log import setLogLevel, addLogFile
+from paos.log import setLogLevel
 
 setLogLevel(logging.INFO)
-addLogFile(level=logging.INFO)
+
+# from paos.log import addLogFile
+# addLogFile(level=logging.INFO)
 
 from paos.classes.wfo import WFO
 from paos.classes.abcd import ABCD
