@@ -4,8 +4,6 @@
 Welcome to ``PAOS``'s documentation!
 ====================================
 
-**Version**: |version|
-
     |image1|
 
 ``PAOS`` is a reliable, user-friendly, and open-source Physical Optics Propagation code that integrates an implementation of Fourier optics. It employs the Fresnel approximation for efficient and accurate optical system simulations. 

@@ -127,7 +127,9 @@ Code example to initialize :class:`~paos.classes.abcd.ABCD` to propagate a light
         abcd = ABCD(thickness=thickness)
         print(abcd.ABCD)
 
-Thin lenses
+.. _thin lens:
+
+Thin lens
 ----------------------------
 
 A thin lens changes the slope angle and this is given by
@@ -252,9 +254,9 @@ Code example to initialize :class:`~paos.classes.abcd.ABCD` to simulate the effe
         abcd = ABCD(n1 = n1, n2 = n2)
         print(abcd.ABCD)
 
-.. _thick lenses:
+.. _thick lens:
 
-Thick lenses
+Thick lens
 ----------------------------
 
 A real (thick) lens is modelled as
