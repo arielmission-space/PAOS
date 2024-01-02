@@ -382,7 +382,7 @@ we report the ABCD matrices for the tangential and sagittal transfer:
     :label:
 
 where n is the refractive index of the prism, L is the geometrical path length of the prism, and the
-angles :math:`\theta_i` are as described in Fig.2 from the article, reported in :numref:`prismtache`.
+angles :math:`\theta_i` are as described in Fig.2 from the article, reproduced in :numref:`prismtache`.
 
 .. _prismtache:
 
@@ -461,7 +461,7 @@ This black box and its matrix can be decomposed into four, non-commuting element
 #. thin lens
 #. translation of distance (thickness)
 
-Explicitly:
+``PAOS`` adopts the following factorization:
 
 .. _oseq:
 

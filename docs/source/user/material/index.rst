@@ -18,7 +18,7 @@ In optics, dispersion is the phenomenon in which the phase velocity of a wave de
 where :math:`c` is the speed of light in a vacuum and :math:`n` is the refractive index of the dispersive medium.
 Physically, dispersion translates in a loss of kinetic energy through absorption. The absorption by the dispersive medium
 is different at different wavelengths, changing the angle of refraction of different colors of light as seen in the spectrum
-produced by a dispersive :ref:`prism` and in chromatic aberration of :ref:`thick lenses`.
+produced by a dispersive :ref:`prism` and in chromatic aberration of :ref:`thick lens`.
 
 This can be seen in geometric optics from Snell's law:
 

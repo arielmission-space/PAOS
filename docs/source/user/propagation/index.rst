@@ -728,11 +728,12 @@ Once the initialization is completed, ``PAOS`` repeats these actions in a loop:
 #. Apply aperture
 #. Apply stop
 #. Apply aberration (see :ref:`Aberration description`)
-#. Apply ABCD matrix and update
+#. Save wavefront properties
 #. Apply magnification
+#. Apply medium change
 #. Apply lens
-#. Apply propagation thickness
-#. Update ABCD matrix
+#. Apply propagation by thickness
+#. Update ray vectors and ABCD matrices (and save them)
 #. Repeat over all optical elements
 
 .. note::
