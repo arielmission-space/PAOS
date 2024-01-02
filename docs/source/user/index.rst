@@ -8,7 +8,7 @@ This guide covers the general installation, as well as the use of ``PAOS`` as a 
 
 .. toctree::
     :name: usertoc
-    :maxdepth: 1
+    :maxdepth: 2
     :caption: Contents:
 
     Introduction <introduction>
