@@ -1,57 +1,99 @@
-# `PAOS`
+# ``PAOS``
 
-The Physical Optics Simulator
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
+## Introduction
+
+``PAOS``, the Physical Optics Simulator, is a fast, modern, and reliable Python package for Physical Optics studies.
+
+It implements physical optics propagation (POP) in Fresnel approximation and paraxial ray tracing to analyze complex waveform propagation through both generic and off-axes optical systems.
+
+## Table of contents
+
+- [``PAOS``](#paos)
+  - [Introduction](#introduction)
+  - [Table of contents](#table-of-contents)
+  - [How to install](#how-to-install)
+    - [Install from PyPI](#install-from-pypi)
+    - [Install from source code](#install-from-source-code)
+      - [Test your installation](#test-your-installation)
+  - [Documentation](#documentation)
+    - [Build the html documentation](#build-the-html-documentation)
+    - [Build the pdf documentation](#build-the-pdf-documentation)
+  - [How to contribute](#how-to-contribute)
+  - [How to cite](#how-to-cite)
 
 ## How to install
 
-``PAOS`` is compatible with Python 3.8 and later.
+Instructions on how to install ``PAOS``.
 
-To install from source, clone the repository and move inside the directory.
-Then use pip as
+### Install from PyPI
+
+``PAOS`` is available on PyPI and can be installed via pip as
+
+    pip install paos
+
+### Install from source code
+
+``PAOS`` is compatible (tested) with Python 3.8, 3.9 and 3.10
+
+To install from source, clone the [repository](https://github.com/arielmission-space/PAOS/) and move inside the directory.
+
+Then use `pip` as
 
     pip install .
 
-## How to build the documentation
+#### Test your installation
 
-### html documentation
+Try importing ``PAOS`` as
 
-To build the html documentation, Sphinx is needed. To install the dependencies run
+    python -c "import paos; print(paos.__version__)"
 
-    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx ipykernel
+Or running ``PAOS`` itself with the `help` flag as
 
-Then move into the `docs` directory and run
+    paos -h
+
+Or the Graphical User Interface with the `help` flag as
+
+    paosgui -h
+
+If there are no errors then the installation was successful!
+
+## Documentation
+
+``PAOS`` comes with an extensive documentation, which can be built using Sphinx.
+The documentation includes a tutorial, a user guide and a reference guide.
+
+To build the documentation, install the needed packages first via:
+
+    pip install -e ".[docs]"
+
+### Build the html documentation
+
+To build the html documentation, move into the `docs` directory and run
 
     make html
 
 The documentation will be produced into the `build/html` directory inside `docs`.
 Open `index.html` to read the documentation.
 
-### pdf documentation
+### Build the pdf documentation
 
-#### requirements
-
-To compile the documentation in .pdf format, a LaTex compiler is needed.
-
-To install `pdflatex` run
-
-    pip install pdflatex
-
-In case you are missing a LaTex installation from your computer, or some packages are missing, run
-
-    sudo apt-get install latexmk texlive texlive-formats-extra
-
-#### build pdf
-
-To build the pdf version of the documentation, Sphinx is needed. To install the dependencies run
-
-    pip install sphinx sphinxcontrib-jsmath sphinx_rtd_theme sphinx_markdown_tables jupyter-sphinx ipykernel
-
-Then move into the `docs` directory and run
+To build the pdf, move into the `docs` directory and run
 
     make latexpdf
 
-Doing so, the documentation is compiled by `pdflatex` and stored into the `build/latex` directory inside `docs`.
+The documentation will be produced into the `build/latex` directory inside `docs`.
 Open `paos.pdf` to read the documentation.
 
-Please refer to the [official sphinx documentation](https://www.sphinx-doc.org/en/master/usage/configuration.html#latex-options)
-for a different LaTex compiler.
+The developers use `pdflatex`; if you have another compiler for LaTex, please refer to [sphinx documentation](https://www.sphinx-doc.org/en/master/usage/configuration.html#latex-options).
+
+## How to contribute
+
+You can contribute to ``PAOS`` by reporting bugs, suggesting new features, or contributing to the code itself.
+If you wish to contribute to the code, please follow the steps described in the documentation under `Developer guide`.
+
+## How to cite
+
+A dedicated publication has been submitted and the relative information will be published soon.
+In the meanwhile, please, send an email to the developers.  
