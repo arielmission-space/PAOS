@@ -6,7 +6,7 @@
 
 ``PAOS``, the Physical Optics Simulator, is a fast, modern, and reliable Python package for Physical Optics studies.
 
-It implements physical optics propagation (POP) in Fresnel approximation and paraxial ray tracing to analyze complex waveform propagation through both generic and off-axes optical systems.
+It implements Physical Optics Propagation in Fresnel approximation and paraxial ray tracing to analyze complex waveform propagation through both generic and off-axes optical systems.
 
 ## Table of contents
 
