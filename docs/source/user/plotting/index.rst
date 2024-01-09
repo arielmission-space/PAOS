@@ -20,7 +20,6 @@ EXCITE optical chain.
 
 .. jupyter-execute::
         :hide-code:
-        :stderr:
         :hide-output:
 
         from paos.core.parseConfig import parse_config

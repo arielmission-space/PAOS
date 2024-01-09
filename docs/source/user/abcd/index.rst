@@ -77,7 +77,6 @@ back to :ref:`Parse configuration file`).
 
 .. jupyter-execute::
         :hide-code:
-        :stderr:
         :hide-output:
 
         from paos.core.parseConfig import parse_config

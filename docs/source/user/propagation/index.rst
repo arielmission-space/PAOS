@@ -88,7 +88,6 @@ the Y axis by :math:`y_{dec} = 10.0 \ \textrm{mm}` and rotated around the X axis
 
 .. jupyter-execute::
         :hide-code:
-        :stderr:
         :hide-output:
 
         import paos
@@ -238,7 +237,6 @@ propagating to the lens focus. The zoom parameter is set to :math:`z = 4`.
     The zoom parameter is the ratio between the grid's linear dimension and the beam size.
 
 .. jupyter-execute::
-        :stderr:
 
         from paos.classes.wfo import WFO
 
@@ -383,7 +381,6 @@ Code example to use :class:`~paos.classes.wfo.WFO` to simulate a change of mediu
 to point out the change in distance to focus.
 
 .. jupyter-execute::
-        :stderr:
 
         from paos.classes.wfo import WFO
 
@@ -475,7 +472,6 @@ Example
 Code example to use :class:`~paos.classes.wfo.WFO` to propagate the beam over a thickness of :math:`10.0 \ \textrm{mm}`.
 
 .. jupyter-execute::
-        :stderr:
 
         from paos.classes.wfo import WFO
 
@@ -749,7 +745,6 @@ applying a circular aperture, the throughput normalization, applying a Paraxial 
 :math:`f=1.0` m, and propagating to the lens focus.
 
 .. jupyter-execute::
-        :stderr:
 
         import matplotlib.pyplot as plt
         from paos.classes.wfo import WFO
