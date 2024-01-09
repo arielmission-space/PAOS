@@ -135,7 +135,6 @@ html_show_sourcelink = False
 html_additional_pages = {
     "index.rst": "index.html",
     "user/index.rst": "user_index.html",
-    # "ariel/index.rst": "ariel.html",
 }
 
 html_use_modindex = True

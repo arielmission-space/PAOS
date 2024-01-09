@@ -322,7 +322,6 @@ Code example to use :class:`~paos.classes.wfo.WFO` to simulate a magnification o
 :math:`M_t = 3.0`, while keeping the sagittal direction unchanged (:math:`M_s = 1.0`).
 
 .. jupyter-execute::
-        :stderr:
 
         from paos.classes.wfo import WFO
 
