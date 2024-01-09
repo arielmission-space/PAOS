@@ -78,13 +78,17 @@ back to :ref:`Parse configuration file`).
 .. jupyter-execute::
         :hide-code:
         :hide-output:
-        :raises:
+
+        import os
+        import paos
+
+        paos_path = os.path.dirname(os.path.dirname(paos.__file__))
+        config_path = os.path.join(paos_path, 'lens data/lens_file_TA_Ground.ini')
 
         from paos.core.parseConfig import parse_config
-        pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('../lens data/lens_file_TA_Ground.ini')
+        pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config(config_path)
 
 .. jupyter-execute::
-        :raises:
 
         from paos.core.raytrace import raytrace
         raytrace(field={'us': 0.0, 'ut': 0.0}, opt_chain=opt_chains[0])

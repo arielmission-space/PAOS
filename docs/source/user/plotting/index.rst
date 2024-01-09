@@ -21,10 +21,16 @@ EXCITE optical chain.
 .. jupyter-execute::
         :hide-code:
         :hide-output:
+        
+        import os
+        import paos
+
+        paos_path = os.path.dirname(os.path.dirname(paos.__file__))
+        config_path = os.path.join(paos_path, 'lens data/Excite_TEL.ini')
 
         from paos.core.parseConfig import parse_config
         from paos.core.run import run
-        pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('../lens data/Excite_TEL.ini')
+        pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config(config_path)
         ret_val = run(pup_diameter, 1.0e-6 * wavelengths[0], parameters['grid_size'], parameters['zoom'], fields[0], opt_chains[0])
 
 .. jupyter-execute::
