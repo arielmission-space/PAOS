@@ -44,6 +44,15 @@ Changed
 
 ``PAOS`` documented on readthedocs
 
+1.0.2-alpha.0 [10/01/2024]
+--------------------
+
+``PAOS`` lives on PyPI
+
+Changed
+^^^^^^^^^
+- Changed setup.cfg file to pyproject.toml
+
 
 .. _Unreleased: https://github.com/arielmission-space/PAOS/
 .. _keepachangelog: https://keepachangelog.com/en/1.0.0/
