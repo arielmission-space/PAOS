@@ -9,7 +9,7 @@ Save output
 ----------------------------
 
 The base saving method, :func:`~paos.core.saveOutput.save_output`, receives as input the POP simulation output
-dictionary, a hdf5 file name and the keys to store at each surface and saves the dictionary along with the `PAOS`
+dictionary, a hdf5 file name and the keys to store at each surface and saves the dictionary along with the ``PAOS``
 package information to the hdf5 output file. If indicated, this function overwrites a previously saved file.
 
 The hdf5 file is structured in two sub-folders, as shown in :numref:`output_gen`. The first one is labelled with the

@@ -7,7 +7,7 @@ from paos.core.plot import do_legend
 
 class Material:
     """
-    Class for handling different optical materials for use in `PAOS`
+    Class for handling different optical materials for use in ``PAOS``
     """
 
     def __init__(self, wl, Tambient=-218.0, Pambient=1.0, materials=None):

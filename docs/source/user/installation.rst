@@ -56,7 +56,7 @@ and the ``PAOS`` GUI (see :ref:`GUI editor`) can be accessed calling
 
     paosgui
 
-Uninstall `PAOS`
+Uninstall ``PAOS``
 -------------------
 
 ``PAOS`` is installed in your system as a standard python package:
@@ -67,7 +67,7 @@ you can uninstall it from your Environment as
     pip uninstall paos
 
 
-Update `PAOS`
+Update ``PAOS``
 ---------------
 
 If you have installed ``PAOS`` using Pip, now you can update the package simply as
@@ -96,7 +96,7 @@ or simply
 
     pip install .
 
-Modify `PAOS`
+Modify ``PAOS``
 ---------------
 
 You can modify ``PAOS`` main code, editing as you prefer, but in order to make the changes effective
