@@ -39,6 +39,11 @@ Changed
 
 ``PAOS`` production ready
 
+1.0.1 [10/01/2024]
+--------------------
+
+``PAOS`` documented on readthedocs
+
 
 .. _Unreleased: https://github.com/arielmission-space/PAOS/
 .. _keepachangelog: https://keepachangelog.com/en/1.0.0/
