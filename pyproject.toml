@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paos"
-version = "1.0.2"
+version = "1.0.2-post.0"
 authors = [
-    {name = "Andrea Bocchieri", email = "andrea.bocchieri@uniroma1.it"},
+    {name = "Andrea Bocchieri <andrea.bocchieri@uniroma1.it>"},
     {name = "Lorenzo V. Mugnai"},
     {name = "Enzo Pascale"},
 ]
