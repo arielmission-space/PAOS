@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paos"
-version = "1.0.2-post.0"
+version = "1.0.2-post.1"
 authors = [
     {name = "Andrea Bocchieri <andrea.bocchieri@uniroma1.it>"},
     {name = "Lorenzo V. Mugnai"},
@@ -51,13 +51,12 @@ Homepage = "https://github.com/arielmission-space/PAOS"
 
 [project.optional-dependencies]
 docs = [
-    "sphinx~=4.5",
+    "sphinx>=5.0",
     "sphinxcontrib-napoleon",
     "sphinxcontrib-jsmath",
-    "sphinx_markdown_tables~=0.0.15",
-    "jupyter-sphinx~=0.3.2",
-    "nbsphinx~=0.9.3",
-    "sphinx_rtd_theme~=1.0.0",
+    "sphinx_markdown_tables>=0.0.15",
+    "jupyter-sphinx>=0.3.2",
+    "sphinx_rtd_theme>=1.0.0",
 ]
 test = [
     "codecov",

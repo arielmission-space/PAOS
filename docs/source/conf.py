@@ -47,7 +47,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosummary",
     "sphinx.ext.githubpages",
-    "nbsphinx",
     "jupyter_sphinx",
     "matplotlib.sphinxext.plot_directive",
     "sphinx_rtd_theme",
