@@ -53,6 +53,14 @@ PAOS presents a fast, modern, and reliable POP simulation tool for the scientifi
 
 <!-- A statement of need section that clearly illustrates the research purpose of the software and places it in the context of related work. -->
 
+Optical system design has witnessed significant advancements in recent years, necessitating efficient and reliable tools to simulate and optimize complex systems [@Smith:2000]. Ray-tracing and Physical Optics Propagation (POP) are the two primary methods for modelling the propagation of electromagnetic fields through optical systems. Ray-tracing is often employed during the design phase due to its speed, flexibility, and efficiency in determining basic properties such as optical magnification, aberrations, and vignetting. POP provides a comprehensive understanding of beam propagation by directly calculating changes in the electromagnetic wavefront [@Goodman:2005]. POP is particularly useful for predicting diffraction effects and modelling the propagation of coherently interfering optical wavefronts. Yet, it may require supplementary input from direct measurements or a ray-tracing model for comprehensive analysis including aberration variations, especially in the Fresnel approximation.
+
+Commercial ray-tracing codes like `Zemax` and `Code V` provide tools for performing POP calculations, offering advanced capabilities in aberration reduction and optical system optimization. However, these programs often come with substantial costs and steep learning curves, which may not be justifiable for every application. Furthermore, accessibility to their source code is often limited or not available.
+
+To overcome these limitations, we present `PAOS`, a reliable, user-friendly, and open-source POP code that integrates an implementation of Fourier optics. It employs the Fresnel approximation for efficient and accurate optical system simulations. By including a flexible configuration file and paraxial ray-tracing, `PAOS` seamlessly facilitates the study of various optical systems, including non-axial symmetric ones, as long as the Fresnel approximation remains valid.
+
+Initially developed to evaluate the optical performance of the `Ariel` Space Mission [@Tinetti:2018;@Tinetti:2021], `PAOS` has proven its value in assessing the impact of diffraction, aberrations, and related systematics on `Ariel`'s optical performance. By offering a general-purpose tool capable of simulating the optical performance of diverse optical systems, `PAOS` fills a crucial gap in the field and makes advanced physical optics research more accessible. This paper presents the development, validation, and application of `PAOS` and its limitations, showcasing its potential to advance optical system design and analysis for a wide range of scientific and engineering applications.
+
 # Acknowledgements
 
 <!-- Acknowledgement of any financial support. -->
