@@ -34,16 +34,11 @@ bibliography: paper.bib
 
 <!-- A summary describing the high-level functionality and purpose of the software for a diverse, non-specialist audience. -->
 
-Accurate assessment of the optical performance of advanced telescopes and imaging systems for astrophysical applications is essential to achieve an optimal balance between optical quality, system complexity, costs, and risks.
+`PAOS` is an open-source code implementing physical optics propagation (POP) in Fresnel approximation and paraxial ray-tracing to analyze complex waveform propagation through both generic and off-axes optical systems, enabling the generation of realistic Point Spread Functions across various wavelengths and focal planes. Developed using a Python&thinsp;3 stack, `PAOS` includes an installer, documented examples, and a comprehensive guide. It improves upon other POP codes offering extensive customization options and the liberty to access, utilize, and adapt the software library to the user's application. With a generic input system and a built-in Graphical User Interface, `PAOS` ensures seamless user interaction and facilitates simulations. The versatility of `PAOS` enables its application to a wide array of optical systems, extending beyond its initial use case. `PAOS` presents a fast, modern, and reliable POP simulation tool for the scientific community, enhancing the assessment of optical performance in various optical systems and making advanced simulations more accessible and user-friendly.
 
-In this paper, we introduce PAOS, an open-source code implementing physical optics propagation (POP) in Fresnel approximation and paraxial ray-tracing to analyze complex waveform propagation through both generic and off-axes optical systems, enabling the generation of realistic Point Spread Functions across various wavelengths and focal planes.
+`PAOS` is released under the BSD 3-Clause license and is available on [GitHub](https://github.com/arielmission-space/PAOS). The plugin can be installed from the source code or from [PyPI](https://pypi.org/project/paos/), so it can be installed as `pip install paos`. The documentation is available on [readthedocs](https://paos.readthedocs.io/en/latest/), including a quick-start guide, a tutorial, a description of the software functionalities, and guidelines for developers. The documentation is continuously updated and is versioned to match the software releases.
 
-Developed using a Python&thinsp;3 stack, PAOS includes an installer, documented examples, and a comprehensive guide. It improves upon other POP codes offering extensive customization options and the liberty to access, utilize, and adapt the software library to the user's application.
-
-With a generic input system and a built-in Graphical User Interface, PAOS ensures seamless user interaction and facilitates simulations.
-
-The versatility of PAOS enables its application to a wide array of optical systems, extending beyond its initial use case.
-PAOS presents a fast, modern, and reliable POP simulation tool for the scientific community, enhancing the assessment of optical performance in various optical systems and making advanced simulations more accessible and user-friendly.
+<!-- Mention PyPi and readthedocs -->
 
 # Benchmark
 
@@ -52,6 +47,8 @@ PAOS presents a fast, modern, and reliable POP simulation tool for the scientifi
 # Statement of need
 
 <!-- A statement of need section that clearly illustrates the research purpose of the software and places it in the context of related work. -->
+
+Accurate assessment of the optical performance of advanced telescopes and imaging systems for astrophysical applications is essential to achieve an optimal balance between optical quality, system complexity, costs, and risks.
 
 Optical system design has witnessed significant advancements in recent years, necessitating efficient and reliable tools to simulate and optimize complex systems [@Smith:2000]. Ray-tracing and Physical Optics Propagation (POP) are the two primary methods for modelling the propagation of electromagnetic fields through optical systems. Ray-tracing is often employed during the design phase due to its speed, flexibility, and efficiency in determining basic properties such as optical magnification, aberrations, and vignetting. POP provides a comprehensive understanding of beam propagation by directly calculating changes in the electromagnetic wavefront [@Goodman:2005]. POP is particularly useful for predicting diffraction effects and modelling the propagation of coherently interfering optical wavefronts. Yet, it may require supplementary input from direct measurements or a ray-tracing model for comprehensive analysis including aberration variations, especially in the Fresnel approximation.
 
