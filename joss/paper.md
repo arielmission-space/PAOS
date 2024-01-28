@@ -44,6 +44,30 @@ Developed using a Python&thinsp;3 stack, `PAOS` is released under the BSD 3-Clau
 
 <!-- A summary of the results of the benchmarking tests. -->
 
+We benchmarked `PAOS` against `PROPER` [@Krist:2007] on the HST optical system, because `PROPER` is not designed to handle `Ariel`’s, which i) is off-axis and ii) involves more complex elements than simple thin lenses, such as dichroics. The description of the HST system used is the one provided in the `Hubble_simple.py` file in the `PROPER` package[^1]. This description was translated into an input file[^2] for `PAOS` for reproducibility. All simulation inputs have been matched (e.g., wavelength, grid size, `zoom`[^3]). We added a line in the `PROPER` HST routine to set the pixel subsampling factor used to antialias the edges of shapes. We set this value to 101 from the default 11 to more closely match the exact treatment given in `PAOS`.
+
+We compared the resulting PSFs at the focal plane of the telescope, both in the central region and in the outer wings. The first benchmark is reported below, showing the results for the PSFs at 1 $\mu$m. \autoref{fig:benchmark-1} shows the central region of the HST PSFs as computed with `PAOS` and `PROPER`, and their difference. No significant residuals were found, with sporadic outlier pixels showing deviations by < 0.1 dB in regions corresponding to the PSF zeros due to small numerical errors.
+
+![The central region of the HST PSF at 1 $\mu$m as estimated with PAOS (left) and `PROPER` (center) and normalized to the maximum value in the array. The axes are in oversampled pixels. The color scale represents the power per pixel in decibels (dB), with a lower cut-off at -60 dB for better visualization. The right panel reports the difference between the PSF computed with `PROPER` and `PAOS` in the same physical units. \label{fig:benchmark-1}](hubble_psf2d_comparison.pdf){height=100%}
+
+\autoref{fig:benchmark-2} shows a detailed view of the slices of the PSFs along the horizontal and vertical axes, and their differences. The signal curves show an almost perfect overlap, with negligible residuals, all corresponding to values < -50 dB from the PSF maximum in the far wings.
+
+![Comparison between PSF slices along the x and y axis, respectively. The left column reports the slice values for both codes, whilst the right column reports their difference. The units are the same (power per pixel in dB) to highlight even the smallest discrepancies. As can be observed, these differences are negligible for powers $\gtrsim$-50 dB for the HST application. \label{fig:benchmark-2}](hubble_psf_comparison.pdf){height=100%}
+
+\autoref{fig:benchmark-aberrated-1} and \ref{fig:benchmark-aberrated-2} report the second benchmark; in this case, we simulate an aberrated PSF by HST described by a superposition of Zernike polynomials. At M2, we added 100 nm RMS (WFE) each for defocus, vertical astigmatism, and oblique astigmatism, totaling $\sigma \approx$ 173.2 nm WFE. The simulation is performed at $\lambda$ = 1.0 $\mu$m; therefore, using the Ruze formula [@Ross:2009], the Strehl ratio is $S = \exp\left(- 2 \pi \sigma / \lambda \right)\approx$ 0.3. Consequently, the PSF is highly aberrated and the main lobe is spread over more pixels. Thus, we can validate the `PAOS` implementation of optical aberrations, and we have a larger region of high signal. The latter is especially useful for investigating aliasing errors, which tend to occur more severely where the distribution has the highest amplitude because the amplitudes of the signal and the error add rather than the intensities [@Lawrence:1992].
+
+![Same as \autoref{fig:benchmark-1}, but adding an optical aberration using Zernike polynomials: 100 nm RMS (WFE) for each of three low-order coefficients in the Zernike expansion: defocus and primary astigmatism (vertical and oblique), corresponding to the coefficients 4, 5, and 6 in the Noll ordering, respectively. The difference between the large-scale features of the PSFs is negligible. \label{fig:benchmark-aberrated-1}](hubble_psf2d_comparison_aberrated.pdf){height=100%}
+
+![Comparison between PSF slices along the x and y axis, respectively. Locally, slightly `hotter` and `colder` pixels can be identified in the PSF wings, although, for powers $\gtrsim$-50 dB, this happens only sporadically. These minute numerical differences may be caused by the different treatment of aperture edges (exact for `PAOS`, sub-pixelled for `PROPER`), causing tiny aliasing errors. \label{fig:benchmark-aberrated-2}](hubble_psf_comparison_aberrated.pdf){height=100%}
+
+We find that the differences between the aberrated PSFs are negligible and reach peaks of a few dB only in the far wings. However, even in the central region, there is an increase in `hot` and `cold` pixels compared to the unaberrated case. These discrepancies are probably due to the different treatment of the edges of apertures and vanes in the optical system, causing small aliasing errors when not exact. However, they are so tiny that they can be safely neglected for the HST application.
+
+In summary, we find that `PAOS` is a robust and reliable tool for simulating the propagation of optical wavefronts through complex optical systems, as shown by the excellent agreement with the results obtained with `PROPER` for HST in our benchmark tests.
+
+[^1]: The `PROPER` source code and documentation can be downloaded at <https://proper-library.sourceforge.net/>.
+[^2]: `Hubble_simple.ini`, included in the package under the `lens data` directory.
+[^3]: The ratio between the grid's linear dimension and the beam size at the initial surface.
+
 # Statement of need
 
 <!-- A statement of need section that clearly illustrates the research purpose of the software and places it in the context of related work. -->
