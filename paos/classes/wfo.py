@@ -1,8 +1,10 @@
 import numpy as np
 import photutils
+import astropy.units as u
 
 from paos import logger
 from paos.classes.zernike import Zernike
+from paos.classes.psd import PSD
 
 
 class WFO:
@@ -636,6 +638,75 @@ class WFO:
         self._wfo = self._wfo * np.exp(
             2.0 * np.pi * 1j * wfe / self._wl
         ).filled(0)
+
+        return wfe
+
+    def psd(self, A=np.pi, B=0, C=0, fknee=1, fmin=None, fmax=None, SR=0.0, units=u.m):
+        """
+        Add a WFE represented by a power spectral density (PSD) and surface roughness (SR) specification.
+
+        Parameters
+        ----------
+        A : float
+            The amplitude of the PSD.
+        B : float
+            PSD parameter. If B = 0, the PSD is a power law.
+        C : float
+            PSD parameter. It sets the slope of the PSD.
+        fknee : float
+            The knee frequency of the PSD.
+        fmin : float
+            The minimum frequency of the PSD.
+        fmax : float
+            The maximum frequency of the PSD.
+        SR : float
+            The rms of the surface roughness.
+        units : astropy.units
+            The units of the SFE. Default is meters.
+
+        Returns
+        -------
+        out: masked array
+            the WFE
+        """
+
+        # compute 2D frequency grid
+        fx = np.fft.fftfreq(self._wfo.shape[0], self.dx)
+        fy = np.fft.fftfreq(self._wfo.shape[1], self.dy)
+
+        fxx, fyy = np.meshgrid(fx, fy)
+        f = np.sqrt(fxx**2 + fyy**2)
+        f[f == 0] = 1e-128
+
+        if fmax is None:
+            logger.warning("fmax not provided, using f_Nyq")
+            fmax = 1 / (2 * self.dx)
+        else:
+            assert fmax <= 1 / (
+                2 * self.dx
+            ), f"fmax = {fmax} should be less than 1/(2*delta = {1/(2*self.dx)}"
+
+        if fmin is None:
+            logger.warning("WARNING: fmin not provided, using 2 / D")
+            fmin = 2 / (self._wfo.shape[0] * np.max([self.dx, self.dy]))
+
+        # compute 2D PSD
+        psd = PSD(
+            pupil=self._wfo.copy().real,
+            A=A,
+            B=B,
+            C=C,
+            f=f,
+            fknee=fknee,
+            fmin=fmin,
+            fmax=fmax,
+            SR=SR,
+            units=units,
+        )
+        wfe = psd()
+
+        # update wfo
+        self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * wfe / self._wl)
 
         return wfe
 

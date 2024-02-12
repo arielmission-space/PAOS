@@ -4,6 +4,7 @@ import sys
 from typing import List
 
 import numpy as np
+import astropy.units as u
 
 from paos import logger
 from paos.classes.abcd import ABCD
@@ -197,6 +198,34 @@ def parse_config(filename):
                     n2=n2,
                     M=1.0,
                 )
+
+            elif _data_["type"] == "PSD":
+                thickness = 0.0
+                curvature = 0.0
+                n2 = n1
+                _data_["A"] = getfloat(element.get("Par1", ""))
+                _data_["B"] = getfloat(element.get("Par2", ""))
+                _data_["C"] = getfloat(element.get("Par3", ""))
+                _data_["fknee"] = getfloat(element.get("Par4", ""))
+                _data_["fmin"] = getfloat(element.get("Par5", ""))
+                _data_["fmax"] = getfloat(element.get("Par6", ""))
+                _data_["SR"] = getfloat(element.get("Par7", ""))
+                _data_["units"] = u.Unit(element.get("Par8", ""))
+
+                _data_["ABCDt"] = ABCD(
+                    thickness=thickness,
+                    curvature=curvature,
+                    n1=n1,
+                    n2=n2,
+                    M=1.0,
+                )
+                _data_["ABCDs"] = ABCD(
+                    thickness=thickness,
+                    curvature=curvature,
+                    n1=n1,
+                    n2=n2,
+                    M=1.0,
+                    )         
 
             elif _data_["type"] == "Coordinate Break":
                 thickness = _data_["T"] if np.isfinite(_data_["T"]) else 0.0

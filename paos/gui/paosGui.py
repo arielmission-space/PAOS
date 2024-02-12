@@ -131,6 +131,7 @@ class PaosGui(SimpleGui):
                 "Paraxial Lens",
                 "ABCD",
                 "Zernike",
+                "PSD",
             ],
             "Comment": "Comment",
             "Radius": "",
@@ -440,6 +441,17 @@ class PaosGui(SimpleGui):
                 "",
                 "",
             ]
+        elif surface_type == "PSD":
+            headings = [
+                "A",
+                "B",
+                "C",
+                "fknee",
+                "fmin",
+                "fmax",
+                "SR",
+                "units"
+            ]
 
         return headings
 
@@ -550,6 +562,11 @@ class PaosGui(SimpleGui):
         elif surface_type == "Zernike" and (
             header.startswith(("Radius", "Thickness", "Material", "aperture"))
             or header.startswith(("Par6", "Par7", "Par8"))
+        ):
+            item = "NaN"
+
+        elif surface_type == "PSD" and (
+            header.startswith(("Radius", "Thickness", "Material", "aperture"))
         ):
             item = "NaN"
 

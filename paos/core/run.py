@@ -162,6 +162,18 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
                 origin=item["Zorigin"],
             )
 
+        if item["type"] == "PSD":
+            wfo.psd(
+                item["A"],
+                item["B"],
+                item["C"],
+                item["fknee"],
+                item["fmin"],
+                item["fmax"],
+                item["SR"],
+                item["units"],
+            )
+
         _retval_.update(push_results(wfo))
 
         Ms = item["ABCDs"].M
