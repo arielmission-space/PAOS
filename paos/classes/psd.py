@@ -11,7 +11,7 @@ class PSD:
 
     The PSD is given by the following expression:
 
-    :math:`\\displaystyle PSD(f) = \\frac{2A}{B + (f/f_{knee})^C} \\frac{1}{2\\pi f}`
+    :math:`\\displaystyle PSD(f) = \\frac{A}{B + (f/f_{knee})^C}`
 
     Parameters
     ----------
@@ -33,8 +33,7 @@ class PSD:
         The maximum frequency of the PSD.
     SR : float
         The rms of the surface roughness.
-    units : astropy.unitsfrom paos import logger
-
+    units : astropy.units
         The units of the SFE. Default is meters.
 
     Returns
@@ -55,7 +54,7 @@ class PSD:
     >>> grid = 1024
     >>> delta = D / grid
 
-    >>> A, B, C, fknee, fmin, fmax = 7.0 * np.pi, 0.0, 0.5, 1.0, 1 / 20, 1 / 2
+    >>> A, B, C, fknee, fmin, fmax = 7.0, 0.0, 1.5, 1.0, 1 / 20, 1 / 2
     >>> SR = 0.0
 
     >>> x = y = np.arange(-grid // 2, grid // 2) * delta
@@ -78,32 +77,47 @@ class PSD:
 
     """
 
-    def __init__(self, pupil, A=np.pi, B=0, C=0, f=None, fknee=1, fmin=None, fmax=None, SR=0.0, units=u.m):
+    def __init__(
+        self,
+        pupil,
+        A=10.0,
+        B=0.0,
+        C=0.0,
+        f=None,
+        fknee=1.0,
+        fmin=None,
+        fmax=None,
+        SR=0.0,
+        units=u.m,
+    ):
 
         # get the grid size
-        N = pupil.shape[0]
+        Nx, Ny = pupil.shape
 
         # get the mask if it is a masked array
         if isinstance(pupil, np.ma.MaskedArray):
             mask = pupil.mask
         else:
-            mask = np.zeros((N, N)).astype(bool)
+            mask = np.zeros((Nx, Ny)).astype(bool)
 
         # compute the desired std for psd
         sfe_rms = self.sfe_rms(A, B, C, fknee, fmin, fmax)
         logger.debug(f"Desired std for PSD: {sfe_rms} {units}")
 
         # generate random field
-        self.wfe = np.random.randn(N, N)
+        self.wfe = np.random.randn(Nx, Ny)
 
         # FFT
         ft_wfe = np.fft.fft2(self.wfe)
 
+        dfx = f[0, 2] - f[0, 1]
+        dfy = f[2, 0] - f[1, 0]
+
         # compute 2D PSD
-        psd2d = 2 * A / (B + (f / fknee) ** C) / (2 * np.pi * f)
+        psd2d = A / (B + (f / fknee) ** C) / (2 * np.pi * f) * (dfx * dfy)
 
         # apply PSD to FT of random field
-        ft_wfe *= np.sqrt(psd2d)
+        ft_wfe *= np.sqrt(psd2d) * np.sqrt(Nx * Ny)
 
         # frequency mask
         idx = np.logical_or(f < fmin, f > fmax)
@@ -117,18 +131,15 @@ class PSD:
 
         # current std
         current_std = self.wfe.std()
-        logger.debug("Current std", current_std)
-
-        # normalize to desired std
-        self.wfe *= sfe_rms / current_std
+        logger.debug(f"Current std for PSD: {current_std} {units}")
 
         # add surface roughness
-        self.wfe += SR * np.random.randn(N, N)
+        self.wfe += SR * np.random.randn(Nx, Ny)
 
         # from sfe to wfe
         self.wfe *= 2
 
-        # convert to meters using astropy
+        # convert to meters using astropy.units
         self.wfe *= units.to(u.m)
 
     def __call__(self):
@@ -145,8 +156,8 @@ class PSD:
         f = sympy.symbols("f")
         a, b, c, fknee, fmin, fmax = sympy.symbols("a b c fknee fmin fmax")
 
-        # define generic expression for PSD
-        expr = 2 * a / (b + (f / fknee) ** c) / (2 * sympy.pi * f)
+        # define PSD
+        expr = a / (b + (f / fknee) ** c)
 
         # evaluate integral using sympy
         integral = sympy.integrate(expr, (f, fmin, fmax))

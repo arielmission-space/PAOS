@@ -641,7 +641,17 @@ class WFO:
 
         return wfe
 
-    def psd(self, A=np.pi, B=0, C=0, fknee=1, fmin=None, fmax=None, SR=0.0, units=u.m):
+    def psd(
+        self,
+        A=10.0,
+        B=0.0,
+        C=0.0,
+        fknee=1.0,
+        fmin=None,
+        fmax=None,
+        SR=0.0,
+        units=u.m,
+    ):
         """
         Add a WFE represented by a power spectral density (PSD) and surface roughness (SR) specification.
 
@@ -676,19 +686,18 @@ class WFO:
 
         fxx, fyy = np.meshgrid(fx, fy)
         f = np.sqrt(fxx**2 + fyy**2)
-        f[f == 0] = 1e-128
+        f[f == 0] = 1e-100
 
         if fmax is None:
-            logger.warning("fmax not provided, using f_Nyq")
-            fmax = 1 / (2 * self.dx)
+            print("WARNING: fmax not provided, using f_Nyq")
+            fmax = 0.5 * np.sqrt(self.dx**-2 + self.dy**-2)
         else:
-            assert fmax <= 1 / (
-                2 * self.dx
-            ), f"fmax = {fmax} should be less than 1/(2*delta = {1/(2*self.dx)}"
+            f_Nyq = 0.5 * np.sqrt(self.dx**-2 + self.dy**-2)
+            assert fmax <= f_Nyq, f"fmax must be less than or equal to f_Nyq ({f_Nyq})"
 
         if fmin is None:
-            logger.warning("WARNING: fmin not provided, using 2 / D")
-            fmin = 2 / (self._wfo.shape[0] * np.max([self.dx, self.dy]))
+            print("WARNING: fmin not provided, using 1 / D")
+            fmin = 1 / (self._wfo.shape[0] * np.max([self.dx, self.dy]))
 
         # compute 2D PSD
         psd = PSD(
