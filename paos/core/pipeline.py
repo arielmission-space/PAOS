@@ -66,7 +66,7 @@ def pipeline(passvalue):
             logger.error("loglevel shall be one of debug, trace or info")
 
     logger.debug(
-        "--------------------------------------------------------------------------------------------"
+        "---------------------------------------------------------------------"
     )
     logger.debug("Set pipeline defaults")
 
@@ -82,7 +82,7 @@ def pipeline(passvalue):
     logger.debug("passvalue keys are {}".format(list(passvalue.keys())))
 
     logger.debug(
-        "--------------------------------------------------------------------------------------------"
+        "---------------------------------------------------------------------"
     )
     logger.info("Parse lens file")
     pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config(
@@ -91,28 +91,21 @@ def pipeline(passvalue):
 
     if "debug" in passvalue.keys() and passvalue["debug"]:
         logger.debug(
-            "--------------------------------------------------------------------------------------------"
+            "-----------------------------------------------------------------"
         )
         logger.debug("Perform a diagnostic ray tracing")
         raytrace(fields[0], opt_chains[0])
 
     logger.debug(
-        "--------------------------------------------------------------------------------------------"
+        "---------------------------------------------------------------------"
     )
     logger.info("Set up the POP")
 
-    if (
-        "wavelengths" in passvalue.keys()
-        and passvalue["wavelengths"] is not None
-    ):
+    if "wavelengths" in passvalue.keys() and passvalue["wavelengths"] is not None:
         logger.debug(
-            "Using user provided wavelengths: {}".format(
-                passvalue["wavelengths"]
-            )
+            "Using user provided wavelengths: {}".format(passvalue["wavelengths"])
         )
-        wavelengths = list(
-            map(float, passvalue["wavelengths"].split(","))
-        )  # in micron
+        wavelengths = list(map(float, passvalue["wavelengths"].split(",")))  # in micron
     elif "wl_grid" in passvalue.keys() and passvalue["wl_grid"] is not None:
         wl_min, wl_max, R = tuple(map(float, passvalue["wl_grid"].split(",")))
         logger.debug("Creating wavelength grid from user defined parameters")
@@ -123,41 +116,44 @@ def pipeline(passvalue):
         n_bin = int(np.ceil(np.log(wl_max / wl_min) / np.log(1 + 1 / R)))
         wavelengths = np.logspace(np.log10(wl_min), np.log10(wl_max), n_bin)
     else:
-        logger.debug("Using wavelength from configuration file")
+        logger.debug(f"Using wavelength wl1 = {wavelengths[0]} from configuration file")
         wavelengths = [wavelengths[0]]
 
     logger.debug("Wavelengths: {}".format(wavelengths))
+
+    logger.debug(f"Using field f1 = {fields[0]} from configuration file")
+    field = fields[0]
+
     logger.debug("Set up the optical chain for the POP run")
 
     optc = {}
-    for key, item in opt_chains[0].items():
-        optc[key] = item
-        if (
-            "light_output" in passvalue.keys()
-            and passvalue["light_output"] is True
-        ):
-            optc[key]["save"] = False
-            if item["name"] == "IMAGE_PLANE":
-                optc[key]["save"] = True
-        if (
-            item["name"] == "Z1"
-            and "wfe" in passvalue.keys()
-            and passvalue["wfe"] is not None
-        ):
-            wfe_file, column = passvalue["wfe"].split(",")
-            logger.debug(
-                "Wfe realization file: {}; column: {}".format(wfe_file, column)
-            )
-            wfe = ascii.read(wfe_file)
-            optc[key]["Zordering"] = "standard"
-            optc[key]["Znormalize"] = "True"
-            optc[key]["Zorigin"] = "x"
-            Ck = wfe["col%i" % (float(column) + 4)].data * 1.0e-9
-            optc[key]["Z"] = np.append(np.zeros(3), Ck)
-            logger.debug("Wfe coefficients: {}".format(optc[key]["Z"]))
+    for idx, opt_chain in enumerate(opt_chains):
+        optc[idx] = {}
+        for key, item in opt_chain.items():
+            optc[idx][key] = item
+            if "light_output" in passvalue.keys() and passvalue["light_output"] is True:
+                optc[idx][key]["save"] = False
+                if item["name"] == "IMAGE_PLANE":
+                    optc[idx][key]["save"] = True
+            if (
+                item["name"] == "Z1"
+                and "wfe" in passvalue.keys()
+                and passvalue["wfe"] is not None
+            ):
+                wfe_file, column = passvalue["wfe"].split(",")
+                logger.debug(
+                    "Wfe realization file: {}; column: {}".format(wfe_file, column)
+                )
+                wfe = ascii.read(wfe_file)
+                optc[idx][key]["Zordering"] = "standard"
+                optc[idx][key]["Znormalize"] = "True"
+                optc[idx][key]["Zorigin"] = "x"
+                Ck = wfe["col%i" % (float(column) + 4)].data * 1.0e-9
+                optc[idx][key]["Z"] = np.append(np.zeros(3), Ck)
+                logger.debug("Wfe coefficients: {}".format(optc[idx][key]["Z"]))
 
     logger.debug(
-        "--------------------------------------------------------------------------------------------"
+        "---------------------------------------------------------------------"
     )
     logger.info("Run the POP")
 
@@ -170,24 +166,22 @@ def pipeline(passvalue):
     retval = Parallel(n_jobs=passvalue["n_jobs"])(
         delayed(run)(
             pup_diameter,
-            1.0e-6 * wl,
+            1.0e-6 * wavelengths[key],
             parameters["grid_size"],
             parameters["zoom"],
-            fields[0],
-            optc,
+            field,
+            opt_chain,
         )
-        for wl in tqdm(wavelengths)
+        for key, opt_chain in tqdm(optc.items())
     )
     end_time = time.time()
     logger.info("POP completed in {:6.1f}s".format(end_time - start_time))
     _ = gc.collect()
 
     logger.debug(
-        "--------------------------------------------------------------------------------------------"
+        "---------------------------------------------------------------------"
     )
-    logger.info(
-        "Save POP simulation output .h5 file to {}".format(passvalue["output"])
-    )
+    logger.info("Save POP simulation output .h5 file to {}".format(passvalue["output"]))
     group_tags = list(map(str, wavelengths))
     logger.debug("group tags: {}".format(group_tags))
     store_keys = None
@@ -205,16 +199,14 @@ def pipeline(passvalue):
     if passvalue["plot"]:
 
         logger.debug(
-            "--------------------------------------------------------------------------------------------"
+            "-----------------------------------------------------------------"
         )
         logger.info("Save POP simulation output plot")
 
         plots_dir = "{}/plots".format(os.path.dirname(passvalue["output"]))
         if not os.path.isdir(plots_dir):
             logger.info(
-                "folder {} not found in directory tree. Creating..".format(
-                    plots_dir
-                )
+                "folder {} not found in directory tree. Creating..".format(plots_dir)
             )
             Path(plots_dir).mkdir(parents=True, exist_ok=True)
         start_time = time.time()
@@ -239,9 +231,7 @@ def pipeline(passvalue):
             for _retval_, tag in zip(tqdm(retval), group_tags)
         )
         end_time = time.time()
-        logger.info(
-            "Plotting completed in {:6.1f}s".format(end_time - start_time)
-        )
+        logger.info("Plotting completed in {:6.1f}s".format(end_time - start_time))
 
     if passvalue["return"]:
         logger.debug("Returning output dict")
