@@ -17,8 +17,12 @@ class Zernike:
     phi : array like
         Azimuthal coordinate in radians. Has same shape as rho.
     ordering : string
-        Can be either ANSI ordering (ordering='ansi', this is the default), or Noll ordering
-        (ordering='noll'), or Fringe ordering (ordering='fringe'), or Standard (Born&Wolf) ordering (ordering='standard')
+        Can either be:
+            ANSI (ordering='ansi', this is the default); 
+            Noll (ordering='noll'). Used in Zemax as "Zernike Standard Coefficients", 
+              R. Noll, "Zernike polynomials and atmospheric turbulence", J. Opt. Soc. Am., Vol. 66, No. 3, p207 (1976); 
+            Fringe (ordering='fringe'), AKA the "Fringe" or "University of Arizona" notation;
+            Standard (ordering='standard'). Used in CodeV, Born and Wolf, Principles of Optics (Pergamon Press, New York, 1989).
     normalize : bool
         Set to True generates ortho-normal polynomials. Set to False generates orthogonal polynomials
         as described in `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_.
