@@ -62,10 +62,6 @@ Other option flags may be given to run specific simulations, as detailed in :num
 
    * - flag
      - description
-   * - ``-wl``, ``--wavelength``
-     - A list of specific wavelengths at which to run the simulation
-   * - ``-wlg``, ``--wavelength_grid``
-     - A list with min wl, max wl, spectral resolution to build a wavelength grid
    * - ``-wfe``, ``--wfe_simulation``
      - A list with wfe realization file and column to simulate an aberration
 
