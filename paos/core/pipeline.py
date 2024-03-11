@@ -23,7 +23,6 @@ def pipeline(passvalue):
     """
     Pipeline to run a POP simulation and save the results, given the input dictionary.
     This pipeline parses the lens file, performs a diagnostic ray tracing (optional),
-    sets up the simulation wavelength or produces a user defined wavelength grid,
     sets up the optical chain for the POP run automatizing the input of an aberration (optional),
     runs the POP in parallel or using a single thread and produces an output where all
     (or a subset) of the products are stored. If indicated, the output includes plots.
@@ -45,7 +44,6 @@ def pipeline(passvalue):
     >>> from paos.core.pipeline import pipeline
     >>> pipeline(passvalue={'conf':'path/to/conf/file',
     >>>                     'output': 'path/to/output/file',
-    >>>                     'wavelengths': '1.95,3.9',
     >>>                     'plot': True,
     >>>                     'loglevel': 'debug',
     >>>                     'n_jobs': 2,
@@ -101,29 +99,9 @@ def pipeline(passvalue):
     )
     logger.info("Set up the POP")
 
-    if "wavelengths" in passvalue.keys() and passvalue["wavelengths"] is not None:
-        logger.debug(
-            "Using user provided wavelengths: {}".format(passvalue["wavelengths"])
-        )
-        wavelengths = list(map(float, passvalue["wavelengths"].split(",")))  # in micron
-    elif "wl_grid" in passvalue.keys() and passvalue["wl_grid"] is not None:
-        wl_min, wl_max, R = tuple(map(float, passvalue["wl_grid"].split(",")))
-        logger.debug("Creating wavelength grid from user defined parameters")
-        logger.debug(
-            "wl grid parameters: wl min {}, wl max {}, spectral resolution {}"
-            "".format(wl_min, wl_max, R)
-        )
-        n_bin = int(np.ceil(np.log(wl_max / wl_min) / np.log(1 + 1 / R)))
-        wavelengths = np.logspace(np.log10(wl_min), np.log10(wl_max), n_bin)
-    else:
-        logger.debug(f"Using wavelength wl1 = {wavelengths[0]} from configuration file")
-        wavelengths = [wavelengths[0]]
-
     logger.debug("Wavelengths: {}".format(wavelengths))
-
     logger.debug(f"Using field f1 = {fields[0]} from configuration file")
     field = fields[0]
-
     logger.debug("Set up the optical chain for the POP run")
 
     optc = {}

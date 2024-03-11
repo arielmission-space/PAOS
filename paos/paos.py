@@ -40,27 +40,6 @@ def main():
         action="store_true",
     )
     parser.add_argument(
-        "-wl",
-        "--wavelength",
-        dest="wavelengths",
-        type=str,
-        default=None,
-        required=False,
-        help="A list of wavelengths at which to run "
-        "the simulation, in micron. ex: 1.95,3.9",
-    )
-    parser.add_argument(
-        "-wlg",
-        "--wavelength_grid",
-        dest="wl_grid",
-        type=str,
-        default=None,
-        required=False,
-        help="A list with wl_min, wl_max, R to build "
-        "a wavelength grid at which to run the simulation, "
-        "in micron. ex: 1.95,3.9,100",
-    )
-    parser.add_argument(
         "-wfe",
         "--wfe_simulation",
         dest="wfe",
@@ -131,8 +110,6 @@ def main():
         "conf": args.conf,
         "output": args.output,
         "light_output": args.light_output,
-        "wavelengths": args.wavelengths,
-        "wl_grid": args.wl_grid,
         "wfe": args.wfe,
         "store_keys": args.store_keys,
         "n_jobs": args.n_jobs,
