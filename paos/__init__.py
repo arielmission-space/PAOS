@@ -48,7 +48,7 @@ setLogLevel(logging.INFO)
 
 from paos.classes.wfo import WFO
 from paos.classes.abcd import ABCD
-from paos.classes.zernike import Zernike
+from paos.classes.zernike import Zernike, PolyOrthoNorm
 
 from paos.core.parseConfig import parse_config
 from paos.core.coordinateBreak import coordinate_break
