@@ -126,24 +126,6 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
                 )
                 _retval_["aperture"] = aper
 
-        # if item['type'] in ['Standard', 'Paraxial Lens', 'Slit', 'Obscuration']:
-        #     xdec = item['xdec'] if np.isfinite(item['xdec']) else vs[0]
-        #     ydec = item['ydec'] if np.isfinite(item['ydec']) else vt[0]
-        #     xrad = item['xrad']
-        #     yrad = item['yrad']
-        #     xrad *= np.sqrt(1 / (vs[1] ** 2 + 1))
-        #     yrad *= np.sqrt(1 / (vt[1] ** 2 + 1))
-        #     xaper = xdec - vs[0]
-        #     yaper = ydec - vt[0]
-        #
-        #     aperture_shape = 'rectangular' if item['type'] == 'Slit' else 'elliptical'
-        #     obscuration = True if item['type'] == 'Obscuration' else False
-        #     if np.all(np.isfinite([xrad, yrad])):
-        #         logger.trace('Apply aperture')
-        #         aper = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad,
-        #                             shape=aperture_shape, obscuration=obscuration)
-        #         _retval_['aperture'] = aper
-
         # Check if this is a stop surface
         if item["is_stop"]:
             logger.trace("Apply stop")
