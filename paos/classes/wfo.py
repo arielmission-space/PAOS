@@ -1,6 +1,8 @@
 import numpy as np
 import photutils
 import astropy.units as u
+from scipy.ndimage import fourier_shift
+from skimage.transform import rescale
 
 from paos import logger
 from paos.classes.zernike import Zernike
@@ -641,6 +643,89 @@ class WFO:
 
         return wfe
 
+    def grid_sag(
+        self,
+        sag: np.ndarray,
+        nx: int,
+        ny: int,
+        delx: float,
+        dely: float,
+        xdec: float = 0.0,
+        ydec: float = 0.0,
+    ):
+        """
+        Add a user-specified grid sag to the wavefront
+
+        Parameters
+        ----------
+        sag: array
+            2D array of sag values in meters
+        nx: int
+            number of pixels along x-axis
+        ny: int
+            number of pixels along y-axis
+        delx: float
+            pixel size along x-axis
+        dely: float
+            pixel size along y-axis
+        xdec: float
+            pixel shift along x-axis
+        ydec: float
+            pixel shift along y-axis
+
+        Returns
+        -------
+        out: array
+            the WFE
+        """
+
+        assert sag.ndim == 2, "sag should be a 2D array"
+
+        if (nx is None) or (ny is None):
+            nx, ny = sag.shape
+
+        # if xdec or ydec is not zero, then shift the grid sag by that amount
+        if (xdec != 0.0) or (ydec != 0.0):
+            sag = fourier_shift(np.fft.fft2(sag), shift=(-xdec, -ydec))
+            sag = np.fft.ifft2(sag).real
+
+        scale_x = delx / self.dx
+        scale_y = dely / self.dy
+
+        sag = rescale(
+            sag,
+            scale=(scale_y, scale_x),
+            anti_aliasing=(
+                scale_x < 1.0 or scale_y < 1.0
+            ),  # anti_aliasing is required for downsampling
+            cval=np.nan,
+            order=3,
+        )
+
+        dnx = self._wfo.shape[1] - sag.shape[0]
+        dny = self._wfo.shape[0] - sag.shape[1]
+
+        padx, pady = dnx // 2, dny // 2
+        padx = (padx, padx) if dnx % 2 == 0 else (padx, padx + 1)
+        pady = (pady, pady) if dny % 2 == 0 else (pady, pady + 1)
+
+        if dnx >= 0 and dny >= 0:  # pad with zeros at edges
+            sag = np.pad(sag, (padx, pady), mode="constant", constant_values=0)
+        elif dnx < 0 and dny < 0:  # crop at edges
+            cropx, cropy = -np.array(padx), -np.array(pady)
+            sag = sag[cropx[0] : -cropx[1], cropy[0] : -cropy[1]]
+        else:
+            logger.error("Unforeseen dimension mismatch")
+            raise ValueError("Unforeseen dimension mismatch")
+
+        sag = np.ma.MaskedArray(sag, mask=np.isnan(sag))
+
+        self._wfo = self._wfo * np.exp(
+            2.0 * np.pi * 1j * sag / self._wl
+        ).filled(0)
+
+        return sag
+
     def psd(
         self,
         A=10.0,
@@ -681,8 +766,8 @@ class WFO:
         """
 
         # compute 2D frequency grid
-        fx = np.fft.fftfreq(self._wfo.shape[0], self.dx)
-        fy = np.fft.fftfreq(self._wfo.shape[1], self.dy)
+        fx = np.fft.fftfreq(self._wfo.shape[1], self.dx)
+        fy = np.fft.fftfreq(self._wfo.shape[0], self.dy)
 
         fxx, fyy = np.meshgrid(fx, fy)
         f = np.sqrt(fxx**2 + fyy**2)

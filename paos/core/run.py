@@ -132,6 +132,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
             wfo.make_stop()
 
         if item["type"] == "Zernike":
+            logger.trace("Apply Zernike")
             radius = (
                 item["Zradius"] if np.isfinite(item["Zradius"]) else wfo.wz
             )
@@ -144,7 +145,20 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
                 origin=item["Zorigin"],
             )
 
+        if item["type"] == "Grid Sag":
+            logger.trace("Apply grid sag")
+            wfo.grid_sag(
+                item["grid_sag"],
+                item["nx"],
+                item["ny"],
+                item["delx"],
+                item["dely"],
+                item["xdec"],
+                item["ydec"],
+            )
+
         if item["type"] == "PSD":
+            logger.trace("Apply PSD")
             wfo.psd(
                 item["A"],
                 item["B"],
