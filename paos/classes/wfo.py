@@ -683,8 +683,10 @@ class WFO:
         assert sag.ndim == 2, "sag shall be a 2D array"
 
         if not isinstance(sag, np.ma.MaskedArray):
-            sag = np.ma.MaskedArray(sag, mask=np.isnan(sag))
-
+            mask = np.isnan(sag)
+            sag[mask] = 0
+            sag = np.ma.MaskedArray(sag, mask=mask)
+        
         mask = sag.mask.astype(float)
 
         if (xdec != 0.0) or (ydec != 0.0):
