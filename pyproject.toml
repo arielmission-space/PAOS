@@ -35,7 +35,7 @@ dependencies = [
     "h5py>=3.6.0",
     "joblib>=1.1.0",
     "decorator>=5.1.1",
-    "pysimplegui>=4.56.0",
+    "pysimplegui==4.70.1",
     "tqdm>=4.62.3",
     "ipykernel>=6.9.0",
     "sympy>=1.12",
