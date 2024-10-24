@@ -45,6 +45,7 @@ class PSD:
     -------
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
+    >>> import astropy.units as u
 
     >>> phi_x = 110.0  # mm
     >>> phi_y = 73.0  # mm
@@ -65,11 +66,15 @@ class PSD:
     >>> pupil[mask] = 1.0
     >>> wfo = np.ma.masked_array(pupil, mask=~mask)
 
-    >>> sfe = WFO(wfo.copy(), wl, delta, delta)
-    >>> wfo_ = sfe.psd(A, B, C, fknee, fmin, fmax, SR, units=u.nm)
+    >>> fx = np.fft.fftfreq(wfo.shape[0], delta)
+    >>> fxx, fyy = np.meshgrid(fx, fx)
+    >>> f = np.sqrt(fxx**2 + fyy**2)
+    >>> f[f == 0] = 1e-100
+
+    >>> wfo_ = PSD(wfo, A, B, C, f, fknee, fmin, fmax, SR, units=u.nm)
 
     >>> plt.figure()
-    >>> plt.imshow(wfo_, cmap="jet", origin="lower")
+    >>> plt.imshow(wfo_(), cmap="jet", origin="lower")
     >>> plt.xlim(grid // 2 - grid // (2 * zoom), grid // 2 + grid // (2 * zoom))
     >>> plt.ylim(grid // 2 - grid // (2 * zoom), grid // 2 + grid // (2 * zoom))
     >>> plt.colorbar()

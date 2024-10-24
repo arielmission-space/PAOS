@@ -1,6 +1,9 @@
 import numpy as np
 import photutils
 import astropy.units as u
+from scipy.ndimage import fourier_shift
+from skimage.transform import rescale
+from skimage.transform import resize
 
 from paos import logger
 from paos.classes.zernike import Zernike
@@ -641,6 +644,107 @@ class WFO:
 
         return wfe
 
+    def grid_sag(
+        self,
+        sag: np.ndarray,
+        nx: int,
+        ny: int,
+        delx: float,
+        dely: float,
+        xdec: float = 0.0,
+        ydec: float = 0.0,
+    ):
+        """
+        Add a user-specified grid sag to the wavefront
+
+        Parameters
+        ----------
+        sag: array
+            2D array of sag values in meters
+        nx: int
+            number of pixels along x-axis
+        ny: int
+            number of pixels along y-axis
+        delx: float
+            pixel size along x-axis
+        dely: float
+            pixel size along y-axis
+        xdec: float
+            pixel shift along x-axis
+        ydec: float
+            pixel shift along y-axis
+
+        Returns
+        -------
+        out: array
+            the WFE
+        """
+
+        assert sag.ndim == 2, "sag shall be a 2D array"
+
+        if not isinstance(sag, np.ma.MaskedArray):
+            mask = np.isnan(sag)
+            sag[mask] = 0
+            sag = np.ma.MaskedArray(sag, mask=mask)
+        
+        mask = sag.mask.astype(float)
+
+        if (xdec != 0.0) or (ydec != 0.0):
+            sag = fourier_shift(np.fft.fft2(sag), shift=(-xdec, -ydec))
+            sag = np.fft.ifft2(sag).real
+            mask = fourier_shift(np.fft.fft2(mask), shift=(-xdec, -ydec))
+            mask = np.fft.ifft2(mask).real
+
+        scale_x = delx / self.dx
+        scale_y = dely / self.dy
+
+        anti_aliasing = (
+            scale_x < 1.0 or scale_y < 1.0
+        )  # anti_aliasing is required for downsampling
+
+        sag = rescale(
+            sag,
+            scale=(scale_y, scale_x),
+            anti_aliasing=anti_aliasing,
+            order=3,
+        )
+
+        mask = rescale(
+            mask,
+            scale=(scale_y, scale_x),
+            anti_aliasing=anti_aliasing,
+            order=3,
+        )
+
+        # if the shape is not the same as the input (could be 1 pixel off), resize
+        if sag.shape != (ny, nx):
+            logger.debug(f"Resampled sag shape is {sag.shape}")
+            logger.debug(f"Output shape should be {(ny, nx)}: resizing...")
+            anti_aliasing = (
+                scale_x < 1.0 or scale_y < 1.0
+            )
+            sag = resize(
+                sag,
+                output_shape=(ny, nx),
+                anti_aliasing=anti_aliasing,
+                order=3,
+            )
+            mask = resize(
+                mask,
+                output_shape=(ny, nx),
+                anti_aliasing=anti_aliasing,
+                order=3,
+            )
+
+        mask = mask > 0.5
+        sag = np.ma.MaskedArray(sag, mask=mask)
+
+        self._wfo = self._wfo * np.exp(
+            2.0 * np.pi * 1j * sag / self._wl
+        ).filled(0)
+
+        return sag
+
     def psd(
         self,
         A=10.0,
@@ -681,22 +785,22 @@ class WFO:
         """
 
         # compute 2D frequency grid
-        fx = np.fft.fftfreq(self._wfo.shape[0], self.dx)
-        fy = np.fft.fftfreq(self._wfo.shape[1], self.dy)
+        fx = np.fft.fftfreq(self._wfo.shape[1], self.dx)
+        fy = np.fft.fftfreq(self._wfo.shape[0], self.dy)
 
         fxx, fyy = np.meshgrid(fx, fy)
         f = np.sqrt(fxx**2 + fyy**2)
         f[f == 0] = 1e-100
 
         if fmax is None:
-            print("WARNING: fmax not provided, using f_Nyq")
+            logger.warning("fmax not provided, using f_Nyq")
             fmax = 0.5 * np.sqrt(self.dx**-2 + self.dy**-2)
         else:
             f_Nyq = 0.5 * np.sqrt(self.dx**-2 + self.dy**-2)
             assert fmax <= f_Nyq, f"fmax must be less than or equal to f_Nyq ({f_Nyq})"
 
         if fmin is None:
-            print("WARNING: fmin not provided, using 1 / D")
+            logger.warning("fmin not provided, using 1 / D")
             fmin = 1 / (self._wfo.shape[0] * np.max([self.dx, self.dy]))
 
         # compute 2D PSD
