@@ -12,14 +12,16 @@ By including a flexible configuration file and paraxial ray-tracing, ``PAOS`` se
 
 This guide will walk you through the ``PAOS`` code with examples and descriptions of the main algorithms.
 
-.. warning::
+.. .. warning::
 
-    This documentation is not completed yet. If you find any issue or difficulty, please contact the developers for help.
+..     This documentation is not completed yet. If you find any issue or difficulty, please contact the developers for help.
 
 .. important::
 
-    A dedicated paper has been submitted and the related information will be published soon. 
-.. If you use this software or its products, please cite (nasa/ads citation).
+    If you use this software or its products, please cite it as 
+
+    Andrea Bocchieri, Lorenzo V. Mugnai, Enzo Pascale, "PAOS: a fast, modern, and reliable Python package for physical optics studies," Proc. SPIE 13092, Space Telescopes and Instrumentation 2024: Optical, Infrared, and Millimeter Wave, 130924K (23 August 2024); https://doi.org/10.1117/12.3018333
+.. A dedicated paper has been submitted and the related information will be published soon. 
 
 .. caution::
 
