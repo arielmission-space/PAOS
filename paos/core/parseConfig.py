@@ -240,7 +240,6 @@ def parse_config(filename):
                     grid_sag["data"], mask=grid_sag_mask | np.isinf(grid_sag["data"])
                 )
                 _data_["grid_sag"] = grid_sag * wave
-                print(_data_["grid_sag"].mean())
 
                 _data_["ABCDt"] = ABCD(
                     thickness=thickness,
