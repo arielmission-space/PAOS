@@ -687,8 +687,6 @@ class WFO:
 
         mask = sag.mask.astype(float)
 
-        print(xdec, ydec)
-
         if (xdec != 0.0) or (ydec != 0.0):
             sag = fourier_shift(np.fft.fft2(sag), shift=(-xdec, -ydec))
             sag = np.fft.ifft2(sag).real
@@ -718,7 +716,8 @@ class WFO:
 
         # if the shape is not the same as the input (could be 1 pixel off), resize
         if sag.shape != (ny, nx):
-            # print(sag.shape, (ny, nx))
+            logger.debug(f"Resampled sag shape is {sag.shape}")
+            logger.debug(f"Output shape should be {(ny, nx)}: resizing...")
             anti_aliasing = (
                 scale_x < 1.0 or scale_y < 1.0
             )
@@ -792,14 +791,14 @@ class WFO:
         f[f == 0] = 1e-100
 
         if fmax is None:
-            print("WARNING: fmax not provided, using f_Nyq")
+            logger.warning("fmax not provided, using f_Nyq")
             fmax = 0.5 * np.sqrt(self.dx**-2 + self.dy**-2)
         else:
             f_Nyq = 0.5 * np.sqrt(self.dx**-2 + self.dy**-2)
             assert fmax <= f_Nyq, f"fmax must be less than or equal to f_Nyq ({f_Nyq})"
 
         if fmin is None:
-            print("WARNING: fmin not provided, using 1 / D")
+            logger.warning("fmin not provided, using 1 / D")
             fmin = 1 / (self._wfo.shape[0] * np.max([self.dx, self.dy]))
 
         # compute 2D PSD
