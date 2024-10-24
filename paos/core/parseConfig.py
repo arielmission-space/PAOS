@@ -217,13 +217,13 @@ def parse_config(filename):
                         "Grid sag file does not exist: {:s}".format(grid_sag_path)
                     )
                 with open(grid_sag_path, "rb") as f:
-                    grid_sag = np.load(f, allow_pickle=True)
+                    grid_sag = np.load(f, allow_pickle=True).item()
                 assert (
                     "data" in grid_sag.keys()
                 ), "The .npy file must contain a dictionary with a 'data' key"
 
                 def input_params(key):
-                    if key in grid_sag.keys() and _data_[key] == "":
+                    if key in grid_sag.keys():
                         logger.debug(
                             f"Setting {key} from grid_sag file: {grid_sag[key]}"
                         )

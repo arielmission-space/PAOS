@@ -283,7 +283,3 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 /.idea/
-
-# PAOS Specific
-notebook/data
-notebook/plots

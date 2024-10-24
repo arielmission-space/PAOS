@@ -3,6 +3,7 @@ import photutils
 import astropy.units as u
 from scipy.ndimage import fourier_shift
 from skimage.transform import rescale
+from skimage.transform import resize
 
 from paos import logger
 from paos.classes.zernike import Zernike
@@ -679,46 +680,64 @@ class WFO:
             the WFE
         """
 
-        assert sag.ndim == 2, "sag should be a 2D array"
+        assert sag.ndim == 2, "sag shall be a 2D array"
 
-        if (nx is None) or (ny is None):
-            nx, ny = sag.shape
+        if not isinstance(sag, np.ma.MaskedArray):
+            mask = np.isnan(sag)
+            sag[mask] = 0
+            sag = np.ma.MaskedArray(sag, mask=mask)
+        
+        mask = sag.mask.astype(float)
 
-        # if xdec or ydec is not zero, then shift the grid sag by that amount
         if (xdec != 0.0) or (ydec != 0.0):
             sag = fourier_shift(np.fft.fft2(sag), shift=(-xdec, -ydec))
             sag = np.fft.ifft2(sag).real
+            mask = fourier_shift(np.fft.fft2(mask), shift=(-xdec, -ydec))
+            mask = np.fft.ifft2(mask).real
 
         scale_x = delx / self.dx
         scale_y = dely / self.dy
 
+        anti_aliasing = (
+            scale_x < 1.0 or scale_y < 1.0
+        )  # anti_aliasing is required for downsampling
+
         sag = rescale(
             sag,
             scale=(scale_y, scale_x),
-            anti_aliasing=(
-                scale_x < 1.0 or scale_y < 1.0
-            ),  # anti_aliasing is required for downsampling
-            cval=np.nan,
+            anti_aliasing=anti_aliasing,
             order=3,
         )
 
-        dnx = self._wfo.shape[1] - sag.shape[0]
-        dny = self._wfo.shape[0] - sag.shape[1]
+        mask = rescale(
+            mask,
+            scale=(scale_y, scale_x),
+            anti_aliasing=anti_aliasing,
+            order=3,
+        )
 
-        padx, pady = dnx // 2, dny // 2
-        padx = (padx, padx) if dnx % 2 == 0 else (padx, padx + 1)
-        pady = (pady, pady) if dny % 2 == 0 else (pady, pady + 1)
+        # if the shape is not the same as the input (could be 1 pixel off), resize
+        if sag.shape != (ny, nx):
+            logger.debug(f"Resampled sag shape is {sag.shape}")
+            logger.debug(f"Output shape should be {(ny, nx)}: resizing...")
+            anti_aliasing = (
+                scale_x < 1.0 or scale_y < 1.0
+            )
+            sag = resize(
+                sag,
+                output_shape=(ny, nx),
+                anti_aliasing=anti_aliasing,
+                order=3,
+            )
+            mask = resize(
+                mask,
+                output_shape=(ny, nx),
+                anti_aliasing=anti_aliasing,
+                order=3,
+            )
 
-        if dnx >= 0 and dny >= 0:  # pad with zeros at edges
-            sag = np.pad(sag, (padx, pady), mode="constant", constant_values=0)
-        elif dnx < 0 and dny < 0:  # crop at edges
-            cropx, cropy = -np.array(padx), -np.array(pady)
-            sag = sag[cropx[0] : -cropx[1], cropy[0] : -cropy[1]]
-        else:
-            logger.error("Unforeseen dimension mismatch")
-            raise ValueError("Unforeseen dimension mismatch")
-
-        sag = np.ma.MaskedArray(sag, mask=np.isnan(sag))
+        mask = mask > 0.5
+        sag = np.ma.MaskedArray(sag, mask=mask)
 
         self._wfo = self._wfo * np.exp(
             2.0 * np.pi * 1j * sag / self._wl
@@ -774,14 +793,14 @@ class WFO:
         f[f == 0] = 1e-100
 
         if fmax is None:
-            print("WARNING: fmax not provided, using f_Nyq")
+            logger.warning("fmax not provided, using f_Nyq")
             fmax = 0.5 * np.sqrt(self.dx**-2 + self.dy**-2)
         else:
             f_Nyq = 0.5 * np.sqrt(self.dx**-2 + self.dy**-2)
             assert fmax <= f_Nyq, f"fmax must be less than or equal to f_Nyq ({f_Nyq})"
 
         if fmin is None:
-            print("WARNING: fmin not provided, using 1 / D")
+            logger.warning("fmin not provided, using 1 / D")
             fmin = 1 / (self._wfo.shape[0] * np.max([self.dx, self.dy]))
 
         # compute 2D PSD
