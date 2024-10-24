@@ -16,7 +16,7 @@ from paos.core.plot import plot_pop
 from paos.core.raytrace import raytrace
 from paos.core.run import run
 from paos.core.saveOutput import save_datacube
-from paos.log import setLogLevel
+from paos.log.logger import setLogLevel
 
 
 def pipeline(passvalue):

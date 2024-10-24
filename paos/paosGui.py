@@ -5,8 +5,8 @@ import os
 from paos import __version__ as version
 from paos import logger
 from paos.gui.paosGui import PaosGui
-from paos.log import addLogFile
-from paos.log import setLogLevel
+from paos.log.logger import addLogFile
+from paos.log.logger import setLogLevel
 
 
 def main():

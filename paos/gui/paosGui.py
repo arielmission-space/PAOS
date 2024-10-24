@@ -62,7 +62,7 @@ from paos.core.parseConfig import getfloat
 from paos.core.plot import plot_surface
 from paos.gui.simpleGui import SimpleGui
 from paos.gui.zernikeGui import ZernikeGui
-from paos.log import setLogLevel
+from paos.log.logger import setLogLevel
 
 
 class PaosGui(SimpleGui):
