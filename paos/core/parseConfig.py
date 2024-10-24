@@ -199,63 +199,6 @@ def parse_config(filename):
                     M=1.0,
                 )
 
-            elif _data_["type"] == "Grid Sag":
-                thickness = 0.0
-                curvature = 0.0
-                n2 = n1
-
-                wave = 1.0e-6 * getfloat(element.get("Par1", ""))
-                _data_["nx"] = element.getint("Par2", "")
-                _data_["ny"] = element.getint("Par3", "")
-                _data_["delx"] = getfloat(element.get("Par4", ""))
-                _data_["dely"] = getfloat(element.get("Par5", ""))
-                _data_["xdec"] = getfloat(element.get("Par6", ""))
-                _data_["ydec"] = getfloat(element.get("Par7", ""))
-                grid_sag_path = element.get("Par8", "")
-                if not os.path.exists(grid_sag_path):
-                    raise ValueError(
-                        "Grid sag file does not exist: {:s}".format(grid_sag_path)
-                    )
-                with open(grid_sag_path, "rb") as f:
-                    grid_sag = np.load(f, allow_pickle=True).item()
-                assert (
-                    "data" in grid_sag.keys()
-                ), "The .npy file must contain a dictionary with a 'data' key"
-
-                def input_params(key):
-                    if key in grid_sag.keys():
-                        logger.debug(
-                            f"Setting {key} from grid_sag file: {grid_sag[key]}"
-                        )
-                        _data_[key] = grid_sag[key]
-                input_params("nx")
-                input_params("ny")
-                input_params("delx")
-                input_params("dely")
-                input_params("xdec")
-                input_params("ydec")
-
-                grid_sag_mask = grid_sag.get("mask", False)
-                grid_sag = np.ma.MaskedArray(
-                    grid_sag["data"], mask=grid_sag_mask | np.isinf(grid_sag["data"])
-                )
-                _data_["grid_sag"] = grid_sag * wave
-
-                _data_["ABCDt"] = ABCD(
-                    thickness=thickness,
-                    curvature=curvature,
-                    n1=n1,
-                    n2=n2,
-                    M=1.0,
-                )
-                _data_["ABCDs"] = ABCD(
-                    thickness=thickness,
-                    curvature=curvature,
-                    n1=n1,
-                    n2=n2,
-                    M=1.0,
-                )
-
             elif _data_["type"] == "PSD":
                 thickness = 0.0
                 curvature = 0.0
@@ -282,7 +225,7 @@ def parse_config(filename):
                     n1=n1,
                     n2=n2,
                     M=1.0,
-                )         
+                    )         
 
             elif _data_["type"] == "Coordinate Break":
                 thickness = _data_["T"] if np.isfinite(_data_["T"]) else 0.0
