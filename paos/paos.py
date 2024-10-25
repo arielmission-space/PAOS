@@ -1,6 +1,4 @@
-import logging
-
-import paos.__version__ as version
+from paos import __version__ as version
 from paos import logger
 from paos.core.pipeline import pipeline
 from paos.log.logger import addLogFile
@@ -101,7 +99,8 @@ def main():
 
     if args.output is None:
         """Defaults to the same directory as the configuration file.
-        The output file name is the same as the configuration file name with the extension .h5"""
+        The output file name is the same as the configuration file name with the extension .h5
+        """
         args.output = os.path.join(
             os.path.dirname(args.conf), Path(args.conf).stem + ".h5"
         )
@@ -125,8 +124,8 @@ def main():
         )
         Path(os.path.dirname(args.output)).mkdir(parents=True, exist_ok=True)
 
-    if args.debug:
-        setLogLevel(logging.DEBUG)
+    if not args.debug:
+        setLogLevel("INFO")
     if args.log:
         if isinstance(args.output, str):
             input_fname = Path(args.conf).stem
