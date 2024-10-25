@@ -2,8 +2,8 @@ import sys
 from paos import logger
 
 
-def addLogFile(filename):
-    logger.add(filename)
+def addLogFile(fname="paos.log"):
+    logger.add(fname)
 
 
 def setLogLevel(level="INFO"):
