@@ -2,7 +2,8 @@ import argparse
 import logging
 import os
 
-from paos import __version__ as version
+from paos import __pkg_name__
+from paos import __version__
 from paos import logger
 from paos.gui.paosGui import PaosGui
 from paos.log.logger import addLogFile
@@ -10,9 +11,9 @@ from paos.log.logger import setLogLevel
 
 
 def main():
-    logger.info("code version {}".format(version))
+    logger.log("Announce", f"Starting {__pkg_name__} v{__version__} GUI...")
 
-    parser = argparse.ArgumentParser(description="PAOS GUI {}".format(version))
+    parser = argparse.ArgumentParser(description=f"{__pkg_name__} GUI {__version__}")
     parser.add_argument(
         "-c",
         "--configuration",
@@ -65,7 +66,7 @@ def main():
 
     PaosGui(passvalue=passvalue)()
 
-    logger.info("PAOS GUI exited")
+    logger.info(f"{__pkg_name__} GUI exited")
     return
 
 

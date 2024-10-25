@@ -1,4 +1,5 @@
-from paos import __version__ as version
+from paos import __pkg_name__
+from paos import __version__
 from paos import logger
 from paos.core.pipeline import pipeline
 from paos.log.logger import addLogFile
@@ -6,11 +7,13 @@ from paos.log.logger import setLogLevel
 
 
 def main():
+    logger.log("Announce", f"Starting {__pkg_name__} v{__version__}...")
+
     import os
     from pathlib import Path
     import argparse
 
-    parser = argparse.ArgumentParser(description="PAOS {}".format(version))
+    parser = argparse.ArgumentParser(description="PAOS {}".format(__version__))
     parser.add_argument(
         "-c",
         "--configuration",
@@ -135,7 +138,6 @@ def main():
         else:
             addLogFile()
 
-    logger.info("code version {}".format(version))
     pipeline(passvalue)
 
     logger.info("Paos simulation completed.")
