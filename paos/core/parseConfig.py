@@ -52,9 +52,7 @@ def parse_config(filename):
     filename = os.path.expanduser(filename)
     if not os.path.exists(filename) or not os.path.isfile(filename):
         logger.error(
-            "Input file {} does not exist or is not a file. Quitting..".format(
-                filename
-            )
+            "Input file {} does not exist or is not a file. Quitting..".format(filename)
         )
         sys.exit()
     config.read(filename)
@@ -68,14 +66,16 @@ def parse_config(filename):
     }
     dtmp = config["general"].getint("grid_size")
     if dtmp not in allowed_grid_size:
+        logger.error(f"Grid size not allowed. Allowed values are {allowed_grid_size}")
         raise ValueError(
-            "Grid size not allowed. Allowed values are", allowed_grid_size
+            f"Grid size not allowed. Allowed values are {allowed_grid_size}"
         )
     parameters["grid_size"] = dtmp
     dtmp = config["general"].getint("zoom")
     if dtmp not in allowed_zoom_val:
+        logger.error(f"Zoom value not allowed. Allowed values are {allowed_zoom_val}")
         raise ValueError(
-            "Zoom value not allowed. Allowed values are", allowed_zoom_val
+            f"Zoom value not allowed. Allowed values are {allowed_zoom_val}"
         )
     elif dtmp == 1:
         logger.warning(
@@ -86,6 +86,7 @@ def parse_config(filename):
 
     lens_unit = config["general"].get("lens_unit", "")
     if lens_unit != "m":
+        logger.error("Verify lens_unit=m in ini file")
         raise ValueError("Verify lens_unit=m in ini file")
 
     Tambient = config["general"].getfloat("Tambient")
@@ -150,10 +151,7 @@ def parse_config(filename):
                 n1 = 1.0
                 aperture = element.get("aperture", "").split(",")
                 aperture_shape, aperture_type = aperture[0].split()
-                if (
-                    aperture_shape == "elliptical"
-                    and aperture_type == "aperture"
-                ):
+                if aperture_shape == "elliptical" and aperture_type == "aperture":
                     xpup = getfloat(aperture[2])
                     ypup = getfloat(aperture[3])
                     pup_diameter = 2.0 * max(xpup, ypup)
@@ -161,7 +159,7 @@ def parse_config(filename):
                 continue
 
             if n1 is None or pup_diameter is None:
-                # logger.error('INIT is not the first surface in Lens Data.')
+                logger.error("INIT is not the first surface in Lens Data.")
                 raise ValueError("INIT is not the first surface in Lens Data.")
 
             if _data_["type"] == "Zernike":
@@ -178,9 +176,7 @@ def parse_config(filename):
                     element.get("Zindex", ""), sep=",", dtype=np.int64
                 )
                 _data_["Z"] = (
-                    np.fromstring(
-                        element.get("Z", ""), sep=",", dtype=np.float64
-                    )
+                    np.fromstring(element.get("Z", ""), sep=",", dtype=np.float64)
                     * wave
                 )
 
@@ -213,9 +209,8 @@ def parse_config(filename):
                 _data_["ydec"] = getfloat(element.get("Par7", ""))
                 grid_sag_path = element.get("Par8", "")
                 if not os.path.exists(grid_sag_path):
-                    raise ValueError(
-                        "Grid sag file does not exist: {:s}".format(grid_sag_path)
-                    )
+                    logger.error(f"Grid sag file does not exist: {grid_sag_path}")
+                    raise ValueError(f"Grid sag file does not exist: {grid_sag_path}")
                 with open(grid_sag_path, "rb") as f:
                     grid_sag = np.load(f, allow_pickle=True).item()
                 assert (
@@ -228,6 +223,7 @@ def parse_config(filename):
                             f"Setting {key} from grid_sag file: {grid_sag[key]}"
                         )
                         _data_[key] = grid_sag[key]
+
                 input_params("nx")
                 input_params("ny")
                 input_params("delx")
@@ -282,7 +278,7 @@ def parse_config(filename):
                     n1=n1,
                     n2=n2,
                     M=1.0,
-                )         
+                )
 
             elif _data_["type"] == "Coordinate Break":
                 thickness = _data_["T"] if np.isfinite(_data_["T"]) else 0.0
@@ -311,9 +307,7 @@ def parse_config(filename):
             elif _data_["type"] == "Paraxial Lens":
                 focal_length = getfloat(element.get("Par1", ""))
                 thickness = _data_["T"] if np.isfinite(_data_["T"]) else 0.0
-                curvature = (
-                    1 / focal_length if np.isfinite(focal_length) else 0.0
-                )
+                curvature = 1 / focal_length if np.isfinite(focal_length) else 0.0
                 n2 = n1
                 aperture = element.get("aperture", "")
                 if aperture:
@@ -352,12 +346,8 @@ def parse_config(filename):
                 By = getfloat(element.get("Par6", ""))
                 Cy = getfloat(element.get("Par7", ""))
                 Dy = getfloat(element.get("Par8", ""))
-                ABCDs = ABCD(
-                    thickness=thickness, curvature=0.0, n1=n1, n2=n1, M=1.0
-                )
-                ABCDt = ABCD(
-                    thickness=thickness, curvature=0.0, n1=n1, n2=n1, M=1.0
-                )
+                ABCDs = ABCD(thickness=thickness, curvature=0.0, n1=n1, n2=n1, M=1.0)
+                ABCDt = ABCD(thickness=thickness, curvature=0.0, n1=n1, n2=n1, M=1.0)
                 _ABCDs = np.array([[Ax, Bx], [Cx, Dx]])
                 _ABCDt = np.array([[Ay, By], [Cy, Dy]])
                 ABCDs.ABCD = ABCDs() @ _ABCDs
@@ -379,9 +369,7 @@ def parse_config(filename):
 
             elif _data_["type"] == "Standard":
                 thickness = _data_["T"] if np.isfinite(_data_["T"]) else 0.0
-                curvature = (
-                    1 / _data_["R"] if np.isfinite(_data_["R"]) else 0.0
-                )
+                curvature = 1 / _data_["R"] if np.isfinite(_data_["R"]) else 0.0
                 aperture = element.get("aperture", "")
                 if aperture:
                     aperture = aperture.split(",")
@@ -419,14 +407,10 @@ def parse_config(filename):
 
             else:
                 logger.error(
-                    "Surface Type not recognised: {:s}".format(
-                        str(_data_["type"])
-                    )
+                    "Surface Type not recognised: {:s}".format(str(_data_["type"]))
                 )
                 raise ValueError(
-                    "Surface Type not recognised: {:s}".format(
-                        str(_data_["type"])
-                    )
+                    "Surface Type not recognised: {:s}".format(str(_data_["type"]))
                 )
 
             opt_chain[_data_["num"]] = _data_
