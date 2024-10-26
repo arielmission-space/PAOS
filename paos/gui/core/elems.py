@@ -96,7 +96,7 @@ def app_elems(config):
         item = config[key]
 
         lens_elems[n] = {}
-        lens_elems[n]["Number"] = {
+        lens_elems[n]["#"] = {
             "f": ui.p,
             "width": 1,
             "value": n,
@@ -111,6 +111,7 @@ def app_elems(config):
                 "ABCD",
                 "Zernike",
                 "PSD",
+                "Grid Sag",
             ],
             "width": 1,
             "selected": item.get("surfacetype"),
@@ -181,8 +182,8 @@ def app_elems(config):
             aperture_type = xhw = yhw = xdecenter = ydecenter = ""
         lens_elems[n]["Aperture"] = {
             "title": "Settings",
-            "f": ui.accordion,
-            "width": 2,
+            "f": ui.popover,
+            "width": 1,
             "value": {
                 "Aperture_Type": {
                     "f": ui.input_select,

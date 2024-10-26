@@ -48,6 +48,20 @@ def fill_value(items, name, row, col):
             label=items[name]["label"] if "label" in items[name] else "",
             value=items[name]["value"],
         )
+    elif func in [ui.popover]:
+        return (
+            func(
+                ICONS["gear"],
+                ui.div(
+                    *[
+                        fill_value(items[name]["value"], key, row, col)
+                        for key in items[name]["value"].keys()
+                    ],
+                ),
+                title=items[name]["title"],
+                placement="top",
+            ),
+        )
     elif func in [ui.p]:
         return func(
             f"{items[name]['value']}",
@@ -98,14 +112,14 @@ def fill_header(items):
         return ui.div()
     key = min(np.array(list(items.keys())))
     item = items[key]
-    return ui.div(
+    return ui.card_header(
         {"style": "display: flex;"},
         *[
             ui.column(
                 subitem["width"],
                 {"style": "text-align: center;"},
-                ui.markdown(
-                    f"**{subkey}**  \n" "___",
+                ui.p(
+                    f"{subkey}",
                 ),
             )
             for _, (subkey, subitem) in enumerate(item.items())
@@ -122,7 +136,7 @@ def fill_body(items):
             *[
                 ui.column(
                     subitem["width"],
-                    {"style": "display: flex; text-align: center;"},
+                    {"style": "text-align: center;"},
                     fill_value(item, subkey, row + 1, col),
                 )
                 for col, (subkey, subitem) in enumerate(item.items())
@@ -142,7 +156,10 @@ def refresh_ui(name, items, mode=None, key=""):
         key = list(items.keys())[0] if key == "" else key
         items = [fill_header(items[key]), *fill_body(items[key])]
 
-    elif mode == "simple":
+    elif mode == "body":
+        items = [*fill_body(items)]
+
+    elif mode == "header":
         items = [*fill_body(items)]
 
     ui.insert_ui(

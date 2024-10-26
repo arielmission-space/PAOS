@@ -45,6 +45,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                     ui.card(
                         ui.card_header(
                             ui.layout_columns(
+                                {"style": "text-align: center;"},
                                 ui.p("#"),
                                 ui.p("Field"),
                             ),
@@ -54,6 +55,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                     ui.card(
                         ui.card_header(
                             ui.layout_columns(
+                                {"style": "text-align: center;"},
                                 ui.p("#"),
                                 ui.p("Wavelength"),
                             ),
@@ -64,7 +66,12 @@ def app_ui(request: StarletteRequest) -> Tag:
                 open=False,
             ),
         ),
-        ui.nav_panel("Lens Editor", nested_div("lens")),
+        ui.nav_panel(
+            "Lens Editor",
+            ui.card(
+                nested_div("lens"),
+            ),
+        ),
         ui.nav_panel(
             "Zernike Editor",
             ui.layout_columns(
@@ -565,8 +572,8 @@ def server(input, output, session):
         refresh_ui("general", general_elems)
         refresh_ui("units", units_elems)
         refresh_ui("sim", sim_elems)
-        refresh_ui("field", field_elems, mode="simple")
-        refresh_ui("wl", wl_elems, mode="simple")
+        refresh_ui("field", field_elems, mode="body")
+        refresh_ui("wl", wl_elems, mode="body")
         refresh_ui("lens", lens_elems, mode="dict")
         refresh_ui("zernike_explorer", zernike_explorer_elems)
         if zernike_elems:
