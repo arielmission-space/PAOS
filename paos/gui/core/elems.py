@@ -2,11 +2,11 @@ from shiny import ui
 
 from paos import Zernike
 
-from .shared import ellipsis
-from .shared import output_text_verbatim
-from .shared import ICONS
-from .shared import card_header_class_
-from .shared import nested_div
+from paos.gui.core.shared import ellipsis
+from paos.gui.core.shared import output_text_verbatim
+from paos.gui.core.shared import ICONS
+from paos.gui.core.shared import card_header_class_
+from paos.gui.core.shared import nested_div
 
 
 def app_elems(config):

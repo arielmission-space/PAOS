@@ -1,4 +1,4 @@
-from .shared import to_configparser
+from paos.gui.core.shared import to_configparser
 
 
 def to_ini(input, config, tmp):

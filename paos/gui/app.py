@@ -21,60 +21,92 @@ from paos import __author__
 from paos import __license__
 from paos.core.parseConfig import parse_config
 
-from core.shared import refresh_ui
-from core.shared import modal_download
-from core.appio import to_ini
-from core.elems import app_elems
-from core.items import menu_items
-from core.items import sidebar_items
-from core.items import main_items
-from core.plot import simple_plot
-from core.plot import zernike_plot
-
-
-page_dependencies = ui.tags.head(
-    ui.tags.link(rel="stylesheet", type="text/css", href="layout.css"),
-)
+from paos.gui.core.io import to_ini
+from paos.gui.core.elems import app_elems
+from paos.gui.core.plot import simple_plot
+from paos.gui.core.plot import zernike_plot
+from paos.gui.core.shared import ICONS
+from paos.gui.core.shared import nested_div
+from paos.gui.core.shared import menu_panel
+from paos.gui.core.shared import refresh_ui
+from paos.gui.core.shared import modal_download
 
 
 def app_ui(request: StarletteRequest) -> Tag:
-    return ui.page_fillable(
-        page_dependencies,
-        ui.tags.script(
-            """
-        Shiny.addCustomMessageHandler('refresh', function(message) {
-            window.location.reload();
-        });
-        """,
-        ),
-        ui.tags.div(
-            ui.tags.div(
-                ui.navset_pill(*menu_items, selected=True),
-                _class="navigation-menu",
-            ),
-            ui.tags.div(
-                ui.tags.a(
-                    ui.tags.img(src="static/logo.png", height="50px"),
-                    href="https://github.com/arielmission-space/PAOS",
+    return ui.page_navbar(
+        ui.nav_spacer(),
+        ui.nav_panel(
+            "System",
+            ui.layout_sidebar(
+                ui.sidebar(
+                    ui.p("System Explorer"),
+                    ui.accordion(
+                        *[
+                            ui.accordion_panel("General", nested_div("general")),
+                            ui.accordion_panel("Units", nested_div("units")),
+                            ui.accordion_panel("Simulation", nested_div("sim")),
+                            ui.accordion_panel("Fields", nested_div("field")),
+                            ui.accordion_panel("Wavelengths", nested_div("wl")),
+                        ],
+                        open=False,
+                    ),
                 ),
-                id="logo-top",
-                class_="navigation-logo",
-            ),
-            id="div-navbar",
-            class_="navbar-top",
-        ),
-        ui.markdown("___"),
-        ui.layout_sidebar(
-            ui.sidebar(
-                ui.p("System Explorer"),
-                ui.accordion(*sidebar_items, open=False),
-            ),
-            ui.navset_card_pill(
-                id="main",
-                *main_items,
             ),
         ),
-        title="PAOS GUI",
+        ui.nav_panel("Lens Editor", nested_div("lens")),
+        ui.nav_panel(
+            "Zernike Editor",
+            ui.layout_columns(
+                ui.div(
+                    ui.card(nested_div("zernike_explorer"), full_screen=True),
+                ),
+                ui.card(nested_div("zernike_plots"), full_screen=True),
+            ),
+        ),
+        ui.nav_panel(
+            "Analysis",
+            ui.layout_columns(
+                ui.div(
+                    ui.card(nested_div("pop"), full_screen=True),
+                    ui.card(nested_div("raytrace"), full_screen=True),
+                ),
+                ui.card(nested_div("plots"), full_screen=True),
+            ),
+        ),
+        id="navbar",
+        title=ui.tags.div(
+            ui.tags.a(
+                ui.tags.img(src="static/logo.png", height="50px"),
+                href="https://github.com/arielmission-space/PAOS",
+            ),
+            id="logo-top",
+            class_="navigation-logo",
+        ),
+        header=ui.page_navbar(
+            [
+                ui.nav_menu(
+                    "File",
+                    menu_panel("open"),
+                    menu_panel("save"),
+                    menu_panel("close"),
+                ),
+                # ui.nav_menu(
+                #     "Edit",
+                #     menu_panel("load"),
+                #     menu_panel("refresh"),
+                # ),
+                ui.nav_menu(
+                    "Help",
+                    menu_panel("docs"),
+                    menu_panel("about"),
+                ),
+            ],
+        ),
+        footer=ui.page_navbar(
+            ui.nav_spacer(),
+        ),
+        window_title=f"{__pkg_name__.upper()} GUI",
+        # selected="System",
     )
 
 
@@ -343,7 +375,7 @@ def server(input, output, session):
 
     @reactive.effect
     @reactive.event(input.about)
-    def _():
+    def about():
         req(input.about())
         m = ui.modal(
             ui.markdown(
@@ -358,7 +390,7 @@ def server(input, output, session):
 
     @reactive.effect
     @reactive.event(input.docs)
-    def _():
+    def docs():
         req(input.docs())
         m = ui.modal(
             ui.markdown(

@@ -5,12 +5,16 @@ import numpy as np
 
 ICONS = {
     "ellipsis": fa.icon_svg("ellipsis"),
+    "gear": fa.icon_svg("gear"),
     "open": fa.icon_svg("folder-open"),
     "save": fa.icon_svg("floppy-disk"),
     "close": fa.icon_svg("xmark"),
     "docs": fa.icon_svg("book-open-reader"),
     "about": fa.icon_svg("info"),
     "run": fa.icon_svg("play"),
+    "refresh": fa.icon_svg("arrows-rotate"),
+    "info": fa.icon_svg("circle-info"),
+    "load": fa.icon_svg("cloud-arrow-up"),
 }
 
 card_header_class_ = "d-flex justify-content-between align-items-center"
