@@ -58,7 +58,7 @@ def app_elems(config):
     for n, (key, value) in enumerate(config.items("fields")):
         n += 1
         field_elems[n] = {}
-        field_elems[n]["Number"] = {
+        field_elems[n]["#"] = {
             "f": ui.p,
             "width": 5,
             "value": n,
@@ -75,7 +75,7 @@ def app_elems(config):
     for n, (key, value) in enumerate(config.items("wavelengths")):
         n += 1
         wl_elems[n] = {}
-        wl_elems[n]["Number"] = {
+        wl_elems[n]["#"] = {
             "f": ui.p,
             "width": 5,
             "value": n,

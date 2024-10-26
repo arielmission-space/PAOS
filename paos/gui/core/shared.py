@@ -122,7 +122,7 @@ def fill_body(items):
             *[
                 ui.column(
                     subitem["width"],
-                    {"style": "text-align: center;"},
+                    {"style": "display: flex; text-align: center;"},
                     fill_value(item, subkey, row + 1, col),
                 )
                 for col, (subkey, subitem) in enumerate(item.items())
@@ -141,6 +141,9 @@ def refresh_ui(name, items, mode=None, key=""):
     elif mode == "nested-dict":
         key = list(items.keys())[0] if key == "" else key
         items = [fill_header(items[key]), *fill_body(items[key])]
+
+    elif mode == "simple":
+        items = [*fill_body(items)]
 
     ui.insert_ui(
         ui.div(

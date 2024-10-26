@@ -36,21 +36,32 @@ def app_ui(request: StarletteRequest) -> Tag:
     return ui.page_navbar(
         ui.nav_spacer(),
         ui.nav_panel(
-            "System",
-            ui.layout_sidebar(
-                ui.sidebar(
-                    ui.p("System Explorer"),
-                    ui.accordion(
-                        *[
-                            ui.accordion_panel("General", nested_div("general")),
-                            ui.accordion_panel("Units", nested_div("units")),
-                            ui.accordion_panel("Simulation", nested_div("sim")),
-                            ui.accordion_panel("Fields", nested_div("field")),
-                            ui.accordion_panel("Wavelengths", nested_div("wl")),
-                        ],
-                        open=False,
+            "System Explorer",
+            ui.layout_columns(
+                *[
+                    ui.card(ui.card_header("General"), nested_div("general")),
+                    ui.card(ui.card_header("Units"), nested_div("units")),
+                    ui.card(ui.card_header("Simulation"), nested_div("sim")),
+                    ui.card(
+                        ui.card_header(
+                            ui.layout_columns(
+                                ui.p("#"),
+                                ui.p("Field"),
+                            ),
+                        ),
+                        nested_div("field"),
                     ),
-                ),
+                    ui.card(
+                        ui.card_header(
+                            ui.layout_columns(
+                                ui.p("#"),
+                                ui.p("Wavelength"),
+                            ),
+                        ),
+                        nested_div("wl"),
+                    ),
+                ],
+                open=False,
             ),
         ),
         ui.nav_panel("Lens Editor", nested_div("lens")),
@@ -554,8 +565,8 @@ def server(input, output, session):
         refresh_ui("general", general_elems)
         refresh_ui("units", units_elems)
         refresh_ui("sim", sim_elems)
-        refresh_ui("field", field_elems, mode="dict")
-        refresh_ui("wl", wl_elems, mode="dict")
+        refresh_ui("field", field_elems, mode="simple")
+        refresh_ui("wl", wl_elems, mode="simple")
         refresh_ui("lens", lens_elems, mode="dict")
         refresh_ui("zernike_explorer", zernike_explorer_elems)
         if zernike_elems:
