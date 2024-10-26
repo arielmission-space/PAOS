@@ -71,7 +71,7 @@ test = [
 
 [project.scripts]
 paos = "paos.paos:main"
-paos_ui = "paos.gui.__main__:main"
+paos_gui = "paos.gui.gui:main"
 
 [tool.setuptools]
 zip-safe = true

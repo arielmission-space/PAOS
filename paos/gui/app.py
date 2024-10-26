@@ -13,9 +13,12 @@ from shiny import ui
 from shiny import reactive
 from shiny import req
 from shiny.types import FileInfo
-import shinyswatch
 
 import paos
+from paos import __pkg_name__
+from paos import __version__
+from paos import __author__
+from paos import __license__
 from paos.core.parseConfig import parse_config
 
 from core.shared import refresh_ui
@@ -37,7 +40,6 @@ page_dependencies = ui.tags.head(
 def app_ui(request: StarletteRequest) -> Tag:
     return ui.page_fillable(
         page_dependencies,
-        shinyswatch.theme.darkly,
         ui.tags.script(
             """
         Shiny.addCustomMessageHandler('refresh', function(message) {
@@ -72,7 +74,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                 *main_items,
             ),
         ),
-        title="PAOS UI",
+        title="PAOS GUI",
     )
 
 
@@ -332,9 +334,7 @@ def server(input, output, session):
         req(input.docs())
         m = ui.modal(
             ui.markdown(
-                """
-                Click [here](https://paos.readthedocs.io/en/latest/) to access the PAOS documentation.
-                """
+                f"Click [here](https://paos.readthedocs.io/en/latest/) to access the {__pkg_name__.upper()} documentation."
             ),
             title="Documentation",
             easy_close=True,
@@ -347,11 +347,26 @@ def server(input, output, session):
         req(input.about())
         m = ui.modal(
             ui.markdown(
-                "PAOS UI v0.1  \n"
-                "author: Andrea Bocchieri (andrea.bocchieri@uniroma1.it)  \n"
-                "LICENSE: [BSD 3-Clause](https://github.com/arielmission-space/PAOS/blob/main/LICENSE)"
+                f"SOFTWARE: {__pkg_name__.upper()} v{__version__}  \n"
+                f"AUTHOR: {__author__}  \n"
+                f"LICENSE: {__license__}  \n"
             ),
             title="About",
+            easy_close=True,
+        )
+        ui.modal_show(m)
+
+    @reactive.effect
+    @reactive.event(input.docs)
+    def _():
+        req(input.docs())
+        m = ui.modal(
+            ui.markdown(
+                """
+                Click [here](https://paos.readthedocs.io/en/latest/) to access the PAOS documentation.
+                """
+            ),
+            title="Documentation",
             easy_close=True,
         )
         ui.modal_show(m)
