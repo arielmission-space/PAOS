@@ -3,7 +3,7 @@ import os
 from datetime import date
 
 # load package info
-__pkg_name__ = metadata.metadata("paos")["Name"]
+__pkg_name__ = metadata.metadata("paos")["Name"].upper()
 __version__ = metadata.version("paos")
 __url__ = metadata.metadata("paos")["Project-URL"]
 __author__ = metadata.metadata("paos")["Author"]

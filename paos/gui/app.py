@@ -123,7 +123,7 @@ def app_ui(request: StarletteRequest) -> Tag:
         footer=ui.page_navbar(
             ui.nav_spacer(),
         ),
-        window_title=f"{__pkg_name__.upper()} GUI",
+        window_title=f"{__pkg_name__} GUI",
         # selected="System",
     )
 
@@ -384,7 +384,7 @@ def server(input, output, session):
         req(input.docs())
         m = ui.modal(
             ui.markdown(
-                f"Click [here](https://paos.readthedocs.io/en/latest/) to access the {__pkg_name__.upper()} documentation."
+                f"Click [here](https://paos.readthedocs.io/en/latest/) to access the {__pkg_name__} documentation."
             ),
             title="Documentation",
             easy_close=True,
@@ -397,7 +397,7 @@ def server(input, output, session):
         req(input.about())
         m = ui.modal(
             ui.markdown(
-                f"SOFTWARE: {__pkg_name__.upper()} v{__version__}  \n"
+                f"SOFTWARE: {__pkg_name__} v{__version__}  \n"
                 f"AUTHOR: {__author__}  \n"
                 f"LICENSE: {__license__}  \n"
             ),

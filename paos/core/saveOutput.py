@@ -7,6 +7,7 @@ import numpy as np
 
 from paos import __author__
 from paos import __version__
+from paos import __pkg_name__
 from paos import logger
 
 
@@ -106,7 +107,7 @@ def save_info(file_name, out):
         "file_name": file_name,
         "file_time": datetime.datetime.now().isoformat(),
         "creator": __author__,
-        "program_name": __package__.upper(),
+        "program_name": __pkg_name__,
         "program_version": __version__,
         "HDF5_Version": h5py.version.hdf5_version,
         "h5py_version": h5py.version.version,

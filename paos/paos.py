@@ -140,7 +140,7 @@ def main():
 
     pipeline(passvalue)
 
-    logger.info("Paos simulation completed.")
+    logger.info(f"{__pkg_name__} simulation completed.")
 
     return
 
