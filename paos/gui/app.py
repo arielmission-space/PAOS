@@ -462,7 +462,7 @@ def server(input, output, session):
 
         surface = input.zernike_select_surface()
 
-        (_, _, _, _, _, _, _, zernike_elems, _, _, _, _) = app_elems(config.get())
+        (_, _, _, _, _, _, _, zernike_elems, _, _) = app_elems(config.get())
 
         surface_key = int(surface[1:])
         refresh_ui("zernike", zernike_elems, mode="nested-dict", key=surface_key)
