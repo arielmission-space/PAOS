@@ -32,6 +32,7 @@ else:
     __commit__ = None
 
 from loguru import logger
+
 logger.level("Announce", no=100, color="<magenta>")
 
 from paos.classes.wfo import WFO

@@ -66,9 +66,7 @@ def save_recursively_to_hdf5(dictionary, outgroup):
         elif isinstance(data, (str, int, float, tuple)):
             outgroup.create_dataset(key, data=data)
         elif isinstance(data, np.ndarray):
-            outgroup.create_dataset(
-                key, data=data, shape=data.shape, dtype=data.dtype
-            )
+            outgroup.create_dataset(key, data=data, shape=data.shape, dtype=data.dtype)
         elif isinstance(data, list):
             asciiList = [n.encode("ascii", "ignore") for n in data]
             outgroup.create_dataset(
@@ -272,9 +270,7 @@ def save_datacube(
 
     """
 
-    assert isinstance(
-        retval_list, list
-    ), "parameter retval_list must be a list"
+    assert isinstance(retval_list, list), "parameter retval_list must be a list"
     assert isinstance(file_name, str), "parameter file_name must be a string"
     assert isinstance(
         group_names, list

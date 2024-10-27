@@ -27,9 +27,7 @@ def do_legend(axis, ncol=1):
         Produces a nice matplotlib legend
 
     """
-    legend = axis.legend(
-        loc="best", ncol=ncol, frameon=True, prop={"size": 12}
-    )
+    legend = axis.legend(loc="best", ncol=ncol, frameon=True, prop={"size": 12})
     legend.get_frame().set_facecolor("white")
     legend.get_frame().set_edgecolor("white")
     legend.get_frame().set_alpha(0.8)
@@ -128,9 +126,7 @@ def simple_plot(
         unit = "mm"
 
     if "psf" in item.keys():
-        ima = np.ma.masked_array(
-            data=item["psf"], mask=item["amplitude"] <= 0.0
-        )
+        ima = np.ma.masked_array(data=item["psf"], mask=item["amplitude"] <= 0.0)
     else:
         ima = np.ma.masked_array(
             data=item["amplitude"] ** 2, mask=item["amplitude"] <= 0.0
@@ -138,9 +134,7 @@ def simple_plot(
     power = ima.sum()
 
     if key in options.keys() and "ima_scale" in options[key].keys():
-        assert isinstance(
-            options[key]["ima_scale"], str
-        ), "ima_scale must be a str"
+        assert isinstance(options[key]["ima_scale"], str), "ima_scale must be a str"
         assert options[key]["ima_scale"] in [
             "linear",
             "log",
@@ -201,16 +195,8 @@ def simple_plot(
     if np.isfinite(airy_radius) and dark_rings:
         for airy_scale in [1.22, 2.23, 3.24, 4.24, 5.24]:
             arad = airy_radius * airy_scale / 1.22
-            width = (
-                2.0 * arad / (scale * item["dx"])
-                if pixel_units
-                else 2.0 * arad
-            )
-            height = (
-                2.0 * arad / (scale * item["dy"])
-                if pixel_units
-                else 2.0 * arad
-            )
+            width = 2.0 * arad / (scale * item["dx"]) if pixel_units else 2.0 * arad
+            height = 2.0 * arad / (scale * item["dy"]) if pixel_units else 2.0 * arad
             aper = Ellipse(
                 (0, 0),
                 width=width,
@@ -416,9 +402,7 @@ def plot_psf_xsec(
         unit = "mm"
 
     if "psf" in item.keys():
-        ima = np.ma.masked_array(
-            data=item["psf"], mask=item["amplitude"] <= 0.0
-        )
+        ima = np.ma.masked_array(data=item["psf"], mask=item["amplitude"] <= 0.0)
     else:
         ima = np.ma.masked_array(
             data=item["amplitude"] ** 2, mask=item["amplitude"] <= 0.0
@@ -487,8 +471,12 @@ def plot_psf_xsec(
             x_label = r"1 /F$\lambda$"
 
         # Plot Airy X and Y cross-sections
-        axis.plot(x_i, airy[Npt // 2, ...], color="C4", label="Airy X-cut", linestyle="--")
-        axis.plot(y_i, airy[..., Npt // 2], color="C5", label="Airy Y-cut", linestyle="--")
+        axis.plot(
+            x_i, airy[Npt // 2, ...], color="C4", label="Airy X-cut", linestyle="--"
+        )
+        axis.plot(
+            y_i, airy[..., Npt // 2], color="C5", label="Airy Y-cut", linestyle="--"
+        )
         axis.set_ylim(1.0e-10, airy.max())
 
         # plot vertical lines to mark the positions of the Airy dark rings and set the axis ticks
