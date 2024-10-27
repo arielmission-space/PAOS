@@ -370,81 +370,104 @@ def app_elems(config):
         zernike_explorer_elems = []
         zernike_plots_elems = []
 
-    pop_elems = [
-        ui.card_header(
-            "Fresnel POP",
-            ellipsis(
-                "pop",
-                names=["field", "wl"],
-                choices=[field_choices, wl_choices],
-            ),
-            class_=card_header_class_,
-        ),
-        output_text_verbatim("pop_inputs"),
-        output_text_verbatim("pop_output"),
-        ui.card_footer(
-            ui.input_action_button("calc_pop", "Run", icon=ICONS["run"]),
-            ui.input_action_button("download_pop", "Download", icon=ICONS["save"]),
-        ),
-    ]
-
-    raytrace_elems = [
-        ui.card_header(
-            "Ray Tracing",
-            ellipsis(
-                "raytrace",
-                names=["field", "wl"],
-                choices=[field_choices, wl_choices],
-            ),
-            class_=card_header_class_,
-        ),
-        output_text_verbatim("raytrace_inputs"),
-        output_text_verbatim("raytrace_output"),
-        ui.card_footer(
-            ui.input_action_button("calc_raytrace", "Run", icon=ICONS["run"]),
-            ui.input_action_button("download_raytrace", "Download", icon=ICONS["save"]),
-        ),
-    ]
-
     surface_choices = [f"S{n}" for n in lens_elems if lens_elems[n]["Save"]["value"]]
-    plots_elems = [
-        ui.card_header(
-            "Plots",
-            ui.popover(
-                ICONS["ellipsis"],
-                *[
-                    ui.input_select(
-                        id="plot_select_surface",
-                        label="Choose surface",
-                        choices=surface_choices,
-                        selected=surface_choices[-1],
+
+    pop_elems = [
+        ui.navset_card_pill(
+            ui.nav_panel(
+                "Fresnel POP",
+                ui.card(
+                    ui.card_header(
+                        ellipsis(
+                            "pop",
+                            names=["field", "wl"],
+                            choices=[field_choices, wl_choices],
+                        ),
+                        class_=card_header_class_,
                     ),
-                    ui.input_select(
-                        id="plot_select_scale",
-                        label="Choose scale",
-                        choices=["log", "linear"],
+                    ui.card_body(
+                        output_text_verbatim("pop_inputs"),
+                        output_text_verbatim("pop_output"),
                     ),
-                    ui.input_text(
-                        id="plot_select_zoom",
-                        label="Choose zoom",
-                        value=1.0,
+                    ui.card_footer(
+                        ui.input_action_button("calc_pop", "Run", icon=ICONS["run"]),
+                        ui.input_action_button(
+                            "download_pop", "Download", icon=ICONS["save"]
+                        ),
                     ),
-                    ui.input_checkbox(
-                        id="plot_select_dark_rings",
-                        label="Dark rings",
-                        value=True,
-                    ),
-                ],
-                title="",
-                placement="top",
+                ),
             ),
-            class_=card_header_class_,
-        ),
-        output_text_verbatim("plot_inputs"),
-        ui.output_plot("plot"),
-        ui.card_footer(
-            ui.input_action_button("do_plot", "Run", icon=ICONS["run"]),
-            ui.input_action_button("download_plot", "Download", icon=ICONS["save"]),
+            ui.nav_panel(
+                "Ray Tracing",
+                ui.card(
+                    ui.card_header(
+                        ellipsis(
+                            "raytrace",
+                            names=["field", "wl"],
+                            choices=[field_choices, wl_choices],
+                        ),
+                        class_=card_header_class_,
+                    ),
+                    ui.card_body(
+                        output_text_verbatim("raytrace_inputs"),
+                        output_text_verbatim("raytrace_output"),
+                    ),
+                    ui.card_footer(
+                        ui.input_action_button(
+                            "calc_raytrace", "Run", icon=ICONS["run"]
+                        ),
+                        ui.input_action_button(
+                            "download_raytrace", "Download", icon=ICONS["save"]
+                        ),
+                    ),
+                ),
+            ),
+            ui.nav_panel(
+                "Plots",
+                ui.card(
+                    ui.card_header(
+                        ui.popover(
+                            ICONS["ellipsis"],
+                            *[
+                                ui.input_select(
+                                    id="plot_select_surface",
+                                    label="Choose surface",
+                                    choices=surface_choices,
+                                    selected=surface_choices[-1],
+                                ),
+                                ui.input_select(
+                                    id="plot_select_scale",
+                                    label="Choose scale",
+                                    choices=["log", "linear"],
+                                ),
+                                ui.input_text(
+                                    id="plot_select_zoom",
+                                    label="Choose zoom",
+                                    value=1.0,
+                                ),
+                                ui.input_checkbox(
+                                    id="plot_select_dark_rings",
+                                    label="Dark rings",
+                                    value=True,
+                                ),
+                            ],
+                            title="",
+                            placement="top",
+                        ),
+                        class_=card_header_class_,
+                    ),
+                    ui.card_body(
+                        output_text_verbatim("plot_inputs"),
+                        ui.output_plot("plot"),
+                    ),
+                    ui.card_footer(
+                        ui.input_action_button("do_plot", "Run", icon=ICONS["run"]),
+                        ui.input_action_button(
+                            "download_plot", "Download", icon=ICONS["save"]
+                        ),
+                    ),
+                ),
+            ),
         ),
     ]
 
@@ -459,6 +482,4 @@ def app_elems(config):
         zernike_elems,
         zernike_plots_elems,
         pop_elems,
-        raytrace_elems,
-        plots_elems,
     )

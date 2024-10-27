@@ -83,12 +83,13 @@ def app_ui(request: StarletteRequest) -> Tag:
         ),
         ui.nav_panel(
             "Analysis",
-            ui.layout_columns(
-                ui.div(
-                    ui.card(nested_div("pop"), full_screen=True),
-                    ui.card(nested_div("raytrace"), full_screen=True),
+            ui.layout_sidebar(
+                ui.sidebar(
+                    nested_div("analysis"),
+                    title="Analysis",
+                    width=350,
                 ),
-                ui.card(nested_div("plots"), full_screen=True),
+                ui.card(nested_div("pop"), full_screen=True),
             ),
         ),
         id="navbar",
@@ -126,7 +127,8 @@ def app_ui(request: StarletteRequest) -> Tag:
             ),
         ),
         window_title=f"{__pkg_name__} GUI",
-        # selected="System",
+        # selected="System Explorer",
+        selected="Analysis",
     )
 
 
@@ -567,8 +569,6 @@ def server(input, output, session):
             zernike_elems,
             zernike_plots_elems,
             pop_elems,
-            raytrace_elems,
-            plots_elems,
         ) = app_elems(config.get())
 
         refresh_ui("general", general_elems)
@@ -583,8 +583,6 @@ def server(input, output, session):
                 refresh_ui("zernike", zernike_elems, mode="nested-dict", key=key)
         refresh_ui("zernike_plots", zernike_plots_elems)
         refresh_ui("pop", pop_elems)
-        refresh_ui("raytrace", raytrace_elems)
-        refresh_ui("plots", plots_elems)
 
     @reactive.effect
     @reactive.event(input.close)
