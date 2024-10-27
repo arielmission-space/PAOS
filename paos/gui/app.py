@@ -152,11 +152,11 @@ def server(input, output, session):
     @reactive.calc
     def calc_raytrace():
         req(config.get().sections())
-        req(input.raytrace_select_field())
-        req(input.raytrace_select_wl())
+        req(input.select_field())
+        req(input.select_wl())
 
-        field = input.raytrace_select_field()
-        wl = input.raytrace_select_wl()
+        field = input.select_field()
+        wl = input.select_wl()
 
         field_idx = int(field[1:]) - 1
         wl_idx = int(wl[1:]) - 1
@@ -201,8 +201,8 @@ def server(input, output, session):
             [ui.output_text_verbatim("raytrace_inputs", placeholder=True)],
         )
 
-        field = input.raytrace_select_field()
-        wl = input.raytrace_select_wl()
+        field = input.select_field()
+        wl = input.select_wl()
 
         return f"Field: {field}, Wavelength: {wl}"
 
@@ -221,11 +221,11 @@ def server(input, output, session):
     @reactive.calc
     def calc_pop():
         req(config.get().sections())
-        req(input.pop_select_field())
-        req(input.pop_select_wl())
+        req(input.select_field())
+        req(input.select_wl())
 
-        field = input.pop_select_field()
-        wl = input.pop_select_wl()
+        field = input.select_field()
+        wl = input.select_wl()
 
         field_idx = int(field[1:]) - 1
         wl_idx = int(wl[1:]) - 1
@@ -282,8 +282,8 @@ def server(input, output, session):
             [ui.output_text_verbatim("pop_inputs", placeholder=True)],
         )
 
-        field = input.pop_select_field()
-        wl = input.pop_select_wl()
+        field = input.select_field()
+        wl = input.select_wl()
 
         return f"Field: {field}, Wavelength: {wl}"
 
@@ -462,7 +462,7 @@ def server(input, output, session):
 
         surface = input.zernike_select_surface()
 
-        (_, _, _, _, _, _, _, zernike_elems, _, _) = app_elems(config.get())
+        (_, _, _, _, _, _, _, zernike_elems, _, _, _) = app_elems(config.get())
 
         surface_key = int(surface[1:])
         refresh_ui("zernike", zernike_elems, mode="nested-dict", key=surface_key)
@@ -568,6 +568,7 @@ def server(input, output, session):
             zernike_explorer_elems,
             zernike_elems,
             zernike_plots_elems,
+            analysis_elems,
             pop_elems,
         ) = app_elems(config.get())
 
@@ -582,6 +583,7 @@ def server(input, output, session):
             for key in zernike_elems.keys():
                 refresh_ui("zernike", zernike_elems, mode="nested-dict", key=key)
         refresh_ui("zernike_plots", zernike_plots_elems)
+        refresh_ui("analysis", analysis_elems)
         refresh_ui("pop", pop_elems)
 
     @reactive.effect

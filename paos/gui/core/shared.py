@@ -19,6 +19,15 @@ ICONS = {
 
 card_header_class_ = "d-flex justify-content-between align-items-center"
 
+vline = ui.markdown(
+    """
+    <div style="border-right: 1px solid lightgrey; height: 100%;"></div>
+    """
+)
+
+
+vspace = ui.tags.div(style="height: 5px;")
+
 
 def menu_panel(id):
     return ui.nav_panel(
@@ -217,6 +226,24 @@ def ellipsis(id, names, choices):
         ],
         title="",
         placement="top",
+    )
+
+
+def step_card(id, label, text="blabla", width="80%"):
+    return ui.tags.div(
+        ui.input_action_button(
+            id,
+            label,
+            icon=ICONS["run"],
+            class_="ms-2",
+            width=width,
+        ),
+        ui.popover(
+            ICONS["info"].add_class("ms-2"),
+            ui.markdown(text),
+            title="Info",
+            placement="right",
+        ),
     )
 
 

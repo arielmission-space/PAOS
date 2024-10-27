@@ -7,6 +7,7 @@ from paos.gui.core.shared import output_text_verbatim
 from paos.gui.core.shared import ICONS
 from paos.gui.core.shared import card_header_class_
 from paos.gui.core.shared import nested_div
+from paos.gui.core.shared import vspace
 
 
 def app_elems(config):
@@ -69,7 +70,6 @@ def app_elems(config):
             "value": value,
             "width": 7,
         }
-    field_choices = [f"f{n}" for n in field_elems]
 
     wl_elems = {}
     for n, (key, value) in enumerate(config.items("wavelengths")):
@@ -86,7 +86,6 @@ def app_elems(config):
             "value": value,
             "width": 7,
         }
-    wl_choices = [f"w{n}" for n in wl_elems]
 
     lens_elems = {}
     for key in config.sections():
@@ -372,99 +371,81 @@ def app_elems(config):
 
     surface_choices = [f"S{n}" for n in lens_elems if lens_elems[n]["Save"]["value"]]
 
+    wl_choices = [f"w{n}" for n in wl_elems]
+    field_choices = [f"f{n}" for n in field_elems]
+
+    analysis_elems = [
+        *[
+            ui.input_select(id=f"select_{name}", label=f"Choose {name}", choices=choice)
+            for name, choice in zip(["field", "wl"], [field_choices, wl_choices])
+        ],
+    ]
+
     pop_elems = [
         ui.navset_card_pill(
             ui.nav_panel(
                 "Fresnel POP",
-                ui.card(
-                    ui.card_header(
-                        ellipsis(
-                            "pop",
-                            names=["field", "wl"],
-                            choices=[field_choices, wl_choices],
-                        ),
-                        class_=card_header_class_,
-                    ),
-                    ui.card_body(
-                        output_text_verbatim("pop_inputs"),
-                        output_text_verbatim("pop_output"),
-                    ),
-                    ui.card_footer(
-                        ui.input_action_button("calc_pop", "Run", icon=ICONS["run"]),
-                        ui.input_action_button(
-                            "download_pop", "Download", icon=ICONS["save"]
-                        ),
+                output_text_verbatim("pop_inputs"),
+                output_text_verbatim("pop_output"),
+                ui.tags.div(
+                    ui.input_action_button("calc_pop", "Run", icon=ICONS["run"]),
+                    ui.input_action_button(
+                        "download_pop", "Download", icon=ICONS["save"]
                     ),
                 ),
             ),
             ui.nav_panel(
                 "Ray Tracing",
-                ui.card(
-                    ui.card_header(
-                        ellipsis(
-                            "raytrace",
-                            names=["field", "wl"],
-                            choices=[field_choices, wl_choices],
-                        ),
-                        class_=card_header_class_,
-                    ),
-                    ui.card_body(
-                        output_text_verbatim("raytrace_inputs"),
-                        output_text_verbatim("raytrace_output"),
-                    ),
-                    ui.card_footer(
-                        ui.input_action_button(
-                            "calc_raytrace", "Run", icon=ICONS["run"]
-                        ),
-                        ui.input_action_button(
-                            "download_raytrace", "Download", icon=ICONS["save"]
-                        ),
+                output_text_verbatim("raytrace_inputs"),
+                output_text_verbatim("raytrace_output"),
+                ui.tags.div(
+                    ui.input_action_button("calc_raytrace", "Run", icon=ICONS["run"]),
+                    ui.input_action_button(
+                        "download_raytrace", "Download", icon=ICONS["save"]
                     ),
                 ),
             ),
             ui.nav_panel(
                 "Plots",
-                ui.card(
-                    ui.card_header(
-                        ui.popover(
-                            ICONS["ellipsis"],
-                            *[
-                                ui.input_select(
-                                    id="plot_select_surface",
-                                    label="Choose surface",
-                                    choices=surface_choices,
-                                    selected=surface_choices[-1],
-                                ),
-                                ui.input_select(
-                                    id="plot_select_scale",
-                                    label="Choose scale",
-                                    choices=["log", "linear"],
-                                ),
-                                ui.input_text(
-                                    id="plot_select_zoom",
-                                    label="Choose zoom",
-                                    value=1.0,
-                                ),
-                                ui.input_checkbox(
-                                    id="plot_select_dark_rings",
-                                    label="Dark rings",
-                                    value=True,
-                                ),
-                            ],
-                            title="",
-                            placement="top",
-                        ),
-                        class_=card_header_class_,
+                ui.tags.div(
+                    ui.popover(
+                        ICONS["gear"],
+                        *[
+                            ui.input_select(
+                                id="plot_select_surface",
+                                label="Choose surface",
+                                choices=surface_choices,
+                                selected=surface_choices[-1],
+                            ),
+                            ui.input_select(
+                                id="plot_select_scale",
+                                label="Choose scale",
+                                choices=["log", "linear"],
+                            ),
+                            ui.input_text(
+                                id="plot_select_zoom",
+                                label="Choose zoom",
+                                value=1.0,
+                            ),
+                            ui.input_checkbox(
+                                id="plot_select_dark_rings",
+                                label="Dark rings",
+                                value=True,
+                            ),
+                        ],
+                        title="Settings",
+                        placement="top",
                     ),
-                    ui.card_body(
-                        output_text_verbatim("plot_inputs"),
-                        ui.output_plot("plot"),
-                    ),
-                    ui.card_footer(
-                        ui.input_action_button("do_plot", "Run", icon=ICONS["run"]),
-                        ui.input_action_button(
-                            "download_plot", "Download", icon=ICONS["save"]
-                        ),
+                    class_=card_header_class_,
+                ),
+                vspace,
+                output_text_verbatim("plot_inputs"),
+                ui.output_plot("plot"),
+                vspace,
+                ui.tags.div(
+                    ui.input_action_button("do_plot", "Run", icon=ICONS["run"]),
+                    ui.input_action_button(
+                        "download_plot", "Download", icon=ICONS["save"]
                     ),
                 ),
             ),
@@ -481,5 +462,6 @@ def app_elems(config):
         zernike_explorer_elems,
         zernike_elems,
         zernike_plots_elems,
+        analysis_elems,
         pop_elems,
     )
