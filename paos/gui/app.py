@@ -120,8 +120,10 @@ def app_ui(request: StarletteRequest) -> Tag:
                 ),
             ],
         ),
-        footer=ui.page_navbar(
-            ui.nav_spacer(),
+        footer=ui.panel_well(
+            ui.p(
+                f"{__pkg_name__} v{__version__}; {__author__}",
+            ),
         ),
         window_title=f"{__pkg_name__} GUI",
         # selected="System",

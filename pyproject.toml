@@ -51,8 +51,9 @@ content-type = "text/markdown"
 
 [project.urls]
 Homepage = "https://github.com/arielmission-space/PAOS"
-"Bug Tracker" = "https://github.com/arielmission-space/PAOS/issues"
-"Source Code" = "https://github.com/arielmission-space/PAOS"
+Issues = "https://github.com/arielmission-space/PAOS/issues"
+Repository = "https://github.com/arielmission-space/PAOS.git"
+DOI = "https://doi.org/10.1117/12.3018333"
 
 [project.optional-dependencies]
 docs = [
