@@ -37,33 +37,58 @@ def app_ui(request: StarletteRequest) -> Tag:
         ui.nav_spacer(),
         ui.nav_panel(
             "System Explorer",
-            ui.layout_columns(
-                *[
-                    ui.card(ui.card_header("General"), nested_div("general")),
-                    ui.card(ui.card_header("Units"), nested_div("units")),
-                    ui.card(ui.card_header("Simulation"), nested_div("sim")),
-                    ui.card(
-                        ui.card_header(
-                            ui.layout_columns(
-                                {"style": "text-align: center;"},
-                                ui.p("#"),
-                                ui.p("Field"),
+            ui.card(
+                ui.layout_columns(
+                    *[
+                        ui.tags.div(
+                            ui.card(
+                                ui.card_header("General"),
+                                ui.card_body(
+                                    nested_div("general"),
+                                ),
+                            ),
+                            ui.card(
+                                ui.card_header("Units"),
+                                ui.card_body(
+                                    nested_div("units"),
+                                ),
                             ),
                         ),
-                        nested_div("field"),
-                    ),
-                    ui.card(
-                        ui.card_header(
-                            ui.layout_columns(
-                                {"style": "text-align: center;"},
-                                ui.p("#"),
-                                ui.p("Wavelength"),
+                        ui.card(
+                            ui.card_header("Simulation"),
+                            ui.card_body(
+                                nested_div("sim"),
                             ),
+                            fill=False,
                         ),
-                        nested_div("wl"),
-                    ),
-                ],
-                open=False,
+                        ui.card(
+                            ui.card_header(
+                                ui.layout_columns(
+                                    {"style": "text-align: center;"},
+                                    ui.p("#"),
+                                    ui.p("Field"),
+                                ),
+                            ),
+                            ui.card_body(
+                                nested_div("field"),
+                            ),
+                            fill=False,
+                        ),
+                        ui.card(
+                            ui.card_header(
+                                ui.layout_columns(
+                                    {"style": "text-align: center;"},
+                                    ui.p("#"),
+                                    ui.p("Wavelength"),
+                                ),
+                            ),
+                            ui.card_body(
+                                nested_div("wl"),
+                            ),
+                            fill=False,
+                        ),
+                    ],
+                ),
             ),
         ),
         ui.nav_panel(
@@ -74,22 +99,24 @@ def app_ui(request: StarletteRequest) -> Tag:
         ),
         ui.nav_panel(
             "Zernike Editor",
-            ui.layout_columns(
-                ui.div(
-                    ui.card(nested_div("zernike_explorer"), full_screen=True),
+            ui.layout_sidebar(
+                ui.sidebar(
+                    nested_div("zernike_settings"),
+                    title="Settings",
+                    width=350,
                 ),
-                ui.card(nested_div("zernike_plots"), full_screen=True),
+                ui.card(nested_div("zernike_tab"), full_screen=True),
             ),
         ),
         ui.nav_panel(
             "Analysis",
             ui.layout_sidebar(
                 ui.sidebar(
-                    nested_div("analysis"),
-                    title="Analysis",
+                    nested_div("analysis_settings"),
+                    title="Settings",
                     width=350,
                 ),
-                ui.card(nested_div("pop"), full_screen=True),
+                ui.card(nested_div("analysis"), full_screen=True),
             ),
         ),
         id="navbar",
@@ -109,11 +136,6 @@ def app_ui(request: StarletteRequest) -> Tag:
                     menu_panel("save"),
                     menu_panel("close"),
                 ),
-                # ui.nav_menu(
-                #     "Edit",
-                #     menu_panel("load"),
-                #     menu_panel("refresh"),
-                # ),
                 ui.nav_menu(
                     "Help",
                     menu_panel("docs"),
@@ -127,8 +149,7 @@ def app_ui(request: StarletteRequest) -> Tag:
             ),
         ),
         window_title=f"{__pkg_name__} GUI",
-        # selected="System Explorer",
-        selected="Analysis",
+        selected="System Explorer",
     )
 
 
@@ -258,7 +279,7 @@ def server(input, output, session):
         req(input.calc_pop())
         req(input.download_pop())
         req(config.get().sections())
-        modal_download("pop", "h5")
+        modal_download("analysis", "h5")
 
     @render.download
     def download_pop_h5():
@@ -450,17 +471,17 @@ def server(input, output, session):
         ui.modal_show(m)
 
     @render.text
-    @reactive.event(input.open_ini, input.zernike_select_surface)
+    @reactive.event(input.open_ini, input.select_zernike)
     def zernike_inputs():
         req(config.get().sections())
-        req(input.zernike_select_surface())
+        req(input.select_zernike())
 
         refresh_ui(
             "zernike_inputs",
             [ui.output_text_verbatim("zernike_inputs", placeholder=True)],
         )
 
-        surface = input.zernike_select_surface()
+        surface = input.select_zernike()
 
         (_, _, _, _, _, _, _, zernike_elems, _, _, _) = app_elems(config.get())
 
@@ -473,12 +494,12 @@ def server(input, output, session):
     @reactive.event(input.do_plot_zernike)
     def plot_zernike():
         req(input.do_plot_zernike())
-        req(input.zernike_plot_select_surface())
+        req(input.select_zernike())
         req(config.get().sections())
 
         to_ini(input=input, config=config, tmp=cache / "tmp.ini")
 
-        surface = input.zernike_plot_select_surface()
+        surface = input.select_zernike()
         surface_key = int(surface[1:])
         zernike_section = f"lens_{surface_key:02d}"
         zernike_section = config.get()[zernike_section]
@@ -533,7 +554,7 @@ def server(input, output, session):
             [ui.output_text_verbatim("plot_zernike_inputs", placeholder=True)],
         )
 
-        surface = input.zernike_plot_select_surface()
+        surface = input.select_zernike()
 
         return f"Surface: {surface}"
 
@@ -565,11 +586,11 @@ def server(input, output, session):
             field_elems,
             wl_elems,
             lens_elems,
-            zernike_explorer_elems,
+            zernike_sidebar_elems,
             zernike_elems,
-            zernike_plots_elems,
+            zernike_tab_elems,
+            analysis_sidebar_elems,
             analysis_elems,
-            pop_elems,
         ) = app_elems(config.get())
 
         refresh_ui("general", general_elems)
@@ -578,13 +599,13 @@ def server(input, output, session):
         refresh_ui("field", field_elems, mode="body")
         refresh_ui("wl", wl_elems, mode="body")
         refresh_ui("lens", lens_elems, mode="dict")
-        refresh_ui("zernike_explorer", zernike_explorer_elems)
+        refresh_ui("zernike_settings", zernike_sidebar_elems)
         if zernike_elems:
             for key in zernike_elems.keys():
                 refresh_ui("zernike", zernike_elems, mode="nested-dict", key=key)
-        refresh_ui("zernike_plots", zernike_plots_elems)
+        refresh_ui("zernike_tab", zernike_tab_elems)
+        refresh_ui("analysis_settings", analysis_sidebar_elems)
         refresh_ui("analysis", analysis_elems)
-        refresh_ui("pop", pop_elems)
 
     @reactive.effect
     @reactive.event(input.close)

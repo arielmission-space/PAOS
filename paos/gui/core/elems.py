@@ -315,73 +315,55 @@ def app_elems(config):
 
     if zernike_elems:
         zernike_choices = [f"S{n}" for n in zernike_elems]
-        zernike_explorer_elems = [
-            ui.card_header(
-                "Zernike Explorer",
-                ui.popover(
-                    ICONS["ellipsis"],
-                    *[
-                        ui.input_select(
-                            id="zernike_select_surface",
-                            label="Choose surface",
-                            choices=zernike_choices,
-                            selected=zernike_choices[0],
-                        ),
-                    ],
-                    title="",
-                    placement="top",
-                ),
-                class_=card_header_class_,
-            ),
-            output_text_verbatim("zernike_inputs"),
-            nested_div("zernike"),
-            ui.card_footer(),
+
+        zernike_sidebar_elems = [
+            *[
+                ui.input_select(
+                    id=f"select_{name}", label=f"Choose {name}", choices=choice
+                )
+                for name, choice in zip(["zernike"], [zernike_choices])
+            ],
         ]
-        zernike_plots_elems = [
-            ui.card_header(
-                "Zernike Errormap",
-                ui.popover(
-                    ICONS["ellipsis"],
-                    *[
-                        ui.input_select(
-                            id="zernike_plot_select_surface",
-                            label="Choose surface",
-                            choices=zernike_choices,
-                            selected=zernike_choices[0],
-                        ),
-                    ],
-                    title="",
-                    placement="top",
+        zernike_tab_elems = [
+            ui.navset_card_pill(
+                ui.nav_panel(
+                    "Explorer",
+                    output_text_verbatim("zernike_inputs"),
+                    nested_div("zernike"),
                 ),
-                class_=card_header_class_,
-            ),
-            output_text_verbatim("plot_zernike_inputs"),
-            ui.output_plot("plot_zernike"),
-            ui.card_footer(
-                ui.input_action_button("do_plot_zernike", "Run", icon=ICONS["run"]),
-                ui.input_action_button(
-                    "download_plot_zernike", "Download", icon=ICONS["save"]
+                ui.nav_panel(
+                    "Plots",
+                    output_text_verbatim("plot_zernike_inputs"),
+                    ui.output_plot("plot_zernike"),
+                    ui.tags.div(
+                        ui.input_action_button(
+                            "do_plot_zernike", "Run", icon=ICONS["run"]
+                        ),
+                        ui.input_action_button(
+                            "download_plot_zernike", "Download", icon=ICONS["save"]
+                        ),
+                    ),
                 ),
             ),
         ]
 
     else:
-        zernike_explorer_elems = []
-        zernike_plots_elems = []
+        zernike_sidebar_elems = []
+        zernike_tab_elems = []
 
     surface_choices = [f"S{n}" for n in lens_elems if lens_elems[n]["Save"]["value"]]
 
     wl_choices = [f"w{n}" for n in wl_elems]
     field_choices = [f"f{n}" for n in field_elems]
 
-    analysis_elems = [
+    analysis_sidebar_elems = [
         *[
             ui.input_select(id=f"select_{name}", label=f"Choose {name}", choices=choice)
             for name, choice in zip(["field", "wl"], [field_choices, wl_choices])
         ],
     ]
 
-    pop_elems = [
+    analysis_elems = [
         ui.navset_card_pill(
             ui.nav_panel(
                 "Fresnel POP",
@@ -459,9 +441,9 @@ def app_elems(config):
         field_elems,
         wl_elems,
         lens_elems,
-        zernike_explorer_elems,
+        zernike_sidebar_elems,
         zernike_elems,
-        zernike_plots_elems,
+        zernike_tab_elems,
+        analysis_sidebar_elems,
         analysis_elems,
-        pop_elems,
     )
