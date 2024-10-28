@@ -6,8 +6,8 @@ from skimage.transform import rescale
 from skimage.transform import resize
 
 from paos import logger
-from paos import Zernike, PolyOrthoNorm
-from paos import PSD
+from paos.classes.zernike import Zernike, PolyOrthoNorm
+from paos.classes.psd import PSD
 
 
 class WFO:
@@ -629,9 +629,13 @@ class WFO:
             )
 
         func = PolyOrthoNorm if orthonorm else Zernike
+        logger.debug(f"Using {func.__name__} polynomials")
+
         zernike = func(len(index), rho, phi, ordering=ordering, normalize=normalize)
         zer = zernike()
         wfe = (zer.T * Z).T.sum(axis=0)
+        logger.debug(f"WFE RMS = {np.std(wfe)}")
+
         self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * wfe / self._wl).filled(0)
 
         return wfe

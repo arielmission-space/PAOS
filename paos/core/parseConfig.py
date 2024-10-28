@@ -171,7 +171,7 @@ def parse_config(filename):
                 _data_["Znormalize"] = element.getboolean("Par3")
                 _data_["Zradius"] = getfloat(element.get("Par4", ""))
                 _data_["Zorigin"] = element.get("Par5", "x")
-                _data_["Zorthonorm"] = element.getboolean("Par6", False)
+                _data_["Zorthonorm"] = bool(element.get("Par6", "False"))
 
                 _data_["Zindex"] = np.fromstring(
                     element.get("Zindex", ""), sep=",", dtype=np.int64
