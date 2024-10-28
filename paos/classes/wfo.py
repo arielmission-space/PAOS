@@ -6,7 +6,7 @@ from skimage.transform import rescale
 from skimage.transform import resize
 
 from paos import logger
-from paos.classes.zernike import Zernike
+from paos.classes.zernike import Zernike, PolyOrthoNorm
 from paos.classes.psd import PSD
 
 
@@ -569,9 +569,19 @@ class WFO:
             self.stw(self.zw0 - z1)
             self.wts(z2 - self.zw0)
 
-    def zernikes(self, index, Z, ordering, normalize, radius, offset=0.0, origin="x"):
+    def zernikes(
+        self,
+        index,
+        Z,
+        ordering,
+        normalize,
+        radius,
+        offset=0.0,
+        origin="x",
+        orthonorm=False,
+    ):
         """
-        Add a WFE represented by a Zernike expansion
+        Add a WFE represented by a Zernike expansion. Either Zernike or orthonormal polynomials can be used.
 
         Parameters
         ----------
@@ -590,6 +600,8 @@ class WFO:
         origin: string
             Angles measured counter-clockwise positive from x axis by default (origin='x').
             Set origin='y' for angles measured clockwise-positive from the y-axis.
+        orthonorm: bool
+            If True, orthonormal polynomials are used. Default is False.
 
         Returns
         -------
@@ -615,9 +627,15 @@ class WFO:
             raise ValueError(
                 "Origin {} not recognised. Origin shall be either x or y".format(origin)
             )
-        zernike = Zernike(len(index), rho, phi, ordering=ordering, normalize=normalize)
+
+        func = PolyOrthoNorm if orthonorm else Zernike
+        logger.debug(f"Using {func.__name__} polynomials")
+
+        zernike = func(len(index), rho, phi, ordering=ordering, normalize=normalize)
         zer = zernike()
         wfe = (zer.T * Z).T.sum(axis=0)
+        logger.debug(f"WFE RMS = {np.std(wfe)}")
+
         self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * wfe / self._wl).filled(0)
 
         return wfe

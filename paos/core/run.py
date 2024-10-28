@@ -135,6 +135,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
                 item["Znormalize"],
                 radius,
                 origin=item["Zorigin"],
+                orthonorm=item["Zorthonorm"],
             )
 
         if item["type"] == "Grid Sag":
