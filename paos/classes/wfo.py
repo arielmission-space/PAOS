@@ -328,9 +328,7 @@ class WFO:
 
         # update Gaussian beam parameters
         self._w0 = wz / np.sqrt(1.0 + (np.pi * wz**2 * gCima / self.wl) ** 2)
-        self._zw0 = (
-            -gCima / (gCima**2 + (self.wl / (np.pi * wz**2)) ** 2) + self.z
-        )
+        self._zw0 = -gCima / (gCima**2 + (self.wl / (np.pi * wz**2)) ** 2) + self.z
         self._zr = np.pi * self.w0**2 / self.wl
 
         propagator = propagator + self.insideout()
@@ -395,9 +393,7 @@ class WFO:
         self._dy *= My
 
         if np.abs(Mx - 1.0) < 1.0e-8 or Mx is None:
-            logger.trace(
-                "Does not do anything if magnification x is close to unity."
-            )
+            logger.trace("Does not do anything if magnification x is close to unity.")
             return
 
         logger.warning(
@@ -456,9 +452,7 @@ class WFO:
             propagation distance
         """
         if np.abs(dz) < 0.001 * self.wl:
-            logger.debug(
-                "Thickness smaller than 1/1000 wavelength. Returning.."
-            )
+            logger.debug("Thickness smaller than 1/1000 wavelength. Returning..")
             return
 
         if self.C != 0:
@@ -487,9 +481,7 @@ class WFO:
             propagation distance
         """
         if np.abs(dz) < 0.001 * self.wl:
-            logger.debug(
-                "Thickness smaller than 1/1000 wavelength. Returning.."
-            )
+            logger.debug("Thickness smaller than 1/1000 wavelength. Returning..")
             return
 
         if self.C == 0.0:
@@ -526,9 +518,7 @@ class WFO:
             propagation distance
         """
         if np.abs(dz) < 0.001 * self.wl:
-            logger.debug(
-                "Thickness smaller than 1/1000 wavelength. Returning.."
-            )
+            logger.debug("Thickness smaller than 1/1000 wavelength. Returning..")
             return
 
         if self.C != 0.0:
@@ -579,9 +569,7 @@ class WFO:
             self.stw(self.zw0 - z1)
             self.wts(z2 - self.zw0)
 
-    def zernikes(
-        self, index, Z, ordering, normalize, radius, offset=0.0, origin="x"
-    ):
+    def zernikes(self, index, Z, ordering, normalize, radius, offset=0.0, origin="x"):
         """
         Add a WFE represented by a Zernike expansion
 
@@ -608,9 +596,7 @@ class WFO:
         out: masked array
             the WFE
         """
-        assert not np.any(
-            np.diff(index) - 1
-        ), "Zernike sequence should be continuous"
+        assert not np.any(np.diff(index) - 1), "Zernike sequence should be continuous"
 
         x = (np.arange(self._wfo.shape[1]) - self._wfo.shape[1] // 2) * self.dx
         y = (np.arange(self._wfo.shape[0]) - self._wfo.shape[0] // 2) * self.dy
@@ -624,23 +610,15 @@ class WFO:
             phi = np.arctan2(xx, yy) + np.deg2rad(offset)
         else:
             logger.error(
-                "Origin {} not recognised. Origin shall be either x or y".format(
-                    origin
-                )
+                "Origin {} not recognised. Origin shall be either x or y".format(origin)
             )
             raise ValueError(
-                "Origin {} not recognised. Origin shall be either x or y".format(
-                    origin
-                )
+                "Origin {} not recognised. Origin shall be either x or y".format(origin)
             )
-        zernike = Zernike(
-            len(index), rho, phi, ordering=ordering, normalize=normalize
-        )
+        zernike = Zernike(len(index), rho, phi, ordering=ordering, normalize=normalize)
         zer = zernike()
         wfe = (zer.T * Z).T.sum(axis=0)
-        self._wfo = self._wfo * np.exp(
-            2.0 * np.pi * 1j * wfe / self._wl
-        ).filled(0)
+        self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * wfe / self._wl).filled(0)
 
         return wfe
 
@@ -686,7 +664,7 @@ class WFO:
             mask = np.isnan(sag)
             sag[mask] = 0
             sag = np.ma.MaskedArray(sag, mask=mask)
-        
+
         mask = sag.mask.astype(float)
 
         if (xdec != 0.0) or (ydec != 0.0):
@@ -720,9 +698,7 @@ class WFO:
         if sag.shape != (ny, nx):
             logger.debug(f"Resampled sag shape is {sag.shape}")
             logger.debug(f"Output shape should be {(ny, nx)}: resizing...")
-            anti_aliasing = (
-                scale_x < 1.0 or scale_y < 1.0
-            )
+            anti_aliasing = scale_x < 1.0 or scale_y < 1.0
             sag = resize(
                 sag,
                 output_shape=(ny, nx),
@@ -739,9 +715,7 @@ class WFO:
         mask = mask > 0.5
         sag = np.ma.MaskedArray(sag, mask=mask)
 
-        self._wfo = self._wfo * np.exp(
-            2.0 * np.pi * 1j * sag / self._wl
-        ).filled(0)
+        self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * sag / self._wl).filled(0)
 
         return sag
 

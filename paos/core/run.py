@@ -94,14 +94,10 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         # Check if aperture needs to be applied
         if "aperture" in item:
             xdec = (
-                item["aperture"]["xc"]
-                if np.isfinite(item["aperture"]["xc"])
-                else vs[0]
+                item["aperture"]["xc"] if np.isfinite(item["aperture"]["xc"]) else vs[0]
             )
             ydec = (
-                item["aperture"]["yc"]
-                if np.isfinite(item["aperture"]["yc"])
-                else vt[0]
+                item["aperture"]["yc"] if np.isfinite(item["aperture"]["yc"]) else vt[0]
             )
             xrad = item["aperture"]["xrad"]
             yrad = item["aperture"]["yrad"]
@@ -110,9 +106,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
             xaper = xdec - vs[0]
             yaper = ydec - vt[0]
 
-            obscuration = (
-                False if item["aperture"]["type"] == "aperture" else True
-            )
+            obscuration = False if item["aperture"]["type"] == "aperture" else True
 
             if np.all(np.isfinite([xrad, yrad])):
                 logger.trace("Apply aperture")
@@ -133,9 +127,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
 
         if item["type"] == "Zernike":
             logger.trace("Apply Zernike")
-            radius = (
-                item["Zradius"] if np.isfinite(item["Zradius"]) else wfo.wz
-            )
+            radius = item["Zradius"] if np.isfinite(item["Zradius"]) else wfo.wz
             wfo.zernikes(
                 item["Zindex"],
                 item["Z"],

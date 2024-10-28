@@ -36,9 +36,7 @@ def read_config(filename):
 
     if not os.path.exists(filename) or not os.path.isfile(filename):
         logger.error(
-            "Input file {} does not exist or is not a file. Quitting..".format(
-                filename
-            )
+            "Input file {} does not exist or is not a file. Quitting..".format(filename)
         )
         sys.exit()
 
@@ -132,9 +130,7 @@ def ParseConfig(filename):
         if element["Surface Type"] == "Zernike":
             sheet, stmp = element["Range"].split(".")
             colrange = "".join([i for i in stmp if not i.isdigit()])
-            rowrange = "".join(
-                [i for i in stmp if i.isdigit() or i == ":"]
-            ).split(":")
+            rowrange = "".join([i for i in stmp if i.isdigit() or i == ":"]).split(":")
             rowstart = int(rowrange[0])
             nrows = int(rowrange[1]) - rowstart + 1
 
@@ -158,7 +154,7 @@ def ParseConfig(filename):
                     "Znormalize": wb0[1][2],
                     "ABCDt": ABCD(),
                     "ABCDs": ABCD(),
-                    "Zorigin": "x"  # this is the default origin for the angles: from x axis, counted
+                    "Zorigin": "x",  # this is the default origin for the angles: from x axis, counted
                     # positive counterclockwise
                 }
             )
@@ -188,14 +184,10 @@ def ParseConfig(filename):
                 n2 = n1
             else:
                 logger.error(
-                    "Surface Type not recognised: {:s}".format(
-                        str(_data_["type"])
-                    )
+                    "Surface Type not recognised: {:s}".format(str(_data_["type"]))
                 )
                 raise ValueError(
-                    "Surface Type not recognised: {:s}".format(
-                        str(_data_["type"])
-                    )
+                    "Surface Type not recognised: {:s}".format(str(_data_["type"]))
                 )
 
             _data_["ABCDt"] = ABCD(thickness, C, n1, n2, My)

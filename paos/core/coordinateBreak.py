@@ -42,12 +42,8 @@ def coordinate_break(vt, vs, xdec, ydec, xrot, yrot, zrot, order=0):
     """
 
     if order != 0:
-        logger.error(
-            "Coordinate break orders other than 0 not implemented yet"
-        )
-        raise ValueError(
-            "Coordinate break orders other than 0 not implemented yet"
-        )
+        logger.error("Coordinate break orders other than 0 not implemented yet")
+        raise ValueError("Coordinate break orders other than 0 not implemented yet")
 
     if not np.isfinite(xdec):
         xdec = 0.0

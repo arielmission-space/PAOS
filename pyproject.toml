@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paos"
-version = "1.1.2"
+version = "1.2.1.rc1"
 authors = [
     {name = "Andrea Bocchieri <andrea.bocchieri@uniroma1.it>"},
     {name = "Lorenzo V. Mugnai"},
@@ -35,12 +35,14 @@ dependencies = [
     "h5py>=3.6.0",
     "joblib>=1.1.0",
     "decorator>=5.1.1",
-    "pysimplegui==4.70.1",
     "tqdm>=4.62.3",
     "ipykernel>=6.9.0",
     "sympy>=1.12",
     "scikit-image>=0.24.0",
     "loguru>=0.7.2",
+    "shiny",
+    "shinywidgets",
+    "faicons",
 ]
 
 [project.readme]
@@ -49,8 +51,9 @@ content-type = "text/markdown"
 
 [project.urls]
 Homepage = "https://github.com/arielmission-space/PAOS"
-"Bug Tracker" = "https://github.com/arielmission-space/PAOS/issues"
-"Source Code" = "https://github.com/arielmission-space/PAOS"
+Issues = "https://github.com/arielmission-space/PAOS/issues"
+Repository = "https://github.com/arielmission-space/PAOS.git"
+DOI = "https://doi.org/10.1117/12.3018333"
 
 [project.optional-dependencies]
 docs = [
@@ -69,7 +72,7 @@ test = [
 
 [project.scripts]
 paos = "paos.paos:main"
-paosgui = "paos.paosGui:main"
+paos_gui = "paos.gui.gui:main"
 
 [tool.setuptools]
 zip-safe = true
