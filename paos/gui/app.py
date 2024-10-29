@@ -279,7 +279,7 @@ def server(input, output, session):
         req(input.calc_pop())
         req(input.download_pop())
         req(config.get().sections())
-        modal_download("analysis", "h5")
+        modal_download("pop", "h5")
 
     @render.download
     def download_pop_h5():
