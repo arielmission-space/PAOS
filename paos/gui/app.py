@@ -98,7 +98,7 @@ def app_ui(request: StarletteRequest) -> Tag:
             ),
         ),
         ui.nav_panel(
-            "WFE Editor",
+            "Wavefront Editor",
             ui.navset_card_pill(
                 ui.nav_panel(
                     "Zernike",
@@ -136,7 +136,7 @@ def app_ui(request: StarletteRequest) -> Tag:
             ),
         ),
         ui.nav_panel(
-            "Analysis",
+            "Optical Analysis",
             ui.layout_sidebar(
                 ui.sidebar(
                     nested_div("analysis_settings"),
@@ -186,6 +186,8 @@ def server(input, output, session):
     retval = reactive.value({})
     figure = reactive.value(None)
     figure_zernike = reactive.value(None)
+    figure_psd = reactive.value(None)
+    figure_gridsag = reactive.value(None)
 
     for file in os.listdir(cache):
         os.remove(os.path.join(cache, file))
@@ -193,8 +195,8 @@ def server(input, output, session):
     @reactive.effect
     @reactive.event(input.save, input.calc_raytrace, input.calc_pop)
     def _():
-        req(input.save)
         req(input.calc_raytrace)
+        req(input.calc_pop)
         to_ini(input=input, config=config, tmp=cache / "tmp.ini")
 
     @reactive.calc
