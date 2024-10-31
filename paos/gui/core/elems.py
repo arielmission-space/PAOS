@@ -351,6 +351,54 @@ def app_elems(config):
         zernike_sidebar_elems = []
         zernike_tab_elems = []
 
+    psd_elems = {}
+    for key in config.sections():
+        if not key.startswith("lens_"):
+            continue
+        item = config[key]
+        if not item.get("surfacetype") == "PSD":
+            continue
+
+        n = int(key.split("_")[1])
+        psd_elems[n] = {}
+
+    if psd_elems:
+        psd_sidebar_elems = []
+        psd_tab_elems = []
+    else:
+        psd_sidebar_elems = []
+        psd_tab_elems = []
+
+    gridsag_elems = {}
+    for key in config.sections():
+        if not key.startswith("lens_"):
+            continue
+        item = config[key]
+        if not item.get("surfacetype") == "Grid Sag":
+            continue
+
+        n = int(key.split("_")[1])
+        gridsag_elems[n] = {}
+
+    if gridsag_elems:
+        gridsag_sidebar_elems = []
+        gridsag_tab_elems = []
+    else:
+        gridsag_sidebar_elems = []
+        gridsag_tab_elems = []
+
+    wfe_elems = (
+        zernike_sidebar_elems,
+        zernike_elems,
+        zernike_tab_elems,
+        psd_sidebar_elems,
+        psd_elems,
+        psd_tab_elems,
+        gridsag_sidebar_elems,
+        gridsag_elems,
+        gridsag_tab_elems,
+    )
+
     surface_choices = [f"S{n}" for n in lens_elems if lens_elems[n]["Save"]["value"]]
 
     wl_choices = [f"w{n}" for n in wl_elems]
@@ -441,9 +489,7 @@ def app_elems(config):
         field_elems,
         wl_elems,
         lens_elems,
-        zernike_sidebar_elems,
-        zernike_elems,
-        zernike_tab_elems,
+        wfe_elems,
         analysis_sidebar_elems,
         analysis_elems,
     )

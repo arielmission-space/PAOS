@@ -98,14 +98,41 @@ def app_ui(request: StarletteRequest) -> Tag:
             ),
         ),
         ui.nav_panel(
-            "Zernike Editor",
-            ui.layout_sidebar(
-                ui.sidebar(
-                    nested_div("zernike_settings"),
-                    title="Settings",
-                    width=350,
+            "WFE Editor",
+            ui.navset_card_pill(
+                ui.nav_panel(
+                    "Zernike",
+                    ui.layout_sidebar(
+                        ui.sidebar(
+                            nested_div("zernike_settings"),
+                            title="Settings",
+                            width=350,
+                        ),
+                        ui.card(nested_div("zernike_tab"), full_screen=True),
+                    ),
                 ),
-                ui.card(nested_div("zernike_tab"), full_screen=True),
+                ui.nav_panel(
+                    "PSD",
+                    ui.layout_sidebar(
+                        ui.sidebar(
+                            nested_div("psd_settings"),
+                            title="Settings",
+                            width=350,
+                        ),
+                        ui.card(nested_div("psd_tab"), full_screen=True),
+                    ),
+                ),
+                ui.nav_panel(
+                    "Grid Sag",
+                    ui.layout_sidebar(
+                        ui.sidebar(
+                            nested_div("gridsag_settings"),
+                            title="Settings",
+                            width=350,
+                        ),
+                        ui.card(nested_div("gridsag_tab"), full_screen=True),
+                    ),
+                ),
             ),
         ),
         ui.nav_panel(
@@ -483,7 +510,8 @@ def server(input, output, session):
 
         surface = input.select_zernike()
 
-        (_, _, _, _, _, _, _, zernike_elems, _, _, _) = app_elems(config.get())
+        (_, _, _, _, _, _, wfe_elems, _, _) = app_elems(config.get())
+        zernike_elems = wfe_elems[1]
 
         surface_key = int(surface[1:])
         refresh_ui("zernike", zernike_elems, mode="nested-dict", key=surface_key)
@@ -588,12 +616,22 @@ def server(input, output, session):
             field_elems,
             wl_elems,
             lens_elems,
-            zernike_sidebar_elems,
-            zernike_elems,
-            zernike_tab_elems,
+            wfe_elems,
             analysis_sidebar_elems,
             analysis_elems,
         ) = app_elems(config.get())
+
+        (
+            zernike_sidebar_elems,
+            zernike_elems,
+            zernike_tab_elems,
+            psd_sidebar_elems,
+            psd_elems,
+            psd_tab_elems,
+            gridsag_sidebar_elems,
+            gridsag_elems,
+            gridsag_tab_elems,
+        ) = wfe_elems
 
         refresh_ui("general", general_elems)
         refresh_ui("units", units_elems)
