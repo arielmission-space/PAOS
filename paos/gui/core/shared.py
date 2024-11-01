@@ -220,7 +220,7 @@ def ellipsis(id, names, choices):
         ICONS["ellipsis"],
         *[
             ui.input_select(
-                id=f"{id}_select_{name}", label=f"Choose {name}", choices=choice
+                id=f"{id}_select_{name}", label=f"Select {name.capitalize()}", choices=choice
             )
             for name, choice in zip(names, choices)
         ],
@@ -273,7 +273,7 @@ def modal_download(id, ext):
                 f"download_{id}_{ext}",
                 "Save",
             ),
-            ui.output_text(f"download_{ext}_progress"),
+            # ui.output_text_verbatim(f"download_{ext}_progress"),
         ],
         title=f"Save to {ext.upper()} File",
         easy_close=True,

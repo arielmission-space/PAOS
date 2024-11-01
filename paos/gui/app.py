@@ -115,11 +115,11 @@ def app_ui(request: StarletteRequest) -> Tag:
                     "PSD",
                     ui.layout_sidebar(
                         ui.sidebar(
-                            nested_div("psd_settings"),
+                            nested_div("PSD_settings"),
                             title="Settings",
                             width=350,
                         ),
-                        ui.card(nested_div("psd_tab"), full_screen=True),
+                        ui.card(nested_div("PSD_tab"), full_screen=True),
                     ),
                 ),
                 ui.nav_panel(
@@ -186,17 +186,22 @@ def server(input, output, session):
     retval = reactive.value({})
     figure = reactive.value(None)
     figure_zernike = reactive.value(None)
-    figure_psd = reactive.value(None)
-    figure_gridsag = reactive.value(None)
+    figure_PSD = reactive.value(None)
 
     for file in os.listdir(cache):
         os.remove(os.path.join(cache, file))
 
     @reactive.effect
-    @reactive.event(input.save, input.calc_raytrace, input.calc_pop)
+    @reactive.event(
+        input.save,
+        input.calc_raytrace,
+        input.calc_pop,
+        input.calc_PSD,
+    )
     def _():
         req(input.calc_raytrace)
         req(input.calc_pop)
+        req(input.calc_PSD)
         to_ini(input=input, config=config, tmp=cache / "tmp.ini")
 
     @reactive.calc
@@ -499,18 +504,27 @@ def server(input, output, session):
         )
         ui.modal_show(m)
 
+    @reactive.event
+    def _():
+        surface = input.select_Zernike()
+
+        (_, _, _, _, _, _, wfe_elems, _, _) = app_elems(config.get())
+        zernike_elems = wfe_elems[1]
+
+        print(zernike_elems)
+    
     @render.text
-    @reactive.event(input.open_ini, input.select_zernike)
+    @reactive.event(input.open_ini, input.select_Zernike)
     def zernike_inputs():
         req(config.get().sections())
-        req(input.select_zernike())
+        req(input.select_Zernike())
 
         refresh_ui(
             "zernike_inputs",
             [ui.output_text_verbatim("zernike_inputs", placeholder=True)],
         )
 
-        surface = input.select_zernike()
+        surface = input.select_Zernike()
 
         (_, _, _, _, _, _, wfe_elems, _, _) = app_elems(config.get())
         zernike_elems = wfe_elems[1]
@@ -524,12 +538,12 @@ def server(input, output, session):
     @reactive.event(input.do_plot_zernike)
     def plot_zernike():
         req(input.do_plot_zernike())
-        req(input.select_zernike())
+        req(input.select_Zernike())
         req(config.get().sections())
 
         to_ini(input=input, config=config, tmp=cache / "tmp.ini")
 
-        surface = input.select_zernike()
+        surface = input.select_Zernike()
         surface_key = int(surface[1:])
         zernike_section = f"lens_{surface_key:02d}"
         zernike_section = config.get()[zernike_section]
@@ -586,9 +600,52 @@ def server(input, output, session):
             [ui.output_text_verbatim("plot_zernike_inputs", placeholder=True)],
         )
 
-        surface = input.select_zernike()
+        surface = input.select_Zernike()
 
         return f"Surface: {surface}"
+    
+    @reactive.calc
+    def calc_PSD():
+        req(config.get().sections())
+        req(input.select_PSD())
+
+        surface = input.select_PSD()
+
+        # (_, _, _, _, _, _, wfe_elems, _, _) = app_elems(config.get())
+        # PSD_elems = wfe_elems[4]
+
+        # surface_key = int(surface[1:])
+        # refresh_ui("PSD", PSD_elems, mode="nested-dict", key=surface_key)
+
+        return f"PSD output for {surface}"
+
+    @render.text
+    @reactive.event(input.open_ini, input.select_PSD)
+    def PSD_inputs():
+        req(input.select_PSD())
+
+        refresh_ui(
+            "PSD_inputs",
+            [ui.output_text_verbatim("PSD_inputs", placeholder=True)],
+        )
+
+        surface = input.select_PSD()
+
+        return f"Surface: {surface}"
+
+    @render.text
+    @reactive.event(input.calc_PSD)
+    def PSD_output():
+        req(input.calc_PSD())
+
+        refresh_ui(
+            "PSD_output",
+            [ui.output_text_verbatim("PSD_output", placeholder=True)],
+        )
+
+        to_ini(input=input, config=config, tmp=cache / "tmp.ini")
+
+        return calc_PSD()
 
     @reactive.effect
     @reactive.event(input.open_ini)
@@ -627,12 +684,9 @@ def server(input, output, session):
             zernike_sidebar_elems,
             zernike_elems,
             zernike_tab_elems,
-            psd_sidebar_elems,
-            psd_elems,
-            psd_tab_elems,
-            gridsag_sidebar_elems,
-            gridsag_elems,
-            gridsag_tab_elems,
+            PSD_sidebar_elems,
+            PSD_elems,
+            PSD_tab_elems,
         ) = wfe_elems
 
         refresh_ui("general", general_elems)
@@ -646,6 +700,11 @@ def server(input, output, session):
             for key in zernike_elems.keys():
                 refresh_ui("zernike", zernike_elems, mode="nested-dict", key=key)
         refresh_ui("zernike_tab", zernike_tab_elems)
+        refresh_ui("PSD_settings", PSD_sidebar_elems)
+        if PSD_elems:
+            for key in PSD_elems.keys():
+                refresh_ui("PSD", PSD_elems, mode="nested-dict", key=key)
+        refresh_ui("PSD_tab", PSD_tab_elems)
         refresh_ui("analysis_settings", analysis_sidebar_elems)
         refresh_ui("analysis", analysis_elems)
 

@@ -1,8 +1,8 @@
 from shiny import ui
 
 from paos import Zernike
+from paos import PSD
 
-from paos.gui.core.shared import ellipsis
 from paos.gui.core.shared import output_text_verbatim
 from paos.gui.core.shared import ICONS
 from paos.gui.core.shared import card_header_class_
@@ -286,6 +286,8 @@ def app_elems(config):
         zindex = item.get("zindex", "").split(",")
         zcoeff = item.get("z", "").split(",")
 
+        print(zindex, zcoeff)
+
         ordering = item.get("par2")
         azimuthal, radial = Zernike.j2mn(N=len(zindex), ordering=ordering)
 
@@ -319,9 +321,9 @@ def app_elems(config):
         zernike_sidebar_elems = [
             *[
                 ui.input_select(
-                    id=f"select_{name}", label=f"Choose {name}", choices=choice
+                    id=f"select_{name}", label=f"Select {name}", choices=choice
                 )
-                for name, choice in zip(["zernike"], [zernike_choices])
+                for name, choice in zip(["Zernike"], [zernike_choices])
             ],
         ]
         zernike_tab_elems = [
@@ -351,7 +353,7 @@ def app_elems(config):
         zernike_sidebar_elems = []
         zernike_tab_elems = []
 
-    psd_elems = {}
+    PSD_elems = {}
     for key in config.sections():
         if not key.startswith("lens_"):
             continue
@@ -360,43 +362,101 @@ def app_elems(config):
             continue
 
         n = int(key.split("_")[1])
-        psd_elems[n] = {}
+        PSD_elems[n] = {}
+        PSD_elems[n][0] = {}
 
-    if psd_elems:
-        psd_sidebar_elems = []
-        psd_tab_elems = []
+        A = float(item.get("Par1"))
+        B = float(item.get("Par2"))
+        C = float(item.get("Par3"))
+        fknee = float(item.get("Par4"))
+        fmin = float(item.get("Par5"))
+        fmax = float(item.get("Par6"))
+        # SR = item.get("Par7")
+        # units = item.get("Par8")
+
+        PSD_elems[n][0]["A"] = {
+            "f": ui.p,
+            "width": 1,
+            "value": f"{A:.3f}",
+        }
+        PSD_elems[n][0]["B"] = {
+            "f": ui.p,
+            "width": 1,
+            "value": f"{B:.3f}",
+        }
+        PSD_elems[n][0]["C"] = {
+            "f": ui.p,
+            "width": 1,
+            "value": f"{C:.3f}",
+        }
+        PSD_elems[n][0]["fknee"] = {
+            "f": ui.p,
+            "width": 1,
+            "value": f"{fknee:.3f}",
+        }
+        PSD_elems[n][0]["fmin"] = {
+            "f": ui.p,
+            "width": 1,
+            "value": f"{fmin:.3f}",
+        }
+        PSD_elems[n][0]["fmax"] = {
+            "f": ui.p,
+            "width": 1,
+            "value": f"{fmax:.3f}",
+        }
+        sfe_rms = PSD.sfe_rms(A, B, C, fknee, fmin, fmax)
+        PSD_elems[n][0]["sfe_rms"] = {
+            "f": ui.p,
+            "width": 1,
+            "value": f"{sfe_rms:.3f}",
+        }
+
+    if PSD_elems:
+        PSD_choices = [f"S{n}" for n in PSD_elems]
+
+        PSD_sidebar_elems = [
+            *[
+                ui.input_select(
+                    id=f"select_{name}", label=f"Select {name}", choices=choice
+                )
+                for name, choice in zip(["PSD"], [PSD_choices])
+            ],
+        ]
+        PSD_tab_elems = [
+            ui.navset_card_pill(
+                ui.nav_panel(
+                    "Explorer",
+                    output_text_verbatim("PSD_inputs"),
+                    nested_div("PSD"),
+                    output_text_verbatim("PSD_output"),
+                    ui.tags.div(
+                        ui.input_action_button("calc_PSD", "Run", icon=ICONS["run"]),
+                    ),
+                ),
+                ui.nav_panel(
+                    "Plots",
+                    output_text_verbatim("plot_PSD_inputs"),
+                    ui.output_plot("plot_PSD"),
+                    ui.tags.div(
+                        ui.input_action_button("do_plot_PSD", "Run", icon=ICONS["run"]),
+                        ui.input_action_button(
+                            "download_plot_PSD", "Download", icon=ICONS["save"]
+                        ),
+                    ),
+                ),
+            ),
+        ]
     else:
-        psd_sidebar_elems = []
-        psd_tab_elems = []
-
-    gridsag_elems = {}
-    for key in config.sections():
-        if not key.startswith("lens_"):
-            continue
-        item = config[key]
-        if not item.get("surfacetype") == "Grid Sag":
-            continue
-
-        n = int(key.split("_")[1])
-        gridsag_elems[n] = {}
-
-    if gridsag_elems:
-        gridsag_sidebar_elems = []
-        gridsag_tab_elems = []
-    else:
-        gridsag_sidebar_elems = []
-        gridsag_tab_elems = []
+        PSD_sidebar_elems = []
+        PSD_tab_elems = []
 
     wfe_elems = (
         zernike_sidebar_elems,
         zernike_elems,
         zernike_tab_elems,
-        psd_sidebar_elems,
-        psd_elems,
-        psd_tab_elems,
-        gridsag_sidebar_elems,
-        gridsag_elems,
-        gridsag_tab_elems,
+        PSD_sidebar_elems,
+        PSD_elems,
+        PSD_tab_elems,
     )
 
     surface_choices = [f"S{n}" for n in lens_elems if lens_elems[n]["Save"]["value"]]
@@ -406,7 +466,7 @@ def app_elems(config):
 
     analysis_sidebar_elems = [
         *[
-            ui.input_select(id=f"select_{name}", label=f"Choose {name}", choices=choice)
+            ui.input_select(id=f"select_{name}", label=f"Select {name}", choices=choice)
             for name, choice in zip(["field", "wl"], [field_choices, wl_choices])
         ],
     ]
@@ -443,18 +503,18 @@ def app_elems(config):
                         *[
                             ui.input_select(
                                 id="plot_select_surface",
-                                label="Choose surface",
+                                label="Select surface",
                                 choices=surface_choices,
                                 selected=surface_choices[-1],
                             ),
                             ui.input_select(
                                 id="plot_select_scale",
-                                label="Choose scale",
+                                label="Select scale",
                                 choices=["log", "linear"],
                             ),
                             ui.input_text(
                                 id="plot_select_zoom",
-                                label="Choose zoom",
+                                label="Select zoom",
                                 value=1.0,
                             ),
                             ui.input_checkbox(
