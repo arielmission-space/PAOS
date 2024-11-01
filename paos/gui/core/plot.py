@@ -1,10 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle, Ellipse
-
-from paos import Zernike, PolyOrthoNorm
+from matplotlib.patches import Rectangle
+from matplotlib.patches import Ellipse
 
 from paos import logger
+from paos import Zernike
+from paos import PolyOrthoNorm
 
 
 plt.rcParams["figure.facecolor"] = "white"
@@ -140,7 +141,7 @@ def simple_plot(
         im = axis.imshow(ima, origin=origin, cmap=plt.get_cmap(cmap))
         cbar_label = "power/pix"
     else:
-        print("ima_scale shall be either log or linear")
+        logger.error("ima_scale shall be either log or linear")
         raise KeyError("ima_scale shall be either log or linear")
 
     fig.colorbar(im, ax=axis, orientation="vertical", label=cbar_label)

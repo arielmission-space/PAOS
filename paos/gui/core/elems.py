@@ -286,8 +286,6 @@ def app_elems(config):
         zindex = item.get("zindex", "").split(",")
         zcoeff = item.get("z", "").split(",")
 
-        print("original", zindex, zcoeff)
-
         ordering = item.get("par2")
         azimuthal, radial = Zernike.j2mn(N=len(zindex), ordering=ordering)
 
@@ -295,27 +293,25 @@ def app_elems(config):
             zernike_elems[n][zi] = {}
             zernike_elems[n][zi]["n"] = {
                 "f": ui.p,
-                "width": 3,
+                "width": 1,
                 "value": radial[int(zi)],
             }
             zernike_elems[n][zi]["m"] = {
                 "f": ui.p,
-                "width": 3,
+                "width": 1,
                 "value": azimuthal[int(zi)],
             }
             zernike_elems[n][zi]["Zindex"] = {
                 "f": ui.p,
-                "width": 3,
+                "width": 1,
                 "value": zi,
             }
             zernike_elems[n][zi]["Zcoeff"] = {
                 "f": ui.input_text,
-                "width": 3,
+                "width": 1,
                 "value": zc,
                 "prefix": f"lens_{n}_",
             }
-
-        print("Created")
 
     if zernike_elems:
         zernike_choices = [f"S{n}" for n in zernike_elems]
@@ -373,8 +369,9 @@ def app_elems(config):
         fknee = float(item.get("Par4"))
         fmin = float(item.get("Par5"))
         fmax = float(item.get("Par6"))
-        # SR = item.get("Par7")
-        # units = item.get("Par8")
+        SR = item.get("Par7")
+        units = item.get("Par8")
+        sfe_rms = PSD.sfe_rms(A, B, C, fknee, fmin, fmax)
 
         PSD_elems[n][0]["A"] = {
             "f": ui.p,
@@ -406,11 +403,20 @@ def app_elems(config):
             "width": 1,
             "value": f"{fmax:.3f}",
         }
-        sfe_rms = PSD.sfe_rms(A, B, C, fknee, fmin, fmax)
-        PSD_elems[n][0]["sfe_rms"] = {
+        PSD_elems[n][0]["PSD SFE RMS"] = {
             "f": ui.p,
             "width": 1,
             "value": f"{sfe_rms:.3f}",
+        }
+        PSD_elems[n][0]["SR RMS"] = {
+            "f": ui.p,
+            "width": 1,
+            "value": f"{SR}",
+        }
+        PSD_elems[n][0]["SFE units"] = {
+            "f": ui.p,
+            "width": 1,
+            "value": f"{units}",
         }
 
     if PSD_elems:
@@ -429,11 +435,12 @@ def app_elems(config):
                 ui.nav_panel(
                     "Explorer",
                     output_text_verbatim("PSD_inputs"),
-                    nested_div("PSD"),
-                    output_text_verbatim("PSD_output"),
                     ui.tags.div(
                         ui.input_action_button("calc_PSD", "Run", icon=ICONS["run"]),
                     ),
+                    vspace,
+                    output_text_verbatim("PSD_output"),
+                    nested_div("PSD"),
                 ),
                 ui.nav_panel(
                     "Plots",

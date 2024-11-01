@@ -15,6 +15,7 @@ from shiny import req
 from shiny.types import FileInfo
 
 import paos
+from paos import logger
 from paos import __pkg_name__
 from paos import __version__
 from paos import __author__
@@ -239,7 +240,7 @@ def server(input, output, session):
     def download_raytrace_txt():
         raytrace: str = calc_raytrace()
         outfile: list[FileInfo] | None = input.save_txt()
-        print(f"Downloaded {outfile}")
+        logger.info(f"Downloaded {outfile}")
 
         with open(cache / outfile, "w") as f:
             f.write(raytrace)
@@ -602,13 +603,13 @@ def server(input, output, session):
 
         surface = input.select_PSD()
 
-        # (_, _, _, _, _, _, wfe_elems, _, _) = app_elems(config.get())
-        # PSD_elems = wfe_elems[4]
+        (_, _, _, _, _, _, wfe_elems, _, _) = app_elems(config.get())
+        PSD_elems = wfe_elems[4]
 
-        # surface_key = int(surface[1:])
-        # refresh_ui("PSD", PSD_elems, mode="nested-dict", key=surface_key)
+        surface_key = int(surface[1:])
+        refresh_ui("PSD", PSD_elems, mode="nested-dict", key=surface_key)
 
-        return f"PSD output for {surface}"
+        return f"PSD stats for Surface: {surface}"
 
     @render.text
     @reactive.event(input.open_ini, input.select_PSD)
@@ -649,7 +650,7 @@ def server(input, output, session):
             return
 
         if not file[0]["name"].endswith(".ini"):
-            print("Invalid file")
+            logger.error("Invalid file")
             return
 
         if ini_file.get().endswith(".ini") and ini_file.get() != file[0]["name"]:
@@ -698,6 +699,9 @@ def server(input, output, session):
         refresh_ui("PSD_tab", PSD_tab_elems)
         refresh_ui("analysis_settings", analysis_sidebar_elems)
         refresh_ui("analysis", analysis_elems)
+
+        with open(cache / "tmp.ini", "w") as f:
+            config.get().write(f)
 
     @reactive.effect
     @reactive.event(input.close)
