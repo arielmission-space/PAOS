@@ -176,7 +176,7 @@ def app_ui(request: StarletteRequest) -> Tag:
             ),
         ),
         window_title=f"{__pkg_name__} GUI",
-        selected="System Explorer",
+        selected="Optical Analysis",
     )
 
 
@@ -504,20 +504,11 @@ def server(input, output, session):
         )
         ui.modal_show(m)
 
-    @reactive.event
-    def _():
-        surface = input.select_Zernike()
-
-        (_, _, _, _, _, _, wfe_elems, _, _) = app_elems(config.get())
-        zernike_elems = wfe_elems[1]
-
-        print(zernike_elems)
-    
     @render.text
     @reactive.event(input.open_ini, input.select_Zernike)
     def zernike_inputs():
         req(config.get().sections())
-        req(input.select_Zernike())
+        # req(input.select_Zernike())
 
         refresh_ui(
             "zernike_inputs",
@@ -603,7 +594,7 @@ def server(input, output, session):
         surface = input.select_Zernike()
 
         return f"Surface: {surface}"
-    
+
     @reactive.calc
     def calc_PSD():
         req(config.get().sections())

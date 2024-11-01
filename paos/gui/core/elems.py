@@ -286,7 +286,7 @@ def app_elems(config):
         zindex = item.get("zindex", "").split(",")
         zcoeff = item.get("z", "").split(",")
 
-        print(zindex, zcoeff)
+        print("original", zindex, zcoeff)
 
         ordering = item.get("par2")
         azimuthal, radial = Zernike.j2mn(N=len(zindex), ordering=ordering)
@@ -314,6 +314,8 @@ def app_elems(config):
                 "value": zc,
                 "prefix": f"lens_{n}_",
             }
+
+        print("Created")
 
     if zernike_elems:
         zernike_choices = [f"S{n}" for n in zernike_elems]

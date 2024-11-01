@@ -42,6 +42,12 @@ def to_ini(input, config, tmp):
             zcoeffs = {
                 key: values[key]() for key in values.keys() if f"lens_{i}_Zcoeff" in key
             }
+            print("zzz", zcoeffs)
+
+            vvv = {
+                key: values[key]() for key in values.keys() if f"lens_{i}" in key
+            }
+            print("vvv", vvv)
             zcoeffs = dict(
                 sorted(zcoeffs.items(), key=lambda item: int(item[0].split("_")[3]))
             )
@@ -52,6 +58,8 @@ def to_ini(input, config, tmp):
 
             dictionary[f"lens_{i:02d}"]["zindex"] = zindex
             dictionary[f"lens_{i:02d}"]["z"] = zcoeffs
+
+            print("hellooo", zindex, zcoeffs)
 
         aperture_type = get_value(f"lens_Aperture_Type_{i}_9")
         aperture_xhw = get_value(f"lens_Aperture_xhw_{i}_9")
