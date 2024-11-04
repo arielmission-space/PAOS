@@ -152,7 +152,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                         title="Settings",
                         width="20vw",
                     ),
-                    ui.card(nested_div("analysis"), full_screen=True),
+                    nested_div("analysis"),
                 ),
             ),
             id="navbar",
