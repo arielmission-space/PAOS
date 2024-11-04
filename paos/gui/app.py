@@ -46,12 +46,14 @@ def app_ui(request: StarletteRequest) -> Tag:
                             ui.card_body(
                                 nested_div("general"),
                             ),
+                            fill=False,
                         ),
                         ui.card(
                             ui.card_header("Units"),
                             ui.card_body(
                                 nested_div("units"),
                             ),
+                            fill=False,
                         ),
                         ui.card(
                             ui.card_header("Simulation"),
@@ -72,6 +74,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                                 nested_div("field"),
                             ),
                             fill=False,
+                            max_height="70vh",
                         ),
                         ui.card(
                             ui.card_header(
@@ -85,6 +88,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                                 nested_div("wl"),
                             ),
                             fill=False,
+                            max_height="70vh",
                         ),
                     ],
                 ),
@@ -94,6 +98,7 @@ def app_ui(request: StarletteRequest) -> Tag:
             "Lens Editor",
             ui.card(
                 nested_div("lens"),
+                max_height="75vh",
             ),
         ),
         ui.nav_panel(
@@ -106,9 +111,9 @@ def app_ui(request: StarletteRequest) -> Tag:
                         ui.sidebar(
                             nested_div("zernike_settings"),
                             title="Settings",
-                            width=350,
+                            width="20vw",
                         ),
-                        ui.card(nested_div("zernike_tab"), full_screen=True),
+                        nested_div("zernike_tab"),
                     ),
                 ),
                 ui.nav_panel(
@@ -117,9 +122,9 @@ def app_ui(request: StarletteRequest) -> Tag:
                         ui.sidebar(
                             nested_div("PSD_settings"),
                             title="Settings",
-                            width=350,
+                            width="20vw",
                         ),
-                        ui.card(nested_div("PSD_tab"), full_screen=True),
+                        nested_div("PSD_tab"),
                     ),
                 ),
                 ui.nav_panel(
@@ -128,9 +133,9 @@ def app_ui(request: StarletteRequest) -> Tag:
                         ui.sidebar(
                             nested_div("gridsag_settings"),
                             title="Settings",
-                            width=350,
+                            width="20vw",
                         ),
-                        ui.card(nested_div("gridsag_tab"), full_screen=True),
+                        nested_div("gridsag_tab"),
                     ),
                 ),
                 ui.nav_spacer(),
@@ -142,7 +147,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                 ui.sidebar(
                     nested_div("analysis_settings"),
                     title="Settings",
-                    width=350,
+                    width="20vw",
                 ),
                 ui.card(nested_div("analysis"), full_screen=True),
             ),

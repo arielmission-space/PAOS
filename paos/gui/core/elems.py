@@ -332,6 +332,7 @@ def app_elems(config):
                         output_text_verbatim("zernike_inputs"),
                         nested_div("zernike"),
                     ),
+                    max_height="60vh",
                 ),
                 ui.card(
                     ui.card_header("Plot"),
@@ -347,7 +348,7 @@ def app_elems(config):
                             ),
                         ),
                     ),
-                    fill=False,
+                    max_height="60vh",
                 ),
             ),
         ]
@@ -450,6 +451,7 @@ def app_elems(config):
                         output_text_verbatim("PSD_output"),
                         nested_div("PSD"),
                     ),
+                    max_height="60vh",
                 ),
                 ui.card(
                     ui.card_header("Plot"),
@@ -465,6 +467,7 @@ def app_elems(config):
                             ),
                         ),
                     ),
+                    max_height="60vh",
                 ),
             ),
         ]
