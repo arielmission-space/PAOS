@@ -23,9 +23,6 @@ def app_elems(config):
             "Version",
             value=config["general"].get("version", "0.1"),
         ),
-    ]
-
-    units_elems = [
         ui.p("Lens: ", config["general"].get("lens_unit", "m")),
         ui.p("Angle: ", config["general"].get("angle_unit", "degrees")),
         ui.p(
@@ -591,7 +588,6 @@ def app_elems(config):
 
     return (
         general_elems,
-        units_elems,
         sim_elems,
         field_elems,
         wl_elems,

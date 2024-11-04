@@ -48,13 +48,13 @@ def app_ui(request: StarletteRequest) -> Tag:
                             ),
                             fill=False,
                         ),
-                        ui.card(
-                            ui.card_header("Units"),
-                            ui.card_body(
-                                nested_div("units"),
-                            ),
-                            fill=False,
-                        ),
+                        # ui.card(
+                        #     ui.card_header("Units"),
+                        #     ui.card_body(
+                        #         nested_div("units"),
+                        #     ),
+                        #     fill=False,
+                        # ),
                         ui.card(
                             ui.card_header("Simulation"),
                             ui.card_body(
@@ -525,7 +525,7 @@ def server(input, output, session):
 
         surface = input.select_Zernike()
 
-        wfe_elems = app_elems(config.get())[6]
+        wfe_elems = app_elems(config.get())[5]
         zernike_elems = wfe_elems[1]
 
         surface_key = int(surface[1:])
@@ -608,7 +608,7 @@ def server(input, output, session):
 
         surface = input.select_PSD()
 
-        wfe_elems = app_elems(config.get())[6]
+        wfe_elems = app_elems(config.get())[5]
         PSD_elems = wfe_elems[4]
 
         surface_key = int(surface[1:])
@@ -665,7 +665,6 @@ def server(input, output, session):
 
         (
             general_elems,
-            units_elems,
             sim_elems,
             field_elems,
             wl_elems,
@@ -685,7 +684,6 @@ def server(input, output, session):
         ) = wfe_elems
 
         refresh_ui("general", general_elems)
-        refresh_ui("units", units_elems)
         refresh_ui("sim", sim_elems)
         refresh_ui("field", field_elems, mode="body")
         refresh_ui("wl", wl_elems, mode="body")
