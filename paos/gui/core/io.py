@@ -46,6 +46,8 @@ def to_ini(input, config, tmp):
                 sorted(zcoeffs.items(), key=lambda item: int(item[0].split("_")[3]))
             )
             zcoeffs = list(zcoeffs.values())
+            if not zcoeffs:
+                zcoeffs = config.get()[f"lens_{i:02d}"]["z"].split(",")
             zindex = list(range(len(zcoeffs)))
             zcoeffs = ",".join(zcoeffs)
             zindex = ",".join(map(str, zindex))
