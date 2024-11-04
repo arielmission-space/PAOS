@@ -7,7 +7,7 @@ from paos.log.logger import setLogLevel
 
 
 def main():
-    logger.log("Announce", f"Starting {__pkg_name__} v{__version__}...")
+    setLogLevel("INFO")
 
     import os
     from pathlib import Path
@@ -127,8 +127,8 @@ def main():
         )
         Path(os.path.dirname(args.output)).mkdir(parents=True, exist_ok=True)
 
-    if not args.debug:
-        setLogLevel("INFO")
+    if args.debug:
+        setLogLevel("DEBUG")
     if args.log:
         if isinstance(args.output, str):
             input_fname = Path(args.conf).stem
@@ -137,6 +137,8 @@ def main():
             addLogFile(fname=fname)
         else:
             addLogFile()
+
+    logger.log("Announce", f"Starting {__pkg_name__} v{__version__}...")
 
     pipeline(passvalue)
 

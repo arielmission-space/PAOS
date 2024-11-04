@@ -128,7 +128,6 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         if item["type"] == "Zernike":
             logger.trace("Apply Zernike")
             radius = item["Zradius"] if np.isfinite(item["Zradius"]) else wfo.wz
-            print(item["Zindex"])
             wfo.zernikes(
                 item["Zindex"],
                 item["Z"],
