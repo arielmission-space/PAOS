@@ -537,8 +537,8 @@ def app_elems(config):
             ),
             ui.card(
                 ui.card_header(
-                    "Plot",
                     ui.tags.div(
+                        "Plot",
                         ui.popover(
                             ICONS["gear"],
                             *[
