@@ -494,70 +494,92 @@ def app_elems(config):
     ]
 
     analysis_elems = [
-        ui.navset_card_pill(
-            ui.nav_panel(
-                "Fresnel POP",
-                output_text_verbatim("pop_inputs"),
-                output_text_verbatim("pop_output"),
-                ui.tags.div(
-                    ui.input_action_button("calc_pop", "Run", icon=ICONS["run"]),
-                    ui.input_action_button(
-                        "download_pop", "Download", icon=ICONS["save"]
+        ui.layout_column_wrap(
+            ui.navset_card_tab(
+                ui.nav_panel(
+                    "Fresnel POP",
+                    ui.card(
+                        ui.card_body(
+                            output_text_verbatim("pop_inputs"),
+                            output_text_verbatim("pop_output"),
+                        ),
+                        ui.card_footer(
+                            ui.tags.div(
+                                ui.input_action_button(
+                                    "calc_pop", "Run", icon=ICONS["run"]
+                                ),
+                                ui.input_action_button(
+                                    "download_pop", "Download", icon=ICONS["save"]
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                ui.nav_panel(
+                    "Ray Tracing",
+                    ui.card(
+                        ui.card_body(
+                            output_text_verbatim("raytrace_inputs"),
+                            output_text_verbatim("raytrace_output"),
+                        ),
+                        ui.card_footer(
+                            ui.tags.div(
+                                ui.input_action_button(
+                                    "calc_raytrace", "Run", icon=ICONS["run"]
+                                ),
+                                ui.input_action_button(
+                                    "download_raytrace", "Download", icon=ICONS["save"]
+                                ),
+                            ),
+                        ),
                     ),
                 ),
             ),
-            ui.nav_panel(
-                "Ray Tracing",
-                output_text_verbatim("raytrace_inputs"),
-                output_text_verbatim("raytrace_output"),
-                ui.tags.div(
-                    ui.input_action_button("calc_raytrace", "Run", icon=ICONS["run"]),
-                    ui.input_action_button(
-                        "download_raytrace", "Download", icon=ICONS["save"]
+            ui.card(
+                ui.card_header(
+                    "Plot",
+                    ui.tags.div(
+                        ui.popover(
+                            ICONS["gear"],
+                            *[
+                                ui.input_select(
+                                    id="plot_select_surface",
+                                    label="Select surface",
+                                    choices=surface_choices,
+                                    selected=surface_choices[-1],
+                                ),
+                                ui.input_select(
+                                    id="plot_select_scale",
+                                    label="Select scale",
+                                    choices=["log", "linear"],
+                                ),
+                                ui.input_text(
+                                    id="plot_select_zoom",
+                                    label="Select zoom",
+                                    value=1.0,
+                                ),
+                                ui.input_checkbox(
+                                    id="plot_select_dark_rings",
+                                    label="Dark rings",
+                                    value=True,
+                                ),
+                            ],
+                            title="Settings",
+                            placement="top",
+                        ),
+                        class_=card_header_class_,
                     ),
                 ),
-            ),
-            ui.nav_panel(
-                "Plot",
-                ui.tags.div(
-                    ui.popover(
-                        ICONS["gear"],
-                        *[
-                            ui.input_select(
-                                id="plot_select_surface",
-                                label="Select surface",
-                                choices=surface_choices,
-                                selected=surface_choices[-1],
-                            ),
-                            ui.input_select(
-                                id="plot_select_scale",
-                                label="Select scale",
-                                choices=["log", "linear"],
-                            ),
-                            ui.input_text(
-                                id="plot_select_zoom",
-                                label="Select zoom",
-                                value=1.0,
-                            ),
-                            ui.input_checkbox(
-                                id="plot_select_dark_rings",
-                                label="Dark rings",
-                                value=True,
-                            ),
-                        ],
-                        title="Settings",
-                        placement="top",
-                    ),
-                    class_=card_header_class_,
+                ui.card_body(
+                    output_text_verbatim("plot_inputs"),
+                    ui.output_plot("plot"),
                 ),
-                vspace,
-                output_text_verbatim("plot_inputs"),
-                ui.output_plot("plot"),
-                vspace,
-                ui.tags.div(
-                    ui.input_action_button("do_plot", "Run", icon=ICONS["run"]),
-                    ui.input_action_button(
-                        "download_plot", "Download", icon=ICONS["save"]
+                ui.card_footer(
+                    ui.tags.div(
+                        ui.input_action_button("do_plot", "Run", icon=ICONS["run"]),
+                        ui.input_action_button(
+                            "download_plot", "Download", icon=ICONS["save"]
+                        ),
                     ),
                 ),
             ),
