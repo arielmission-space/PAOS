@@ -189,7 +189,6 @@ def app_ui(request: StarletteRequest) -> Tag:
             window_title=f"{__pkg_name__} GUI",
             selected="Optical Analysis",
         ),
-        # theme=shinyswatch.theme.superhero,
     )
 
 
