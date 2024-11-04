@@ -460,7 +460,7 @@ def app_elems(config):
                                 *[
                                     ui.input_text(
                                         id="PSD_plot_phi",
-                                        label="Select D [mm]",
+                                        label="D [mm]",
                                         value=110.0,
                                     ),
                                 ],
