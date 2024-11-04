@@ -439,14 +439,15 @@ def app_elems(config):
                     ui.card_header("Explorer"),
                     ui.card_body(
                         output_text_verbatim("PSD_inputs"),
+                        output_text_verbatim("PSD_output"),
+                        nested_div("PSD"),
+                    ),
+                    ui.card_footer(
                         ui.tags.div(
                             ui.input_action_button(
                                 "calc_PSD", "Run", icon=ICONS["run"]
                             ),
                         ),
-                        vspace,
-                        output_text_verbatim("PSD_output"),
-                        nested_div("PSD"),
                     ),
                     max_height="60vh",
                 ),
