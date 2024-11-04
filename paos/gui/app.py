@@ -539,6 +539,20 @@ def server(input, output, session):
 
         return f"Surface: {surface}"
 
+    @render.text
+    @reactive.event(input.do_plot_zernike)
+    def plot_Zernike_inputs():
+        req(input.do_plot_zernike())
+
+        refresh_ui(
+            "plot_Zernike_inputs",
+            [ui.output_text_verbatim("plot_Zernike_inputs", placeholder=True)],
+        )
+
+        surface = input.select_Zernike()
+
+        return f"Surface: {surface}"
+    
     @render.plot(alt="Zernike plot")
     @reactive.event(input.do_plot_zernike)
     def plot_zernike():
@@ -593,20 +607,6 @@ def server(input, output, session):
 
         return os.path.join(os.path.dirname(__file__), "cache", outfile)
 
-    @render.text
-    @reactive.event(input.do_plot_zernike)
-    def plot_Zernike_inputs():
-        req(input.do_plot_zernike())
-
-        refresh_ui(
-            "plot_Zernike_inputs",
-            [ui.output_text_verbatim("plot_Zernike_inputs", placeholder=True)],
-        )
-
-        surface = input.select_Zernike()
-
-        return f"Surface: {surface}"
-
     @reactive.calc
     def calc_PSD():
         req(config.get().sections())
@@ -647,6 +647,60 @@ def server(input, output, session):
         )
 
         return calc_PSD()
+    
+    @render.text
+    @reactive.event(input.do_plot_PSD)
+    def plot_PSD_inputs():
+        req(input.do_plot_PSD())
+
+        refresh_ui(
+            "plot_PSD_inputs",
+            [ui.output_text_verbatim("plot_PSD_inputs", placeholder=True)],
+        )
+
+        surface = input.select_PSD()
+
+        return f"Surface: {surface}"
+    
+    @render.plot(alt="PSD plot")
+    @reactive.event(input.do_plot_PSD)
+    def plot_PSD():
+        req(input.do_plot_PSD())
+        req(input.select_PSD())
+        req(config.get().sections())
+
+        surface = input.select_PSD()
+        surface_key = int(surface[1:])
+        PSD_section = f"lens_{surface_key:02d}"
+        PSD_section = config.get()[PSD_section]
+
+        fig, ax = plt.subplots()
+        # PSD_plot(
+        #     fig=fig,
+        #     axis=ax,
+        #     surface=surface,
+        #     PSD_section=PSD_section,
+        #     grid_size=int(input.grid_size()),
+        # )
+
+        figure_PSD.set(fig)
+
+        return fig
+    
+    @reactive.effect
+    @reactive.event(input.download_plot_PSD)
+    def download_plot_PSD():
+        req(config.get().sections())
+        req(input.do_plot_PSD())
+        modal_download("plot_PSD", "pdf")
+
+    @render.download
+    def download_plot_PSD_pdf():
+        outfile: list[FileInfo] | None = input.save_pdf()
+
+        figure_PSD.get().savefig(cache / outfile)
+
+        return os.path.join(os.path.dirname(__file__), "cache", outfile)
 
     @reactive.effect
     @reactive.event(input.open_ini)
