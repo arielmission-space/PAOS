@@ -98,7 +98,7 @@ def app_ui(request: StarletteRequest) -> Tag:
         ),
         ui.nav_panel(
             "Wavefront Editor",
-            ui.navset_card_pill(
+            ui.navset_card_tab(
                 ui.nav_spacer(),
                 ui.nav_panel(
                     "Zernike",
