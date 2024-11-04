@@ -99,6 +99,7 @@ def app_ui(request: StarletteRequest) -> Tag:
         ui.nav_panel(
             "Wavefront Editor",
             ui.navset_card_pill(
+                ui.nav_spacer(),
                 ui.nav_panel(
                     "Zernike",
                     ui.layout_sidebar(
@@ -132,6 +133,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                         ui.card(nested_div("gridsag_tab"), full_screen=True),
                     ),
                 ),
+                ui.nav_spacer(),
             ),
         ),
         ui.nav_panel(
@@ -607,7 +609,7 @@ def server(input, output, session):
         surface_key = int(surface[1:])
         refresh_ui("PSD", PSD_elems, mode="nested-dict", key=surface_key)
 
-        return f"PSD stats for Surface: {surface}"
+        return f"Stats for Surface: {surface}"
 
     @render.text
     @reactive.event(input.open_ini, input.select_PSD)

@@ -347,6 +347,7 @@ def app_elems(config):
                             ),
                         ),
                     ),
+                    fill=False,
                 ),
             ),
         ]
