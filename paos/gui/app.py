@@ -13,6 +13,7 @@ from shiny import ui
 from shiny import reactive
 from shiny import req
 from shiny.types import FileInfo
+import shinyswatch
 
 import paos
 from paos import logger
@@ -34,148 +35,158 @@ from paos.gui.core.shared import modal_download
 
 
 def app_ui(request: StarletteRequest) -> Tag:
-    return ui.page_navbar(
-        ui.nav_spacer(),
-        ui.nav_panel(
-            "System Explorer",
-            ui.card(
-                ui.layout_column_wrap(
-                    *[
-                        ui.card(
-                            ui.card_header("General"),
-                            ui.card_body(
-                                nested_div("general"),
-                            ),
-                            fill=False,
-                        ),
-                        ui.card(
-                            ui.card_header("Simulation"),
-                            ui.card_body(
-                                nested_div("sim"),
-                            ),
-                            fill=False,
-                        ),
-                        ui.card(
-                            ui.card_header(
-                                ui.layout_columns(
-                                    {"style": "text-align: center;"},
-                                    ui.p("#"),
-                                    ui.p("Field"),
+    return ui.page_fillable(
+        # shinyswatch.theme.darkly,
+        # ui.tags.script(
+        # """
+        # Shiny.addCustomMessageHandler('refresh', function(message) {
+        #     window.location.reload();
+        # });
+        # """,
+        # ),
+        ui.page_navbar(
+            ui.nav_spacer(),
+            ui.nav_panel(
+                "System Explorer",
+                ui.card(
+                    ui.layout_column_wrap(
+                        *[
+                            ui.card(
+                                ui.card_header("General"),
+                                ui.card_body(
+                                    nested_div("general"),
                                 ),
+                                fill=False,
                             ),
-                            ui.card_body(
-                                nested_div("field"),
-                            ),
-                            fill=False,
-                            max_height="70vh",
-                        ),
-                        ui.card(
-                            ui.card_header(
-                                ui.layout_columns(
-                                    {"style": "text-align: center;"},
-                                    ui.p("#"),
-                                    ui.p("Wavelength"),
+                            ui.card(
+                                ui.card_header("Simulation"),
+                                ui.card_body(
+                                    nested_div("sim"),
                                 ),
+                                fill=False,
                             ),
-                            ui.card_body(
-                                nested_div("wl"),
+                            ui.card(
+                                ui.card_header(
+                                    ui.layout_columns(
+                                        {"style": "text-align: center;"},
+                                        ui.p("#"),
+                                        ui.p("Field"),
+                                    ),
+                                ),
+                                ui.card_body(
+                                    nested_div("field"),
+                                ),
+                                fill=False,
+                                max_height="70vh",
                             ),
-                            fill=False,
-                            max_height="70vh",
-                        ),
-                    ],
-                ),
-            ),
-        ),
-        ui.nav_panel(
-            "Lens Editor",
-            ui.card(
-                nested_div("lens"),
-                max_height="75vh",
-            ),
-        ),
-        ui.nav_panel(
-            "Wavefront Editor",
-            ui.navset_card_tab(
-                ui.nav_spacer(),
-                ui.nav_panel(
-                    "Zernike",
-                    ui.layout_sidebar(
-                        ui.sidebar(
-                            nested_div("Zernike_settings"),
-                            title="Settings",
-                            width="20vw",
-                        ),
-                        nested_div("Zernike_tab"),
+                            ui.card(
+                                ui.card_header(
+                                    ui.layout_columns(
+                                        {"style": "text-align: center;"},
+                                        ui.p("#"),
+                                        ui.p("Wavelength"),
+                                    ),
+                                ),
+                                ui.card_body(
+                                    nested_div("wl"),
+                                ),
+                                fill=False,
+                                max_height="70vh",
+                            ),
+                        ],
                     ),
                 ),
-                ui.nav_panel(
-                    "PSD",
-                    ui.layout_sidebar(
-                        ui.sidebar(
-                            nested_div("PSD_settings"),
-                            title="Settings",
-                            width="20vw",
+            ),
+            ui.nav_panel(
+                "Lens Editor",
+                ui.card(
+                    nested_div("lens"),
+                    max_height="75vh",
+                ),
+            ),
+            ui.nav_panel(
+                "Wavefront Editor",
+                ui.navset_card_tab(
+                    ui.nav_spacer(),
+                    ui.nav_panel(
+                        "Zernike",
+                        ui.layout_sidebar(
+                            ui.sidebar(
+                                nested_div("Zernike_settings"),
+                                title="Settings",
+                                width="20vw",
+                            ),
+                            nested_div("Zernike_tab"),
                         ),
-                        nested_div("PSD_tab"),
                     ),
-                ),
-                ui.nav_panel(
-                    "Grid Sag",
-                    ui.layout_sidebar(
-                        ui.sidebar(
-                            nested_div("gridsag_settings"),
-                            title="Settings",
-                            width="20vw",
+                    ui.nav_panel(
+                        "PSD",
+                        ui.layout_sidebar(
+                            ui.sidebar(
+                                nested_div("PSD_settings"),
+                                title="Settings",
+                                width="20vw",
+                            ),
+                            nested_div("PSD_tab"),
                         ),
-                        nested_div("gridsag_tab"),
                     ),
+                    ui.nav_panel(
+                        "Grid Sag",
+                        ui.layout_sidebar(
+                            ui.sidebar(
+                                nested_div("gridsag_settings"),
+                                title="Settings",
+                                width="20vw",
+                            ),
+                            nested_div("gridsag_tab"),
+                        ),
+                    ),
+                    ui.nav_spacer(),
                 ),
-                ui.nav_spacer(),
             ),
-        ),
-        ui.nav_panel(
-            "Optical Analysis",
-            ui.layout_sidebar(
-                ui.sidebar(
-                    nested_div("analysis_settings"),
-                    title="Settings",
-                    width="20vw",
+            ui.nav_panel(
+                "Optical Analysis",
+                ui.layout_sidebar(
+                    ui.sidebar(
+                        nested_div("analysis_settings"),
+                        title="Settings",
+                        width="20vw",
+                    ),
+                    ui.card(nested_div("analysis"), full_screen=True),
                 ),
-                ui.card(nested_div("analysis"), full_screen=True),
             ),
-        ),
-        id="navbar",
-        title=ui.tags.div(
-            ui.tags.a(
-                ui.tags.img(src="static/logo.png", height="50px"),
-                href="https://github.com/arielmission-space/PAOS",
-            ),
-            id="logo-top",
-            class_="navigation-logo",
-        ),
-        header=ui.page_navbar(
-            [
-                ui.nav_menu(
-                    "File",
-                    menu_panel("open"),
-                    menu_panel("save"),
-                    menu_panel("close"),
+            id="navbar",
+            title=ui.tags.div(
+                ui.tags.a(
+                    ui.tags.img(src="static/logo.png", height="50px"),
+                    href="https://github.com/arielmission-space/PAOS",
                 ),
-                ui.nav_menu(
-                    "Help",
-                    menu_panel("docs"),
-                    menu_panel("about"),
-                ),
-            ],
-        ),
-        footer=ui.panel_well(
-            ui.p(
-                f"{__pkg_name__} v{__version__}; {__author__}",
+                id="logo-top",
+                class_="navigation-logo",
             ),
+            header=ui.page_navbar(
+                [
+                    ui.nav_menu(
+                        "File",
+                        menu_panel("open"),
+                        menu_panel("save"),
+                        menu_panel("close"),
+                    ),
+                    ui.nav_menu(
+                        "Help",
+                        menu_panel("docs"),
+                        menu_panel("about"),
+                    ),
+                ],
+            ),
+            footer=ui.panel_well(
+                ui.p(
+                    f"{__pkg_name__} v{__version__}; {__author__}",
+                ),
+            ),
+            window_title=f"{__pkg_name__} GUI",
+            selected="Optical Analysis",
         ),
-        window_title=f"{__pkg_name__} GUI",
-        selected="Optical Analysis",
     )
 
 
@@ -637,7 +648,8 @@ def server(input, output, session):
 
     @reactive.effect
     @reactive.event(input.open_ini)
-    async def open_ini():
+    def open_ini():
+        # async def open_ini():
         req(input.open_ini())
         file: list[FileInfo] | None = input.open_ini()
 
@@ -649,7 +661,8 @@ def server(input, output, session):
             return
 
         if ini_file.get().endswith(".ini") and ini_file.get() != file[0]["name"]:
-            await session.send_custom_message("refresh", "")
+            return
+            # await session.send_custom_message("refresh", "")
 
         ini_file.set(file[0]["datapath"])
         config.get().read(ini_file.get())
@@ -691,6 +704,9 @@ def server(input, output, session):
         refresh_ui("PSD_tab", PSD_tab_elems)
         refresh_ui("analysis_settings", analysis_sidebar_elems)
         refresh_ui("analysis", analysis_elems)
+
+        with open(cache / "tmp.ini", "w") as f:
+            config.get().write(f)
 
     @reactive.effect
     @reactive.event(input.close)
