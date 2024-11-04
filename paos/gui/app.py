@@ -48,13 +48,6 @@ def app_ui(request: StarletteRequest) -> Tag:
                             ),
                             fill=False,
                         ),
-                        # ui.card(
-                        #     ui.card_header("Units"),
-                        #     ui.card_body(
-                        #         nested_div("units"),
-                        #     ),
-                        #     fill=False,
-                        # ),
                         ui.card(
                             ui.card_header("Simulation"),
                             ui.card_body(
