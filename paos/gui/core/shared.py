@@ -172,7 +172,7 @@ def refresh_ui(name, items, mode=None, key=""):
         items = [*fill_body(items)]
 
     ui.insert_ui(
-        ui.card(
+        ui.div(
             {"id": f"inserted-{name}-editor"},
             *items,
         ),

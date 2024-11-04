@@ -26,6 +26,7 @@ from paos.gui.core.io import to_ini
 from paos.gui.core.elems import app_elems
 from paos.gui.core.plot import simple_plot
 from paos.gui.core.plot import Zernike_plot
+from paos.gui.core.plot import PSD_plot
 from paos.gui.core.shared import ICONS
 from paos.gui.core.shared import nested_div
 from paos.gui.core.shared import menu_panel
@@ -674,14 +675,30 @@ def server(input, output, session):
         PSD_section = f"lens_{surface_key:02d}"
         PSD_section = config.get()[PSD_section]
 
+        A = float(PSD_section.get("par1"))
+        B = float(PSD_section.get("par2"))
+        C = float(PSD_section.get("par3"))
+        fknee = float(PSD_section.get("par4"))
+        fmin = float(PSD_section.get("par5"))
+        fmax = float(PSD_section.get("par6"))
+        SR = float(PSD_section.get("par7"))
+        units = PSD_section.get("par8")
+
         fig, ax = plt.subplots()
-        # PSD_plot(
-        #     fig=fig,
-        #     axis=ax,
-        #     surface=surface,
-        #     PSD_section=PSD_section,
-        #     grid_size=int(input.grid_size()),
-        # )
+        PSD_plot(
+            fig=fig,
+            axis=ax,
+            surface=surface,
+            A=A, 
+            B=B, 
+            C=C, 
+            fknee=fknee, 
+            fmin=fmin, 
+            fmax=fmax, 
+            SR=SR, 
+            units=units,
+            grid_size=int(input.grid_size()),
+        )
 
         figure_PSD.set(fig)
 

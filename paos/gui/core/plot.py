@@ -2,10 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib.patches import Ellipse
+from astropy import units as u
 
 from paos import logger
 from paos import Zernike
 from paos import PolyOrthoNorm
+from paos import PSD
 
 
 plt.rcParams["figure.facecolor"] = "white"
@@ -258,8 +260,53 @@ def Zernike_plot(
         f"{surface}" + "\n" + "Zernike errormap",
         y=1.05,
     )
-    axis.set_xlabel("pix")
-    axis.set_ylabel("pix")
+    axis.set_xlabel("pixel")
+    axis.set_ylabel("pixel")
+    axis.grid()
+
+    return
+
+
+def PSD_plot(fig, axis, surface, A, B, C, fknee, fmin, fmax, SR, units, grid_size):
+    phi_x = 110.0  # mm
+    phi_y = 110.0  # mm
+    zoom = 4
+    D = zoom * np.max([phi_x, phi_y])
+    delta = D / grid_size
+
+    x = y = np.arange(-grid_size // 2, grid_size // 2) * delta
+    xx, yy = np.meshgrid(x, y)
+    pupil = np.zeros((grid_size, grid_size))
+
+    mask = (2 * xx / phi_x) ** 2 + (2 * yy / phi_y) ** 2 <= 1
+
+    pupil[mask] = 1.0
+    wfo = np.ma.masked_array(pupil, mask=~mask)
+
+    fx = np.fft.fftfreq(wfo.shape[0], delta)
+    fxx, fyy = np.meshgrid(fx, fx)
+    f = np.sqrt(fxx**2 + fyy**2)
+    f[f == 0] = 1e-100
+
+    wfe = PSD(wfo, A, B, C, f, fknee, fmin, fmax, SR, units=u.Unit(units))()
+
+    im = axis.imshow(wfe, origin="lower", cmap=plt.get_cmap("viridis"))
+    fig.colorbar(im, ax=axis, orientation="vertical", label="WFE [m]")
+
+    axis.set_title(
+        f"{surface}" + "\n" + "PSD errormap",
+        y=1.05,
+    )
+    axis.set_xlabel("pixel")
+    axis.set_ylabel("pixel")
+    axis.set_xlim(
+        grid_size // 2 - grid_size // (2 * zoom),
+        grid_size // 2 + grid_size // (2 * zoom),
+    )
+    axis.set_ylim(
+        grid_size // 2 - grid_size // (2 * zoom),
+        grid_size // 2 + grid_size // (2 * zoom),
+    )
     axis.grid()
 
     return
