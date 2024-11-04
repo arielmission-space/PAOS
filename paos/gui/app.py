@@ -198,11 +198,13 @@ def server(input, output, session):
         input.calc_raytrace,
         input.calc_pop,
         input.calc_PSD,
+        input.do_plot_zernike,
     )
     def _():
         req(input.calc_raytrace)
         req(input.calc_pop)
         req(input.calc_PSD)
+        req(input.do_plot_zernike)
         to_ini(input=input, config=config, tmp=cache / "tmp.ini")
 
     @reactive.calc
@@ -533,8 +535,6 @@ def server(input, output, session):
         req(input.select_Zernike())
         req(config.get().sections())
 
-        to_ini(input=input, config=config, tmp=cache / "tmp.ini")
-
         surface = input.select_Zernike()
         surface_key = int(surface[1:])
         zernike_section = f"lens_{surface_key:02d}"
@@ -634,8 +634,6 @@ def server(input, output, session):
             "PSD_output",
             [ui.output_text_verbatim("PSD_output", placeholder=True)],
         )
-
-        to_ini(input=input, config=config, tmp=cache / "tmp.ini")
 
         return calc_PSD()
 
