@@ -236,7 +236,16 @@ def simple_plot(
 
 
 def Zernike_plot(
-    fig, axis, surface, index, Z, wavelength, ordering, normalize, orthonorm, grid_size
+    fig,
+    axis,
+    surface,
+    index,
+    Z,
+    wavelength,
+    ordering,
+    normalize,
+    orthonorm,
+    grid_size,
 ):
     x = np.linspace(-1.0, 1.0, grid_size)
     xx, yy = np.meshgrid(x, x)
@@ -267,10 +276,23 @@ def Zernike_plot(
     return
 
 
-def PSD_plot(fig, axis, surface, A, B, C, fknee, fmin, fmax, SR, units, grid_size):
-    phi_x = 110.0  # mm
-    phi_y = 110.0  # mm
-    zoom = 4
+def PSD_plot(
+    fig,
+    axis,
+    surface,
+    A,
+    B,
+    C,
+    fknee,
+    fmin,
+    fmax,
+    SR,
+    units,
+    grid_size,
+    zoom,
+    phi,
+):
+    phi_x = phi_y = phi  # mm
     D = zoom * np.max([phi_x, phi_y])
     delta = D / grid_size
 

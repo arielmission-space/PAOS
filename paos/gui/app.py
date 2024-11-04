@@ -683,6 +683,7 @@ def server(input, output, session):
         fmax = float(PSD_section.get("par6"))
         SR = float(PSD_section.get("par7"))
         units = PSD_section.get("par8")
+        phi = float(input.PSD_plot_phi())
 
         fig, ax = plt.subplots()
         PSD_plot(
@@ -698,6 +699,8 @@ def server(input, output, session):
             SR=SR, 
             units=units,
             grid_size=int(input.grid_size()),
+            zoom=int(input.zoom()),
+            phi=phi,
         )
 
         figure_PSD.set(fig)

@@ -451,7 +451,24 @@ def app_elems(config):
                     max_height="60vh",
                 ),
                 ui.card(
-                    ui.card_header("Plot"),
+                    ui.card_header(
+                        ui.tags.div(
+                            "Plot",
+                            ui.popover(
+                                ICONS["gear"],
+                                *[
+                                    ui.input_text(
+                                        id="PSD_plot_phi",
+                                        label="Select D [mm]",
+                                        value=110.0,
+                                    ),
+                                ],
+                                title="Settings",
+                                placement="top",
+                            ),
+                            class_=card_header_class_,
+                        ),
+                    ),
                     ui.card_body(
                         output_text_verbatim("plot_PSD_inputs"),
                         ui.output_plot("plot_PSD"),
