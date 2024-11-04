@@ -26,7 +26,7 @@ vline = ui.markdown(
 )
 
 
-vspace = ui.tags.div(style="height: 5px;")
+vspace = ui.tags.div(style="height: 10px;")
 
 
 def menu_panel(id):
@@ -159,11 +159,11 @@ def refresh_ui(name, items, mode=None, key=""):
     ui.remove_ui(f"#inserted-{name}-editor")
 
     if mode == "dict":
-        items = [fill_header(items), *fill_body(items)]
+        items = [fill_header(items), vspace, *fill_body(items)]
 
     elif mode == "nested-dict":
         key = list(items.keys())[0] if key == "" else key
-        items = [fill_header(items[key]), *fill_body(items[key])]
+        items = [fill_header(items[key]), vspace, *fill_body(items[key])]
 
     elif mode == "body":
         items = [*fill_body(items)]
@@ -220,7 +220,9 @@ def ellipsis(id, names, choices):
         ICONS["ellipsis"],
         *[
             ui.input_select(
-                id=f"{id}_select_{name}", label=f"Select {name.capitalize()}", choices=choice
+                id=f"{id}_select_{name}",
+                label=f"Select {name.capitalize()}",
+                choices=choice,
             )
             for name, choice in zip(names, choices)
         ],
