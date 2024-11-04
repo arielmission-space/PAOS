@@ -39,20 +39,18 @@ def app_ui(request: StarletteRequest) -> Tag:
         ui.nav_panel(
             "System Explorer",
             ui.card(
-                ui.layout_columns(
+                ui.layout_column_wrap(
                     *[
-                        ui.tags.div(
-                            ui.card(
-                                ui.card_header("General"),
-                                ui.card_body(
-                                    nested_div("general"),
-                                ),
+                        ui.card(
+                            ui.card_header("General"),
+                            ui.card_body(
+                                nested_div("general"),
                             ),
-                            ui.card(
-                                ui.card_header("Units"),
-                                ui.card_body(
-                                    nested_div("units"),
-                                ),
+                        ),
+                        ui.card(
+                            ui.card_header("Units"),
+                            ui.card_body(
+                                nested_div("units"),
                             ),
                         ),
                         ui.card(

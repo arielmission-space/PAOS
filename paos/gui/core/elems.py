@@ -293,22 +293,22 @@ def app_elems(config):
             zernike_elems[n][zi] = {}
             zernike_elems[n][zi]["n"] = {
                 "f": ui.p,
-                "width": 1,
+                "width": 2,
                 "value": radial[int(zi)],
             }
             zernike_elems[n][zi]["m"] = {
                 "f": ui.p,
-                "width": 1,
+                "width": 2,
                 "value": azimuthal[int(zi)],
             }
             zernike_elems[n][zi]["Zindex"] = {
                 "f": ui.p,
-                "width": 1,
+                "width": 2,
                 "value": zi,
             }
             zernike_elems[n][zi]["Zcoeff"] = {
                 "f": ui.input_text,
-                "width": 1,
+                "width": 2,
                 "value": zc,
                 "prefix": f"lens_{n}_",
             }
@@ -325,22 +325,26 @@ def app_elems(config):
             ],
         ]
         zernike_tab_elems = [
-            ui.navset_card_pill(
-                ui.nav_panel(
-                    "Explorer",
-                    output_text_verbatim("zernike_inputs"),
-                    nested_div("zernike"),
+            ui.layout_column_wrap(
+                ui.card(
+                    ui.card_header("Explorer"),
+                    ui.card_body(
+                        output_text_verbatim("zernike_inputs"),
+                        nested_div("zernike"),
+                    ),
                 ),
-                ui.nav_panel(
-                    "Plots",
-                    output_text_verbatim("plot_zernike_inputs"),
-                    ui.output_plot("plot_zernike"),
-                    ui.tags.div(
-                        ui.input_action_button(
-                            "do_plot_zernike", "Run", icon=ICONS["run"]
-                        ),
-                        ui.input_action_button(
-                            "download_plot_zernike", "Download", icon=ICONS["save"]
+                ui.card(
+                    ui.card_header("Plot"),
+                    ui.card_body(
+                        output_text_verbatim("plot_zernike_inputs"),
+                        ui.output_plot("plot_zernike"),
+                        ui.tags.div(
+                            ui.input_action_button(
+                                "do_plot_zernike", "Run", icon=ICONS["run"]
+                            ),
+                            ui.input_action_button(
+                                "download_plot_zernike", "Download", icon=ICONS["save"]
+                            ),
                         ),
                     ),
                 ),
@@ -405,7 +409,7 @@ def app_elems(config):
         }
         PSD_elems[n][0]["PSD SFE RMS"] = {
             "f": ui.p,
-            "width": 1,
+            "width": 2,
             "value": f"{sfe_rms:.3f}",
         }
         PSD_elems[n][0]["SR RMS"] = {
@@ -431,25 +435,33 @@ def app_elems(config):
             ],
         ]
         PSD_tab_elems = [
-            ui.navset_card_pill(
-                ui.nav_panel(
-                    "Explorer",
-                    output_text_verbatim("PSD_inputs"),
-                    ui.tags.div(
-                        ui.input_action_button("calc_PSD", "Run", icon=ICONS["run"]),
+            ui.layout_column_wrap(
+                ui.card(
+                    ui.card_header("Explorer"),
+                    ui.card_body(
+                        output_text_verbatim("PSD_inputs"),
+                        ui.tags.div(
+                            ui.input_action_button(
+                                "calc_PSD", "Run", icon=ICONS["run"]
+                            ),
+                        ),
+                        vspace,
+                        output_text_verbatim("PSD_output"),
+                        nested_div("PSD"),
                     ),
-                    vspace,
-                    output_text_verbatim("PSD_output"),
-                    nested_div("PSD"),
                 ),
-                ui.nav_panel(
-                    "Plots",
-                    output_text_verbatim("plot_PSD_inputs"),
-                    ui.output_plot("plot_PSD"),
-                    ui.tags.div(
-                        ui.input_action_button("do_plot_PSD", "Run", icon=ICONS["run"]),
-                        ui.input_action_button(
-                            "download_plot_PSD", "Download", icon=ICONS["save"]
+                ui.card(
+                    ui.card_header("Plot"),
+                    ui.card_body(
+                        output_text_verbatim("plot_PSD_inputs"),
+                        ui.output_plot("plot_PSD"),
+                        ui.tags.div(
+                            ui.input_action_button(
+                                "do_plot_PSD", "Run", icon=ICONS["run"]
+                            ),
+                            ui.input_action_button(
+                                "download_plot_PSD", "Download", icon=ICONS["save"]
+                            ),
                         ),
                     ),
                 ),
@@ -505,7 +517,7 @@ def app_elems(config):
                 ),
             ),
             ui.nav_panel(
-                "Plots",
+                "Plot",
                 ui.tags.div(
                     ui.popover(
                         ICONS["gear"],
