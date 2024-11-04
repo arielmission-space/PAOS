@@ -233,7 +233,7 @@ def simple_plot(
     return
 
 
-def zernike_plot(
+def Zernike_plot(
     fig, axis, surface, index, Z, wavelength, ordering, normalize, orthonorm, grid_size
 ):
     x = np.linspace(-1.0, 1.0, grid_size)

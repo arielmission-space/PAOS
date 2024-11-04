@@ -269,7 +269,7 @@ def app_elems(config):
             "prefix": "lens_",
         }
 
-    zernike_elems = {}
+    Zernike_elems = {}
     for key in config.sections():
         if not key.startswith("lens_"):
             continue
@@ -278,7 +278,7 @@ def app_elems(config):
             continue
 
         n = int(key.split("_")[1])
-        zernike_elems[n] = {}
+        Zernike_elems[n] = {}
 
         zindex = item.get("zindex", "").split(",")
         zcoeff = item.get("z", "").split(",")
@@ -287,46 +287,46 @@ def app_elems(config):
         azimuthal, radial = Zernike.j2mn(N=len(zindex), ordering=ordering)
 
         for zi, zc in zip(zindex, zcoeff):
-            zernike_elems[n][zi] = {}
-            zernike_elems[n][zi]["n"] = {
+            Zernike_elems[n][zi] = {}
+            Zernike_elems[n][zi]["n"] = {
                 "f": ui.p,
                 "width": 3,
                 "value": radial[int(zi)],
             }
-            zernike_elems[n][zi]["m"] = {
+            Zernike_elems[n][zi]["m"] = {
                 "f": ui.p,
                 "width": 3,
                 "value": azimuthal[int(zi)],
             }
-            zernike_elems[n][zi]["Zindex"] = {
+            Zernike_elems[n][zi]["Zindex"] = {
                 "f": ui.p,
                 "width": 3,
                 "value": zi,
             }
-            zernike_elems[n][zi]["Zcoeff"] = {
+            Zernike_elems[n][zi]["Zcoeff"] = {
                 "f": ui.input_text,
                 "width": 3,
                 "value": zc,
                 "prefix": f"lens_{n}_",
             }
 
-    if zernike_elems:
-        zernike_choices = [f"S{n}" for n in zernike_elems]
+    if Zernike_elems:
+        Zernike_choices = [f"S{n}" for n in Zernike_elems]
 
-        zernike_sidebar_elems = [
+        Zernike_sidebar_elems = [
             *[
                 ui.input_select(
                     id=f"select_{name}", label=f"Select {name}", choices=choice
                 )
-                for name, choice in zip(["Zernike"], [zernike_choices])
+                for name, choice in zip(["Zernike"], [Zernike_choices])
             ],
         ]
-        zernike_tab_elems = [
+        Zernike_tab_elems = [
             ui.layout_column_wrap(
                 ui.card(
                     ui.card_header("Explorer"),
                     ui.card_body(
-                        output_text_verbatim("zernike_inputs"),
+                        output_text_verbatim("Zernike_inputs"),
                         nested_div("zernike"),
                     ),
                     max_height="60vh",
@@ -334,7 +334,7 @@ def app_elems(config):
                 ui.card(
                     ui.card_header("Plot"),
                     ui.card_body(
-                        output_text_verbatim("plot_zernike_inputs"),
+                        output_text_verbatim("plot_Zernike_inputs"),
                         ui.output_plot("plot_zernike"),
                         ui.tags.div(
                             ui.input_action_button(
@@ -351,8 +351,8 @@ def app_elems(config):
         ]
 
     else:
-        zernike_sidebar_elems = []
-        zernike_tab_elems = []
+        Zernike_sidebar_elems = []
+        Zernike_tab_elems = []
 
     PSD_elems = {}
     for key in config.sections():
@@ -473,9 +473,9 @@ def app_elems(config):
         PSD_tab_elems = []
 
     wfe_elems = (
-        zernike_sidebar_elems,
-        zernike_elems,
-        zernike_tab_elems,
+        Zernike_sidebar_elems,
+        Zernike_elems,
+        Zernike_tab_elems,
         PSD_sidebar_elems,
         PSD_elems,
         PSD_tab_elems,
