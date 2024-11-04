@@ -290,22 +290,22 @@ def app_elems(config):
             zernike_elems[n][zi] = {}
             zernike_elems[n][zi]["n"] = {
                 "f": ui.p,
-                "width": 2,
+                "width": 3,
                 "value": radial[int(zi)],
             }
             zernike_elems[n][zi]["m"] = {
                 "f": ui.p,
-                "width": 2,
+                "width": 3,
                 "value": azimuthal[int(zi)],
             }
             zernike_elems[n][zi]["Zindex"] = {
                 "f": ui.p,
-                "width": 2,
+                "width": 3,
                 "value": zi,
             }
             zernike_elems[n][zi]["Zcoeff"] = {
                 "f": ui.input_text,
-                "width": 2,
+                "width": 3,
                 "value": zc,
                 "prefix": f"lens_{n}_",
             }
