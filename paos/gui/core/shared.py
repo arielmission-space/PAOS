@@ -159,7 +159,7 @@ def refresh_ui(name, items, mode=None, key=""):
     ui.remove_ui(f"#inserted-{name}-editor")
 
     if mode == "dict":
-        items = [fill_header(items), vspace, *fill_body(items)]
+        items = [fill_header(items), *fill_body(items)]
 
     elif mode == "nested-dict":
         key = list(items.keys())[0] if key == "" else key
