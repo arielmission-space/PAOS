@@ -151,7 +151,7 @@ def fill_body(items):
                 for col, (subkey, subitem) in enumerate(item.items())
             ],
         )
-        for row, (key, item) in enumerate(items.items())
+        for row, (_, item) in enumerate(items.items())
     ]
 
 
