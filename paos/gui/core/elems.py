@@ -378,36 +378,36 @@ def app_elems(config):
         units = item.get("Par8")
         sfe_rms = PSD.sfe_rms(A, B, C, fknee, fmin, fmax)
 
-        PSD_elems[n][0]["A"] = {
-            "f": ui.p,
-            "width": 1,
-            "value": f"{A:.3f}",
-        }
-        PSD_elems[n][0]["B"] = {
-            "f": ui.p,
-            "width": 1,
-            "value": f"{B:.3f}",
-        }
-        PSD_elems[n][0]["C"] = {
-            "f": ui.p,
-            "width": 1,
-            "value": f"{C:.3f}",
-        }
-        PSD_elems[n][0]["fknee"] = {
-            "f": ui.p,
-            "width": 1,
-            "value": f"{fknee:.3f}",
-        }
-        PSD_elems[n][0]["fmin"] = {
-            "f": ui.p,
-            "width": 1,
-            "value": f"{fmin:.3f}",
-        }
-        PSD_elems[n][0]["fmax"] = {
-            "f": ui.p,
-            "width": 1,
-            "value": f"{fmax:.3f}",
-        }
+        # PSD_elems[n][0]["A"] = {
+        #     "f": ui.p,
+        #     "width": 1,
+        #     "value": f"{A:.3f}",
+        # }
+        # PSD_elems[n][0]["B"] = {
+        #     "f": ui.p,
+        #     "width": 1,
+        #     "value": f"{B:.3f}",
+        # }
+        # PSD_elems[n][0]["C"] = {
+        #     "f": ui.p,
+        #     "width": 1,
+        #     "value": f"{C:.3f}",
+        # }
+        # PSD_elems[n][0]["fknee"] = {
+        #     "f": ui.p,
+        #     "width": 1,
+        #     "value": f"{fknee:.3f}",
+        # }
+        # PSD_elems[n][0]["fmin"] = {
+        #     "f": ui.p,
+        #     "width": 1,
+        #     "value": f"{fmin:.3f}",
+        # }
+        # PSD_elems[n][0]["fmax"] = {
+        #     "f": ui.p,
+        #     "width": 1,
+        #     "value": f"{fmax:.3f}",
+        # }
         PSD_elems[n][0]["PSD SFE RMS"] = {
             "f": ui.p,
             "width": 2,
@@ -415,12 +415,12 @@ def app_elems(config):
         }
         PSD_elems[n][0]["SR RMS"] = {
             "f": ui.p,
-            "width": 1,
+            "width": 2,
             "value": f"{SR}",
         }
         PSD_elems[n][0]["SFE units"] = {
             "f": ui.p,
-            "width": 1,
+            "width": 2,
             "value": f"{units}",
         }
 

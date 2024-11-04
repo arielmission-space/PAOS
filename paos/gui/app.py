@@ -520,7 +520,7 @@ def server(input, output, session):
 
         surface = input.select_Zernike()
 
-        (_, _, _, _, _, _, wfe_elems, _, _) = app_elems(config.get())
+        wfe_elems = app_elems(config.get())[6]
         zernike_elems = wfe_elems[1]
 
         surface_key = int(surface[1:])
@@ -603,7 +603,7 @@ def server(input, output, session):
 
         surface = input.select_PSD()
 
-        (_, _, _, _, _, _, wfe_elems, _, _) = app_elems(config.get())
+        wfe_elems = app_elems(config.get())[6]
         PSD_elems = wfe_elems[4]
 
         surface_key = int(surface[1:])
