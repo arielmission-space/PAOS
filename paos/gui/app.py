@@ -694,9 +694,6 @@ def server(input, output, session):
         refresh_ui("analysis_settings", analysis_sidebar_elems)
         refresh_ui("analysis", analysis_elems)
 
-        with open(cache / "tmp.ini", "w") as f:
-            config.get().write(f)
-
     @reactive.effect
     @reactive.event(input.close)
     async def _():
