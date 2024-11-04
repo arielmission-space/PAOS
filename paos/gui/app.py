@@ -13,7 +13,6 @@ from shiny import ui
 from shiny import reactive
 from shiny import req
 from shiny.types import FileInfo
-import shinyswatch
 
 import paos
 from paos import logger
@@ -36,7 +35,6 @@ from paos.gui.core.shared import modal_download
 
 def app_ui(request: StarletteRequest) -> Tag:
     return ui.page_fillable(
-        # shinyswatch.theme.darkly,
         # ui.tags.script(
         # """
         # Shiny.addCustomMessageHandler('refresh', function(message) {
@@ -184,9 +182,14 @@ def app_ui(request: StarletteRequest) -> Tag:
                     f"{__pkg_name__} v{__version__}; {__author__}",
                 ),
             ),
+            sidebar=ui.sidebar(
+                ui.input_dark_mode(id="dark_mode", mode="light"),
+                open="closed",
+            ),
             window_title=f"{__pkg_name__} GUI",
             selected="Optical Analysis",
         ),
+        # theme=shinyswatch.theme.superhero,
     )
 
 
