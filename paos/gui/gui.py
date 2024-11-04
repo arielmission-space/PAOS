@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 from shiny import run_app
 
@@ -8,6 +9,7 @@ from paos import __version__
 
 from paos import logger
 from paos.log.logger import setLogLevel
+from paos.log.logger import addLogFile
 
 
 def main():
@@ -25,7 +27,6 @@ def main():
 
     -h, --help:
         show this help message and exit.
-
     """
     if "-h" in sys.argv or "--help" in sys.argv:
         print(main.__doc__)
@@ -33,8 +34,12 @@ def main():
 
     reload = False
     if "-d" in sys.argv or "--debug" in sys.argv:
-        setLogLevel("DEBUG")
         reload = True
+
+    if "-l" in sys.argv or "--logfile" in sys.argv:
+        fname = f"{__pkg_name__}_{time.strftime('%Y%m%d_%H%M%S')}.log"
+        logger.debug(f"Logging to file {fname}")
+        addLogFile(fname=fname)
 
     app = os.path.realpath(os.path.dirname(__file__)) + "/app.py"
     logger.info(f"Running app: {__pkg_name__} GUI v{__version__}")
