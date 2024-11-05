@@ -168,6 +168,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                     ui.tags.img(src="static/logo.png", height="50px"),
                     href="https://github.com/arielmission-space/PAOS",
                 ),
+                ui.input_dark_mode(id="dark_mode", mode="light"),
                 id="logo-top",
                 class_="navigation-logo",
             ),
@@ -191,13 +192,11 @@ def app_ui(request: StarletteRequest) -> Tag:
                     f"{__pkg_name__} v{__version__}; {__author__}",
                 ),
             ),
-            sidebar=ui.sidebar(
-                ui.input_dark_mode(id="dark_mode", mode="light"),
-                open="closed",
-            ),
             window_title=f"{__pkg_name__} GUI",
-            selected="Optical Analysis",
+            selected="Wavefront Editor",
         ),
+        gap="2px",
+        padding="2px",
     )
 
 
