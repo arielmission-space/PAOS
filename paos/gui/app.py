@@ -207,6 +207,7 @@ def server(input, output, session):
     figure = reactive.value(None)
     figure_zernike = reactive.value(None)
     figure_PSD = reactive.value(None)
+    figure_gridsag = reactive.value(None)
 
     for file in os.listdir(cache):
         os.remove(os.path.join(cache, file))
@@ -710,6 +711,73 @@ def server(input, output, session):
         outfile: list[FileInfo] | None = input.save_pdf()
 
         figure_PSD.get().savefig(cache / outfile)
+
+        return os.path.join(os.path.dirname(__file__), "cache", outfile)
+    
+    @render.text
+    @reactive.event(input.open_ini, input.select_gridsag)
+    def gridsag_inputs():
+        req(input.select_gridsag())
+
+        refresh_ui(
+            "gridsag_inputs",
+            [ui.output_text_verbatim("gridsag_inputs", placeholder=True)],
+        )
+
+        surface = input.select_gridsag()
+
+        return f"Surface: {surface}"
+    
+    @render.text
+    @reactive.event(input.do_plot_gridsag)
+    def plot_gridsag_inputs():
+        req(input.do_plot_gridsag())
+
+        refresh_ui(
+            "plot_gridsag_inputs",
+            [ui.output_text_verbatim("plot_gridsag_inputs", placeholder=True)],
+        )
+
+        surface = input.select_gridsag()
+
+        return f"Surface: {surface}"
+    
+    @render.plot(alt="Grid Sag plot")
+    @reactive.event(input.do_plot_gridsag)
+    def plot_gridsag():
+        req(input.do_plot_gridsag())
+        req(input.select_gridsag())
+        req(config.get().sections())
+
+        surface = input.select_gridsag()
+        surface_key = int(surface[1:])
+        gridsag_section = f"lens_{surface_key:02d}"
+        gridsag_section = config.get()[gridsag_section]
+
+        fig, ax = plt.subplots()
+        # gridsag_plot(
+        #     fig=fig,
+        #     axis=ax,
+        #     surface=surface,
+        #     grid_size=int(input.grid_size()),
+        # )
+
+        figure_gridsag.set(fig)
+
+        return fig
+    
+    @reactive.effect
+    @reactive.event(input.download_plot_gridsag)
+    def download_plot_gridsag():
+        req(config.get().sections())
+        req(input.do_plot_gridsag())
+        modal_download("plot_gridsag", "pdf")
+
+    @render.download
+    def download_plot_gridsag_pdf():
+        outfile: list[FileInfo] | None = input.save_pdf()
+
+        figure_gridsag.get().savefig(cache / outfile)
 
         return os.path.join(os.path.dirname(__file__), "cache", outfile)
 
