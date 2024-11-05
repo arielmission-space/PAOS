@@ -166,7 +166,7 @@ def app_ui(request: StarletteRequest) -> Tag:
             title=ui.tags.div(
                 ui.tags.a(
                     ui.tags.img(src="static/logo.png", height="50px"),
-                    href="https://github.com/arielmission-space/PAOS",
+                    # href="https://github.com/arielmission-space/PAOS",
                 ),
                 ui.input_dark_mode(id="dark_mode", mode="light"),
                 id="logo-top",
