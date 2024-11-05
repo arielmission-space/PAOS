@@ -1,7 +1,7 @@
-import faicons as fa
-from shiny import ui
 import configparser
 import numpy as np
+from shiny import ui
+import faicons as fa
 
 ICONS = {
     "ellipsis": fa.icon_svg("ellipsis"),
@@ -17,7 +17,7 @@ ICONS = {
     "load": fa.icon_svg("cloud-arrow-up"),
 }
 
-card_header_class_ = "d-flex justify-content-between align-items-center"
+CARD_HEADER_CLASS = "d-flex justify-content-between align-items-center"
 
 vline = ui.markdown(
     """
@@ -25,8 +25,14 @@ vline = ui.markdown(
     """
 )
 
+hline = ui.markdown(
+    """
+    <div style="border-bottom: 1px solid lightgrey; width: 100%;"></div>
+    """
+)
 
-vspace = ui.tags.div(style="height: 5px;")
+
+vspace = ui.tags.div(style="height: 10px;")
 
 
 def menu_panel(id):
@@ -121,15 +127,16 @@ def fill_header(items):
         return ui.div()
     key = min(np.array(list(items.keys())))
     item = items[key]
-    return ui.card_header(
+    return ui.div(
         {"style": "display: flex;"},
         *[
             ui.column(
                 subitem["width"],
                 {"style": "text-align: center;"},
-                ui.p(
-                    f"{subkey}",
+                ui.markdown(
+                    f"**{subkey}**"
                 ),
+                hline,
             )
             for _, (subkey, subitem) in enumerate(item.items())
         ],
@@ -151,19 +158,23 @@ def fill_body(items):
                 for col, (subkey, subitem) in enumerate(item.items())
             ],
         )
-        for row, (key, item) in enumerate(items.items())
+        for row, (_, item) in enumerate(items.items())
     ]
 
 
 def refresh_ui(name, items, mode=None, key=""):
     ui.remove_ui(f"#inserted-{name}-editor")
 
+    func = ui.div
+
     if mode == "dict":
         items = [fill_header(items), *fill_body(items)]
+        func = ui.card
 
     elif mode == "nested-dict":
         key = list(items.keys())[0] if key == "" else key
         items = [fill_header(items[key]), *fill_body(items[key])]
+        func = ui.card
 
     elif mode == "body":
         items = [*fill_body(items)]
@@ -172,7 +183,7 @@ def refresh_ui(name, items, mode=None, key=""):
         items = [*fill_body(items)]
 
     ui.insert_ui(
-        ui.div(
+        func(
             {"id": f"inserted-{name}-editor"},
             *items,
         ),
@@ -220,30 +231,14 @@ def ellipsis(id, names, choices):
         ICONS["ellipsis"],
         *[
             ui.input_select(
-                id=f"{id}_select_{name}", label=f"Choose {name}", choices=choice
+                id=f"{id}_select_{name}",
+                label=f"Select {name.capitalize()}",
+                choices=choice,
             )
             for name, choice in zip(names, choices)
         ],
         title="",
         placement="top",
-    )
-
-
-def step_card(id, label, text="blabla", width="80%"):
-    return ui.tags.div(
-        ui.input_action_button(
-            id,
-            label,
-            icon=ICONS["run"],
-            class_="ms-2",
-            width=width,
-        ),
-        ui.popover(
-            ICONS["info"].add_class("ms-2"),
-            ui.markdown(text),
-            title="Info",
-            placement="right",
-        ),
     )
 
 
@@ -273,7 +268,7 @@ def modal_download(id, ext):
                 f"download_{id}_{ext}",
                 "Save",
             ),
-            ui.output_text(f"download_{ext}_progress"),
+            # ui.output_text_verbatim(f"download_{ext}_progress"),
         ],
         title=f"Save to {ext.upper()} File",
         easy_close=True,

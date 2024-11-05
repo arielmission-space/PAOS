@@ -75,7 +75,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
 
     for index, item in opt_chain.items():
 
-        logger.trace("Surface: {}".format(item["name"]))
+        logger.trace(f"Surface: {item['name']}")
 
         if item["type"] == "Coordinate Break":
             logger.trace("Apply coordinate break.")
@@ -175,7 +175,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         )
         T = item["ABCDt"].cout * item["ABCDt"].thickness
         n1n2 = item["ABCDt"].n1n2
-        logger.trace("n1n2: {:.4f}".format(n1n2))
+        logger.trace(f"n1n2: {n1n2:.4f}")
 
         if Mt != 1.0 or Ms != 1.0:
             logger.trace("Apply magnification")
@@ -190,7 +190,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
             wfo.lens(fl)
 
         if np.isfinite(T) and np.abs(T) > 1e-10:
-            logger.trace("Apply propagation thickness: T: {:.4f}".format(T))
+            logger.trace(f"Apply propagation thickness: T: {T:.4f}")
             wfo.propagate(T)
 
         vt = item["ABCDt"]() @ vt
@@ -199,9 +199,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         ABCDs = item["ABCDs"] * ABCDs
 
         logger.debug(
-            "F num: {:2f}, distance to focus: {:.6f}".format(
-                _retval_["fratio"], wfo.distancetofocus
-            )
+            f"F num: {_retval_['fratio']:2f}, distance to focus: {wfo.distancetofocus:.6f}"
         )
 
         _retval_["ABCDt"] = ABCDt

@@ -1,10 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle, Ellipse
-
-from paos import Zernike, PolyOrthoNorm
+from matplotlib.patches import Rectangle
+from matplotlib.patches import Ellipse
+from astropy import units as u
 
 from paos import logger
+from paos import Zernike
+from paos import PolyOrthoNorm
+from paos import PSD
 
 
 plt.rcParams["figure.facecolor"] = "white"
@@ -140,7 +143,7 @@ def simple_plot(
         im = axis.imshow(ima, origin=origin, cmap=plt.get_cmap(cmap))
         cbar_label = "power/pix"
     else:
-        print("ima_scale shall be either log or linear")
+        logger.error("ima_scale shall be either log or linear")
         raise KeyError("ima_scale shall be either log or linear")
 
     fig.colorbar(im, ax=axis, orientation="vertical", label=cbar_label)
@@ -232,8 +235,17 @@ def simple_plot(
     return
 
 
-def zernike_plot(
-    fig, axis, surface, index, Z, wavelength, ordering, normalize, orthonorm, grid_size
+def Zernike_plot(
+    fig,
+    axis,
+    surface,
+    index,
+    Z,
+    wavelength,
+    ordering,
+    normalize,
+    orthonorm,
+    grid_size,
 ):
     x = np.linspace(-1.0, 1.0, grid_size)
     xx, yy = np.meshgrid(x, x)
@@ -257,8 +269,77 @@ def zernike_plot(
         f"{surface}" + "\n" + "Zernike errormap",
         y=1.05,
     )
-    axis.set_xlabel("pix")
-    axis.set_ylabel("pix")
+    axis.set_xlabel("pixel")
+    axis.set_ylabel("pixel")
+    axis.grid()
+
+    return
+
+
+def PSD_plot(
+    fig,
+    axis,
+    surface,
+    A,
+    B,
+    C,
+    fknee,
+    fmin,
+    fmax,
+    SR,
+    units,
+    grid_size,
+    phi,
+):
+    phi_x = phi_y = phi  # mm
+    D = np.max([phi_x, phi_y])
+    delta = D / grid_size
+
+    x = y = np.arange(-grid_size // 2, grid_size // 2) * delta
+    xx, yy = np.meshgrid(x, y)
+    pupil = np.zeros((grid_size, grid_size))
+
+    mask = (2 * xx / phi_x) ** 2 + (2 * yy / phi_y) ** 2 <= 1
+
+    pupil[mask] = 1.0
+    wfo = np.ma.masked_array(pupil, mask=~mask)
+
+    fx = np.fft.fftfreq(wfo.shape[0], delta)
+    fxx, fyy = np.meshgrid(fx, fx)
+    f = np.sqrt(fxx**2 + fyy**2)
+    f[f == 0] = 1e-100
+
+    wfe = PSD(wfo, A, B, C, f, fknee, fmin, fmax, SR, units=u.Unit(units))()
+
+    im = axis.imshow(wfe, origin="lower", cmap=plt.get_cmap("viridis"))
+    fig.colorbar(im, ax=axis, orientation="vertical", label="WFE [m]")
+
+    axis.set_title(
+        f"{surface}" + "\n" + "PSD errormap",
+        y=1.05,
+    )
+    axis.set_xlabel("pixel")
+    axis.set_ylabel("pixel")
+    axis.grid()
+
+    return
+
+
+def gridsag_plot(
+    fig,
+    axis,
+    surface,
+    data,
+):
+    im = axis.imshow(data, origin="lower", cmap=plt.get_cmap("viridis"))
+    fig.colorbar(im, ax=axis, orientation="vertical", label="Grid Sag [m]")
+
+    axis.set_title(
+        f"{surface}" + "\n" + "Grid Sag",
+        y=1.05,
+    )
+    axis.set_xlabel("pixel")
+    axis.set_ylabel("pixel")
     axis.grid()
 
     return
