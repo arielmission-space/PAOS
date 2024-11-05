@@ -728,6 +728,27 @@ def server(input, output, session):
         surface = input.select_gridsag()
 
         return f"Surface: {surface}"
+    
+    @render.text
+    @reactive.event(input.open_ini, input.select_gridsag)
+    def gridsag_output():
+        req(input.select_gridsag())
+
+        refresh_ui(
+            "gridsag_output",
+            [ui.output_text_verbatim("gridsag_output", placeholder=True)],
+        )
+
+        req(config.get().sections())
+
+        surface = input.select_gridsag()
+        surface_key = int(surface[1:])
+        gridsag_section = f"lens_{surface_key:02d}"
+        gridsag_section = config.get()[gridsag_section]
+
+        grid_sag_path = gridsag_section.get("Par8")
+
+        return f"Grid Sag from: {grid_sag_path}"
 
     @render.text
     @reactive.event(input.do_plot_gridsag)
