@@ -58,49 +58,20 @@ def app_ui(request: StarletteRequest) -> Tag:
             ui.nav_panel(
                 "System Explorer",
                 ui.card(
-                    ui.layout_column_wrap(
-                        *[
-                            ui.card(
-                                ui.card_header("General"),
-                                ui.card_body(
-                                    nested_div("general"),
-                                ),
-                                fill=False,
+                    ui.layout_sidebar(
+                        ui.sidebar(
+                            nested_div("general"),
+                            title="Settings",
+                            width="20vw",
+                        ),
+                        ui.card(
+                            ui.layout_column_wrap(
+                                nested_div("sim"),
+                                nested_div("field"),
+                                nested_div("wl"),
                             ),
-                            ui.card(
-                                ui.card_header("Simulation"),
-                                ui.card_body(
-                                    nested_div("sim"),
-                                ),
-                                fill=False,
-                            ),
-                            ui.card(
-                                ui.card_header(
-                                    ui.layout_columns(
-                                        {"style": "text-align: center;"},
-                                        ui.p("#"),
-                                        ui.p("Field"),
-                                    ),
-                                ),
-                                ui.card_body(
-                                    nested_div("field"),
-                                ),
-                                fill=False,
-                            ),
-                            ui.card(
-                                ui.card_header(
-                                    ui.layout_columns(
-                                        {"style": "text-align: center;"},
-                                        ui.p("#"),
-                                        ui.p("Wavelength"),
-                                    ),
-                                ),
-                                ui.card_body(
-                                    nested_div("wl"),
-                                ),
-                                fill=False,
-                            ),
-                        ],
+                            fill=False,
+                        ),
                     ),
                     min_height="72vh",
                     max_height="72vh",
@@ -851,8 +822,8 @@ def server(input, output, session):
 
         refresh_ui("general", general_elems)
         refresh_ui("sim", sim_elems)
-        refresh_ui("field", field_elems, mode="body")
-        refresh_ui("wl", wl_elems, mode="body")
+        refresh_ui("field", field_elems, mode="dict")
+        refresh_ui("wl", wl_elems, mode="dict")
         refresh_ui("lens", lens_elems, mode="dict")
         refresh_ui("Zernike_settings", Zernike_sidebar_elems)
         if Zernike_elems:

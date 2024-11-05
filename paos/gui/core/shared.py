@@ -165,12 +165,16 @@ def fill_body(items):
 def refresh_ui(name, items, mode=None, key=""):
     ui.remove_ui(f"#inserted-{name}-editor")
 
+    func = ui.div
+
     if mode == "dict":
         items = [fill_header(items), *fill_body(items)]
+        func = ui.card
 
     elif mode == "nested-dict":
         key = list(items.keys())[0] if key == "" else key
         items = [fill_header(items[key]), *fill_body(items[key])]
+        func = ui.card
 
     elif mode == "body":
         items = [*fill_body(items)]
@@ -179,7 +183,7 @@ def refresh_ui(name, items, mode=None, key=""):
         items = [*fill_body(items)]
 
     ui.insert_ui(
-        ui.card(
+        func(
             {"id": f"inserted-{name}-editor"},
             *items,
         ),
