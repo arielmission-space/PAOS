@@ -125,7 +125,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                                 ui.sidebar(
                                     nested_div("Zernike_settings"),
                                     title="Settings",
-                                    width="20vw",
+                                    width="15vw",
                                 ),
                                 nested_div("Zernike_tab"),
                             ),
@@ -136,7 +136,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                                 ui.sidebar(
                                     nested_div("PSD_settings"),
                                     title="Settings",
-                                    width="20vw",
+                                    width="15vw",
                                 ),
                                 nested_div("PSD_tab"),
                             ),
@@ -147,7 +147,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                                 ui.sidebar(
                                     nested_div("gridsag_settings"),
                                     title="Settings",
-                                    width="20vw",
+                                    width="15vw",
                                 ),
                                 nested_div("gridsag_tab"),
                             ),
@@ -165,7 +165,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                         ui.sidebar(
                             nested_div("analysis_settings"),
                             title="Settings",
-                            width="20vw",
+                            width="15vw",
                         ),
                         nested_div("analysis"),
                     ),
