@@ -323,3 +323,23 @@ def PSD_plot(
     axis.grid()
 
     return
+
+
+def gridsag_plot(
+    fig,
+    axis,
+    surface,
+    data,
+):
+    im = axis.imshow(data, origin="lower", cmap=plt.get_cmap("viridis"))
+    fig.colorbar(im, ax=axis, orientation="vertical", label="Grid Sag [m]")
+
+    axis.set_title(
+        f"{surface}" + "\n" + "Grid Sag",
+        y=1.05,
+    )
+    axis.set_xlabel("pixel")
+    axis.set_ylabel("pixel")
+    axis.grid()
+
+    return

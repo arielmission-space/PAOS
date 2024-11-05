@@ -2,6 +2,7 @@ import os
 import time
 import configparser
 from pathlib import Path
+import numpy as np
 import matplotlib.pyplot as plt
 
 from htmltools import Tag
@@ -27,6 +28,7 @@ from paos.gui.core.elems import app_elems
 from paos.gui.core.plot import simple_plot
 from paos.gui.core.plot import Zernike_plot
 from paos.gui.core.plot import PSD_plot
+from paos.gui.core.plot import gridsag_plot
 from paos.gui.core.shared import nested_div
 from paos.gui.core.shared import menu_panel
 from paos.gui.core.shared import refresh_ui
@@ -84,7 +86,6 @@ def app_ui(request: StarletteRequest) -> Tag:
                                     nested_div("field"),
                                 ),
                                 fill=False,
-                                max_height="70vh",
                             ),
                             ui.card(
                                 ui.card_header(
@@ -98,68 +99,78 @@ def app_ui(request: StarletteRequest) -> Tag:
                                     nested_div("wl"),
                                 ),
                                 fill=False,
-                                max_height="70vh",
                             ),
                         ],
                     ),
+                    min_height="72vh",
+                    max_height="72vh",
                 ),
             ),
             ui.nav_panel(
                 "Lens Editor",
                 ui.card(
                     nested_div("lens"),
-                    max_height="75vh",
+                    max_height="72vh",
+                    min_height="72vh",
                 ),
             ),
             ui.nav_panel(
                 "Wavefront Editor",
-                ui.navset_card_tab(
-                    ui.nav_spacer(),
-                    ui.nav_panel(
-                        "Zernike",
-                        ui.layout_sidebar(
-                            ui.sidebar(
-                                nested_div("Zernike_settings"),
-                                title="Settings",
-                                width="20vw",
+                ui.card(
+                    ui.navset_card_tab(
+                        ui.nav_spacer(),
+                        ui.nav_panel(
+                            "Zernike",
+                            ui.layout_sidebar(
+                                ui.sidebar(
+                                    nested_div("Zernike_settings"),
+                                    title="Settings",
+                                    width="20vw",
+                                ),
+                                nested_div("Zernike_tab"),
                             ),
-                            nested_div("Zernike_tab"),
                         ),
-                    ),
-                    ui.nav_panel(
-                        "PSD",
-                        ui.layout_sidebar(
-                            ui.sidebar(
-                                nested_div("PSD_settings"),
-                                title="Settings",
-                                width="20vw",
+                        ui.nav_panel(
+                            "PSD",
+                            ui.layout_sidebar(
+                                ui.sidebar(
+                                    nested_div("PSD_settings"),
+                                    title="Settings",
+                                    width="20vw",
+                                ),
+                                nested_div("PSD_tab"),
                             ),
-                            nested_div("PSD_tab"),
                         ),
-                    ),
-                    ui.nav_panel(
-                        "Grid Sag",
-                        ui.layout_sidebar(
-                            ui.sidebar(
-                                nested_div("gridsag_settings"),
-                                title="Settings",
-                                width="20vw",
+                        ui.nav_panel(
+                            "Grid Sag",
+                            ui.layout_sidebar(
+                                ui.sidebar(
+                                    nested_div("gridsag_settings"),
+                                    title="Settings",
+                                    width="20vw",
+                                ),
+                                nested_div("gridsag_tab"),
                             ),
-                            nested_div("gridsag_tab"),
                         ),
+                        ui.nav_spacer(),
                     ),
-                    ui.nav_spacer(),
+                    max_height="72vh",
+                    min_height="72vh",
                 ),
             ),
             ui.nav_panel(
                 "Optical Analysis",
-                ui.layout_sidebar(
-                    ui.sidebar(
-                        nested_div("analysis_settings"),
-                        title="Settings",
-                        width="20vw",
+                ui.card(
+                    ui.layout_sidebar(
+                        ui.sidebar(
+                            nested_div("analysis_settings"),
+                            title="Settings",
+                            width="20vw",
+                        ),
+                        nested_div("analysis"),
                     ),
-                    nested_div("analysis"),
+                    max_height="72vh",
+                    min_height="72vh",
                 ),
             ),
             id="navbar",
@@ -497,7 +508,8 @@ def server(input, output, session):
                 id="open_ini",
                 label=ui.markdown(
                     "Input files must be in the INI format.  \n"
-                    "Example files can be found in the PAOS public [GitHub repository](https://github.com/arielmission-space/PAOS)."
+                    f"Example files can be found in the {__pkg_name__} \n"
+                    "public [GitHub](https://github.com/arielmission-space/PAOS) repository."
                 ),
                 accept=[".ini"],
                 multiple=False,
@@ -516,7 +528,7 @@ def server(input, output, session):
     @reactive.event(input.open_ini, input.select_Zernike)
     def Zernike_inputs():
         req(config.get().sections())
-        # req(input.select_Zernike())
+        req(input.select_Zernike())
 
         refresh_ui(
             "Zernike_inputs",
@@ -713,7 +725,7 @@ def server(input, output, session):
         figure_PSD.get().savefig(cache / outfile)
 
         return os.path.join(os.path.dirname(__file__), "cache", outfile)
-    
+
     @render.text
     @reactive.event(input.open_ini, input.select_gridsag)
     def gridsag_inputs():
@@ -727,7 +739,7 @@ def server(input, output, session):
         surface = input.select_gridsag()
 
         return f"Surface: {surface}"
-    
+
     @render.text
     @reactive.event(input.do_plot_gridsag)
     def plot_gridsag_inputs():
@@ -741,7 +753,7 @@ def server(input, output, session):
         surface = input.select_gridsag()
 
         return f"Surface: {surface}"
-    
+
     @render.plot(alt="Grid Sag plot")
     @reactive.event(input.do_plot_gridsag)
     def plot_gridsag():
@@ -754,18 +766,30 @@ def server(input, output, session):
         gridsag_section = f"lens_{surface_key:02d}"
         gridsag_section = config.get()[gridsag_section]
 
+        wave = 1.0e-6 * float(gridsag_section.get("Par1"))
+        grid_sag_path = gridsag_section.get("Par8")
+
+        with open(grid_sag_path, "rb") as f:
+            grid_sag = np.load(f, allow_pickle=True).item()
+
+        grid_sag_mask = grid_sag.get("mask", False)
+        grid_sag = np.ma.MaskedArray(
+            grid_sag["data"], mask=grid_sag_mask | np.isinf(grid_sag["data"])
+        )
+        grid_sag *= wave
+
         fig, ax = plt.subplots()
-        # gridsag_plot(
-        #     fig=fig,
-        #     axis=ax,
-        #     surface=surface,
-        #     grid_size=int(input.grid_size()),
-        # )
+        gridsag_plot(
+            fig=fig,
+            axis=ax,
+            surface=surface,
+            data=grid_sag,
+        )
 
         figure_gridsag.set(fig)
 
         return fig
-    
+
     @reactive.effect
     @reactive.event(input.download_plot_gridsag)
     def download_plot_gridsag():

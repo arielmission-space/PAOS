@@ -330,7 +330,7 @@ def app_elems(config):
                         output_text_verbatim("Zernike_inputs"),
                         nested_div("zernike"),
                     ),
-                    max_height="60vh",
+                    max_height="55vh",
                 ),
                 ui.card(
                     ui.card_header("Plot"),
@@ -346,7 +346,7 @@ def app_elems(config):
                             "download_plot_zernike", "Download", icon=ICONS["save"]
                         ),
                     ),
-                    max_height="60vh",
+                    max_height="55vh",
                 ),
             ),
         ]
@@ -448,7 +448,7 @@ def app_elems(config):
                             ),
                         ),
                     ),
-                    max_height="60vh",
+                    max_height="55vh",
                 ),
                 ui.card(
                     ui.card_header(
@@ -479,7 +479,7 @@ def app_elems(config):
                             "download_plot_PSD", "Download", icon=ICONS["save"]
                         ),
                     ),
-                    max_height="60vh",
+                    max_height="55vh",
                 ),
             ),
         ]
@@ -527,7 +527,7 @@ def app_elems(config):
                         output_text_verbatim("gridsag_output"),
                         nested_div("gridsag"),
                     ),
-                    max_height="60vh",
+                    max_height="55vh",
                 ),
                 ui.card(
                     ui.card_header(
@@ -545,7 +545,7 @@ def app_elems(config):
                             "download_plot_gridsag", "Download", icon=ICONS["save"]
                         ),
                     ),
-                    max_height="60vh",
+                    max_height="55vh",
                 ),
             ),
         ]
