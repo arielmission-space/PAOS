@@ -336,13 +336,13 @@ def app_elems(config):
                     ui.card_body(
                         output_text_verbatim("plot_Zernike_inputs"),
                         ui.output_plot("plot_zernike"),
-                        ui.tags.div(
-                            ui.input_action_button(
-                                "do_plot_zernike", "Run", icon=ICONS["run"]
-                            ),
-                            ui.input_action_button(
-                                "download_plot_zernike", "Download", icon=ICONS["save"]
-                            ),
+                    ),
+                    ui.card_footer(
+                        ui.input_action_button(
+                            "do_plot_zernike", "Run", icon=ICONS["run"]
+                        ),
+                        ui.input_action_button(
+                            "download_plot_zernike", "Download", icon=ICONS["save"]
                         ),
                     ),
                     max_height="60vh",
@@ -473,13 +473,11 @@ def app_elems(config):
                     ui.card_body(
                         output_text_verbatim("plot_PSD_inputs"),
                         ui.output_plot("plot_PSD"),
-                        ui.tags.div(
-                            ui.input_action_button(
-                                "do_plot_PSD", "Run", icon=ICONS["run"]
-                            ),
-                            ui.input_action_button(
-                                "download_plot_PSD", "Download", icon=ICONS["save"]
-                            ),
+                    ),
+                    ui.card_footer(
+                        ui.input_action_button("do_plot_PSD", "Run", icon=ICONS["run"]),
+                        ui.input_action_button(
+                            "download_plot_PSD", "Download", icon=ICONS["save"]
                         ),
                     ),
                     max_height="60vh",
