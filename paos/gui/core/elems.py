@@ -7,7 +7,6 @@ from paos.gui.core.shared import output_text_verbatim
 from paos.gui.core.shared import ICONS
 from paos.gui.core.shared import CARD_HEADER_CLASS
 from paos.gui.core.shared import nested_div
-from paos.gui.core.shared import vspace
 
 
 def app_elems(config):
@@ -310,6 +309,8 @@ def app_elems(config):
                 "prefix": f"lens_{n}_",
             }
 
+    Zernike_sidebar_elems = []
+    Zernike_tab_elems = []
     if Zernike_elems:
         Zernike_choices = [f"S{n}" for n in Zernike_elems]
 
@@ -349,10 +350,6 @@ def app_elems(config):
                 ),
             ),
         ]
-
-    else:
-        Zernike_sidebar_elems = []
-        Zernike_tab_elems = []
 
     PSD_elems = {}
     for key in config.sections():
@@ -422,6 +419,8 @@ def app_elems(config):
             "value": f"{units}",
         }
 
+    PSD_sidebar_elems = []
+    PSD_tab_elems = []
     if PSD_elems:
         PSD_choices = [f"S{n}" for n in PSD_elems]
 
@@ -484,9 +483,6 @@ def app_elems(config):
                 ),
             ),
         ]
-    else:
-        PSD_sidebar_elems = []
-        PSD_tab_elems = []
 
     gridsag_elems = {}
     for key in config.sections():
@@ -508,6 +504,8 @@ def app_elems(config):
             "value": f"{filename}",
         }
 
+    gridsag_sidebar_elems = []
+    gridsag_tab_elems = []
     if gridsag_elems:
         gridsag_choices = [f"S{n}" for n in gridsag_elems]
 
@@ -551,9 +549,6 @@ def app_elems(config):
                 ),
             ),
         ]
-    else:
-        gridsag_sidebar_elems = []
-        gridsag_tab_elems = []
 
     wfe_elems = (
         Zernike_sidebar_elems,
