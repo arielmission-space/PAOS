@@ -27,7 +27,6 @@ from paos.gui.core.elems import app_elems
 from paos.gui.core.plot import simple_plot
 from paos.gui.core.plot import Zernike_plot
 from paos.gui.core.plot import PSD_plot
-from paos.gui.core.shared import ICONS
 from paos.gui.core.shared import nested_div
 from paos.gui.core.shared import menu_panel
 from paos.gui.core.shared import refresh_ui
@@ -35,6 +34,15 @@ from paos.gui.core.shared import modal_download
 
 
 def app_ui(request: StarletteRequest) -> Tag:
+    """
+    Returns the UI for the PAOS application.
+
+    It generates the UI using Shiny's ui.page_fillable function.
+    It includes a page navbar with a nav spacer and a nav panel.
+
+    Returns:
+        Tag: The UI for the PAOS application.
+    """
     return ui.page_fillable(
         # ui.tags.script(
         # """
@@ -256,7 +264,7 @@ def server(input, output, session):
         outfile: list[FileInfo] | None = input.save_txt()
         logger.info(f"Downloaded {outfile}")
 
-        with open(cache / outfile, "w") as f:
+        with open(cache / outfile, "w", encoding="utf-8") as f:
             f.write(raytrace)
 
         return os.path.join(os.path.dirname(__file__), "cache", outfile)
@@ -446,8 +454,8 @@ def server(input, output, session):
     def download_config_ini():
         outfile: list[FileInfo] | None = input.save_ini()
 
-        with open(cache / "tmp.ini", "r") as f:
-            with open(cache / outfile, "w") as cf:
+        with open(cache / "tmp.ini", "r", encoding="utf-8") as f:
+            with open(cache / outfile, "w", encoding="utf-8") as cf:
                 cf.write(f.read())
 
         return os.path.join(os.path.dirname(__file__), "cache", outfile)
@@ -553,7 +561,7 @@ def server(input, output, session):
         surface = input.select_Zernike()
 
         return f"Surface: {surface}"
-    
+
     @render.plot(alt="Zernike plot")
     @reactive.event(input.do_plot_zernike)
     def plot_zernike():
@@ -648,7 +656,7 @@ def server(input, output, session):
         )
 
         return calc_PSD()
-    
+
     @render.text
     @reactive.event(input.do_plot_PSD)
     def plot_PSD_inputs():
@@ -662,7 +670,7 @@ def server(input, output, session):
         surface = input.select_PSD()
 
         return f"Surface: {surface}"
-    
+
     @render.plot(alt="PSD plot")
     @reactive.event(input.do_plot_PSD)
     def plot_PSD():
@@ -690,23 +698,22 @@ def server(input, output, session):
             fig=fig,
             axis=ax,
             surface=surface,
-            A=A, 
-            B=B, 
-            C=C, 
-            fknee=fknee, 
-            fmin=fmin, 
-            fmax=fmax, 
-            SR=SR, 
+            A=A,
+            B=B,
+            C=C,
+            fknee=fknee,
+            fmin=fmin,
+            fmax=fmax,
+            SR=SR,
             units=units,
             grid_size=int(input.grid_size()),
-            zoom=int(input.zoom()),
             phi=phi,
         )
 
         figure_PSD.set(fig)
 
         return fig
-    
+
     @reactive.effect
     @reactive.event(input.download_plot_PSD)
     def download_plot_PSD():
@@ -770,18 +777,18 @@ def server(input, output, session):
         refresh_ui("lens", lens_elems, mode="dict")
         refresh_ui("Zernike_settings", Zernike_sidebar_elems)
         if Zernike_elems:
-            for key in Zernike_elems.keys():
+            for key, _ in Zernike_elems.items():
                 refresh_ui("zernike", Zernike_elems, mode="nested-dict", key=key)
         refresh_ui("Zernike_tab", Zernike_tab_elems)
         refresh_ui("PSD_settings", PSD_sidebar_elems)
         if PSD_elems:
-            for key in PSD_elems.keys():
+            for key, _ in PSD_elems.items():
                 refresh_ui("PSD", PSD_elems, mode="nested-dict", key=key)
         refresh_ui("PSD_tab", PSD_tab_elems)
         refresh_ui("analysis_settings", analysis_sidebar_elems)
         refresh_ui("analysis", analysis_elems)
 
-        with open(cache / "tmp.ini", "w") as f:
+        with open(cache / "tmp.ini", "w", encoding="utf-8") as f:
             config.get().write(f)
 
     @reactive.effect

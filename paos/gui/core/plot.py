@@ -289,11 +289,10 @@ def PSD_plot(
     SR,
     units,
     grid_size,
-    zoom,
     phi,
 ):
     phi_x = phi_y = phi  # mm
-    D = zoom * np.max([phi_x, phi_y])
+    D = np.max([phi_x, phi_y])
     delta = D / grid_size
 
     x = y = np.arange(-grid_size // 2, grid_size // 2) * delta
@@ -321,14 +320,6 @@ def PSD_plot(
     )
     axis.set_xlabel("pixel")
     axis.set_ylabel("pixel")
-    axis.set_xlim(
-        grid_size // 2 - grid_size // (2 * zoom),
-        grid_size // 2 + grid_size // (2 * zoom),
-    )
-    axis.set_ylim(
-        grid_size // 2 - grid_size // (2 * zoom),
-        grid_size // 2 + grid_size // (2 * zoom),
-    )
     axis.grid()
 
     return
