@@ -22,14 +22,6 @@ def app_elems(config):
             "Version",
             value=config["general"].get("version", "0.1"),
         ),
-        ui.p("Lens: ", config["general"].get("lens_unit", "m")),
-        ui.p("Angle: ", config["general"].get("angle_unit", "degrees")),
-        ui.p(
-            "Wavelength: ",
-            config["general"].get("wavelength_units", "micrometers"),
-        ),
-        ui.p("Temperature: ", config["general"].get("temperature_units", "C")),
-        ui.p("Pressure: ", config["general"].get("pressure_units", "atm")),
     ]
 
     sim_elems = [
@@ -562,7 +554,9 @@ def app_elems(config):
         gridsag_tab_elems,
     )
 
-    surface_choices = [f"S{key}" for key, item in lens_elems.items() if item["Save"]["value"]]
+    surface_choices = [
+        f"S{key}" for key, item in lens_elems.items() if item["Save"]["value"]
+    ]
 
     wl_choices = [f"w{n}" for n in wl_elems]
     field_choices = [f"f{n}" for n in field_elems]
@@ -667,6 +661,17 @@ def app_elems(config):
         ),
     ]
 
+    units_elems = [
+        ui.p("Lens: ", config["general"].get("lens_unit", "m")),
+        ui.p("Angle: ", config["general"].get("angle_unit", "degrees")),
+        ui.p(
+            "Wavelength: ",
+            config["general"].get("wavelength_units", "micrometers"),
+        ),
+        ui.p("Temperature: ", config["general"].get("temperature_units", "C")),
+        ui.p("Pressure: ", config["general"].get("pressure_units", "atm")),
+    ]
+
     return (
         general_elems,
         sim_elems,
@@ -676,4 +681,5 @@ def app_elems(config):
         wfe_elems,
         analysis_sidebar_elems,
         analysis_elems,
+        units_elems,
     )

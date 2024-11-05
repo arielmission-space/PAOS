@@ -33,6 +33,10 @@ from paos.gui.core.shared import nested_div
 from paos.gui.core.shared import menu_panel
 from paos.gui.core.shared import refresh_ui
 from paos.gui.core.shared import modal_download
+from paos.gui.core.shared import ICONS
+from paos.gui.core.shared import CARD_HEADER_CLASS
+from paos.gui.core.shared import vspace
+from paos.gui.core.shared import hline
 
 
 def app_ui(request: StarletteRequest) -> Tag:
@@ -62,7 +66,21 @@ def app_ui(request: StarletteRequest) -> Tag:
                         ui.sidebar(
                             nested_div("general"),
                             nested_div("sim"),
-                            title="Settings",
+                            title=ui.tags.div(
+                                ui.tags.div(
+                                    ui.markdown("##### Settings"),
+                                    ui.popover(
+                                        ICONS["info"],
+                                        nested_div("units"),
+                                        title="Units",
+                                        placement="top",
+                                    ),
+                                    class_=CARD_HEADER_CLASS,
+                                ),
+                                vspace,
+                                hline,
+                                vspace,
+                            ),
                             width="20vw",
                         ),
                         ui.card(
@@ -806,6 +824,7 @@ def server(input, output, session):
             wfe_elems,
             analysis_sidebar_elems,
             analysis_elems,
+            units_elems,
         ) = app_elems(config.get())
 
         (
@@ -842,6 +861,7 @@ def server(input, output, session):
         refresh_ui("gridsag_tab", gridsag_tab_elems)
         refresh_ui("analysis_settings", analysis_sidebar_elems)
         refresh_ui("analysis", analysis_elems)
+        refresh_ui("units", units_elems)
 
         with open(cache / "tmp.ini", "w", encoding="utf-8") as f:
             config.get().write(f)
