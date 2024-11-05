@@ -5,7 +5,7 @@ from paos import PSD
 
 from paos.gui.core.shared import output_text_verbatim
 from paos.gui.core.shared import ICONS
-from paos.gui.core.shared import card_header_class_
+from paos.gui.core.shared import CARD_HEADER_CLASS
 from paos.gui.core.shared import nested_div
 from paos.gui.core.shared import vspace
 
@@ -467,7 +467,7 @@ def app_elems(config):
                                 title="Settings",
                                 placement="top",
                             ),
-                            class_=card_header_class_,
+                            class_=CARD_HEADER_CLASS,
                         ),
                     ),
                     ui.card_body(
@@ -583,7 +583,7 @@ def app_elems(config):
                             title="Settings",
                             placement="top",
                         ),
-                        class_=card_header_class_,
+                        class_=CARD_HEADER_CLASS,
                     ),
                 ),
                 ui.card_body(

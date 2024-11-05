@@ -1,7 +1,7 @@
-import faicons as fa
-from shiny import ui
 import configparser
 import numpy as np
+from shiny import ui
+import faicons as fa
 
 ICONS = {
     "ellipsis": fa.icon_svg("ellipsis"),
@@ -17,7 +17,7 @@ ICONS = {
     "load": fa.icon_svg("cloud-arrow-up"),
 }
 
-card_header_class_ = "d-flex justify-content-between align-items-center"
+CARD_HEADER_CLASS = "d-flex justify-content-between align-items-center"
 
 vline = ui.markdown(
     """
