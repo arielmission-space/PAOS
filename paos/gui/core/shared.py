@@ -25,6 +25,12 @@ vline = ui.markdown(
     """
 )
 
+hline = ui.markdown(
+    """
+    <div style="border-bottom: 1px solid lightgrey; width: 100%;"></div>
+    """
+)
+
 
 vspace = ui.tags.div(style="height: 10px;")
 
@@ -121,7 +127,7 @@ def fill_header(items):
         return ui.div()
     key = min(np.array(list(items.keys())))
     item = items[key]
-    return ui.card_header(
+    return ui.div(
         {"style": "display: flex;"},
         *[
             ui.column(
@@ -172,7 +178,7 @@ def refresh_ui(name, items, mode=None, key=""):
         items = [*fill_body(items)]
 
     ui.insert_ui(
-        ui.div(
+        ui.card(
             {"id": f"inserted-{name}-editor"},
             *items,
         ),
