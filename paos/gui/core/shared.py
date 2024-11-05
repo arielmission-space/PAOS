@@ -231,24 +231,6 @@ def ellipsis(id, names, choices):
     )
 
 
-def step_card(id, label, text="blabla", width="80%"):
-    return ui.tags.div(
-        ui.input_action_button(
-            id,
-            label,
-            icon=ICONS["run"],
-            class_="ms-2",
-            width=width,
-        ),
-        ui.popover(
-            ICONS["info"].add_class("ms-2"),
-            ui.markdown(text),
-            title="Info",
-            placement="right",
-        ),
-    )
-
-
 def output_text_verbatim(id, placeholder=True):
     return ui.div(
         {"id": f"{id}-editor"},
