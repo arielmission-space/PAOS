@@ -61,14 +61,14 @@ def app_ui(request: StarletteRequest) -> Tag:
                     ui.layout_sidebar(
                         ui.sidebar(
                             nested_div("general"),
+                            nested_div("sim"),
                             title="Settings",
                             width="20vw",
                         ),
                         ui.card(
                             ui.layout_column_wrap(
-                                nested_div("sim"),
-                                nested_div("field"),
                                 nested_div("wl"),
+                                nested_div("field"),
                             ),
                             fill=False,
                         ),
