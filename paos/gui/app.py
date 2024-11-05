@@ -460,19 +460,6 @@ def server(input, output, session):
         return os.path.join(os.path.dirname(__file__), "cache", outfile)
 
     @reactive.effect
-    @reactive.event(input.docs)
-    def _():
-        req(input.docs())
-        m = ui.modal(
-            ui.markdown(
-                f"Click [here](https://paos.readthedocs.io/en/latest/) to access the {__pkg_name__} documentation."
-            ),
-            title="Documentation",
-            easy_close=True,
-        )
-        ui.modal_show(m)
-
-    @reactive.effect
     @reactive.event(input.about)
     def about():
         req(input.about())
@@ -493,9 +480,7 @@ def server(input, output, session):
         req(input.docs())
         m = ui.modal(
             ui.markdown(
-                """
-                Click [here](https://paos.readthedocs.io/en/latest/) to access the PAOS documentation.
-                """
+                f"Click [here](https://paos.readthedocs.io/en/latest/) to access the {__pkg_name__} documentation."
             ),
             title="Documentation",
             easy_close=True,
@@ -767,6 +752,9 @@ def server(input, output, session):
             PSD_sidebar_elems,
             PSD_elems,
             PSD_tab_elems,
+            gridsag_sidebar_elems,
+            gridsag_elems,
+            gridsag_tab_elems,
         ) = wfe_elems
 
         refresh_ui("general", general_elems)
@@ -784,6 +772,11 @@ def server(input, output, session):
             for key, _ in PSD_elems.items():
                 refresh_ui("PSD", PSD_elems, mode="nested-dict", key=key)
         refresh_ui("PSD_tab", PSD_tab_elems)
+        refresh_ui("gridsag_settings", gridsag_sidebar_elems)
+        if gridsag_elems:
+            for key, _ in gridsag_elems.items():
+                refresh_ui("gridsag", gridsag_elems, mode="nested-dict", key=key)
+        refresh_ui("gridsag_tab", gridsag_tab_elems)
         refresh_ui("analysis_settings", analysis_sidebar_elems)
         refresh_ui("analysis", analysis_elems)
 

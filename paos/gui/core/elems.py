@@ -488,6 +488,73 @@ def app_elems(config):
         PSD_sidebar_elems = []
         PSD_tab_elems = []
 
+    gridsag_elems = {}
+    for key in config.sections():
+        if not key.startswith("lens_"):
+            continue
+        item = config[key]
+        if not item.get("surfacetype") == "Grid Sag":
+            continue
+
+        n = int(key.split("_")[1])
+        gridsag_elems[n] = {}
+        gridsag_elems[n][0] = {}
+
+        filename = item.get("Par8")
+
+        gridsag_elems[n][0]["Filename"] = {
+            "f": ui.p,
+            "width": 2,
+            "value": f"{filename}",
+        }
+
+    if gridsag_elems:
+        gridsag_choices = [f"S{n}" for n in gridsag_elems]
+
+        gridsag_sidebar_elems = [
+            *[
+                ui.input_select(
+                    id=f"select_{name}", label=f"Select {name}", choices=choice
+                )
+                for name, choice in zip(["gridsag"], [gridsag_choices])
+            ],
+        ]
+
+        gridsag_tab_elems = [
+            ui.layout_column_wrap(
+                ui.card(
+                    ui.card_header("Explorer"),
+                    ui.card_body(
+                        output_text_verbatim("gridsag_inputs"),
+                        output_text_verbatim("gridsag_output"),
+                        nested_div("gridsag"),
+                    ),
+                    max_height="60vh",
+                ),
+                ui.card(
+                    ui.card_header(
+                        "Plot",
+                    ),
+                    ui.card_body(
+                        output_text_verbatim("plot_gridsag_inputs"),
+                        ui.output_plot("plot_gridsag"),
+                    ),
+                    ui.card_footer(
+                        ui.input_action_button(
+                            "do_plot_gridsag", "Run", icon=ICONS["run"]
+                        ),
+                        ui.input_action_button(
+                            "download_plot_gridsag", "Download", icon=ICONS["save"]
+                        ),
+                    ),
+                    max_height="60vh",
+                ),
+            ),
+        ]
+    else:
+        gridsag_sidebar_elems = []
+        gridsag_tab_elems = []
+
     wfe_elems = (
         Zernike_sidebar_elems,
         Zernike_elems,
@@ -495,9 +562,12 @@ def app_elems(config):
         PSD_sidebar_elems,
         PSD_elems,
         PSD_tab_elems,
+        gridsag_sidebar_elems,
+        gridsag_elems,
+        gridsag_tab_elems,
     )
 
-    surface_choices = [f"S{n}" for n in lens_elems if lens_elems[n]["Save"]["value"]]
+    surface_choices = [f"S{key}" for key, item in lens_elems.items() if item["Save"]["value"]]
 
     wl_choices = [f"w{n}" for n in wl_elems]
     field_choices = [f"f{n}" for n in field_elems]
