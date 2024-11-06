@@ -134,9 +134,7 @@ def fill_header(items):
             ui.column(
                 subitem["width"],
                 {"style": "text-align: center;"},
-                ui.markdown(
-                    f"**{subkey}**"
-                ),
+                ui.markdown(f"**{subkey}**"),
                 hline,
             )
             for _, (subkey, subitem) in enumerate(item.items())
