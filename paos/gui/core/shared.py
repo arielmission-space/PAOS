@@ -20,20 +20,20 @@ ICONS = {
 
 CARD_HEADER_CLASS = "d-flex justify-content-between align-items-center"
 
-vline = ui.markdown(
+vline = ui.HTML(
     """
-    <div style="border-right: 1px solid lightgrey; height: 100%;"></div>
-    """
-)
-
-hline = ui.markdown(
-    """
-    <div style="border-bottom: 1px solid lightgrey; width: 100%;"></div>
+    <div style="border-right: 0.1px solid lightgrey; height: 100%;"></div>
     """
 )
 
+hline = ui.HTML(
+    """
+    <div style="border-bottom: 0.1px solid lightgrey; width: 100%;"></div>
+    """
+)
 
-vspace = ui.tags.div(style="height: 10px;")
+
+vspace = ui.tags.div(style="height: 15px;")
 
 
 def menu_panel(id):
@@ -57,6 +57,14 @@ def fill_value(items, name, row, col):
             label=items[name]["label"] if "label" in items[name] else "",
             choices=items[name]["choices"],
             selected=items[name]["selected"],
+        )
+    elif func in [ui.tags.input]:
+        return func(
+            id=theid,
+            type="text",
+            value=items[name]["value"],
+            readonly=items[name]["readonly"],
+            class_="form-control",
         )
     elif func in [ui.input_text]:
         return func(

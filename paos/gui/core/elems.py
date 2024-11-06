@@ -7,6 +7,7 @@ from paos.gui.core.shared import output_text_verbatim
 from paos.gui.core.shared import nested_div
 from paos.gui.core.shared import CARD_HEADER_CLASS
 from paos.gui.core.shared import ICONS
+from paos.gui.core.shared import vspace
 
 
 help = {
@@ -122,11 +123,38 @@ def app_elems(config):
             "Ambient pressure [atm]",
             value=config["general"].getfloat("pambient", "1.0"),
         ),
-        ui.markdown(
-            f"Wavelength unit is **{config['general'].get('wavelength_units', 'μm')}**"
+        ui.tags.div(
+            ui.tags.label("Wavelength unit", class_="form-label"),
+            ui.tags.input(
+                id="wavelength_unit",
+                type="text",
+                value=config["general"].get("wavelength_unit", "micron"),
+                readonly=True,
+                class_="form-control",
+            ),
         ),
-        ui.markdown(f"Angle unit is **{config['general'].get('angle_unit', '°')}**"),
-        ui.markdown(f"Lens unit is **{config['general'].get('lens_unit', 'm')}**"),
+        vspace,
+        ui.tags.div(
+            ui.tags.label("Angle unit", class_="form-label"),
+            ui.tags.input(
+                id="angle_unit",
+                type="text",
+                value=config["general"].get("angle_unit", "deg"),
+                readonly=True,
+                class_="form-control",
+            ),
+        ),
+        vspace,
+        ui.tags.div(
+            ui.tags.label("Lens unit", class_="form-label"),
+            ui.tags.input(
+                id="lens_unit",
+                type="text",
+                value=config["general"].get("lens_unit", "m"),
+                readonly=True,
+                class_="form-control",
+            ),
+        ),
     ]
 
     field_elems = {}
@@ -176,20 +204,22 @@ def app_elems(config):
         }
         surface_type = item.get("surfacetype")
         lens_elems[n]["SurfaceType"] = {
-            "f": ui.input_select,
-            "choices": [
-                "INIT",
-                "Coordinate Break",
-                "Standard",
-                "Paraxial Lens",
-                "ABCD",
-                "Zernike",
-                "PSD",
-                "Grid Sag",
-            ],
+            "f": ui.tags.input,
+            # "choices": [
+            #     "INIT",
+            #     "Coordinate Break",
+            #     "Standard",
+            #     "Paraxial Lens",
+            #     "ABCD",
+            #     "Zernike",
+            #     "PSD",
+            #     "Grid Sag",
+            # ],
             "width": 1,
-            "selected": surface_type,
+            "value": surface_type,
+            # "selected": surface_type,
             "prefix": "lens_",
+            "readonly": True,
         }
         lens_elems[n]["Comment"] = {
             "f": ui.input_text,
