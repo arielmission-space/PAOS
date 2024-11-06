@@ -260,7 +260,7 @@ def app_elems(config):
             "prefix": "lens_",
         }
 
-    Zernike_elems = {}
+    zernike_elems = {}
     for key in config.sections():
         if not key.startswith("lens_"):
             continue
@@ -269,7 +269,7 @@ def app_elems(config):
             continue
 
         n = int(key.split("_")[1])
-        Zernike_elems[n] = {}
+        zernike_elems[n] = {}
 
         zindex = item.get("zindex", "").split(",")
         zcoeff = item.get("z", "").split(",")
@@ -278,48 +278,48 @@ def app_elems(config):
         azimuthal, radial = Zernike.j2mn(N=len(zindex), ordering=ordering)
 
         for zi, zc in zip(zindex, zcoeff):
-            Zernike_elems[n][zi] = {}
-            Zernike_elems[n][zi]["n"] = {
+            zernike_elems[n][zi] = {}
+            zernike_elems[n][zi]["n"] = {
                 "f": ui.p,
                 "width": 3,
                 "value": radial[int(zi)],
             }
-            Zernike_elems[n][zi]["m"] = {
+            zernike_elems[n][zi]["m"] = {
                 "f": ui.p,
                 "width": 3,
                 "value": azimuthal[int(zi)],
             }
-            Zernike_elems[n][zi]["Zindex"] = {
+            zernike_elems[n][zi]["Zindex"] = {
                 "f": ui.p,
                 "width": 3,
                 "value": zi,
             }
-            Zernike_elems[n][zi]["Zcoeff"] = {
+            zernike_elems[n][zi]["Zcoeff"] = {
                 "f": ui.input_text,
                 "width": 3,
                 "value": zc,
                 "prefix": f"lens_{n}_",
             }
 
-    Zernike_sidebar_elems = []
-    Zernike_tab_elems = []
-    if Zernike_elems:
-        Zernike_choices = [f"S{n}" for n in Zernike_elems]
+    zernike_sidebar_elems = []
+    zernike_tab_elems = []
+    if zernike_elems:
+        zernike_choices = [f"S{n}" for n in zernike_elems]
 
-        Zernike_sidebar_elems = [
+        zernike_sidebar_elems = [
             *[
                 ui.input_select(
                     id=f"select_{name}", label=f"Select {name}", choices=choice
                 )
-                for name, choice in zip(["Zernike"], [Zernike_choices])
+                for name, choice in zip(["Zernike"], [zernike_choices])
             ],
         ]
-        Zernike_tab_elems = [
+        zernike_tab_elems = [
             ui.layout_column_wrap(
                 ui.card(
                     ui.card_header("Explorer"),
                     ui.card_body(
-                        output_text_verbatim("Zernike_inputs"),
+                        output_text_verbatim("zernike_inputs"),
                         nested_div("zernike"),
                     ),
                     max_height="55vh",
@@ -327,7 +327,7 @@ def app_elems(config):
                 ui.card(
                     ui.card_header("Plot"),
                     ui.card_body(
-                        output_text_verbatim("plot_Zernike_inputs"),
+                        output_text_verbatim("plot_zernike_inputs"),
                         ui.output_plot("plot_zernike"),
                     ),
                     ui.card_footer(
@@ -343,7 +343,7 @@ def app_elems(config):
             ),
         ]
 
-    PSD_elems = {}
+    psd_elems = {}
     for key in config.sections():
         if not key.startswith("lens_"):
             continue
@@ -352,8 +352,8 @@ def app_elems(config):
             continue
 
         n = int(key.split("_")[1])
-        PSD_elems[n] = {}
-        PSD_elems[n][0] = {}
+        psd_elems[n] = {}
+        psd_elems[n][0] = {}
 
         A = float(item.get("Par1"))
         B = float(item.get("Par2"))
@@ -365,72 +365,72 @@ def app_elems(config):
         units = item.get("Par8")
         sfe_rms = PSD.sfe_rms(A, B, C, fknee, fmin, fmax)
 
-        # PSD_elems[n][0]["A"] = {
+        # psd_elems[n][0]["A"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{A:.3f}",
         # }
-        # PSD_elems[n][0]["B"] = {
+        # psd_elems[n][0]["B"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{B:.3f}",
         # }
-        # PSD_elems[n][0]["C"] = {
+        # psd_elems[n][0]["C"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{C:.3f}",
         # }
-        # PSD_elems[n][0]["fknee"] = {
+        # psd_elems[n][0]["fknee"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{fknee:.3f}",
         # }
-        # PSD_elems[n][0]["fmin"] = {
+        # psd_elems[n][0]["fmin"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{fmin:.3f}",
         # }
-        # PSD_elems[n][0]["fmax"] = {
+        # psd_elems[n][0]["fmax"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{fmax:.3f}",
         # }
-        PSD_elems[n][0]["PSD SFE RMS"] = {
+        psd_elems[n][0]["PSD SFE RMS"] = {
             "f": ui.p,
             "width": 2,
             "value": f"{sfe_rms:.3f}",
         }
-        PSD_elems[n][0]["SR RMS"] = {
+        psd_elems[n][0]["SR RMS"] = {
             "f": ui.p,
             "width": 2,
             "value": f"{SR}",
         }
-        PSD_elems[n][0]["SFE units"] = {
+        psd_elems[n][0]["SFE units"] = {
             "f": ui.p,
             "width": 2,
             "value": f"{units}",
         }
 
-    PSD_sidebar_elems = []
-    PSD_tab_elems = []
-    if PSD_elems:
-        PSD_choices = [f"S{n}" for n in PSD_elems]
+    psd_sidebar_elems = []
+    psd_tab_elems = []
+    if psd_elems:
+        psd_choices = [f"S{n}" for n in psd_elems]
 
-        PSD_sidebar_elems = [
+        psd_sidebar_elems = [
             *[
                 ui.input_select(
                     id=f"select_{name}", label=f"Select {name}", choices=choice
                 )
-                for name, choice in zip(["PSD"], [PSD_choices])
+                for name, choice in zip(["PSD"], [psd_choices])
             ],
         ]
-        PSD_tab_elems = [
+        psd_tab_elems = [
             ui.layout_column_wrap(
                 ui.card(
                     ui.card_header("Explorer"),
                     ui.card_body(
-                        output_text_verbatim("PSD_inputs"),
-                        output_text_verbatim("PSD_output"),
+                        output_text_verbatim("psd_inputs"),
+                        output_text_verbatim("psd_output"),
                         nested_div("PSD"),
                     ),
                     ui.card_footer(
@@ -450,7 +450,7 @@ def app_elems(config):
                                 ICONS["gear"],
                                 *[
                                     ui.input_text(
-                                        id="PSD_plot_phi",
+                                        id="psd_plot_phi",
                                         label="D [mm]",
                                         value=110.0,
                                     ),
@@ -462,7 +462,7 @@ def app_elems(config):
                         ),
                     ),
                     ui.card_body(
-                        output_text_verbatim("plot_PSD_inputs"),
+                        output_text_verbatim("plot_psd_inputs"),
                         ui.output_plot("plot_PSD"),
                     ),
                     ui.card_footer(
@@ -543,12 +543,12 @@ def app_elems(config):
         ]
 
     wfe_elems = (
-        Zernike_sidebar_elems,
-        Zernike_elems,
-        Zernike_tab_elems,
-        PSD_sidebar_elems,
-        PSD_elems,
-        PSD_tab_elems,
+        zernike_sidebar_elems,
+        zernike_elems,
+        zernike_tab_elems,
+        psd_sidebar_elems,
+        psd_elems,
+        psd_tab_elems,
         gridsag_sidebar_elems,
         gridsag_elems,
         gridsag_tab_elems,
