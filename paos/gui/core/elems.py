@@ -4,9 +4,93 @@ from paos import Zernike
 from paos import PSD
 
 from paos.gui.core.shared import output_text_verbatim
-from paos.gui.core.shared import ICONS
-from paos.gui.core.shared import CARD_HEADER_CLASS
 from paos.gui.core.shared import nested_div
+from paos.gui.core.shared import CARD_HEADER_CLASS
+from paos.gui.core.shared import ICONS
+
+
+help = {
+    "Par1": {
+        "INIT": "",
+        "Coordinate Break": "Xdecenter",
+        "Standard": "",
+        "Paraxial Lens": "Focal length",
+        "ABCD": "Ax",
+        "Zernike": "Wavelength",
+        "PSD": "A",
+        "Grid Sag": "Wavelength",
+    },
+    "Par2": {
+        "INIT": "",
+        "Coordinate Break": "Ydecenter",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Bx",
+        "Zernike": "Ordering",
+        "PSD": "B",
+        "Grid Sag": "Nx",
+    },
+    "Par3": {
+        "INIT": "",
+        "Coordinate Break": "Xtilt",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Cx",
+        "Zernike": "Normalization",
+        "PSD": "C",
+        "Grid Sag": "Ny",
+    },
+    "Par4": {
+        "INIT": "",
+        "Coordinate Break": "Ytilt",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Dx",
+        "Zernike": "Radius of S.A.",
+        "PSD": "fknee",
+        "Grid Sag": "Dx",
+    },
+    "Par5": {
+        "INIT": "",
+        "Coordinate Break": "",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Ay",
+        "Zernike": "Origin",
+        "PSD": "fmin",
+        "Grid Sag": "Dy",
+    },
+    "Par6": {
+        "INIT": "",
+        "Coordinate Break": "",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "By",
+        "Zernike": "",
+        "PSD": "fmax",
+        "Grid Sag": "Xdecenter (pix)",
+    },
+    "Par7": {
+        "INIT": "",
+        "Coordinate Break": "",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Cy",
+        "Zernike": "",
+        "PSD": "SR",
+        "Grid Sag": "Ydecenter (pix)",
+    },
+    "Par8": {
+        "INIT": "",
+        "Coordinate Break": "",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Dy",
+        "Zernike": "",
+        "PSD": "units",
+        "Grid Sag": "Errormap filepath",
+    },
+}
 
 
 def app_elems(config):
@@ -90,6 +174,7 @@ def app_elems(config):
             "width": 1,
             "value": n,
         }
+        surface_type = item.get("surfacetype")
         lens_elems[n]["SurfaceType"] = {
             "f": ui.input_select,
             "choices": [
@@ -103,7 +188,7 @@ def app_elems(config):
                 "Grid Sag",
             ],
             "width": 1,
-            "selected": item.get("surfacetype"),
+            "selected": surface_type,
             "prefix": "lens_",
         }
         lens_elems[n]["Comment"] = {
@@ -218,48 +303,56 @@ def app_elems(config):
             "value": item.get("par1", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": help["Par1"][surface_type],
         }
         lens_elems[n]["Par2"] = {
             "f": ui.input_text,
             "value": item.get("par2", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": help["Par2"][surface_type],
         }
         lens_elems[n]["Par3"] = {
             "f": ui.input_text,
             "value": item.get("par3", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": help["Par3"][surface_type],
         }
         lens_elems[n]["Par4"] = {
             "f": ui.input_text,
             "value": item.get("par4", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": help["Par4"][surface_type],
         }
         lens_elems[n]["Par5"] = {
             "f": ui.input_text,
             "value": item.get("par5", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": help["Par5"][surface_type],
         }
         lens_elems[n]["Par6"] = {
             "f": ui.input_text,
             "value": item.get("par6", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": help["Par6"][surface_type],
         }
         lens_elems[n]["Par7"] = {
             "f": ui.input_text,
             "value": item.get("par7", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": help["Par7"][surface_type],
         }
         lens_elems[n]["Par8"] = {
             "f": ui.input_text,
             "value": item.get("par8", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": help["Par8"][surface_type],
         }
 
     zernike_elems = {}

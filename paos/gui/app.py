@@ -808,9 +808,6 @@ def server(input, output, session):
         req(input.open_ini())
         file: list[FileInfo] | None = input.open_ini()
 
-        if file is None:
-            return
-
         if not file[0]["name"].endswith(".ini"):
             logger.error("Invalid file")
             return

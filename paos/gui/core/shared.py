@@ -58,7 +58,14 @@ def fill_value(items, name, row, col):
             choices=items[name]["choices"],
             selected=items[name]["selected"],
         )
-    elif func in [ui.input_text, ui.input_checkbox]:
+    elif func in [ui.input_text]:
+        return func(
+            id=theid,
+            label=items[name]["label"] if "label" in items[name] else "",
+            value=items[name]["value"],
+            placeholder=items[name]["placeholder"] if "placeholder" in items[name] else "",
+        )
+    elif func in [ui.input_checkbox]:
         return func(
             id=theid,
             label=items[name]["label"] if "label" in items[name] else "",
