@@ -10,7 +10,7 @@ from paos.gui.core.shared import ICONS
 from paos.gui.core.shared import vspace
 
 
-help = {
+Placeholder = {
     "Par1": {
         "INIT": "",
         "Coordinate Break": "Xdecenter",
@@ -163,14 +163,14 @@ def app_elems(config):
         field_elems[n] = {}
         field_elems[n]["#"] = {
             "f": ui.p,
-            "width": 5,
+            "width": 1,
             "value": n,
         }
         field_elems[n]["Field"] = {
             "f": ui.input_text,
             "id": key,
             "value": value,
-            "width": 7,
+            "width": 5,
         }
 
     wl_elems = {}
@@ -179,14 +179,14 @@ def app_elems(config):
         wl_elems[n] = {}
         wl_elems[n]["#"] = {
             "f": ui.p,
-            "width": 5,
+            "width": 1,
             "value": n,
         }
         wl_elems[n]["Wavelength"] = {
             "f": ui.input_text,
             "id": key,
             "value": value,
-            "width": 7,
+            "width": 5,
         }
 
     lens_elems = {}
@@ -333,56 +333,56 @@ def app_elems(config):
             "value": item.get("par1", ""),
             "width": 1,
             "prefix": "lens_",
-            "placeholder": help["Par1"][surface_type],
+            "placeholder": Placeholder["Par1"][surface_type],
         }
         lens_elems[n]["Par2"] = {
             "f": ui.input_text,
             "value": item.get("par2", ""),
             "width": 1,
             "prefix": "lens_",
-            "placeholder": help["Par2"][surface_type],
+            "placeholder": Placeholder["Par2"][surface_type],
         }
         lens_elems[n]["Par3"] = {
             "f": ui.input_text,
             "value": item.get("par3", ""),
             "width": 1,
             "prefix": "lens_",
-            "placeholder": help["Par3"][surface_type],
+            "placeholder": Placeholder["Par3"][surface_type],
         }
         lens_elems[n]["Par4"] = {
             "f": ui.input_text,
             "value": item.get("par4", ""),
             "width": 1,
             "prefix": "lens_",
-            "placeholder": help["Par4"][surface_type],
+            "placeholder": Placeholder["Par4"][surface_type],
         }
         lens_elems[n]["Par5"] = {
             "f": ui.input_text,
             "value": item.get("par5", ""),
             "width": 1,
             "prefix": "lens_",
-            "placeholder": help["Par5"][surface_type],
+            "placeholder": Placeholder["Par5"][surface_type],
         }
         lens_elems[n]["Par6"] = {
             "f": ui.input_text,
             "value": item.get("par6", ""),
             "width": 1,
             "prefix": "lens_",
-            "placeholder": help["Par6"][surface_type],
+            "placeholder": Placeholder["Par6"][surface_type],
         }
         lens_elems[n]["Par7"] = {
             "f": ui.input_text,
             "value": item.get("par7", ""),
             "width": 1,
             "prefix": "lens_",
-            "placeholder": help["Par7"][surface_type],
+            "placeholder": Placeholder["Par7"][surface_type],
         }
         lens_elems[n]["Par8"] = {
             "f": ui.input_text,
             "value": item.get("par8", ""),
             "width": 1,
             "prefix": "lens_",
-            "placeholder": help["Par8"][surface_type],
+            "placeholder": Placeholder["Par8"][surface_type],
         }
 
     zernike_elems = {}
