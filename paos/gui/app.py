@@ -34,9 +34,6 @@ from paos.gui.core.shared import menu_panel
 from paos.gui.core.shared import refresh_ui
 from paos.gui.core.shared import modal_download
 from paos.gui.core.shared import ICONS
-from paos.gui.core.shared import CARD_HEADER_CLASS
-from paos.gui.core.shared import vspace
-from paos.gui.core.shared import hline
 
 
 def app_ui(request: StarletteRequest) -> Tag:
@@ -70,10 +67,18 @@ def app_ui(request: StarletteRequest) -> Tag:
                             width="20vw",
                         ),
                         ui.card(
+                            ui.help_text(
+                                "This software is useless without an input file. \n"
+                                "Add wavelengths, fields, and optical surfaces in your input file. \n"
+                                "Then load it here. \n"
+                                "Happy modeling.\n",
+                                ui.tags.a(ICONS["wizard"]),
+                            ),
                             ui.layout_column_wrap(
                                 nested_div("wl"),
                                 nested_div("field"),
                             ),
+                            width="40vw",
                             fill=False,
                         ),
                     ),
@@ -179,7 +184,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                 ),
             ),
             window_title=f"{__pkg_name__} GUI",
-            selected="Wavefront Editor",
+            selected="System Explorer",
         ),
         gap="2px",
         padding="2px",
@@ -714,7 +719,7 @@ def server(input, output, session):
         surface = input.select_gridsag()
 
         return f"Surface: {surface}"
-    
+
     @render.text
     @reactive.event(input.open_ini, input.select_gridsag)
     def gridsag_output():

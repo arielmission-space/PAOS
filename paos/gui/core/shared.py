@@ -16,6 +16,7 @@ ICONS = {
     "info": fa.icon_svg("circle-info"),
     "load": fa.icon_svg("cloud-arrow-up"),
     "download": fa.icon_svg("cloud-arrow-down"),
+    "wizard": fa.icon_svg("hat-wizard"),
 }
 
 CARD_HEADER_CLASS = "d-flex justify-content-between align-items-center"

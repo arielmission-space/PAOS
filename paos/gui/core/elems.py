@@ -163,14 +163,14 @@ def app_elems(config):
         field_elems[n] = {}
         field_elems[n]["#"] = {
             "f": ui.p,
-            "width": 1,
+            "width": 5,
             "value": n,
         }
         field_elems[n]["Field"] = {
             "f": ui.input_text,
             "id": key,
             "value": value,
-            "width": 5,
+            "width": 7,
         }
 
     wl_elems = {}
@@ -179,14 +179,14 @@ def app_elems(config):
         wl_elems[n] = {}
         wl_elems[n]["#"] = {
             "f": ui.p,
-            "width": 1,
+            "width": 5,
             "value": n,
         }
         wl_elems[n]["Wavelength"] = {
             "f": ui.input_text,
             "id": key,
             "value": value,
-            "width": 5,
+            "width": 7,
         }
 
     lens_elems = {}
