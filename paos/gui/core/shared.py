@@ -15,6 +15,7 @@ ICONS = {
     "refresh": fa.icon_svg("arrows-rotate"),
     "info": fa.icon_svg("circle-info"),
     "load": fa.icon_svg("cloud-arrow-up"),
+    "download": fa.icon_svg("cloud-arrow-down"),
 }
 
 CARD_HEADER_CLASS = "d-flex justify-content-between align-items-center"
@@ -266,7 +267,9 @@ def modal_download(id, ext):
             ),
             ui.download_button(
                 f"download_{id}_{ext}",
-                "Save",
+                "Download",
+                icon=ICONS["download"],
+                class_="btn-success",
             ),
             # ui.output_text_verbatim(f"download_{ext}_progress"),
         ],

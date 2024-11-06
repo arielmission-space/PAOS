@@ -332,10 +332,15 @@ def app_elems(config):
                     ),
                     ui.card_footer(
                         ui.input_action_button(
-                            "do_plot_zernike", "Run", icon=ICONS["run"]
+                            "do_plot_zernike",
+                            "Run",
+                            icon=ICONS["run"],
+                            class_="btn-success",
                         ),
                         ui.input_action_button(
-                            "download_plot_zernike", "Download", icon=ICONS["save"]
+                            "download_plot_zernike",
+                            "Save",
+                            icon=ICONS["save"],
                         ),
                     ),
                     max_height="55vh",
@@ -436,7 +441,10 @@ def app_elems(config):
                     ui.card_footer(
                         ui.tags.div(
                             ui.input_action_button(
-                                "calc_PSD", "Run", icon=ICONS["run"]
+                                "calc_PSD",
+                                "Run",
+                                icon=ICONS["run"],
+                                class_="btn-success",
                             ),
                         ),
                     ),
@@ -466,9 +474,14 @@ def app_elems(config):
                         ui.output_plot("plot_PSD"),
                     ),
                     ui.card_footer(
-                        ui.input_action_button("do_plot_PSD", "Run", icon=ICONS["run"]),
                         ui.input_action_button(
-                            "download_plot_PSD", "Download", icon=ICONS["save"]
+                            "do_plot_PSD",
+                            "Run",
+                            icon=ICONS["run"],
+                            class_="btn-success",
+                        ),
+                        ui.input_action_button(
+                            "download_plot_PSD", "Save", icon=ICONS["save"]
                         ),
                     ),
                     max_height="55vh",
@@ -531,10 +544,13 @@ def app_elems(config):
                     ),
                     ui.card_footer(
                         ui.input_action_button(
-                            "do_plot_gridsag", "Run", icon=ICONS["run"]
+                            "do_plot_gridsag",
+                            "Run",
+                            icon=ICONS["run"],
+                            class_="btn-success",
                         ),
                         ui.input_action_button(
-                            "download_plot_gridsag", "Download", icon=ICONS["save"]
+                            "download_plot_gridsag", "Save", icon=ICONS["save"]
                         ),
                     ),
                     max_height="55vh",
@@ -581,10 +597,13 @@ def app_elems(config):
                         ui.card_footer(
                             ui.tags.div(
                                 ui.input_action_button(
-                                    "calc_pop", "Run", icon=ICONS["run"]
+                                    "calc_pop",
+                                    "Run",
+                                    icon=ICONS["run"],
+                                    class_="btn-success",
                                 ),
                                 ui.input_action_button(
-                                    "download_pop", "Download", icon=ICONS["save"]
+                                    "download_pop", "Save", icon=ICONS["save"]
                                 ),
                             ),
                         ),
@@ -600,10 +619,13 @@ def app_elems(config):
                         ui.card_footer(
                             ui.tags.div(
                                 ui.input_action_button(
-                                    "calc_raytrace", "Run", icon=ICONS["run"]
+                                    "calc_raytrace",
+                                    "Run",
+                                    icon=ICONS["run"],
+                                    class_="btn-success",
                                 ),
                                 ui.input_action_button(
-                                    "download_raytrace", "Download", icon=ICONS["save"]
+                                    "download_raytrace", "Save", icon=ICONS["save"]
                                 ),
                             ),
                         ),
@@ -651,9 +673,14 @@ def app_elems(config):
                 ),
                 ui.card_footer(
                     ui.tags.div(
-                        ui.input_action_button("do_plot", "Run", icon=ICONS["run"]),
                         ui.input_action_button(
-                            "download_plot", "Download", icon=ICONS["save"]
+                            "do_plot",
+                            "Run",
+                            icon=ICONS["run"],
+                            class_="btn-success",
+                        ),
+                        ui.input_action_button(
+                            "download_plot", "Save", icon=ICONS["save"]
                         ),
                     ),
                 ),
