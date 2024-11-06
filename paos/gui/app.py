@@ -66,21 +66,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                         ui.sidebar(
                             nested_div("general"),
                             nested_div("sim"),
-                            title=ui.tags.div(
-                                ui.tags.div(
-                                    ui.markdown("##### Settings"),
-                                    ui.popover(
-                                        ICONS["info"],
-                                        nested_div("units"),
-                                        title="Units",
-                                        placement="top",
-                                    ),
-                                    class_=CARD_HEADER_CLASS,
-                                ),
-                                vspace,
-                                hline,
-                                vspace,
-                            ),
+                            title="Settings",
                             width="20vw",
                         ),
                         ui.card(
@@ -526,7 +512,7 @@ def server(input, output, session):
 
         surface = input.select_Zernike()
 
-        wfe_elems = app_elems(config.get())[5]
+        wfe_elems = app_elems(config.get())[4]
         zernike_elems = wfe_elems[1]
 
         surface_key = int(surface[1:])
@@ -609,7 +595,7 @@ def server(input, output, session):
 
         surface = input.select_PSD()
 
-        wfe_elems = app_elems(config.get())[5]
+        wfe_elems = app_elems(config.get())[4]
         psd_elems = wfe_elems[4]
 
         surface_key = int(surface[1:])
@@ -838,7 +824,6 @@ def server(input, output, session):
 
         (
             general_elems,
-            sim_elems,
             field_elems,
             wl_elems,
             lens_elems,
@@ -861,7 +846,6 @@ def server(input, output, session):
         ) = wfe_elems
 
         refresh_ui("general", general_elems)
-        refresh_ui("sim", sim_elems)
         refresh_ui("field", field_elems, mode="dict")
         refresh_ui("wl", wl_elems, mode="dict")
         refresh_ui("lens", lens_elems, mode="dict")

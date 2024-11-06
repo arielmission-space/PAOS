@@ -22,9 +22,6 @@ def app_elems(config):
             "Version",
             value=config["general"].get("version", "0.1"),
         ),
-    ]
-
-    sim_elems = [
         ui.input_text(
             "grid_size",
             "Grid size",
@@ -33,14 +30,19 @@ def app_elems(config):
         ui.input_text("zoom", "Zoom", value=config["general"].getint("zoom", "4")),
         ui.input_text(
             "tambient",
-            "Ambient temperature",
+            "Ambient temperature [°C]",
             value=config["general"].getfloat("tambient", "20.0"),
         ),
         ui.input_text(
             "pambient",
-            "Ambient pressure",
+            "Ambient pressure [atm]",
             value=config["general"].getfloat("pambient", "1.0"),
         ),
+        ui.markdown(
+            f"Wavelength unit is **{config['general'].get('wavelength_units', 'μm')}**"
+        ),
+        ui.markdown(f"Angle unit is **{config['general'].get('angle_unit', '°')}**"),
+        ui.markdown(f"Lens unit is **{config['general'].get('lens_unit', 'm')}**"),
     ]
 
     field_elems = {}
@@ -688,20 +690,10 @@ def app_elems(config):
         ),
     ]
 
-    units_elems = [
-        ui.p("Lens: ", config["general"].get("lens_unit", "m")),
-        ui.p("Angle: ", config["general"].get("angle_unit", "degrees")),
-        ui.p(
-            "Wavelength: ",
-            config["general"].get("wavelength_units", "micrometers"),
-        ),
-        ui.p("Temperature: ", config["general"].get("temperature_units", "C")),
-        ui.p("Pressure: ", config["general"].get("pressure_units", "atm")),
-    ]
+    units_elems = []
 
     return (
         general_elems,
-        sim_elems,
         field_elems,
         wl_elems,
         lens_elems,
