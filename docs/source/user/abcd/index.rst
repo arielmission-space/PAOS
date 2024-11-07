@@ -72,8 +72,7 @@ realistic elements of the `Ariel` optical chain (e.g. mirrors)
 Example
 ^^^^^^^^^^
 
-Code example to call :func:`~paos.core.raytrace.raytrace`, provided you already have the optical chain (if not,
-back to :ref:`Parse configuration file`).
+Code example to call :func:`~paos.core.raytrace.raytrace`, provided you already have the optical chain (if not, back to :ref:`Parse configuration file`).
 
 .. jupyter-execute::
         :hide-code:
