@@ -10,10 +10,9 @@ Its two pillars are
 #. The :ref:`Configuration file`
     A .ini configuration file with structure similar to that of Zemax OpticStudio :math:`^{©}`;
 #. The :ref:`GUI editor`
-    A GUI to dynamically modify the configuration file and launch instant POP simulations
+    A GUI to dynamically modify the configuration file and launch instant POP simulations.
 
-This structure allows the user to write configuration files from scratch or edit existing ones in a dynamic way, and
-to launch automatized POP simulations that reflect the edits without requiring advanced programming skills.
+This structure allows the user to write configuration files from scratch or edit existing ones in a dynamic way, and to launch automatized POP simulations that reflect the edits without requiring advanced programming skills.
 
 From a broad perspective, this input system has two advantages:
 
@@ -47,6 +46,8 @@ The configuration file is an .ini file structured into four different sections:
     #. Lens units: meters
     #. Angles units: degrees
     #. Wavelength units: micron
+    #. Temperature units: Celsius
+    #. Pressure units: atmospheres
 
 .. _general section:
 
@@ -182,7 +183,7 @@ Lens_xx
 ^^^^^^^^^^^^^
 
 Lens data sections describing how to define the different optical surfaces (INIT, Coordinate Break,
-Standard, Paraxial Lens, ABCD and Zernike) and their required parameters.
+Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required parameters.
 
 .. _lens_xx_table:
 
@@ -286,6 +287,31 @@ Standard, Paraxial Lens, ABCD and Zernike) and their required parameters.
 
        Par5 = origin, can be x (counterclockwise positive from x axis) or y (clockwise positive from y axis)
 
+   * - PSD
+     - ...
+     - None
+     - None
+     - None
+     - Bool
+     - Bool
+     - Bool
+     - list
+     - Par1 = A
+
+       Par2 = B
+
+       Par3 = C
+
+       Par4 = fknee
+
+       Par5 = fmin
+
+       Par6 = fmax
+
+       Par7 = Surface Roughness
+
+       Par8 = units
+
 .. note::
 
     #. Set the `Ignore` flag to 1 to skip the surface
@@ -304,6 +330,11 @@ Standard, Paraxial Lens, ABCD and Zernike) and their required parameters.
     Example:
     aperture = elliptical aperture, 0.5, 0.3, 0.0, 0.0
 
+.. note::
+    The functional form of the PSD is given by:
+
+    :math:`PSD(f) = \frac{A}{B + (f/f_{knee})^C}`
+
 
 Below we report a snapshot of the first lens data section from the Ariel AIRS CH1 configuration file
 
@@ -318,9 +349,7 @@ Below we report a snapshot of the first lens data section from the Ariel AIRS CH
 Parse configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``PAOS`` implements the method :func:`~paos.core.parseConfig.parse_config` that parses the .ini configuration file, prepares the
-simulation run and returns the simulation parameters and the optical chain. This method can be called as in the example
-below.
+``PAOS`` implements the method :func:`~paos.core.parseConfig.parse_config` that parses the .ini configuration file, prepares the simulation run and returns the simulation parameters and the optical chain. This method can be called as in the example below.
 
 Example
 ~~~~~~~~~~~
@@ -337,9 +366,12 @@ Code example to parse a ``PAOS`` configuration file.
 GUI editor
 ----------------------
 
-``PAOS`` implements a GUI editor that allows to dynamically edit and modify the configuration file and to launch POP
-simulations. This makes it effectively the ``PAOS`` front-end. To achieve this, ``PAOS`` uses the PySimpleGui_ package,
-a Python package that aims at "bridging the GUI gap between software developers and end users".
+``PAOS`` implements a GUI editor that allows to dynamically edit and modify the configuration file and to launch POP simulations. This makes it effectively the ``PAOS`` front-end. 
+To achieve this, ``PAOS`` (v1.2.1 and above) uses the shiny_ package, a Python package that supports the development of Python web applications with the power of reactive programming.
+
+
+.. note::
+  Previous ``PAOS`` versions relied on the PySimpleGui_ package, however this has been discontinued due to a change in their policy.
 
 The quickest way to run the ``PAOS`` GUI is from terminal.
 
@@ -347,7 +379,7 @@ Run it with the `help` flag to read the available options:
 
 .. code-block:: bash
 
-   $ paosgui --help
+   $ paos_gui --help
 
 .. _GUI command line flags:
 
@@ -359,145 +391,71 @@ Run it with the `help` flag to read the available options:
      - description
    * - ``-h``, ``--help``
      - show this help message and exit
-   * - ``-c``, ``--configuration``
-     - Input configuration file to pass
-   * - ``-o``, ``--output``
-     - Output file path
    * - ``-d``, ``--debug``
      - Debug mode screen
    * - ``-l``, ``--logger``
-     - Store the log output on file
+     - Store the log output to file
 
-Where the configuration file shall be an `.ini` file (see :ref:`Configuration file`). If no configuration file is
-passed it defaults to the configuration template `template.ini` file. To activate `-d` and `-l` no argument is needed.
+Where the configuration file shall be an `.ini` file (see :ref:`Configuration file`). 
 
-The GUI editor then opens and displays a GUI window with a standard Menu (`Open`, `Save`, `Save As`, `Global Settings`,
-`Exit`) and a series of Tabs:
+The GUI editor then opens and displays a window with a standard File Menu (`Open`, `Save`, `Close`) and a Help Menu (`Docs`, `About`). 
+The GUI has four Tabs:
 
-#. :ref:`General Tab`
-#. :ref:`Fields Tab`
-#. :ref:`Lens data Tab`
-    :ref:`Zernike Tab`
-#. :ref:`Launcher Tab`
-#. :ref:`Monte Carlo Tab`
-#. :ref:`Info Tab`
+#. :ref:`System Explorer`
+#. :ref:`Lens Editor`
+#. :ref:`Wavefront Editor`
+#. :ref:`Optical Analysis`
 
-On the bottom of the GUI window, there are five Buttons to perform several actions:
+The user can choose to work in `dark mode` using the switch on the right of the logo.
 
-* ``Submit``:
+.. _System Explorer:
 
-  Submits all values from the GUI window in a flat dictionary
-* ``Show Dict``:
-
-  Shows the GUI window values in a nested dictionary, organized into the same sections as the configuration file
-* ``Copy to clipboard``:
-
-  Copied the nested dictionary to the local keyboard
-* ``Save``:
-
-  Saves the GUI window to the configuration file upon exiting
-* ``Exit``:
-
-  Exits the GUI window
-
-The GUI window defines also a right-click Menu with the following options:
-
-* ``Nothing``:
-
-  Does nothing
-* ``Version``:
-
-  Displays the current Python, tkinter and PySimpleGUI versions
-* ``Exit``:
-
-  Exits the GUI window
-
-.. _General Tab:
-
-General Tab
+System Explorer
 ^^^^^^^^^^^^^^^^
 This Tab opens upon starting the GUI. Its purpose is to setup the main simulation parameters.
-
-It contains two Frames:
-
-* ``General Setup``
-
-  Displays the general simulation parameters and ``PAOS`` units, as defined in :ref:`general section`. The contents
-  can be altered as necessary, safe if the the cells are disabled.
-* ``Wavelength Setup``
-
-  Lists the wavelengths to simulate. This list can be altered by editing the wavelengths.
-  The user can use the Buttons in the ``Wavelengths Actions`` Frame to modify the list content by adding new wavelength rows,
-  pasting a list of wavelengths from the local clipboard (:math:`\textit{comma}`-separated or
-  :math:`\backslash n`-separated) and can also be sort the list to increasing order.
+It contains a sidebar, which displays the general simulation parameters and ``PAOS`` units, as defined in :ref:`general section`. The contents can be altered as necessary, safe if the the cells are disabled.
+On the main tab area the wavelengths and fields are listed, as parsed from the configuration file.
 
 Below we report a snapshot of this Tab.
 
-.. _GeneralTab:
+.. _SystemExplorer:
 
-.. figure:: GeneralTab.png
+.. figure:: SystemExplorer.png
    :align: center
 
-   `General Tab`
+   `System Explorer`
 
-.. _Fields Tab:
+.. tip::
+  You cannot add new wavelengths or fields in the GUI. This needs to happen in the configuration file. So, save your current work to a new .ini config file using `File/Save` and make any changes there. Then, reload the file to the GUI.
 
-Fields Tab
+.. _Lens Editor:
+
+Lens Editor
 ^^^^^^^^^^^^^^^^
 
-This GUI Tab describes the input fields to simulate.
-
-In the ``Fields Setup`` Frame it lists the input fields, as defined in :ref:`fields section`.
-
-The fields contents can be edited as necessary and new fields can be added by clicking on the
-`Add Field` Button in the ``Fields Actions`` Frame.
-
-.. note::
-    While more than one field can be listed in this Tab, the current version of ``PAOS`` only supports simulating one
-    field at a time
-
-Below we report a snapshot of this Tab.
-
-.. _FieldsTab:
-.. figure:: FieldsTab.png
-   :align: center
-   :width: 400
-
-   `Fields Tab`
-
-.. _Lens data Tab:
-
-Lens data Tab
-^^^^^^^^^^^^^^^^
-
-This GUI Tab contains the list of the optical surfaces describing the optical chain to simulate, as defined in
+This Tab contains the list of the optical surfaces describing the optical chain to simulate, as defined in
 :ref:`Lens_xx`.
 
-This information is organized in the ``Lens Data Setup`` Frame, whose structure tries to mimic that of
-Zemax OpticStudio :math:`^{©}`. The columns are arranged as explained in :ref:`lens_xx_table`, with horizontal
-and vertical scrollbars to allow any movement.
+This information is organized as explained in :ref:`lens_xx_table`, with horizontal and vertical scrollbars to allow any movement.
 
-The contents of each row can be edited as necessary and new surfaces can be added by clicking on the
-`Add Surface` Button in the ``Lens Data Actions`` Frame.
+The contents of each cell can be edited as necessary. 
 
-For each row, columns are automatically enabled/disabled according to the surface type.
+.. tip::
+  You cannot add new surfaces or change the surface type in the GUI. This needs to happen in the configuration file. So, save your current work to a new .ini config file using `File/Save` and make any changes there. Then, reload the file to the GUI.
 
 Below we report a snapshot of this Tab.
 
-.. _LensDataTab:
-.. figure:: LensDataTab.png
+.. _LensEditor:
+.. figure:: LensEditor.png
    :align: center
 
-   `Lens data Tab`
+   `Lens Editor`
 
 .. tip::
-    The column headers for Par1..N change according to the cursor position in the Table.
+    Placeholders in unused Par1..N parameter cells help remember the cell intended content.
 
 .. tip::
-    It is possible to move the cursor with arrow keys.
-
-.. tip::
-    To see/edit the contents of the `aperture` column, click on the Button with the yellow triangle.
+    To see/edit the contents of the `Aperture` column, click on the `gear` icon.
 
 
 .. _Zernike Tab:
@@ -575,88 +533,6 @@ Below we report a snapshot of this Tab.
 
    `Launcher Tab`
 
-.. _Monte Carlo Tab:
 
-Monte Carlo Tab
-^^^^^^^^^^^^^^^^
-
-This GUI Tab is designed to provide support for specific `Monte Carlo` simulations.
-
-Two kinds of such simulations are currently supported:
-
-#. Running the optical system at all provided wavelengths at once.
-#. Running the optical system with different aberration realizations.
-
-Therefore, the Tab contains two (collapsible) Frames, each with a layout similar to :ref:`Launcher Tab`:
-
-* ``MC Wavelengths``
-
-  Provides GUI support for running all provided wavelengths using parallel execution.
-
-  The user can select a field in the ``Select Inputs`` Frame, a number of parallel jobs, and then run the propagation
-  by clicking on the ``POP`` Button. The simulation output can then be saved to a binary
-  (.hdf5) file using the ``Save POP`` Button.
-
-  The ``Plot`` Button plots the squared amplitude of the wavefront for the selected range of simulations, which is
-  automatically estimated from the simulation output but can be customized as needed. The plots can be customized
-  by selecting the zoom factor, the surface to plot and the plot scale. Use the ``Save Plot`` Button to save the
-  produced plots. To uniquely label the plots to be saved, please change the default figure prefix.
-
-  To display the plots, use the ``Display plot`` Button and the Slider element to see all plotted instances.
-
-  Below we report a snapshot of this Frame.
-
-  .. _MonteCarloTab1:
-  .. figure:: MonteCarloTab1.png
-     :align: center
-
-     `Monte Carlo Tab (1)`
-
-* ``MC Wavelengths``
-
-  Provides GUI support for running the propagation with different aberration realizations using parallel execution.
-
-  The user can select the wavelength and field in the ``Select Inputs`` Frame.
-
-  The .csv file with the aberration realizations can be imported using the ``Import wfe`` Button. To indicate the
-  unit of the Zernike coefficients (r.m.s.), use the Dropdown menu below it.
-
-  After this, select the number of parallel jobs, indicate the index of the Zernike surface (the corresponding row in the
-  :ref:`Lens Data Tab` and run the propagation using the ``POP`` Button. The simulation output can then be saved to a binary
-  (.hdf5) file using the ``Save POP`` Button.
-
-  To plot, save and display the simulation output, please refer to the preceding paragraph ``MC Wavelengths``.
-
-  Below we report a snapshot of this Frame.
-
-  .. _MonteCarloTab2:
-  .. figure:: MonteCarloTab2.png
-     :align: center
-
-     `Monte Carlo Tab (2)`
-
-
-.. _Info Tab:
-
-Info Tab
-^^^^^^^^^^^^^^^^
-
-This GUI Tab contains information about the ``PAOS`` creators and the GUI.
-
-It displays:
-
-* The author names
-* The ``PAOS`` version
-* The Github repository
-* The PySimpleGui version and release
-
-Below we report a snapshot of this Tab.
-
-.. _InfoTab:
-.. figure:: InfoTab.png
-   :align: center
-   :width: 400
-
-   `Info Tab`
-
+.. _shiny: https://shiny.posit.co/py/
 .. _PySimpleGui: https://pysimplegui.readthedocs.io/en/latest/

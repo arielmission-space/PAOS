@@ -59,7 +59,7 @@ Or running ``PAOS`` itself with the `help` flag as
 
 Or the Graphical User Interface with the `help` flag as
 
-    paosgui -h
+    paos_gui -h
 
 If there are no errors then the installation was successful!
 

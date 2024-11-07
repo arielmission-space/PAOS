@@ -9,6 +9,7 @@ API guide
    paos.classes.abcd
    paos.classes.wfo
    paos.classes.zernike
+   paos.classes.psd
    paos.core
    paos.gui
    paos.util
