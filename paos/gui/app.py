@@ -208,13 +208,22 @@ def server(input, output, session):
         input.save,
         input.calc_raytrace,
         input.calc_pop,
-        input.calc_PSD,
-        input.do_plot_zernike,
     )
     def _():
+        req(input.save)
         req(input.calc_raytrace)
         req(input.calc_pop)
+        to_ini(input=input, config=config, tmp=cache / "tmp.ini")
+
+    @reactive.effect
+    @reactive.event(input.calc_PSD)
+    def _():
         req(input.calc_PSD)
+        to_ini(input=input, config=config, tmp=cache / "tmp.ini")
+
+    @reactive.effect
+    @reactive.event(input.do_plot_zernike)
+    def _():
         req(input.do_plot_zernike)
         to_ini(input=input, config=config, tmp=cache / "tmp.ini")
 
