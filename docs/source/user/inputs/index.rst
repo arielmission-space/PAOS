@@ -509,7 +509,7 @@ Below we report a snapshot of this panel.
 * ``PSD``
 
   The Explorer area contains a calculator for the Surface Form Error that corresponds to the PSD parameters (and Surface Roughness), input by the user in the :ref:`Lens Editor`.
-  The Plot area allows the user to draw the aberrated surface that corresponds to the PSD and save it to a file. The gear icon on the `Plot` header allows the user to change the spatial scale for the plot. E.g. the user can draw the PSD on a 1 mm-diameter circle rather than 1-m to better visualize local deformations.
+  The Plot area allows one to draw the aberrated surface that corresponds to the PSD and save it to a file. The gear icon on the `Plot` header allows one to change the spatial scale for the plot. E.g. the user can draw the PSD on a 1 mm-diameter circle rather than 1-m to better visualize local deformations.
 
 Below we report a snapshot of this panel.
 
@@ -521,8 +521,8 @@ Below we report a snapshot of this panel.
 
 * ``Grid Sag``
 
-  The Explorer area contains a calculator for the Surface Form Error that corresponds to the PSD parameters (and Surface Roughness), input by the user in the :ref:`Lens Editor`.
-  The Plot area allows the user to draw the aberrated surface that corresponds to the PSD and save it to a file. The gear icon on the `Plot` header allows the user to change the spatial scale for the plot. E.g. the user can draw the PSD on a 1 mm-diameter circle rather than 1-m to better visualize local deformations.
+  The Explorer area only contains an output text that reports the file path of the errormap input by the user in the :ref:`Lens Editor`.
+  The Plot area allows one to draw the aberrated surface that corresponds to the input Grid Sag and save it to a file. 
 
 Below we report a snapshot of this panel.
 
@@ -532,45 +532,38 @@ Below we report a snapshot of this panel.
 
    `Grid Sag Panel`
 
-.. _Launcher Tab:
+.. _Optical Analysis:
 
-Launcher Tab
+Optical Analysis
 ^^^^^^^^^^^^^^^^
 
-This GUI Tab is designed to make preliminary, fast simulations to test a new configuration file or to simulate the
-propagation for a particular wavelength at a time.
+This Tab provides the main GUI functionality: the POP propagation. 
+It is updated dinamically based on the parameters input by the user in the :ref:`System Explorer`, :ref:`Lens Editor`, and :ref:`Wavefront Editor` tabs.
+The POP simulation is done one wavelength and field at a time, which can be chosen from the dropdown menus in the sidebar.
 
-It contains three Frames:
+The main part of the Tab contains three panels:
 
-* ``Select inputs``
+* ``Fresnel POP``
 
-  Allows to select the simulation wavelength and field. By selecting a new wavelength or field, the outputs of
-  this Tab are reset, except for the raytrace output if the field has not changed.
-* ``Run and Save``
+  Allows to run the wavefront propagation simulation and save the outputs to a binary (.hdf5) file.
 
-  Contains Buttons to call ``PAOS`` methods to run the simulation.
+* ``Ray Tracing``
 
-  The `Raytrace` Button runs a diagnostic ray-trace of the optical system, producing an output that is displayed
-  in the Multiline element below it. This output can be saved to a text file by using the ``Save raytrace`` Button.
+  Allows to run user to a diagnostic ray-trace of the optical system, producing an output that is displayed in the text area and can be saved to a text file.
 
-  The ``POP`` Button runs the wavefront propagation, producing an output dictionary that can be saved to a binary
-  (.hdf5) file using the ``Save POP`` Button.
+* ``Plot``
 
-  The ``Plot`` Button plots the squared amplitude of the wavefront with the selected zoom factor at the selected surface
-  from the Dropdown menu. The plot scale can be selected to be `logarithmic` or `linear`. Use the ``Save Plot`` Button
-  to save the produced plot.
-
-* ``Display``
-
-  Allows to see the simulation output plot. To display it, use the ``Display plot`` Button.
+  Allows one to draw the squared amplitude of the wavefront. 
+  The gear icon on the `Plot` header contains options for selecting a different surface (any surface with ``Save = True`` in the :ref:`lens_xx_table`), changing the plot scale (`linear`  or `log`), zoom factor (the greater, the more zoomed out), and an option to plot dark rings in correspondance to the first 5 zeros of the Airy diffraction pattern. 
+  The plot can then be saved to a (.pdf) or (.png) file.
 
 Below we report a snapshot of this Tab.
 
-.. _LauncherTab:
-.. figure:: LauncherTab.png
+.. _OpticalAnalysis:
+.. figure:: OpticalAnalysis.png
    :align: center
 
-   `Launcher Tab`
+   `Optical Analysis Tab`
 
 
 .. _shiny: https://shiny.posit.co/py/
