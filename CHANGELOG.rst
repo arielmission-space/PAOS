@@ -58,6 +58,94 @@ Changed
 
 ``PAOS`` production ready
 
+1.0.3-post1 [11/03/2024]
+--------------------
+
+Added
+^^^^^
+- Implemented PSD/SR
+- References to the Zernike ordering
+
+Fixed
+^^^^^
+- optical chain dependency on wavelength in paos.core.pipeline
+
+1.1.0 [22/06/2024]
+--------------------
+
+Fixed
+^^^^^
+- Zernike covariance (hermitianity)
+
+Added
+^^^^^
+- class PolyOrthoNorm (based on Zernike)
+
+1.0.3-post1 [11/03/2024]
+--------------------
+
+Added
+^^^^^
+- Implemented PSD/SR
+
+1.1.1 [24/10/2024]
+--------------------
+
+Added
+^^^^^
+- Implemented Grid Sag
+
+Fixed
+^^^^^
+- PySimpleGui version set to before v5.0
+
+1.1.2 [26/10/2024]
+--------------------
+
+Changed
+^^^^^^^
+- Implemented ``loguru`` logger
+
+1.2.1 [28/10/2024]
+--------------------
+
+Changed
+^^^^^^^
+- Implemented GUI v2.0
+
+1.2.2 [28/10/2024]
+--------------------
+
+Changed
+^^^^^^^
+- Enabled ortho-normal polynomials to be used in ``PAOS`` run
+
+1.2.3 [05/11/2024]
+--------------------
+
+Added
+^^^^^^^
+- Implemented Wavefront Editor in GUI
+
+1.2.4 [07/11/2024]
+--------------------
+
+Changed
+^^^^^^^
+- Refactored Lens Editor in GUI
+
+1.2.5 [07/11/2024]
+--------------------
+
+Added
+^^^^^^^
+- Missing docs in Aberration section
+
+Changed
+^^^^^^^
+- Refactored docs
+
+
 .. _Unreleased: https://github.com/arielmission-space/PAOS/
 .. _keepachangelog: https://keepachangelog.com/en/1.0.0/
 .. _semver: https://semver.org/spec/v2.0.0.html
