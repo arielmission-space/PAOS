@@ -99,5 +99,4 @@ If you wish to contribute to the code, please follow the steps described in the 
 
 ## How to cite
 
-A dedicated publication has been submitted and the relative information will be published soon.
-In the meanwhile, please, send an email to the developers.  
+Andrea Bocchieri, Lorenzo V. Mugnai, Enzo Pascale, “PAOS: a fast, modern, and reliable Python package for physical optics studies,” Proc. SPIE 13092, Space Telescopes and Instrumentation 2024: Optical, Infrared, and Millimeter Wave, 130924K (23 August 2024); https://doi.org/10.1117/12.3018333
