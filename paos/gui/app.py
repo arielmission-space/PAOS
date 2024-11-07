@@ -215,18 +215,6 @@ def server(input, output, session):
         req(input.calc_pop)
         to_ini(input=input, config=config, tmp=cache / "tmp.ini")
 
-    @reactive.effect
-    @reactive.event(input.calc_PSD)
-    def _():
-        req(input.calc_PSD)
-        to_ini(input=input, config=config, tmp=cache / "tmp.ini")
-
-    @reactive.effect
-    @reactive.event(input.do_plot_zernike)
-    def _():
-        req(input.do_plot_zernike)
-        to_ini(input=input, config=config, tmp=cache / "tmp.ini")
-
     @reactive.calc
     def calc_raytrace():
         req(config.get().sections())
@@ -539,6 +527,8 @@ def server(input, output, session):
     def plot_zernike_inputs():
         req(input.do_plot_zernike())
 
+        to_ini(input=input, config=config, tmp=cache / "tmp.ini")
+
         refresh_ui(
             "plot_zernike_inputs",
             [ui.output_text_verbatim("plot_zernike_inputs", placeholder=True)],
@@ -636,6 +626,8 @@ def server(input, output, session):
     def psd_output():
         req(input.calc_PSD())
 
+        to_ini(input=input, config=config, tmp=cache / "tmp.ini")
+
         refresh_ui(
             "psd_output",
             [ui.output_text_verbatim("psd_output", placeholder=True)],
@@ -730,30 +722,11 @@ def server(input, output, session):
         return f"Surface: {surface}"
 
     @render.text
-    @reactive.event(input.open_ini, input.select_gridsag)
-    def gridsag_output():
-        req(input.select_gridsag())
-
-        refresh_ui(
-            "gridsag_output",
-            [ui.output_text_verbatim("gridsag_output", placeholder=True)],
-        )
-
-        req(config.get().sections())
-
-        surface = input.select_gridsag()
-        surface_key = int(surface[1:])
-        gridsag_section = f"lens_{surface_key:02d}"
-        gridsag_section = config.get()[gridsag_section]
-
-        grid_sag_path = gridsag_section.get("Par8")
-
-        return f"Grid Sag from: {grid_sag_path}"
-
-    @render.text
     @reactive.event(input.do_plot_gridsag)
     def plot_gridsag_inputs():
         req(input.do_plot_gridsag())
+
+        to_ini(input=input, config=config, tmp=cache / "tmp.ini")
 
         refresh_ui(
             "plot_gridsag_inputs",
@@ -763,6 +736,26 @@ def server(input, output, session):
         surface = input.select_gridsag()
 
         return f"Surface: {surface}"
+
+    @render.text
+    @reactive.event(input.select_gridsag, input.do_plot_gridsag)
+    def gridsag_output():
+        req(config.get().sections())
+        req(input.select_gridsag())
+
+        refresh_ui(
+            "gridsag_output",
+            [ui.output_text_verbatim("gridsag_output", placeholder=True)],
+        )
+
+        surface = input.select_gridsag()
+        surface_key = int(surface[1:])
+        gridsag_section = f"lens_{surface_key:02d}"
+        gridsag_section = config.get()[gridsag_section]
+
+        grid_sag_path = gridsag_section.get("Par8")
+
+        return f"Grid Sag from: {grid_sag_path}"
 
     @render.plot(alt="Grid Sag plot")
     @reactive.event(input.do_plot_gridsag)

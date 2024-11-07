@@ -263,11 +263,11 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
 
    * - Zernike
 
-       in addition to standard parameters defines:
+       In addition to standard parameters defines:
 
-       Zindex: polynomial index starting from 0
+       - Zindex: polynomial index starting from 0
 
-       Z: coefficients in units of wave
+       - Z: coefficients in units of wave
 
      - ...
      - None
@@ -286,6 +286,8 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
        Par4 = Radius of support aperture of the polynomial
 
        Par5 = origin, can be x (counterclockwise positive from x axis) or y (clockwise positive from y axis)
+
+       Par6 = Zorthonorm, False (Zernike circular polynomials) or True (polynomials that are ortho-normal on the mask provided)
 
    * - PSD
      - ...
@@ -483,40 +485,52 @@ Below we report a snapshot of this Tab.
     To see/edit the contents of the `Aperture` column, click on the `gear` icon.
 
 
-.. _Zernike Tab:
+.. _Wavefront Editor:
 
-Zernike Tab
-^^^^^^^^^^^^^^^^
+Wavefront Editor
+^^^^^^^^^^^^^^^^^^
 
-This GUI Tab can be accessed from the Lens Data Tab, by selecting a ``Zernike`` surface in the Dropdown menu from the
-``SurfaceType`` column. Then, a small window appears asking to proceed with the insertion or modification of Zernike
-coefficients. A positive answer opens the Zernike Tab.
+This Tab contains three panels, each containing a sidebar as well as an `Explorer` and a `Plot` area. The sidebar allows the user to select the desired surface for modification or plotting.
 
-It contains two Frames:
+* ``Zernike``
 
-* ``Parameters``
+  The Explorer area contains a Table that lists the Zernike (or ortho-normal) polynomial radial (``n``) and azimuthal (``m``) orders according to the specified Zernike ordering (one of `standard`, `ansi`, `fringe` and `noll`), the index as given by the user (``Zindex``), and the Zernike coefficients (``Z``).
+  Only the ``Z`` column is enabled to be modified as required by the user.
+  The Plot area allows the user to draw the aberrated surface that corresponds to the Zernike expansion in the table and save it to a file.
 
-  Displays the Zernike parameters as defined in the Lens Data Tab and serves as a reminder to the user. It is not
-  enabled to be modified, which needs to be done beforehand in the Lens Data Tab.
-* ``Zernike Setup``
+Below we report a snapshot of this panel.
 
-  Contains a Table that lists the Zernike polynomial index ("Zindex"), the Zernike coefficients ("Z"), and the azimuthal ("m")
-  and radial ("n") polynomial orders, according to the specified Zernike ordering (one of `standard`, `ansi`, `fringe` and `noll`).
-  Only the "Z" column is enabled to be modified as required by the user.
-
-  The user can use the Buttons in the ``Zernike Actions`` Frame to modify the Table content by adding new rows,
-  completing an unclosed Zernike radial order or adding a new one (available only if using `standard` or `ansi` ordering),
-  and by pasting a list of Zernike coefficients from the local clipboard
-  (:math:`\textit{comma}`-separated or :math:`\backslash n`-separated) in a cell from the "Z" column to
-  automatically create and fill all necessary rows. The other columns will update accordingly.
-
-Below we report a snapshot of this Tab.
-
-.. _ZernikeTab:
-.. figure:: ZernikeTab.png
+.. _ZernikePanel:
+.. figure:: ZernikePanel.png
    :align: center
 
-   `Zernike Tab`
+   `Zernike Panel`
+
+* ``PSD``
+
+  The Explorer area contains a calculator for the Surface Form Error that corresponds to the PSD parameters (and Surface Roughness), input by the user in the :ref:`Lens Editor`.
+  The Plot area allows the user to draw the aberrated surface that corresponds to the PSD and save it to a file. The gear icon on the `Plot` header allows the user to change the spatial scale for the plot. E.g. the user can draw the PSD on a 1 mm-diameter circle rather than 1-m to better visualize local deformations.
+
+Below we report a snapshot of this panel.
+
+.. _PSDPanel:
+.. figure:: PSDPanel.png
+   :align: center
+
+   `PSD Panel`
+
+* ``Grid Sag``
+
+  The Explorer area contains a calculator for the Surface Form Error that corresponds to the PSD parameters (and Surface Roughness), input by the user in the :ref:`Lens Editor`.
+  The Plot area allows the user to draw the aberrated surface that corresponds to the PSD and save it to a file. The gear icon on the `Plot` header allows the user to change the spatial scale for the plot. E.g. the user can draw the PSD on a 1 mm-diameter circle rather than 1-m to better visualize local deformations.
+
+Below we report a snapshot of this panel.
+
+.. _GridSagPanel:
+.. figure:: GridSagPanel.png
+   :align: center
+
+   `Grid Sag Panel`
 
 .. _Launcher Tab:
 
