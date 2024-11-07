@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog (keepachangelog_), and this project adheres
 to Semantic Versioning (semver_).
 
-[Unreleased_]
+Unreleased
 ====================
 
 0.0.2 [15/09/2021]
@@ -43,6 +43,9 @@ Changed
 --------------------
 
 ``PAOS`` documented on readthedocs
+
+[Released_]
+====================
 
 1.0.2-alpha.0 [10/01/2024]
 --------------------
@@ -146,6 +149,6 @@ Changed
 - Refactored docs
 
 
-.. _Unreleased: https://github.com/arielmission-space/PAOS/
+.. _Released: https://github.com/arielmission-space/PAOS/
 .. _keepachangelog: https://keepachangelog.com/en/1.0.0/
 .. _semver: https://semver.org/spec/v2.0.0.html
