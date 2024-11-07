@@ -235,7 +235,7 @@ def simple_plot(
     return
 
 
-def Zernike_plot(
+def zernike_plot(
     fig,
     axis,
     surface,
@@ -276,7 +276,7 @@ def Zernike_plot(
     return
 
 
-def PSD_plot(
+def psd_plot(
     fig,
     axis,
     surface,

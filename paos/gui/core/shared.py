@@ -15,24 +15,26 @@ ICONS = {
     "refresh": fa.icon_svg("arrows-rotate"),
     "info": fa.icon_svg("circle-info"),
     "load": fa.icon_svg("cloud-arrow-up"),
+    "download": fa.icon_svg("cloud-arrow-down"),
+    "wizard": fa.icon_svg("hat-wizard"),
 }
 
 CARD_HEADER_CLASS = "d-flex justify-content-between align-items-center"
 
-vline = ui.markdown(
+vline = ui.HTML(
     """
-    <div style="border-right: 1px solid lightgrey; height: 100%;"></div>
-    """
-)
-
-hline = ui.markdown(
-    """
-    <div style="border-bottom: 1px solid lightgrey; width: 100%;"></div>
+    <div style="border-right: 0.1px solid lightgrey; height: 100%;"></div>
     """
 )
 
+hline = ui.HTML(
+    """
+    <div style="border-bottom: 0.1px solid lightgrey; width: 100%;"></div>
+    """
+)
 
-vspace = ui.tags.div(style="height: 10px;")
+
+vspace = ui.tags.div(style="height: 15px;")
 
 
 def menu_panel(id):
@@ -57,7 +59,22 @@ def fill_value(items, name, row, col):
             choices=items[name]["choices"],
             selected=items[name]["selected"],
         )
-    elif func in [ui.input_text, ui.input_checkbox]:
+    elif func in [ui.tags.input]:
+        return func(
+            id=theid,
+            type="text",
+            value=items[name]["value"],
+            readonly=items[name]["readonly"],
+            class_="form-control",
+        )
+    elif func in [ui.input_text]:
+        return func(
+            id=theid,
+            label=items[name]["label"] if "label" in items[name] else "",
+            value=items[name]["value"],
+            placeholder=items[name]["placeholder"] if "placeholder" in items[name] else "",
+        )
+    elif func in [ui.input_checkbox]:
         return func(
             id=theid,
             label=items[name]["label"] if "label" in items[name] else "",
@@ -133,9 +150,7 @@ def fill_header(items):
             ui.column(
                 subitem["width"],
                 {"style": "text-align: center;"},
-                ui.markdown(
-                    f"**{subkey}**"
-                ),
+                ui.markdown(f"**{subkey}**"),
                 hline,
             )
             for _, (subkey, subitem) in enumerate(item.items())
@@ -266,7 +281,9 @@ def modal_download(id, ext):
             ),
             ui.download_button(
                 f"download_{id}_{ext}",
-                "Save",
+                "Download",
+                icon=ICONS["download"],
+                class_="btn-success",
             ),
             # ui.output_text_verbatim(f"download_{ext}_progress"),
         ],

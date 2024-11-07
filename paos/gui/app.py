@@ -26,17 +26,14 @@ from paos.core.parseConfig import parse_config
 from paos.gui.core.io import to_ini
 from paos.gui.core.elems import app_elems
 from paos.gui.core.plot import simple_plot
-from paos.gui.core.plot import Zernike_plot
-from paos.gui.core.plot import PSD_plot
+from paos.gui.core.plot import zernike_plot
+from paos.gui.core.plot import psd_plot
 from paos.gui.core.plot import gridsag_plot
 from paos.gui.core.shared import nested_div
 from paos.gui.core.shared import menu_panel
 from paos.gui.core.shared import refresh_ui
 from paos.gui.core.shared import modal_download
 from paos.gui.core.shared import ICONS
-from paos.gui.core.shared import CARD_HEADER_CLASS
-from paos.gui.core.shared import vspace
-from paos.gui.core.shared import hline
 
 
 def app_ui(request: StarletteRequest) -> Tag:
@@ -66,28 +63,22 @@ def app_ui(request: StarletteRequest) -> Tag:
                         ui.sidebar(
                             nested_div("general"),
                             nested_div("sim"),
-                            title=ui.tags.div(
-                                ui.tags.div(
-                                    ui.markdown("##### Settings"),
-                                    ui.popover(
-                                        ICONS["info"],
-                                        nested_div("units"),
-                                        title="Units",
-                                        placement="top",
-                                    ),
-                                    class_=CARD_HEADER_CLASS,
-                                ),
-                                vspace,
-                                hline,
-                                vspace,
-                            ),
+                            title="Settings",
                             width="20vw",
                         ),
                         ui.card(
+                            ui.help_text(
+                                "This software is useless without an input file. \n"
+                                "Add wavelengths, fields, and optical surfaces in your input file. \n"
+                                "Then load it here. \n"
+                                "Happy modeling.\n",
+                                ui.tags.a(ICONS["wizard"]),
+                            ),
                             ui.layout_column_wrap(
                                 nested_div("wl"),
                                 nested_div("field"),
                             ),
+                            width="40vw",
                             fill=False,
                         ),
                     ),
@@ -112,22 +103,22 @@ def app_ui(request: StarletteRequest) -> Tag:
                             "Zernike",
                             ui.layout_sidebar(
                                 ui.sidebar(
-                                    nested_div("Zernike_settings"),
+                                    nested_div("zernike_settings"),
                                     title="Settings",
                                     width="15vw",
                                 ),
-                                nested_div("Zernike_tab"),
+                                nested_div("zernike_tab"),
                             ),
                         ),
                         ui.nav_panel(
                             "PSD",
                             ui.layout_sidebar(
                                 ui.sidebar(
-                                    nested_div("PSD_settings"),
+                                    nested_div("psd_settings"),
                                     title="Settings",
                                     width="15vw",
                                 ),
-                                nested_div("PSD_tab"),
+                                nested_div("psd_tab"),
                             ),
                         ),
                         ui.nav_panel(
@@ -193,7 +184,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                 ),
             ),
             window_title=f"{__pkg_name__} GUI",
-            selected="Wavefront Editor",
+            selected="System Explorer",
         ),
         gap="2px",
         padding="2px",
@@ -515,33 +506,33 @@ def server(input, output, session):
 
     @render.text
     @reactive.event(input.open_ini, input.select_Zernike)
-    def Zernike_inputs():
+    def zernike_inputs():
         req(config.get().sections())
         req(input.select_Zernike())
 
         refresh_ui(
-            "Zernike_inputs",
-            [ui.output_text_verbatim("Zernike_inputs", placeholder=True)],
+            "zernike_inputs",
+            [ui.output_text_verbatim("zernike_inputs", placeholder=True)],
         )
 
         surface = input.select_Zernike()
 
-        wfe_elems = app_elems(config.get())[5]
-        Zernike_elems = wfe_elems[1]
+        wfe_elems = app_elems(config.get())[4]
+        zernike_elems = wfe_elems[1]
 
         surface_key = int(surface[1:])
-        refresh_ui("zernike", Zernike_elems, mode="nested-dict", key=surface_key)
+        refresh_ui("zernike", zernike_elems, mode="nested-dict", key=surface_key)
 
         return f"Surface: {surface}"
 
     @render.text
     @reactive.event(input.do_plot_zernike)
-    def plot_Zernike_inputs():
+    def plot_zernike_inputs():
         req(input.do_plot_zernike())
 
         refresh_ui(
-            "plot_Zernike_inputs",
-            [ui.output_text_verbatim("plot_Zernike_inputs", placeholder=True)],
+            "plot_zernike_inputs",
+            [ui.output_text_verbatim("plot_zernike_inputs", placeholder=True)],
         )
 
         surface = input.select_Zernike()
@@ -557,20 +548,20 @@ def server(input, output, session):
 
         surface = input.select_Zernike()
         surface_key = int(surface[1:])
-        Zernike_section = f"lens_{surface_key:02d}"
-        Zernike_section = config.get()[Zernike_section]
+        zernike_section = f"lens_{surface_key:02d}"
+        zernike_section = config.get()[zernike_section]
 
-        zindex = Zernike_section.get("zindex").split(",")
+        zindex = zernike_section.get("zindex").split(",")
         zindex = list(map(int, zindex))
-        zcoeffs = Zernike_section.get("z").split(",")
+        zcoeffs = zernike_section.get("z").split(",")
         zcoeffs = list(map(float, zcoeffs))
-        wavelength = float(Zernike_section.get("par1"))
-        ordering = Zernike_section.get("par2")
-        normalize = bool(Zernike_section.get("par3"))
-        orthonorm = bool(Zernike_section.get("par6"))
+        wavelength = float(zernike_section.get("par1"))
+        ordering = zernike_section.get("par2")
+        normalize = bool(zernike_section.get("par3"))
+        orthonorm = bool(zernike_section.get("par6"))
 
         fig, ax = plt.subplots()
-        Zernike_plot(
+        zernike_plot(
             fig=fig,
             axis=ax,
             surface=surface,
@@ -595,7 +586,7 @@ def server(input, output, session):
         modal_download("plot_zernike", "pdf")
 
     @render.download
-    def download_plot_Zernike_pdf():
+    def download_plot_zernike_pdf():
         outfile: list[FileInfo] | None = input.save_pdf()
 
         figure_zernike.get().savefig(cache / outfile)
@@ -609,22 +600,22 @@ def server(input, output, session):
 
         surface = input.select_PSD()
 
-        wfe_elems = app_elems(config.get())[5]
-        PSD_elems = wfe_elems[4]
+        wfe_elems = app_elems(config.get())[4]
+        psd_elems = wfe_elems[4]
 
         surface_key = int(surface[1:])
-        refresh_ui("PSD", PSD_elems, mode="nested-dict", key=surface_key)
+        refresh_ui("PSD", psd_elems, mode="nested-dict", key=surface_key)
 
         return f"Stats for Surface: {surface}"
 
     @render.text
     @reactive.event(input.open_ini, input.select_PSD)
-    def PSD_inputs():
+    def psd_inputs():
         req(input.select_PSD())
 
         refresh_ui(
-            "PSD_inputs",
-            [ui.output_text_verbatim("PSD_inputs", placeholder=True)],
+            "psd_inputs",
+            [ui.output_text_verbatim("psd_inputs", placeholder=True)],
         )
 
         surface = input.select_PSD()
@@ -633,24 +624,24 @@ def server(input, output, session):
 
     @render.text
     @reactive.event(input.calc_PSD)
-    def PSD_output():
+    def psd_output():
         req(input.calc_PSD())
 
         refresh_ui(
-            "PSD_output",
-            [ui.output_text_verbatim("PSD_output", placeholder=True)],
+            "psd_output",
+            [ui.output_text_verbatim("psd_output", placeholder=True)],
         )
 
         return calc_PSD()
 
     @render.text
     @reactive.event(input.do_plot_PSD)
-    def plot_PSD_inputs():
+    def plot_psd_inputs():
         req(input.do_plot_PSD())
 
         refresh_ui(
-            "plot_PSD_inputs",
-            [ui.output_text_verbatim("plot_PSD_inputs", placeholder=True)],
+            "plot_psd_inputs",
+            [ui.output_text_verbatim("plot_psd_inputs", placeholder=True)],
         )
 
         surface = input.select_PSD()
@@ -666,21 +657,21 @@ def server(input, output, session):
 
         surface = input.select_PSD()
         surface_key = int(surface[1:])
-        PSD_section = f"lens_{surface_key:02d}"
-        PSD_section = config.get()[PSD_section]
+        psd_section = f"lens_{surface_key:02d}"
+        psd_section = config.get()[psd_section]
 
-        A = float(PSD_section.get("par1"))
-        B = float(PSD_section.get("par2"))
-        C = float(PSD_section.get("par3"))
-        fknee = float(PSD_section.get("par4"))
-        fmin = float(PSD_section.get("par5"))
-        fmax = float(PSD_section.get("par6"))
-        SR = float(PSD_section.get("par7"))
-        units = PSD_section.get("par8")
-        phi = float(input.PSD_plot_phi())
+        A = float(psd_section.get("par1"))
+        B = float(psd_section.get("par2"))
+        C = float(psd_section.get("par3"))
+        fknee = float(psd_section.get("par4"))
+        fmin = float(psd_section.get("par5"))
+        fmax = float(psd_section.get("par6"))
+        SR = float(psd_section.get("par7"))
+        units = psd_section.get("par8")
+        phi = float(input.psd_plot_phi())
 
         fig, ax = plt.subplots()
-        PSD_plot(
+        psd_plot(
             fig=fig,
             axis=ax,
             surface=surface,
@@ -708,7 +699,7 @@ def server(input, output, session):
         modal_download("plot_PSD", "pdf")
 
     @render.download
-    def download_plot_PSD_pdf():
+    def download_plot_psd_pdf():
         outfile: list[FileInfo] | None = input.save_pdf()
 
         figure_PSD.get().savefig(cache / outfile)
@@ -728,7 +719,7 @@ def server(input, output, session):
         surface = input.select_gridsag()
 
         return f"Surface: {surface}"
-    
+
     @render.text
     @reactive.event(input.open_ini, input.select_gridsag)
     def gridsag_output():
@@ -822,9 +813,6 @@ def server(input, output, session):
         req(input.open_ini())
         file: list[FileInfo] | None = input.open_ini()
 
-        if file is None:
-            return
-
         if not file[0]["name"].endswith(".ini"):
             logger.error("Invalid file")
             return
@@ -838,7 +826,6 @@ def server(input, output, session):
 
         (
             general_elems,
-            sim_elems,
             field_elems,
             wl_elems,
             lens_elems,
@@ -849,32 +836,31 @@ def server(input, output, session):
         ) = app_elems(config.get())
 
         (
-            Zernike_sidebar_elems,
-            Zernike_elems,
-            Zernike_tab_elems,
-            PSD_sidebar_elems,
-            PSD_elems,
-            PSD_tab_elems,
+            zernike_sidebar_elems,
+            zernike_elems,
+            zernike_tab_elems,
+            psd_sidebar_elems,
+            psd_elems,
+            psd_tab_elems,
             gridsag_sidebar_elems,
             gridsag_elems,
             gridsag_tab_elems,
         ) = wfe_elems
 
         refresh_ui("general", general_elems)
-        refresh_ui("sim", sim_elems)
         refresh_ui("field", field_elems, mode="dict")
         refresh_ui("wl", wl_elems, mode="dict")
         refresh_ui("lens", lens_elems, mode="dict")
-        refresh_ui("Zernike_settings", Zernike_sidebar_elems)
-        if Zernike_elems:
-            for key, _ in Zernike_elems.items():
-                refresh_ui("zernike", Zernike_elems, mode="nested-dict", key=key)
-        refresh_ui("Zernike_tab", Zernike_tab_elems)
-        refresh_ui("PSD_settings", PSD_sidebar_elems)
-        if PSD_elems:
-            for key, _ in PSD_elems.items():
-                refresh_ui("PSD", PSD_elems, mode="nested-dict", key=key)
-        refresh_ui("PSD_tab", PSD_tab_elems)
+        refresh_ui("zernike_settings", zernike_sidebar_elems)
+        if zernike_elems:
+            for key, _ in zernike_elems.items():
+                refresh_ui("zernike", zernike_elems, mode="nested-dict", key=key)
+        refresh_ui("zernike_tab", zernike_tab_elems)
+        refresh_ui("psd_settings", psd_sidebar_elems)
+        if psd_elems:
+            for key, _ in psd_elems.items():
+                refresh_ui("PSD", psd_elems, mode="nested-dict", key=key)
+        refresh_ui("psd_tab", psd_tab_elems)
         refresh_ui("gridsag_settings", gridsag_sidebar_elems)
         if gridsag_elems:
             for key, _ in gridsag_elems.items():

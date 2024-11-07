@@ -4,9 +4,94 @@ from paos import Zernike
 from paos import PSD
 
 from paos.gui.core.shared import output_text_verbatim
-from paos.gui.core.shared import ICONS
-from paos.gui.core.shared import CARD_HEADER_CLASS
 from paos.gui.core.shared import nested_div
+from paos.gui.core.shared import CARD_HEADER_CLASS
+from paos.gui.core.shared import ICONS
+from paos.gui.core.shared import vspace
+
+
+Placeholder = {
+    "Par1": {
+        "INIT": "",
+        "Coordinate Break": "Xdecenter",
+        "Standard": "",
+        "Paraxial Lens": "Focal length",
+        "ABCD": "Ax",
+        "Zernike": "Wavelength",
+        "PSD": "A",
+        "Grid Sag": "Wavelength",
+    },
+    "Par2": {
+        "INIT": "",
+        "Coordinate Break": "Ydecenter",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Bx",
+        "Zernike": "Ordering",
+        "PSD": "B",
+        "Grid Sag": "Nx",
+    },
+    "Par3": {
+        "INIT": "",
+        "Coordinate Break": "Xtilt",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Cx",
+        "Zernike": "Normalization",
+        "PSD": "C",
+        "Grid Sag": "Ny",
+    },
+    "Par4": {
+        "INIT": "",
+        "Coordinate Break": "Ytilt",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Dx",
+        "Zernike": "Radius of S.A.",
+        "PSD": "fknee",
+        "Grid Sag": "Dx",
+    },
+    "Par5": {
+        "INIT": "",
+        "Coordinate Break": "",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Ay",
+        "Zernike": "Origin",
+        "PSD": "fmin",
+        "Grid Sag": "Dy",
+    },
+    "Par6": {
+        "INIT": "",
+        "Coordinate Break": "",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "By",
+        "Zernike": "",
+        "PSD": "fmax",
+        "Grid Sag": "Xdecenter (pix)",
+    },
+    "Par7": {
+        "INIT": "",
+        "Coordinate Break": "",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Cy",
+        "Zernike": "",
+        "PSD": "SR",
+        "Grid Sag": "Ydecenter (pix)",
+    },
+    "Par8": {
+        "INIT": "",
+        "Coordinate Break": "",
+        "Standard": "",
+        "Paraxial Lens": "",
+        "ABCD": "Dy",
+        "Zernike": "",
+        "PSD": "units",
+        "Grid Sag": "Errormap filepath",
+    },
+}
 
 
 def app_elems(config):
@@ -22,9 +107,6 @@ def app_elems(config):
             "Version",
             value=config["general"].get("version", "0.1"),
         ),
-    ]
-
-    sim_elems = [
         ui.input_text(
             "grid_size",
             "Grid size",
@@ -33,13 +115,45 @@ def app_elems(config):
         ui.input_text("zoom", "Zoom", value=config["general"].getint("zoom", "4")),
         ui.input_text(
             "tambient",
-            "Ambient temperature",
+            "Ambient temperature [°C]",
             value=config["general"].getfloat("tambient", "20.0"),
         ),
         ui.input_text(
             "pambient",
-            "Ambient pressure",
+            "Ambient pressure [atm]",
             value=config["general"].getfloat("pambient", "1.0"),
+        ),
+        ui.tags.div(
+            ui.tags.label("Wavelength unit", class_="form-label"),
+            ui.tags.input(
+                id="wavelength_unit",
+                type="text",
+                value=config["general"].get("wavelength_unit", "micron"),
+                readonly=True,
+                class_="form-control",
+            ),
+        ),
+        vspace,
+        ui.tags.div(
+            ui.tags.label("Angle unit", class_="form-label"),
+            ui.tags.input(
+                id="angle_unit",
+                type="text",
+                value=config["general"].get("angle_unit", "deg"),
+                readonly=True,
+                class_="form-control",
+            ),
+        ),
+        vspace,
+        ui.tags.div(
+            ui.tags.label("Lens unit", class_="form-label"),
+            ui.tags.input(
+                id="lens_unit",
+                type="text",
+                value=config["general"].get("lens_unit", "m"),
+                readonly=True,
+                class_="form-control",
+            ),
         ),
     ]
 
@@ -88,21 +202,24 @@ def app_elems(config):
             "width": 1,
             "value": n,
         }
+        surface_type = item.get("surfacetype")
         lens_elems[n]["SurfaceType"] = {
-            "f": ui.input_select,
-            "choices": [
-                "INIT",
-                "Coordinate Break",
-                "Standard",
-                "Paraxial Lens",
-                "ABCD",
-                "Zernike",
-                "PSD",
-                "Grid Sag",
-            ],
+            "f": ui.tags.input,
+            # "choices": [
+            #     "INIT",
+            #     "Coordinate Break",
+            #     "Standard",
+            #     "Paraxial Lens",
+            #     "ABCD",
+            #     "Zernike",
+            #     "PSD",
+            #     "Grid Sag",
+            # ],
             "width": 1,
-            "selected": item.get("surfacetype"),
+            "value": surface_type,
+            # "selected": surface_type,
             "prefix": "lens_",
+            "readonly": True,
         }
         lens_elems[n]["Comment"] = {
             "f": ui.input_text,
@@ -216,51 +333,59 @@ def app_elems(config):
             "value": item.get("par1", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": Placeholder["Par1"][surface_type],
         }
         lens_elems[n]["Par2"] = {
             "f": ui.input_text,
             "value": item.get("par2", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": Placeholder["Par2"][surface_type],
         }
         lens_elems[n]["Par3"] = {
             "f": ui.input_text,
             "value": item.get("par3", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": Placeholder["Par3"][surface_type],
         }
         lens_elems[n]["Par4"] = {
             "f": ui.input_text,
             "value": item.get("par4", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": Placeholder["Par4"][surface_type],
         }
         lens_elems[n]["Par5"] = {
             "f": ui.input_text,
             "value": item.get("par5", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": Placeholder["Par5"][surface_type],
         }
         lens_elems[n]["Par6"] = {
             "f": ui.input_text,
             "value": item.get("par6", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": Placeholder["Par6"][surface_type],
         }
         lens_elems[n]["Par7"] = {
             "f": ui.input_text,
             "value": item.get("par7", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": Placeholder["Par7"][surface_type],
         }
         lens_elems[n]["Par8"] = {
             "f": ui.input_text,
             "value": item.get("par8", ""),
             "width": 1,
             "prefix": "lens_",
+            "placeholder": Placeholder["Par8"][surface_type],
         }
 
-    Zernike_elems = {}
+    zernike_elems = {}
     for key in config.sections():
         if not key.startswith("lens_"):
             continue
@@ -269,7 +394,7 @@ def app_elems(config):
             continue
 
         n = int(key.split("_")[1])
-        Zernike_elems[n] = {}
+        zernike_elems[n] = {}
 
         zindex = item.get("zindex", "").split(",")
         zcoeff = item.get("z", "").split(",")
@@ -278,48 +403,48 @@ def app_elems(config):
         azimuthal, radial = Zernike.j2mn(N=len(zindex), ordering=ordering)
 
         for zi, zc in zip(zindex, zcoeff):
-            Zernike_elems[n][zi] = {}
-            Zernike_elems[n][zi]["n"] = {
+            zernike_elems[n][zi] = {}
+            zernike_elems[n][zi]["n"] = {
                 "f": ui.p,
                 "width": 3,
                 "value": radial[int(zi)],
             }
-            Zernike_elems[n][zi]["m"] = {
+            zernike_elems[n][zi]["m"] = {
                 "f": ui.p,
                 "width": 3,
                 "value": azimuthal[int(zi)],
             }
-            Zernike_elems[n][zi]["Zindex"] = {
+            zernike_elems[n][zi]["Zindex"] = {
                 "f": ui.p,
                 "width": 3,
                 "value": zi,
             }
-            Zernike_elems[n][zi]["Zcoeff"] = {
+            zernike_elems[n][zi]["Zcoeff"] = {
                 "f": ui.input_text,
                 "width": 3,
                 "value": zc,
                 "prefix": f"lens_{n}_",
             }
 
-    Zernike_sidebar_elems = []
-    Zernike_tab_elems = []
-    if Zernike_elems:
-        Zernike_choices = [f"S{n}" for n in Zernike_elems]
+    zernike_sidebar_elems = []
+    zernike_tab_elems = []
+    if zernike_elems:
+        zernike_choices = [f"S{n}" for n in zernike_elems]
 
-        Zernike_sidebar_elems = [
+        zernike_sidebar_elems = [
             *[
                 ui.input_select(
                     id=f"select_{name}", label=f"Select {name}", choices=choice
                 )
-                for name, choice in zip(["Zernike"], [Zernike_choices])
+                for name, choice in zip(["Zernike"], [zernike_choices])
             ],
         ]
-        Zernike_tab_elems = [
+        zernike_tab_elems = [
             ui.layout_column_wrap(
                 ui.card(
                     ui.card_header("Explorer"),
                     ui.card_body(
-                        output_text_verbatim("Zernike_inputs"),
+                        output_text_verbatim("zernike_inputs"),
                         nested_div("zernike"),
                     ),
                     max_height="55vh",
@@ -327,15 +452,20 @@ def app_elems(config):
                 ui.card(
                     ui.card_header("Plot"),
                     ui.card_body(
-                        output_text_verbatim("plot_Zernike_inputs"),
+                        output_text_verbatim("plot_zernike_inputs"),
                         ui.output_plot("plot_zernike"),
                     ),
                     ui.card_footer(
                         ui.input_action_button(
-                            "do_plot_zernike", "Run", icon=ICONS["run"]
+                            "do_plot_zernike",
+                            "Run",
+                            icon=ICONS["run"],
+                            class_="btn-success",
                         ),
                         ui.input_action_button(
-                            "download_plot_zernike", "Download", icon=ICONS["save"]
+                            "download_plot_zernike",
+                            "Save",
+                            icon=ICONS["save"],
                         ),
                     ),
                     max_height="55vh",
@@ -343,7 +473,7 @@ def app_elems(config):
             ),
         ]
 
-    PSD_elems = {}
+    psd_elems = {}
     for key in config.sections():
         if not key.startswith("lens_"):
             continue
@@ -352,8 +482,8 @@ def app_elems(config):
             continue
 
         n = int(key.split("_")[1])
-        PSD_elems[n] = {}
-        PSD_elems[n][0] = {}
+        psd_elems[n] = {}
+        psd_elems[n][0] = {}
 
         A = float(item.get("Par1"))
         B = float(item.get("Par2"))
@@ -365,78 +495,81 @@ def app_elems(config):
         units = item.get("Par8")
         sfe_rms = PSD.sfe_rms(A, B, C, fknee, fmin, fmax)
 
-        # PSD_elems[n][0]["A"] = {
+        # psd_elems[n][0]["A"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{A:.3f}",
         # }
-        # PSD_elems[n][0]["B"] = {
+        # psd_elems[n][0]["B"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{B:.3f}",
         # }
-        # PSD_elems[n][0]["C"] = {
+        # psd_elems[n][0]["C"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{C:.3f}",
         # }
-        # PSD_elems[n][0]["fknee"] = {
+        # psd_elems[n][0]["fknee"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{fknee:.3f}",
         # }
-        # PSD_elems[n][0]["fmin"] = {
+        # psd_elems[n][0]["fmin"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{fmin:.3f}",
         # }
-        # PSD_elems[n][0]["fmax"] = {
+        # psd_elems[n][0]["fmax"] = {
         #     "f": ui.p,
         #     "width": 2,
         #     "value": f"{fmax:.3f}",
         # }
-        PSD_elems[n][0]["PSD SFE RMS"] = {
+        psd_elems[n][0]["PSD SFE RMS"] = {
             "f": ui.p,
             "width": 2,
             "value": f"{sfe_rms:.3f}",
         }
-        PSD_elems[n][0]["SR RMS"] = {
+        psd_elems[n][0]["SR RMS"] = {
             "f": ui.p,
             "width": 2,
             "value": f"{SR}",
         }
-        PSD_elems[n][0]["SFE units"] = {
+        psd_elems[n][0]["SFE units"] = {
             "f": ui.p,
             "width": 2,
             "value": f"{units}",
         }
 
-    PSD_sidebar_elems = []
-    PSD_tab_elems = []
-    if PSD_elems:
-        PSD_choices = [f"S{n}" for n in PSD_elems]
+    psd_sidebar_elems = []
+    psd_tab_elems = []
+    if psd_elems:
+        psd_choices = [f"S{n}" for n in psd_elems]
 
-        PSD_sidebar_elems = [
+        psd_sidebar_elems = [
             *[
                 ui.input_select(
                     id=f"select_{name}", label=f"Select {name}", choices=choice
                 )
-                for name, choice in zip(["PSD"], [PSD_choices])
+                for name, choice in zip(["PSD"], [psd_choices])
             ],
         ]
-        PSD_tab_elems = [
+        psd_tab_elems = [
             ui.layout_column_wrap(
                 ui.card(
                     ui.card_header("Explorer"),
                     ui.card_body(
-                        output_text_verbatim("PSD_inputs"),
-                        output_text_verbatim("PSD_output"),
+                        output_text_verbatim("psd_inputs"),
+                        output_text_verbatim("psd_output"),
                         nested_div("PSD"),
                     ),
                     ui.card_footer(
                         ui.tags.div(
                             ui.input_action_button(
-                                "calc_PSD", "Run", icon=ICONS["run"]
+                                "calc_PSD",
+                                "Run",
+                                icon=ICONS["run"],
+                                class_="btn-success",
                             ),
                         ),
                     ),
@@ -450,7 +583,7 @@ def app_elems(config):
                                 ICONS["gear"],
                                 *[
                                     ui.input_text(
-                                        id="PSD_plot_phi",
+                                        id="psd_plot_phi",
                                         label="D [mm]",
                                         value=110.0,
                                     ),
@@ -462,13 +595,18 @@ def app_elems(config):
                         ),
                     ),
                     ui.card_body(
-                        output_text_verbatim("plot_PSD_inputs"),
+                        output_text_verbatim("plot_psd_inputs"),
                         ui.output_plot("plot_PSD"),
                     ),
                     ui.card_footer(
-                        ui.input_action_button("do_plot_PSD", "Run", icon=ICONS["run"]),
                         ui.input_action_button(
-                            "download_plot_PSD", "Download", icon=ICONS["save"]
+                            "do_plot_PSD",
+                            "Run",
+                            icon=ICONS["run"],
+                            class_="btn-success",
+                        ),
+                        ui.input_action_button(
+                            "download_plot_PSD", "Save", icon=ICONS["save"]
                         ),
                     ),
                     max_height="55vh",
@@ -531,10 +669,13 @@ def app_elems(config):
                     ),
                     ui.card_footer(
                         ui.input_action_button(
-                            "do_plot_gridsag", "Run", icon=ICONS["run"]
+                            "do_plot_gridsag",
+                            "Run",
+                            icon=ICONS["run"],
+                            class_="btn-success",
                         ),
                         ui.input_action_button(
-                            "download_plot_gridsag", "Download", icon=ICONS["save"]
+                            "download_plot_gridsag", "Save", icon=ICONS["save"]
                         ),
                     ),
                     max_height="55vh",
@@ -543,12 +684,12 @@ def app_elems(config):
         ]
 
     wfe_elems = (
-        Zernike_sidebar_elems,
-        Zernike_elems,
-        Zernike_tab_elems,
-        PSD_sidebar_elems,
-        PSD_elems,
-        PSD_tab_elems,
+        zernike_sidebar_elems,
+        zernike_elems,
+        zernike_tab_elems,
+        psd_sidebar_elems,
+        psd_elems,
+        psd_tab_elems,
         gridsag_sidebar_elems,
         gridsag_elems,
         gridsag_tab_elems,
@@ -581,10 +722,13 @@ def app_elems(config):
                         ui.card_footer(
                             ui.tags.div(
                                 ui.input_action_button(
-                                    "calc_pop", "Run", icon=ICONS["run"]
+                                    "calc_pop",
+                                    "Run",
+                                    icon=ICONS["run"],
+                                    class_="btn-success",
                                 ),
                                 ui.input_action_button(
-                                    "download_pop", "Download", icon=ICONS["save"]
+                                    "download_pop", "Save", icon=ICONS["save"]
                                 ),
                             ),
                         ),
@@ -600,10 +744,13 @@ def app_elems(config):
                         ui.card_footer(
                             ui.tags.div(
                                 ui.input_action_button(
-                                    "calc_raytrace", "Run", icon=ICONS["run"]
+                                    "calc_raytrace",
+                                    "Run",
+                                    icon=ICONS["run"],
+                                    class_="btn-success",
                                 ),
                                 ui.input_action_button(
-                                    "download_raytrace", "Download", icon=ICONS["save"]
+                                    "download_raytrace", "Save", icon=ICONS["save"]
                                 ),
                             ),
                         ),
@@ -651,9 +798,14 @@ def app_elems(config):
                 ),
                 ui.card_footer(
                     ui.tags.div(
-                        ui.input_action_button("do_plot", "Run", icon=ICONS["run"]),
                         ui.input_action_button(
-                            "download_plot", "Download", icon=ICONS["save"]
+                            "do_plot",
+                            "Run",
+                            icon=ICONS["run"],
+                            class_="btn-success",
+                        ),
+                        ui.input_action_button(
+                            "download_plot", "Save", icon=ICONS["save"]
                         ),
                     ),
                 ),
@@ -661,20 +813,10 @@ def app_elems(config):
         ),
     ]
 
-    units_elems = [
-        ui.p("Lens: ", config["general"].get("lens_unit", "m")),
-        ui.p("Angle: ", config["general"].get("angle_unit", "degrees")),
-        ui.p(
-            "Wavelength: ",
-            config["general"].get("wavelength_units", "micrometers"),
-        ),
-        ui.p("Temperature: ", config["general"].get("temperature_units", "C")),
-        ui.p("Pressure: ", config["general"].get("pressure_units", "atm")),
-    ]
+    units_elems = []
 
     return (
         general_elems,
-        sim_elems,
         field_elems,
         wl_elems,
         lens_elems,
