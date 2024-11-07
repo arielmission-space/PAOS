@@ -20,7 +20,7 @@ This pipeline
 Example
 ~~~~~~~~~~~~~
 
-Code example to the method :func:`~paos.core.pipeline.pipeline` to run a simulation using the configuration file for AIRS-CH1.
+Code example to the method :func:`~paos.core.pipeline.pipeline` to run a simulation using a configuration file.
 
 .. code-block:: python
 
