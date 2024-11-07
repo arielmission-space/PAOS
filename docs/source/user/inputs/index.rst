@@ -205,7 +205,7 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
      - Par1..N
 
    * - INIT
-     - string, this surface name
+     - string, e.g. this surface name
      - None
      - None
      - None
@@ -310,7 +310,32 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
 
        Par7 = Surface Roughness
 
-       Par8 = units
+       Par8 = units (usually nm)
+
+   * - Grid Sag
+     - ...
+     - None
+     - None
+     - None
+     - Bool
+     - Bool
+     - Bool
+     - list
+     - Par1 = wavelength (in micron)
+
+       Par2 = Nx (shall be the same as grid_size)
+
+       Par3 = Ny (shall be the same as grid_size)
+
+       Par4 = Dx
+
+       Par5 = Dy
+
+       Par6 = Xdecenter (in pixel)
+
+       Par7 = Ydecenter (in pixel)
+
+       Par8 = Errormap file path
 
 .. note::
 
