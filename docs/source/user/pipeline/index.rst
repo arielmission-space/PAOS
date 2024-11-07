@@ -1,6 +1,6 @@
-.. _Automatic pipeline:
+.. _Pipeline:
 
-Automatic pipeline
+Pipeline
 =======================
 
 Pipeline to run a POP simulation and save the results, given an input dictionary with selected options.

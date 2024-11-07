@@ -1,6 +1,6 @@
-.. _Aberration description:
+.. _Aberration:
 
-Aberration description
+Aberration
 =======================
 
 Brief description of wavefront error (WFE) modelling and how it is implemented in ``PAOS``.

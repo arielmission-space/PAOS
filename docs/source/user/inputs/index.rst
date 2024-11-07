@@ -20,7 +20,7 @@ From a broad perspective, this input system has two advantages:
     Outside Ariel, ``PAOS`` is currently used to simulate the optical performance of the stratospheric balloon-borne experiment `EXCITE <https://doi.org/10.1117/12.2314225>`_.
 
     .. tip::
-        The interested reader may refer to the section :ref:`Plotting results` to see an example of ``PAOS`` results for
+        The interested reader may refer to the section :ref:`Plot` to see an example of ``PAOS`` results for
         EXCITE.
 
 #. It helped in validating the ``PAOS`` code against existing simulators.

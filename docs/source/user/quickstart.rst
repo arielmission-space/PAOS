@@ -1,7 +1,7 @@
-.. _Quick start:
+.. _Quickstart:
 
 =======================
-Quick start
+Quickstart
 =======================
 
 Short explanation on how to quickly run ``PAOS`` and have its output stored in a convenient file.
@@ -110,7 +110,7 @@ To open it, please choose your favourite viewer (e.g. HDFView_, HDFCompass_) or 
 
 .. _Python: https://www.h5py.org/
 
-For more information on how to produce a similar output file, see :ref:`Saving results`.
+For more information on how to produce a similar output file, see :ref:`Save`.
 
 
 The baseline plot
@@ -132,4 +132,4 @@ simulation wavelength and the total optical throughput that reaches the surface.
 The color scale can be either linear or logarithmic. The x and y axes are in physical units, e.g. micron.
 For reference, black rings mark the first five zeros of the circular Airy function.
 
-For more information on how to produce a similar plot, see :ref:`Plotting results`.
+For more information on how to produce a similar plot, see :ref:`Plot`.

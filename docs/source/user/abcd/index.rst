@@ -1,12 +1,12 @@
-.. _ABCD description:
+.. _ABCD method:
 
-ABCD description
+ABCD method
 =======================
 
 ``PAOS`` implements the paraxial theory described in
 `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_.
 
-In ``PAOS``, this is handled by the classes :class:`~paos.classes.abcd.ABCD` and :class:`~paos.classes.abcd.WFO` (see :ref:`POP description`).
+In ``PAOS``, this is handled by the classes :class:`~paos.classes.abcd.ABCD` and :class:`~paos.classes.abcd.WFO` (see :ref:`POP`).
 
 .. _Paraxial region:
 

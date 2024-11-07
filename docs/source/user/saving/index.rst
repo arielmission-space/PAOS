@@ -1,6 +1,6 @@
-.. _Saving results:
+.. _Save:
 
-Saving results
+Save
 =======================
 
 ``PAOS`` implements different saving routines, summarized here, that can be used to save the main POP simulation results.

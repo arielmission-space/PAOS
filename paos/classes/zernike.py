@@ -17,16 +17,13 @@ class Zernike:
     phi : array like
         Azimuthal coordinate in radians. Has same shape as rho.
     ordering : string
-        Can either be:
-            ANSI (ordering='ansi', this is the default);
-            Noll (ordering='noll'). Used in Zemax as "Zernike Standard Coefficients",
-              R. Noll, "Zernike polynomials and atmospheric turbulence", J. Opt. Soc. Am., Vol. 66, No. 3, p207 (1976);
-            Fringe (ordering='fringe'), AKA the "Fringe" or "University of Arizona" notation;
-            Standard (ordering='standard'). Used in CodeV, Born and Wolf, Principles of Optics (Pergamon Press, New York, 1989).
+        The ordering of the Zernike polynomials. Can either be:
+            - ANSI (ordering='ansi', this is the default);
+            - Noll (ordering='noll'). Used in Zemax as "Zernike Standard Coefficients", R. Noll, "Zernike polynomials and atmospheric turbulence", J. Opt. Soc. Am., Vol. 66, No. 3, p207 (1976);
+            - Fringe (ordering='fringe'), AKA the "Fringe" or "University of Arizona" notation;
+            - Standard (ordering='standard'). Used in CodeV, Born and Wolf, Principles of Optics (Pergamon Press, New York, 1989).
     normalize : bool
-        Set to True generates ortho-normal polynomials. Set to False generates orthogonal polynomials
-        as described in `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_.
-        The radial polynomial is estimated using the Jacobi polynomial expression as in their Equation in Equation 14.
+        Set to True generates ortho-normal polynomials. Set to False generates orthogonal polynomials as described in `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_. The radial polynomial is estimated using the Jacobi polynomial expression as in their Equation in Equation 14.
 
 
     Returns
@@ -322,17 +319,18 @@ class Zernike:
 
 class PolyOrthoNorm(Zernike):
     """
-    Generates polynomials that are ortho-normal on the mask provided. This is done by applying the
-    Gram-Smidth orthonormalization process, implemented following Section 3.4 of https://doi.org/10.1117/3.927341.
-    Therefore, the relevant input are the type of Zernike polinomial to be used (ordering and normalization), and
-    the mask defining the pupil.
+    Generates polynomials that are ortho-normal on the mask provided. This is done by applying the Gram-Smidth orthonormalization process, implemented following Section 3.4 of https://doi.org/10.1117/3.927341. 
+    Therefore, the relevant input are the type of Zernike polinomial to be used (ordering and normalization), and the mask defining the pupil.
 
         U[m] = sum_n M[m, n] Z[n]
 
     where Z[m] are Zernike polynomials over a circular domain containing the pupil.
     If Phi is the field on the pupil, using linear algebra notation:
+
         Phi = b.T U = b.T M Z = c.T Z
+
     And the coefficients of the Zernike expansion are
+
         c.T = M.T c
 
     Parameters
@@ -340,24 +338,19 @@ class PolyOrthoNorm(Zernike):
     N : integer
         Number of polynomials to generate in a sequence following the defined 'ordering'
     rho : array like
-        the radial coordinate normalised to the interval [0, 1]. If rho is a numpy masked array, the mask is used in the
-        orthonrmalisation process
+        the radial coordinate normalised to the interval [0, 1]. If rho is a numpy masked array, the mask is used in the orthonormalisation process
     phi : array like
         Azimuthal coordinate in radians. Has same shape as rho.
     ordering : string
         The ordering of the Zernike polynomials. Can either be:
-            ANSI (ordering='ansi', this is the default);
-            Noll (ordering='noll'). Used in Zemax as "Zernike Standard Coefficients",
-              R. Noll, "Zernike polynomials and atmospheric turbulence", J. Opt. Soc. Am., Vol. 66, No. 3, p207 (1976);
-            Fringe (ordering='fringe'), AKA the "Fringe" or "University of Arizona" notation;
-            Standard (ordering='standard'). Used in CodeV, Born and Wolf, Principles of Optics (Pergamon Press, New York, 1989).
+            - ANSI (ordering='ansi', this is the default);
+            - Noll (ordering='noll'). Used in Zemax as "Zernike Standard Coefficients", R. Noll, "Zernike polynomials and atmospheric turbulence", J. Opt. Soc. Am., Vol. 66, No. 3, p207 (1976);
+            - Fringe (ordering='fringe'), AKA the "Fringe" or "University of Arizona" notation;
+            - Standard (ordering='standard'). Used in CodeV, Born and Wolf, Principles of Optics (Pergamon Press, New York, 1989).
     normalize : bool
-        The normalisation of Zernike polinomials. Set to True generates ortho-normal polynomials. Set to False generates orthogonal polynomials
-        as described in `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_.
-        The radial polynomial is estimated using the Jacobi polynomial expression as in their Equation in Equation 14.
+        The normalisation of Zernike polinomials. Set to True generates ortho-normal polynomials. Set to False generates orthogonal polynomials as described in `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_. The radial polynomial is estimated using the Jacobi polynomial expression as in their Equation in Equation 14.
     mask: bool array like
-        The mask defining the pupil following masked array convention. Pixel within the pupil are masked False.
-        Defaults to False.
+        The mask defining the pupil following masked array convention. Pixel within the pupil are masked False. Defaults to False.
 
 
     Returns
@@ -411,8 +404,10 @@ class PolyOrthoNorm(Zernike):
     def toZernike(self, coeff):
         """
         If Phi is the field on the pupil, using linear algebra notation:
+
             Phi = coeff.T U = c.T Z
-        this function returns the Zerkinke coefficients c
+
+        This function returns the Zerkinke coefficients c
 
         Parameters
         ----------
