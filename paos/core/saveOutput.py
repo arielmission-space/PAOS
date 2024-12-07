@@ -7,6 +7,7 @@ import numpy as np
 
 from paos import __author__
 from paos import __version__
+from paos import __pkg_name__
 from paos import logger
 
 
@@ -66,9 +67,7 @@ def save_recursively_to_hdf5(dictionary, outgroup):
         elif isinstance(data, (str, int, float, tuple)):
             outgroup.create_dataset(key, data=data)
         elif isinstance(data, np.ndarray):
-            outgroup.create_dataset(
-                key, data=data, shape=data.shape, dtype=data.dtype
-            )
+            outgroup.create_dataset(key, data=data, shape=data.shape, dtype=data.dtype)
         elif isinstance(data, list):
             asciiList = [n.encode("ascii", "ignore") for n in data]
             outgroup.create_dataset(
@@ -108,7 +107,7 @@ def save_info(file_name, out):
         "file_name": file_name,
         "file_time": datetime.datetime.now().isoformat(),
         "creator": __author__,
-        "program_name": __package__.upper(),
+        "program_name": __pkg_name__,
         "program_version": __version__,
         "HDF5_Version": h5py.version.hdf5_version,
         "h5py_version": h5py.version.version,
@@ -272,9 +271,7 @@ def save_datacube(
 
     """
 
-    assert isinstance(
-        retval_list, list
-    ), "parameter retval_list must be a list"
+    assert isinstance(retval_list, list), "parameter retval_list must be a list"
     assert isinstance(file_name, str), "parameter file_name must be a string"
     assert isinstance(
         group_names, list

@@ -17,16 +17,13 @@ class Zernike:
     phi : array like
         Azimuthal coordinate in radians. Has same shape as rho.
     ordering : string
-        Can either be:
-            ANSI (ordering='ansi', this is the default); 
-            Noll (ordering='noll'). Used in Zemax as "Zernike Standard Coefficients", 
-              R. Noll, "Zernike polynomials and atmospheric turbulence", J. Opt. Soc. Am., Vol. 66, No. 3, p207 (1976); 
-            Fringe (ordering='fringe'), AKA the "Fringe" or "University of Arizona" notation;
-            Standard (ordering='standard'). Used in CodeV, Born and Wolf, Principles of Optics (Pergamon Press, New York, 1989).
+        The ordering of the Zernike polynomials. Can either be:
+            - ANSI (ordering='ansi', this is the default);
+            - Noll (ordering='noll'). Used in Zemax as "Zernike Standard Coefficients", R. Noll, "Zernike polynomials and atmospheric turbulence", J. Opt. Soc. Am., Vol. 66, No. 3, p207 (1976);
+            - Fringe (ordering='fringe'), AKA the "Fringe" or "University of Arizona" notation;
+            - Standard (ordering='standard'). Used in CodeV, Born and Wolf, Principles of Optics (Pergamon Press, New York, 1989).
     normalize : bool
-        Set to True generates ortho-normal polynomials. Set to False generates orthogonal polynomials
-        as described in `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_.
-        The radial polynomial is estimated using the Jacobi polynomial expression as in their Equation in Equation 14.
+        Set to True generates ortho-normal polynomials. Set to False generates orthogonal polynomials as described in `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_. The radial polynomial is estimated using the Jacobi polynomial expression as in their Equation in Equation 14.
 
 
     Returns
@@ -107,10 +104,7 @@ class Zernike:
         self.Zphi = [Z[m].view() for m in self.m]
 
         self.Z = np.ma.MaskedArray(
-            [
-                self.norm[k] * self.Zrad[k] * self.Zphi[k]
-                for k in range(self.N)
-            ],
+            [self.norm[k] * self.Zrad[k] * self.Zphi[k] for k in range(self.N)],
             fill_value=0.0,
         )
 
@@ -236,14 +230,10 @@ class Zernike:
         m = np.abs(m)
 
         if n < 0:
-            raise ValueError(
-                "Invalid parameter: n={:d} should be > 0".format(n)
-            )
+            raise ValueError("Invalid parameter: n={:d} should be > 0".format(n))
         if m > n:
             raise ValueError(
-                "Invalid parameter: n={:d} should be larger than m={:d}".format(
-                    n, m
-                )
+                "Invalid parameter: n={:d} should be larger than m={:d}".format(n, m)
             )
         if (n - m) % 2:
             raise ValueError(
@@ -280,14 +270,10 @@ class Zernike:
         m = np.abs(m)
 
         if n < 0:
-            raise ValueError(
-                "Invalid parameter: n={:d} should be > 0".format(n)
-            )
+            raise ValueError("Invalid parameter: n={:d} should be > 0".format(n))
         if m > n:
             raise ValueError(
-                "Invalid parameter: n={:d} should be larger than m={:d}".format(
-                    n, m
-                )
+                "Invalid parameter: n={:d} should be larger than m={:d}".format(n, m)
             )
         if (n - m) % 2:
             raise ValueError(
@@ -302,9 +288,7 @@ class Zernike:
             / (fac(k) * fac((n + m) // 2 - k) * fac((n - m) // 2 - k))
         )
 
-        return sum(
-            pre_fac(k) * rho ** (n - 2 * k) for k in range((n - m) // 2 + 1)
-        )
+        return sum(pre_fac(k) * rho ** (n - 2 * k) for k in range((n - m) // 2 + 1))
 
     def cov(self):
         """
@@ -335,42 +319,38 @@ class Zernike:
 
 class PolyOrthoNorm(Zernike):
     """
-    Generates polynomials that are ortho-normal on the mask provided. This is done by applying the 
-    Gram-Smidth orthonormalization process, implemented following Section 3.4 of https://doi.org/10.1117/3.927341.
-    Therefore, the relevant input are the type of Zernike polinomial to be used (ordering and normalization), and 
-    the mask defining the pupil.
+    Generates polynomials that are ortho-normal on the mask provided. This is done by applying the Gram-Smidth orthonormalization process, implemented following Section 3.4 of https://doi.org/10.1117/3.927341. 
+    Therefore, the relevant input are the type of Zernike polinomial to be used (ordering and normalization), and the mask defining the pupil.
 
         U[m] = sum_n M[m, n] Z[n]
-    
-    where Z[m] are Zernike polynomials over a circular domain containing the pupil. 
+
+    where Z[m] are Zernike polynomials over a circular domain containing the pupil.
     If Phi is the field on the pupil, using linear algebra notation:
+
         Phi = b.T U = b.T M Z = c.T Z
-    And the coefficients of the Zernike expansion are 
+
+    And the coefficients of the Zernike expansion are
+
         c.T = M.T c
-    
+
     Parameters
     ----------
     N : integer
         Number of polynomials to generate in a sequence following the defined 'ordering'
     rho : array like
-        the radial coordinate normalised to the interval [0, 1]. If rho is a numpy masked array, the mask is used in the 
-        orthonrmalisation process
+        the radial coordinate normalised to the interval [0, 1]. If rho is a numpy masked array, the mask is used in the orthonormalisation process
     phi : array like
         Azimuthal coordinate in radians. Has same shape as rho.
     ordering : string
         The ordering of the Zernike polynomials. Can either be:
-            ANSI (ordering='ansi', this is the default); 
-            Noll (ordering='noll'). Used in Zemax as "Zernike Standard Coefficients", 
-              R. Noll, "Zernike polynomials and atmospheric turbulence", J. Opt. Soc. Am., Vol. 66, No. 3, p207 (1976); 
-            Fringe (ordering='fringe'), AKA the "Fringe" or "University of Arizona" notation;
-            Standard (ordering='standard'). Used in CodeV, Born and Wolf, Principles of Optics (Pergamon Press, New York, 1989).
+            - ANSI (ordering='ansi', this is the default);
+            - Noll (ordering='noll'). Used in Zemax as "Zernike Standard Coefficients", R. Noll, "Zernike polynomials and atmospheric turbulence", J. Opt. Soc. Am., Vol. 66, No. 3, p207 (1976);
+            - Fringe (ordering='fringe'), AKA the "Fringe" or "University of Arizona" notation;
+            - Standard (ordering='standard'). Used in CodeV, Born and Wolf, Principles of Optics (Pergamon Press, New York, 1989).
     normalize : bool
-        The normalisation of Zernike polinomials. Set to True generates ortho-normal polynomials. Set to False generates orthogonal polynomials
-        as described in `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_.
-        The radial polynomial is estimated using the Jacobi polynomial expression as in their Equation in Equation 14.
+        The normalisation of Zernike polinomials. Set to True generates ortho-normal polynomials. Set to False generates orthogonal polynomials as described in `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_. The radial polynomial is estimated using the Jacobi polynomial expression as in their Equation in Equation 14.
     mask: bool array like
-        The mask defining the pupil following masked array convention. Pixel within the pupil are masked False. 
-        Defaults to False. 
+        The mask defining the pupil following masked array convention. Pixel within the pupil are masked False. Defaults to False.
 
 
     Returns
@@ -384,7 +364,7 @@ class PolyOrthoNorm(Zernike):
     >>> from matplotlib import pyplot as plt
     >>> x = np.linspace(-1.0, 1.0, 1024)
     >>> xx, yy = np.meshgrid(x, x)
-    >>> mask = xx**2 + (yy/0.5)**2 > 1.0 
+    >>> mask = xx**2 + (yy/0.5)**2 > 1.0
     >>> rho = np.ma.MaskedArray(data=np.sqrt(xx**2 + yy**2), mask=mask, fill_value=0.0)
     >>> phi = np.arctan2(yy, xx)
     >>> poly = PolyOrthoNorm(36, rho, phi, ordering='noll', normalize=True)
@@ -404,34 +384,36 @@ class PolyOrthoNorm(Zernike):
     >>> phi = 0.5*np.pi - np.arctan2(yy, xx)
 
     """
-    
-    def __init__ (self, N, rho, phi, ordering="ansi", normalize=False, mask = False):
-        
+
+    def __init__(self, N, rho, phi, ordering="ansi", normalize=False, mask=False):
+
         super().__init__(N, rho, phi, ordering=ordering, normalize=normalize)
-        
+
         cov = self.cov()
         self.Qt = np.linalg.cholesky(cov)
         self.M = np.linalg.inv(self.Qt)
-        idx = np.where (np.abs(self.M) < 1.0e-10)
+        idx = np.where(np.abs(self.M) < 1.0e-10)
         self.M[idx] = 0.0
 
         _mask = self.Z.mask | mask
-        
+
         z1 = np.tensordot(self.M, self.Z.filled(fill_value=0), axes=1)
-        
+
         self.Z = np.ma.MaskedArray(data=z1, mask=_mask, fill_value=0.0)
-    
+
     def toZernike(self, coeff):
         """
         If Phi is the field on the pupil, using linear algebra notation:
+
             Phi = coeff.T U = c.T Z
-        this function returns the Zerkinke coefficients c 
+
+        This function returns the Zerkinke coefficients c
 
         Parameters
         ----------
         coeff: vector 1D
             coefficients of the field in the orthonormal base
-        
+
         Returns
         -------
         out: vector 1D
@@ -439,4 +421,3 @@ class PolyOrthoNorm(Zernike):
         """
 
         return self.M.T @ coeff
-

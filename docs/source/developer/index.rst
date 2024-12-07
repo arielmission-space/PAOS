@@ -34,36 +34,25 @@ breaks. This shall be provided after `PAOS v1.0.0`.
 
 Logging
 --------------
-To keep a logger is very important when coding, hence we include a :class:`paos.log.logger.Logger` class to inherit.
+To keep a logger is very important when coding, hence we utilize the loguru_ Python package.
+
+Here are some examples of how to use it:
 
 .. code-block:: python
 
-    import paos.log as log
+    from paos import logger
 
-    class MyClass(log.Logger):
-        ...
-
-This newly created class has the logging methods from the main :class:`~paos.log.logger.Logger` class.
-Here are some examples of how to use them:
-
-.. code-block:: python
-
-    self.info("info message")
-    self.debug("debug message")
-    self.warning("warning message")
-    self.error("error message")
-    self.critical("critical message")
+    logger.info("info message")
+    logger.debug("debug message")
+    logger.warning("warning message")
+    logger.error("error message")
+    logger.critical("critical message")
 
 The logger output will be printed on the run or stored in the log file, if the log file option is enabled.
-To enable the log file, the user can refer to :func:`paos.log.addLogFile`.
+To enable the log file, the user can refer to :func:`paos.log.logger.addLogFile`.
 
-.. note::
-
-    The logger implemented in ``PAOS`` is inspired by the logging classes in ExoSim2.0_, which is originally inspired
-    by the ones in TauREx3_ (developed by Ahmed Al-Refaie).
-
-The user can also set the level of the printed messaged using :func:`paos.log.setLogLevel`, or enable or disable the
-messaged with :func:`paos.log.enableLogging` or :func:`paos.log.disableLogging`
+The user can also set the level of the printed messaged using :func:`paos.log.logger.setLogLevel`, or enable or disable the
+messaged with :func:`paos.log.logger.enableLogging` or :func:`paos.log.logger.disableLogging`
 
 
 Versioning conventions
@@ -160,3 +149,4 @@ When the code is ready, a pull_ request can be raised.
 .. _unittest: https://docs.python.org/3/library/unittest.html
 .. _decorator: https://realpython.com/primer-on-python-decorators/
 .. _actions: https://github.com/features/actions
+.. _loguru: https://loguru.readthedocs.io/en/stable/

@@ -1,6 +1,6 @@
-.. _Monte Carlo simulations:
+.. _Monte Carlo:
 
-Monte Carlo simulations
+Monte Carlo
 ========================
 
 ``PAOS`` is designed to easily accommodate customized simulations such as Monte Carlo runs to test the performance of

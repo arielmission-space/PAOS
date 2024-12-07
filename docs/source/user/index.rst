@@ -13,13 +13,13 @@ This guide covers the general installation, as well as the use of ``PAOS`` as a 
 
     Introduction <introduction>
     Installation <installation>
-    Quick start <quickstart>
+    Quickstart <quickstart>
     Input system <inputs/index>
-    ABCD description <abcd/index>
+    ABCD method <abcd/index>
     POP description <propagation/index>
-    Aberration description <aberration/index>
-    Materials description <material/index>
-    Monte Carlo simulations <montecarlo/index>
-    Plotting results <plotting/index>
-    Saving results <saving/index>
-    Automatic pipeline <pipeline/index>
+    Aberration <aberration/index>
+    Materials <material/index>
+    Monte Carlo <montecarlo/index>
+    Plot <plotting/index>
+    Save <saving/index>
+    Pipeline <pipeline/index>

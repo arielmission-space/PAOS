@@ -73,12 +73,8 @@ class ABCD:
         """
 
         if n1 == 0 or n2 == 0 or M == 0:
-            logger.error(
-                "Refractive index and magnification shall not be zero"
-            )
-            raise ValueError(
-                "Refractive index and magnification shall not be zero"
-            )
+            logger.error("Refractive index and magnification shall not be zero")
+            raise ValueError("Refractive index and magnification shall not be zero")
 
         T = np.array([[1.0, thickness], [0, 1.0]])
 

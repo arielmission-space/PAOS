@@ -3,7 +3,7 @@
 POP description
 =======================
 
-Brief description of some concepts of physical optics wavefront propagation (POP) and how they are implemented in ``PAOS``.
+Brief description of some concepts of physical optics wavefront propagation (POP) and how they are implemented in ``PAOS``, in the Fresnel approximation.
 
 In ``PAOS``, this is handled by the class :class:`~paos.classes.wfo.WFO`.
 
@@ -725,7 +725,7 @@ Once the initialization is completed, ``PAOS`` repeats these actions in a loop:
 #. Apply coordinate break
 #. Apply aperture
 #. Apply stop
-#. Apply aberration (see :ref:`Aberration description`)
+#. Apply aberration (see :ref:`Aberration`)
 #. Save wavefront properties
 #. Apply magnification
 #. Apply medium change

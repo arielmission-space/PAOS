@@ -8,7 +8,7 @@ import numpy as np
 from pathlib import Path
 
 from paos.core.pipeline import pipeline
-from paos.log import disableLogging
+from paos.log.logger import disableLogging
 
 disableLogging()
 

@@ -5,7 +5,7 @@ Introduction
 
 Accurate assessment of the optical performance of advanced telescopes and imaging systems for astrophysical applications is essential to achieve an optimal balance between optical quality, system complexity, costs, and risks. 
 
-``PAOS`` is an open-source code implementing physical optics propagation (POP) in Fresnel approximation and paraxial ray tracing to analyze complex waveform propagation through both generic and off-axes optical systems (see :ref:`ABCD description` and :ref:`POP description`), enabling the generation of realistic Point Spread Functions across various wavelengths and focal planes. 
+``PAOS`` is an open-source code implementing physical optics propagation (POP) in Fresnel approximation and paraxial ray tracing to analyze complex waveform propagation through both generic and off-axes optical systems (see :ref:`ABCD method` and :ref:`POP`), enabling the generation of realistic Point Spread Functions across various wavelengths and focal planes. 
 
 Developed using a Python 3 stack, ``PAOS`` includes an installer, documented examples, and **this** comprehensive guide. It improves upon other POP codes offering extensive customization options and the liberty to access, utilize, and adapt the software library to the user's application.
 

@@ -1,6 +1,6 @@
-.. _Automatic pipeline:
+.. _Pipeline:
 
-Automatic pipeline
+Pipeline
 =======================
 
 Pipeline to run a POP simulation and save the results, given an input dictionary with selected options.
@@ -20,7 +20,7 @@ This pipeline
 Example
 ~~~~~~~~~~~~~
 
-Code example to the method :func:`~paos.core.pipeline.pipeline` to run a simulation using the configuration file for AIRS-CH1.
+Code example to the method :func:`~paos.core.pipeline.pipeline` to run a simulation using a configuration file.
 
 .. code-block:: python
 

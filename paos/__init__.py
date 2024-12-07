@@ -3,7 +3,7 @@ import os
 from datetime import date
 
 # load package info
-__pkg_name__ = metadata.metadata("paos")["Name"]
+__pkg_name__ = metadata.metadata("paos")["Name"].upper()
 __version__ = metadata.version("paos")
 __url__ = metadata.metadata("paos")["Project-URL"]
 __author__ = metadata.metadata("paos")["Author"]
@@ -31,18 +31,9 @@ if base_dir is not None and os.path.exists(os.path.join(base_dir, ".git")):
 else:
     __commit__ = None
 
-# initialise logger
-import logging
+from loguru import logger
 
-logger = logging.getLogger(__pkg_name__)
-logger.info(f"code version {__version__}")
-
-from paos.log import setLogLevel
-
-setLogLevel(logging.INFO)
-
-# from paos.log import addLogFile
-# addLogFile(level=logging.INFO)
+logger.level("Announce", no=100, color="<magenta>")
 
 from paos.classes.wfo import WFO
 from paos.classes.abcd import ABCD

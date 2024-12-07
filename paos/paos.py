@@ -1,18 +1,19 @@
-import logging
-
-import paos.__version__ as version
+from paos import __pkg_name__
+from paos import __version__
 from paos import logger
 from paos.core.pipeline import pipeline
-from paos.log import addLogFile
-from paos.log import setLogLevel
+from paos.log.logger import addLogFile
+from paos.log.logger import setLogLevel
 
 
 def main():
+    setLogLevel("INFO")
+
     import os
     from pathlib import Path
     import argparse
 
-    parser = argparse.ArgumentParser(description="PAOS {}".format(version))
+    parser = argparse.ArgumentParser(description="PAOS {}".format(__version__))
     parser.add_argument(
         "-c",
         "--configuration",
@@ -101,7 +102,8 @@ def main():
 
     if args.output is None:
         """Defaults to the same directory as the configuration file.
-        The output file name is the same as the configuration file name with the extension .h5"""
+        The output file name is the same as the configuration file name with the extension .h5
+        """
         args.output = os.path.join(
             os.path.dirname(args.conf), Path(args.conf).stem + ".h5"
         )
@@ -126,7 +128,7 @@ def main():
         Path(os.path.dirname(args.output)).mkdir(parents=True, exist_ok=True)
 
     if args.debug:
-        setLogLevel(logging.DEBUG)
+        setLogLevel("DEBUG")
     if args.log:
         if isinstance(args.output, str):
             input_fname = Path(args.conf).stem
@@ -136,10 +138,11 @@ def main():
         else:
             addLogFile()
 
-    logger.info("code version {}".format(version))
+    logger.log("Announce", f"Starting {__pkg_name__} v{__version__}...")
+
     pipeline(passvalue)
 
-    logger.info("Paos simulation completed.")
+    logger.info(f"{__pkg_name__} simulation completed.")
 
     return
 

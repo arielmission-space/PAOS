@@ -1,0 +1,45 @@
+.navigation-logo {
+    grid-area: logo;
+  
+    display: flex;
+    justify-content: right;
+    align-items: right;
+    gap: 10px;
+  }
+
+.navigation-menu {
+    grid-area: menu;
+  
+    display: flex;
+    justify-content: left;
+    align-items: left;
+    gap: 10px;
+  }
+
+.navbar-top {
+  display: grid;
+
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: minmax(0, 1fr);
+
+  grid-template-areas:
+    "menu logo ...";
+
+  height: 5%;
+  width: 100%;
+
+  padding: 20px;
+  gap: 20px;
+}
+@media only screen and (max-width: 600px) {
+  .navbar-top {
+    grid-template-columns: 140px 1fr 140px;
+    grid-template-rows: minmax(0, 1fr);
+
+    grid-template-areas:
+      "menu ... logo";
+
+    padding: 0;
+    gap: 0;
+  }
+}

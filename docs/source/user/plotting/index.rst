@@ -1,6 +1,6 @@
-.. _Plotting results:
+.. _Plot:
 
-Plotting results
+Plot
 =======================
 
 ``PAOS`` implements different plotting routines, summarized here, that can be used to give a complementary idea of
