@@ -1,0 +1,27 @@
+# .github/workflows/version_bump.yml
+
+name: Version Bump
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: write
+
+jobs:
+  version-bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run auto-dev-version-bumper
+        uses: LorenzoMugnai/auto-dev-version-bumper@v1
+        with:
+          dev_suffix: "-dev"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
