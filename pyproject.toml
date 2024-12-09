@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paos"
-version = "1.2.5-post0"
+dynamic = ["version"]
 authors = [
     {name = "Andrea Bocchieri <andrea.bocchieri@uniroma1.it>"},
     {name = "Lorenzo V. Mugnai"},
@@ -54,6 +54,9 @@ Homepage = "https://github.com/arielmission-space/PAOS"
 Issues = "https://github.com/arielmission-space/PAOS/issues"
 Repository = "https://github.com/arielmission-space/PAOS.git"
 DOI = "https://doi.org/10.1117/12.3018333"
+
+[tool.setuptools.dynamic]
+version = {attr = "__version__.py"}
 
 [project.optional-dependencies]
 docs = [
