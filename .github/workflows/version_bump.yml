@@ -18,10 +18,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run auto-dev-version-bumper
         uses: LorenzoMugnai/auto-dev-version-bumper@v1
-        with:
-          dev_suffix: "-dev"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
