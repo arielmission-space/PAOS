@@ -557,7 +557,7 @@ def server(input, output, session):
         wavelength = float(zernike_section.get("par1"))
         ordering = zernike_section.get("par2")
         normalize = bool(zernike_section.get("par3"))
-        orthonorm = bool(zernike_section.get("par6"))
+        orthonorm = zernike_section.get("par6", "False").lower() == 'true'
 
         fig, ax = plt.subplots()
         zernike_plot(

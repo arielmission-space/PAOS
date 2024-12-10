@@ -67,7 +67,7 @@ Placeholder = {
         "Standard": "",
         "Paraxial Lens": "",
         "ABCD": "By",
-        "Zernike": "",
+        "Zernike": "Orthonorm",
         "PSD": "fmax",
         "Grid Sag": "Xdecenter (pix)",
     },
