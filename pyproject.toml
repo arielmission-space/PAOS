@@ -66,9 +66,9 @@ faicons = "*"
 sphinx = "*"
 sphinxcontrib-napoleon = "*"
 sphinxcontrib-jsmath = "*"
-sphinx-markdown-tables = "^0.0.15"
-jupyter-sphinx = "^0.3.2"
-sphinx-rtd-theme = "^1.0.0"
+sphinx-markdown-tables = "^0.0.17"
+jupyter-sphinx = "^0.5.3"
+sphinx-rtd-theme = "^3.0.1"
 
 [tool.poetry.scripts]
 paos = "paos.paos:main"
