@@ -11,7 +11,6 @@ __url__ = metadata.metadata("paos")["Project-URL"]
 __author__ = metadata.metadata("paos")["Author"]
 __license__ = metadata.metadata("paos")["License"]
 __copyright__ = f"2021-{date.today().year:d}, {__author__}"
-__citation__ = None
 __summary__ = metadata.metadata("paos")["Summary"]
 
 # load package commit number
