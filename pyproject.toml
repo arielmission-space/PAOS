@@ -45,7 +45,7 @@ classifiers = [
 "DOI" = "https://doi.org/10.1117/12.3018333"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 numpy = "^1.22.2"
 photutils = "^1.3.0"
 scipy = "^1.8.0"
