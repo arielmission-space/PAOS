@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.10.6"
+__generated_with = "0.10.7"
 app = marimo.App(width="medium")
 
 
@@ -20,8 +20,12 @@ def _(Material, mo):
 
 @app.cell
 def _(mo):
-    tamb = mo.ui.slider(start=-273, stop=25, step=1, value=-218, label="Ambient T [C]")
-    pamb = mo.ui.slider(start=0, stop=10, step=0.1, value=1, label="Ambient P [atm]")
+    tamb = mo.ui.slider(
+        start=-273, stop=25, step=1, value=-218, label="Ambient T [C]"
+    )
+    pamb = mo.ui.slider(
+        start=0, stop=10, step=0.1, value=1, label="Ambient P [atm]"
+    )
     return pamb, tamb
 
 
@@ -40,8 +44,8 @@ def _(material, mo, pamb, tamb):
 
 @app.cell
 def _(mo):
-    wlmin = mo.ui.number(value=0.5, label=r"wl$_{min}$")
-    wlmax = mo.ui.number(value=7.8, label=r"wl$_{max}$")
+    wlmin = mo.ui.text(value="0.5", label=r"wl$_{min}$")
+    wlmax = mo.ui.text(value="7.8", label=r"wl$_{max}$")
     Nwl = mo.ui.number(value=100, label=r"N$_{wl}$", step=1)
 
     mo.vstack(
@@ -52,8 +56,8 @@ def _(mo):
 
 @app.cell
 def _(material, mo, np, plot_n, wlmax, wlmin):
-    mo.stop(wlmin.value >= wlmax.value)
-    mo.stop(np.logical_or(wlmin.value <= 0, wlmax.value <= 0))
+    mo.stop(float(wlmin.value) >= float(wlmax.value))
+    mo.stop(np.logical_or(float(wlmin.value) <= 0, float(wlmax.value) <= 0))
     mo.stop(material.value is None)
 
     plot_n(material.value)
@@ -63,9 +67,8 @@ def _(material, mo, np, plot_n, wlmax, wlmin):
 @app.cell
 def _(Material, Nwl, np, pamb, plt, tamb, wlmax, wlmin):
     def plot_n(name):
-
         mat = Material(
-            wl=np.linspace(wlmin.value, wlmax.value, Nwl.value),
+            wl=np.linspace(float(wlmin.value), float(wlmax.value), Nwl.value),
             Tambient=tamb.value,
             Pambient=pamb.value,
         )
