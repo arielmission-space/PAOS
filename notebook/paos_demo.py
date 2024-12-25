@@ -11,6 +11,12 @@ def _(mo):
 
 
 @app.cell
+def _(mo):
+    mo.md(r"""## Select .ini config file""")
+    return
+
+
+@app.cell
 def _(mo, os):
     file_path = "../lens data/"
 
@@ -27,8 +33,14 @@ def _(mo, os):
 
 @app.cell
 def _(mo):
+    mo.md(r"""## Set field and wavelength""")
+    return
+
+
+@app.cell
+def _(mo):
     field_s = mo.ui.text("0.0", label=r"Field x [$^{\circ}$]")
-    field_t = mo.ui.text("0.003", label=r"Field y [$^{\circ}$]")
+    field_t = mo.ui.text("0.0", label=r"Field y [$^{\circ}$]")
 
     mo.hstack([field_s, field_t], justify="start")
     return field_s, field_t
@@ -43,11 +55,17 @@ def _(mo):
 
 
 @app.cell
+def _(mo):
+    mo.md(r"""## Play with PAOS""")
+    return
+
+
+@app.cell
 def _(compute_raytrace, file_browser, mo):
     mo.stop(file_browser.path() is None)
 
     mo.accordion(
-        {"## Paraxial raytrace": compute_raytrace()},
+        {"### Paraxial raytrace": mo.ui.table(compute_raytrace())},
         lazy=True,
     )
     return
@@ -59,7 +77,7 @@ def _(get_surf_info, mo, plot, retval, surf):
 
     mo.accordion(
         {
-            "## POP": mo.vstack(
+            "### POP": mo.vstack(
                 [
                     mo.hstack(
                         [surf, get_surf_info(int(surf.value))],
@@ -129,7 +147,17 @@ def _(
     def compute_raytrace():
         pup_diameter, parameters, wavelengths, fields, opt_chains = update_config()
 
-        return raytrace(fields[0], opt_chains[0])
+        rt = raytrace(fields[0], opt_chains[0])
+
+        res = {}
+        res["Surface key"] = [item.split(" - ")[0] for item in rt]
+        res["Description"] = [item.split(" - ")[1].split("y:")[0] for item in rt]
+        res["Sagittal data [x]"] = ["x: " + item.split("x:")[1] for item in rt]
+        res["Tangential data [y]"] = [
+            "y: " + item.split("y:")[1].split("x:")[0] for item in rt
+        ]
+
+        return res
 
 
     def compute_pop():
