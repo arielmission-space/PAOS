@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.10.6"
+__generated_with = "0.10.7"
 app = marimo.App(width="medium")
 
 
@@ -12,9 +12,7 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md(
-        r"""The PSD is given by the following expression: PSD(f) = $\frac{A}{B + (f/f_{knee})^C}$"""
-    )
+    mo.md(r"""The PSD is given by the following expression: PSD(f) = $\frac{A}{B + (f/f_{knee})^C}$""")
     return
 
 
@@ -29,8 +27,8 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    phi_x = mo.ui.number(value=110.0, label=r"Phi$_x$")
-    phi_y = mo.ui.number(value=73.0, label=r"Phi$_y$")
+    phi_x = mo.ui.text(value="110.0", label=r"Phi$_x$")
+    phi_y = mo.ui.text(value="73.0", label=r"Phi$_y$")
 
     mo.hstack([phi_x, phi_y], justify="start")
     return phi_x, phi_y
@@ -46,13 +44,13 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    A = mo.ui.number(value=7.0, label="A")
-    B = mo.ui.number(value=0.0, label="B")
-    C = mo.ui.number(value=1.5, label="C")
-    fknee = mo.ui.number(value=1.0, label="fknee")
-    fmin = mo.ui.number(value=1 / 20, label="fmin")
-    fmax = mo.ui.number(value=1 / 2, label="fmax")
-    SR = mo.ui.number(value=0.0, label="Surface Roughness")
+    A = mo.ui.text(value="7.0", label="A")
+    B = mo.ui.text(value="0.0", label="B")
+    C = mo.ui.text(value="1.5", label="C")
+    fknee = mo.ui.text(value="1.0", label="fknee")
+    fmin = mo.ui.text(value="0.05", label="fmin")
+    fmax = mo.ui.text(value="0.5", label="fmax")
+    SR = mo.ui.text(value="0.0", label="Surface Roughness")
 
     mo.vstack(
         [
@@ -71,7 +69,9 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    unit = mo.ui.dropdown(["m", "mm", "um", "nm"], label="PSD rms units", value="nm")
+    unit = mo.ui.dropdown(
+        ["m", "mm", "um", "nm"], label="PSD rms units", value="nm"
+    )
 
     unit
     return (unit,)
@@ -86,10 +86,17 @@ def _(compute_psd, plot_psd):
 
 @app.cell
 def _(A, B, C, fknee, fmax, fmin, mo, psd, u, unit):
-    mo.md(
-        f"Desired PSD rms is {psd.sfe_rms(A.value, B.value, C.value, fknee.value, fmin.value, fmax.value):.2f} {u.Unit(unit.value)}"
+    desired_rms = psd.sfe_rms(
+        float(A.value),
+        float(B.value),
+        float(C.value),
+        float(fknee.value),
+        float(fmin.value),
+        float(fmax.value),
     )
-    return
+
+    mo.md(f"Desired PSD rms is {desired_rms:.2f} {u.Unit(unit.value)}")
+    return (desired_rms,)
 
 
 @app.cell
@@ -113,7 +120,6 @@ def _(grid, plt, zoom):
         )
         plt.colorbar(im, ax=plt.gca(), label="Error [m]")
         return plt.gca()
-
     return (plot_psd,)
 
 
@@ -137,17 +143,18 @@ def _(
     zoom,
 ):
     def compute_psd():
-
         np.random.seed(seed.value)
 
-        D = zoom.value * np.max([phi_x.value, phi_y.value])
+        D = zoom.value * np.max([float(phi_x.value), float(phi_y.value)])
         delta = D / grid.value
 
         x = y = np.arange(-grid.value // 2, grid.value // 2) * delta
         xx, yy = np.meshgrid(x, y)
         pupil = np.zeros((grid.value, grid.value))
 
-        mask = (2 * xx / phi_x.value) ** 2 + (2 * yy / phi_y.value) ** 2 <= 1
+        mask = (2 * xx / float(phi_x.value)) ** 2 + (
+            2 * yy / float(phi_y.value)
+        ) ** 2 <= 1
         pupil[mask] = 1.0
         wfo = np.ma.masked_array(pupil, mask=~mask)
 
@@ -158,17 +165,16 @@ def _(
 
         return PSD(
             wfo,
-            A.value,
-            B.value,
-            C.value,
+            float(A.value),
+            float(B.value),
+            float(C.value),
             f,
-            fknee.value,
-            fmin.value,
-            fmax.value,
-            SR.value,
+            float(fknee.value),
+            float(fmin.value),
+            float(fmax.value),
+            float(SR.value),
             units=u.Unit(unit.value),
         )
-
     return (compute_psd,)
 
 
@@ -180,7 +186,6 @@ def _():
     import numpy as np
     import matplotlib.pyplot as plt
     import astropy.units as u
-
     return PSD, mo, np, plt, u
 
 
