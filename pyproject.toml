@@ -61,6 +61,7 @@ loguru = "^0.7.2"
 shiny = "*"
 shinywidgets = "*"
 faicons = "*"
+marimo = "^0.10.7"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "*"
