@@ -172,7 +172,7 @@ def parse_config(filename):
                 _data_["Zradius"] = getfloat(element.get("Par4", ""))
                 _data_["Zorigin"] = element.get("Par5", "x")
                 _data_["Zorthonorm"] = element.get("Par6", "False").lower() == 'true'
-                zmask = element.get("Par7", "").split(",")
+                zmask = element.get("Par7", "")
                 if zmask:
                     zmask = zmask.split(",")
                     zmask_shape, zmask_type = zmask[0].split()
