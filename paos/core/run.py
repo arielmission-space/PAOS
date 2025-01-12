@@ -161,7 +161,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
                     aperture = photutils.aperture.EllipticalAperture(
                         (ixc, iyc), ihx, ihy, theta=theta
                     )
-                    Zmask = ~aperture.to_mask(method="center").to_image(wfo._wfo.shape)
+                    Zmask = ~aperture.to_mask(method="center").to_image(wfo._wfo.shape).astype(bool)
                 else:
                     logger.error(f"{shape} shape not implemented")
 
