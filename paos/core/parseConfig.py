@@ -172,6 +172,18 @@ def parse_config(filename):
                 _data_["Zradius"] = getfloat(element.get("Par4", ""))
                 _data_["Zorigin"] = element.get("Par5", "x")
                 _data_["Zorthonorm"] = element.get("Par6", "False").lower() == 'true'
+                zmask = element.get("Par7", "").split(",")
+                if zmask:
+                    zmask = zmask.split(",")
+                    zmask_shape, zmask_type = zmask[0].split()
+                    _data_["Zmask"] = {
+                        "shape": zmask_shape,
+                        "type": zmask_type,
+                        "xrad": getfloat(zmask[1]),
+                        "yrad": getfloat(zmask[2]),
+                        "xc": getfloat(zmask[3]),
+                        "yc": getfloat(zmask[4]),
+                    }
 
                 _data_["Zindex"] = np.fromstring(
                     element.get("Zindex", ""), sep=",", dtype=np.int64

@@ -223,7 +223,7 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
      - Bool
      - Bool
      - Bool
-     - list
+     - None
      - None
 
    * - Standard
@@ -289,6 +289,8 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
 
        Par6 = Zorthonorm, False (Zernike circular polynomials) or True (polynomials that are ortho-normal on the mask provided)
 
+       Par7 = Zmask, the pupil on which ortho-normal polynomials are defined. Applies only if Par6 is True. Currently supports only elliptical pupils, following the same convention as when defining an `aperture`. 
+
    * - PSD
      - ...
      - None
@@ -297,7 +299,7 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
      - Bool
      - Bool
      - Bool
-     - list
+     - None
      - Par1 = A
 
        Par2 = B
@@ -322,7 +324,7 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
      - Bool
      - Bool
      - Bool
-     - list
+     - None
      - Par1 = wavelength (in micron)
 
        Par2 = Nx (shall be the same as grid_size)

@@ -2,6 +2,7 @@ import gc
 from copy import deepcopy
 
 import numpy as np
+import photutils
 
 from paos import logger
 from paos.classes.abcd import ABCD
@@ -128,6 +129,42 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         if item["type"] == "Zernike":
             logger.trace("Apply Zernike")
             radius = item["Zradius"] if np.isfinite(item["Zradius"]) else wfo.wz
+
+            Zmask = False
+            if item["Zorthonorm"]:
+                assert "Zmask" in item, "Zorthonorm requires Zmask"
+
+                xdec = (
+                    item["Zmask"]["xc"] if np.isfinite(item["Zmask"]["xc"]) else vs[0]
+                )
+                ydec = (
+                    item["Zmask"]["yc"] if np.isfinite(item["Zmask"]["yc"]) else vt[0]
+                )
+                xrad = item["Zmask"]["xrad"]
+                yrad = item["Zmask"]["yrad"]
+                xrad *= np.sqrt(1 / (vs[1] ** 2 + 1))
+                yrad *= np.sqrt(1 / (vt[1] ** 2 + 1))
+                xaper = xdec - vs[0]
+                yaper = ydec - vt[0]
+                shape = item["Zmask"]["shape"]
+
+                ixc = xaper / wfo.dx + wfo._wfo.shape[1] / 2
+                iyc = yaper / wfo.dy + wfo._wfo.shape[0] / 2
+
+                if shape == "elliptical":
+                    if xrad is None or yrad is None:
+                        logger.error("Semi major/minor axes not defined")
+                        raise AssertionError("Semi major/minor axes not defined")
+                    ihx = xrad / wfo.dx
+                    ihy = yrad / wfo.dy
+                    theta = 0.0  # if tilt is None else np.deg2rad(tilt)
+                    aperture = photutils.aperture.EllipticalAperture(
+                        (ixc, iyc), ihx, ihy, theta=theta
+                    )
+                    Zmask = aperture.to_mask(method="exact").to_image(wfo._wfo.shape)
+                else:
+                    logger.error(f"{shape} shape not implemented")
+
             wfo.zernikes(
                 item["Zindex"],
                 item["Z"],
@@ -136,6 +173,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
                 radius,
                 origin=item["Zorigin"],
                 orthonorm=item["Zorthonorm"],
+                mask=Zmask,
             )
 
         if item["type"] == "Grid Sag":
