@@ -18,6 +18,20 @@ def getfloat(value):
         return np.nan
 
 
+def getaperture(aperture, _data_):
+    aperture = aperture.split(",")
+    aperture_shape, aperture_type = aperture[0].split()
+    _data_["aperture"] = {
+        "shape": aperture_shape,
+        "type": aperture_type,
+        "xrad": getfloat(aperture[1]),
+        "yrad": getfloat(aperture[2]),
+        "xc": getfloat(aperture[3]),
+        "yc": getfloat(aperture[4]),
+    }
+    return _data_
+
+
 def parse_config(filename):
     """
     Parse an ini lens file
@@ -52,7 +66,7 @@ def parse_config(filename):
     filename = os.path.expanduser(filename)
     if not os.path.exists(filename) or not os.path.isfile(filename):
         logger.error(
-            "Input file {} does not exist or is not a file. Quitting..".format(filename)
+            f"Input file {filename} does not exist or is not a file. Quitting..."
         )
         sys.exit()
     config.read(filename)
@@ -98,7 +112,7 @@ def parse_config(filename):
     wavelengths = []
     num = 1
     while True:
-        _wl_ = config["wavelengths"].getfloat("w{:d}".format(num))
+        _wl_ = config["wavelengths"].getfloat(f"w{num:d}")
         if _wl_:
             wavelengths.append(_wl_)
         else:
@@ -111,7 +125,7 @@ def parse_config(filename):
     num = 1
 
     while True:
-        _fld_ = config["fields"].get("f{:d}".format(num))
+        _fld_ = config["fields"].get(f"f{num:d}")
         if _fld_:
             _fld_ = np.fromstring(_fld_, sep=",")
             _fld_ = np.tan(np.deg2rad(_fld_))
@@ -129,10 +143,10 @@ def parse_config(filename):
         glasslib = Material(_wl_, Tambient=Tambient, Pambient=Pambient)
         opt_chain = {}
         lens_num = 1
-        while "lens_{:02d}".format(lens_num) in config:
+        while f"lens_{lens_num:02d}" in config:
             _data_ = {"num": lens_num}
 
-            element = config["lens_{:02d}".format(lens_num)]
+            element = config[f"lens_{lens_num:02d}"]
             lens_num += 1
 
             if element.getboolean("Ignore"):
@@ -171,20 +185,7 @@ def parse_config(filename):
                 _data_["Znormalize"] = element.getboolean("Par3")
                 _data_["Zradius"] = getfloat(element.get("Par4", ""))
                 _data_["Zorigin"] = element.get("Par5", "x")
-                _data_["Zorthonorm"] = element.get("Par6", "False").lower() == 'true'
-                zmask = element.get("Par7", "")
-                if zmask:
-                    zmask = zmask.split(",")
-                    zmask_shape, zmask_type = zmask[0].split()
-                    _data_["Zmask"] = {
-                        "shape": zmask_shape,
-                        "type": zmask_type,
-                        "xrad": getfloat(zmask[1]),
-                        "yrad": getfloat(zmask[2]),
-                        "xc": getfloat(zmask[3]),
-                        "yc": getfloat(zmask[4]),
-                    }
-
+                _data_["Zorthonorm"] = element.get("Par6", "False").lower() == "true"
                 _data_["Zindex"] = np.fromstring(
                     element.get("Zindex", ""), sep=",", dtype=np.int64
                 )
@@ -192,6 +193,9 @@ def parse_config(filename):
                     np.fromstring(element.get("Z", ""), sep=",", dtype=np.float64)
                     * wave
                 )
+                aperture = element.get("aperture", "")
+                if aperture:
+                    getaperture(aperture, _data_)
 
                 _data_["ABCDt"] = ABCD(
                     thickness=thickness,
@@ -232,19 +236,15 @@ def parse_config(filename):
                     "data" in grid_sag.keys()
                 ), "The .npy file must contain a dictionary with a 'data' key"
 
-                def input_params(key):
+                def input_params(key, grid_sag, _data_):
                     if key in grid_sag.keys():
                         logger.debug(
                             f"Setting {key} from grid_sag file: {grid_sag[key]}"
                         )
                         _data_[key] = grid_sag[key]
 
-                input_params("nx")
-                input_params("ny")
-                input_params("delx")
-                input_params("dely")
-                input_params("xdec")
-                input_params("ydec")
+                for par in ["nx", "ny", "delx", "dely", "xdec", "ydec"]:
+                    input_params(par, grid_sag, _data_)
 
                 grid_sag_mask = grid_sag.get("mask", False)
                 grid_sag = np.ma.MaskedArray(
@@ -326,16 +326,7 @@ def parse_config(filename):
                 n2 = n1
                 aperture = element.get("aperture", "")
                 if aperture:
-                    aperture = aperture.split(",")
-                    aperture_shape, aperture_type = aperture[0].split()
-                    _data_["aperture"] = {
-                        "shape": aperture_shape,
-                        "type": aperture_type,
-                        "xrad": getfloat(aperture[1]),
-                        "yrad": getfloat(aperture[2]),
-                        "xc": getfloat(aperture[3]),
-                        "yc": getfloat(aperture[4]),
-                    }
+                    getaperture(aperture, _data_)
                 _data_["ABCDt"] = ABCD(
                     thickness=thickness,
                     curvature=curvature,
@@ -369,16 +360,7 @@ def parse_config(filename):
                 ABCDt.ABCD = ABCDt() @ _ABCDt
                 aperture = element.get("aperture", "")
                 if aperture:
-                    aperture = aperture.split(",")
-                    aperture_shape, aperture_type = aperture[0].split()
-                    _data_["aperture"] = {
-                        "shape": aperture_shape,
-                        "type": aperture_type,
-                        "xrad": getfloat(aperture[1]),
-                        "yrad": getfloat(aperture[2]),
-                        "xc": getfloat(aperture[3]),
-                        "yc": getfloat(aperture[4]),
-                    }
+                    getaperture(aperture, _data_)
                 _data_["ABCDt"] = ABCDt
                 _data_["ABCDs"] = ABCDs
 
@@ -387,16 +369,7 @@ def parse_config(filename):
                 curvature = 1 / _data_["R"] if np.isfinite(_data_["R"]) else 0.0
                 aperture = element.get("aperture", "")
                 if aperture:
-                    aperture = aperture.split(",")
-                    aperture_shape, aperture_type = aperture[0].split()
-                    _data_["aperture"] = {
-                        "shape": aperture_shape,
-                        "type": aperture_type,
-                        "xrad": getfloat(aperture[1]),
-                        "yrad": getfloat(aperture[2]),
-                        "xc": getfloat(aperture[3]),
-                        "yc": getfloat(aperture[4]),
-                    }
+                    getaperture(aperture, _data_)
 
                 if _data_["material"] == "MIRROR":
                     n2 = -n1
@@ -421,11 +394,9 @@ def parse_config(filename):
                 )
 
             else:
-                logger.error(
-                    "Surface Type not recognised: {:s}".format(str(_data_["type"]))
-                )
+                logger.error(f"Surface Type not recognised: {str(_data_['type']):s}")
                 raise ValueError(
-                    "Surface Type not recognised: {:s}".format(str(_data_["type"]))
+                    f"Surface Type not recognised: {str(_data_['type']):s}"
                 )
 
             opt_chain[_data_["num"]] = _data_

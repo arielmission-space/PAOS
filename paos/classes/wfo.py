@@ -267,8 +267,8 @@ class WFO:
                 self._wfo.shape
             )
         else:
-            logger.error("Aperture {:s} not defined yet.".format(shape))
-            raise ValueError("Aperture {:s} not defined yet.".format(shape))
+            logger.error(f"Aperture {shape:s} not defined yet.")
+            raise ValueError(f"Aperture {shape:s} not defined yet.")
 
         if obscuration:
             self._wfo *= 1 - mask
