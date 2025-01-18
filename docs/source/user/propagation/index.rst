@@ -615,7 +615,7 @@ steps:
 #. estimate the Gaussian beam curvature after the element (image space)
 #. check the final position
 
-By combining the result of the second and the fourth step, ``PAOS`` selects the propagator (see :ref:`Wavefront propagation`).
+By combining the result of the second and the fourth step, ``PAOS`` selects the propagator (see :ref:`Wavefront propagation`),
 and the phase shift is imposed accordingly by defining a phase bias
 (see `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_):
 

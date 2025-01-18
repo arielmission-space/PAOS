@@ -267,8 +267,8 @@ class WFO:
                 self._wfo.shape
             )
         else:
-            logger.error("Aperture {:s} not defined yet.".format(shape))
-            raise ValueError("Aperture {:s} not defined yet.".format(shape))
+            logger.error(f"Aperture {shape:s} not defined yet.")
+            raise ValueError(f"Aperture {shape:s} not defined yet.")
 
         if obscuration:
             self._wfo *= 1 - mask
@@ -579,9 +579,11 @@ class WFO:
         offset=0.0,
         origin="x",
         orthonorm=False,
+        mask=False,
     ):
         """
-        Add a WFE represented by a Zernike expansion. Either Zernike or orthonormal polynomials can be used.
+        Add a WFE represented by a Zernike expansion. 
+        Either Zernike or orthonormal polynomials can be used.
 
         Parameters
         ----------
@@ -602,6 +604,9 @@ class WFO:
             Set origin='y' for angles measured clockwise-positive from the y-axis.
         orthonorm: bool
             If True, orthonormal polynomials are used. Default is False.
+        mask: bool array like
+            The mask defining the pupil following masked array convention. 
+            Pixel within the pupil are masked False. Defaults to False.
 
         Returns
         -------
@@ -614,7 +619,11 @@ class WFO:
         y = (np.arange(self._wfo.shape[0]) - self._wfo.shape[0] // 2) * self.dy
 
         xx, yy = np.meshgrid(x, y)
-        rho = np.sqrt(xx**2 + yy**2) / radius
+        rho = np.ma.MaskedArray(
+            data=np.sqrt(xx**2 + yy**2) / radius,
+            mask=mask,
+            fill_value=0.0,
+        )
 
         if origin == "x":
             phi = np.arctan2(yy, xx) + np.deg2rad(offset)
@@ -622,10 +631,10 @@ class WFO:
             phi = np.arctan2(xx, yy) + np.deg2rad(offset)
         else:
             logger.error(
-                "Origin {} not recognised. Origin shall be either x or y".format(origin)
+                f"Origin {origin} not recognised. Origin shall be either x or y"
             )
             raise ValueError(
-                "Origin {} not recognised. Origin shall be either x or y".format(origin)
+                f"Origin {origin} not recognised. Origin shall be either x or y"
             )
 
         func = PolyOrthoNorm if orthonorm else Zernike
