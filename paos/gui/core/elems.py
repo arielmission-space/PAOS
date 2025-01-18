@@ -447,14 +447,10 @@ def app_elems(config):
                         output_text_verbatim("zernike_inputs"),
                         nested_div("zernike"),
                     ),
-                    max_height="55vh",
+                    max_height="45vw",
                 ),
                 ui.card(
                     ui.card_header("Plot"),
-                    ui.card_body(
-                        output_text_verbatim("plot_zernike_inputs"),
-                        ui.output_plot("plot_zernike"),
-                    ),
                     ui.card_footer(
                         ui.input_action_button(
                             "do_plot_zernike",
@@ -468,7 +464,11 @@ def app_elems(config):
                             icon=ICONS["save"],
                         ),
                     ),
-                    max_height="55vh",
+                    ui.card_body(
+                        output_text_verbatim("plot_zernike_inputs"),
+                        ui.output_plot("plot_zernike"),
+                    ),
+                    min_height="45vw",
                 ),
             ),
         ]
@@ -543,14 +543,10 @@ def app_elems(config):
                             ),
                         ),
                     ),
-                    max_height="55vh",
+                    max_height="45vh",
                 ),
                 ui.card(
                     ui.card_header("Plot"),
-                    ui.card_body(
-                        output_text_verbatim("plot_psd_inputs"),
-                        ui.output_plot("plot_PSD"),
-                    ),
                     ui.card_footer(
                         ui.input_action_button(
                             "do_plot_PSD",
@@ -564,7 +560,11 @@ def app_elems(config):
                             icon=ICONS["save"],
                         ),
                     ),
-                    max_height="55vh",
+                    ui.card_body(
+                        output_text_verbatim("plot_psd_inputs"),
+                        ui.output_plot("plot_PSD"),
+                    ),
+                    min_height="45vw",
                 ),
             ),
         ]
@@ -612,15 +612,11 @@ def app_elems(config):
                         output_text_verbatim("gridsag_output"),
                         nested_div("gridsag"),
                     ),
-                    max_height="55vh",
+                    max_height="45vh",
                 ),
                 ui.card(
                     ui.card_header(
                         "Plot",
-                    ),
-                    ui.card_body(
-                        output_text_verbatim("plot_gridsag_inputs"),
-                        ui.output_plot("plot_gridsag"),
                     ),
                     ui.card_footer(
                         ui.input_action_button(
@@ -633,7 +629,11 @@ def app_elems(config):
                             "download_plot_gridsag", "Save", icon=ICONS["save"]
                         ),
                     ),
-                    max_height="55vh",
+                    ui.card_body(
+                        output_text_verbatim("plot_gridsag_inputs"),
+                        ui.output_plot("plot_gridsag"),
+                    ),
+                    min_height="45vw",
                 ),
             ),
         ]
@@ -687,6 +687,7 @@ def app_elems(config):
                                 ),
                             ),
                         ),
+                        max_height="45vh",
                     ),
                 ),
                 ui.nav_panel(
@@ -709,6 +710,7 @@ def app_elems(config):
                                 ),
                             ),
                         ),
+                        max_height="45vh",
                     ),
                 ),
             ),
@@ -747,10 +749,6 @@ def app_elems(config):
                         class_=CARD_HEADER_CLASS,
                     ),
                 ),
-                ui.card_body(
-                    output_text_verbatim("plot_inputs"),
-                    ui.output_plot("plot"),
-                ),
                 ui.card_footer(
                     ui.tags.div(
                         ui.input_action_button(
@@ -764,7 +762,13 @@ def app_elems(config):
                         ),
                     ),
                 ),
+                ui.card_body(
+                    output_text_verbatim("plot_inputs"),
+                    ui.output_plot("plot"),
+                ),
+                min_height="45vw",
             ),
+            fillable=False,
         ),
     ]
 
