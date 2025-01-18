@@ -523,14 +523,11 @@ def plot_psf_xsec(
     )
 
     axis.set_title(
-        r"S{:02d} | F#{:.2f} | w{:.2f}{:s} | $\lambda${:3.2f}$\mu$m | P{:2.0f}%".format(
-            key,
-            item["fratio"],
-            scale * item["wz"],
-            unit,
-            1.0e6 * item["wl"],
-            100 * power,
-        )
+        rf"S{key:02d}"
+        + "\n"
+        + rf"F\#{item['fratio']:.2f} | w{scale * item['wz']:.2f}{unit:s} | "
+        rf"$\lambda${1.0e6 * item['wl']:3.2f}\textmu m | P{100 * power:2.0f}\%",
+        y=1.01,
     )
 
     axis.set_ylabel("Cross-sections")
