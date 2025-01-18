@@ -2,23 +2,27 @@ import importlib.metadata as metadata
 import os
 from datetime import date
 
-# load package info
-__pkg_name__ = metadata.metadata("paos")["Name"].upper()
+
 __version__ = metadata.version("paos")
+
+# load package info
+__pkg_name__ = __title__ = metadata.metadata("paos")["Name"].upper()
 __url__ = metadata.metadata("paos")["Project-URL"]
 __author__ = metadata.metadata("paos")["Author"]
 __license__ = metadata.metadata("paos")["License"]
-__copyright__ = "2021-{:d}, {}".format(date.today().year, __author__)
+__copyright__ = f"2021-{date.today().year:d}, {__author__}"
 __summary__ = metadata.metadata("paos")["Summary"]
 
+# load package commit number
 try:
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    __base_dir__ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 except NameError:
-    base_dir = None
+    __base_dir__ = None
 
+__commit__ = None
 __branch__ = None
-if base_dir is not None and os.path.exists(os.path.join(base_dir, ".git")):
-    git_folder = os.path.join(base_dir, ".git")
+if __base_dir__ is not None and os.path.exists(os.path.join(__base_dir__, ".git")):
+    git_folder = os.path.join(__base_dir__, ".git")
     with open(os.path.join(git_folder, "HEAD")) as fp:
         ref = fp.read().strip()
     ref_dir = ref[5:]
@@ -28,12 +32,10 @@ if base_dir is not None and os.path.exists(os.path.join(base_dir, ".git")):
             __commit__ = fp.read().strip()
     except FileNotFoundError:
         __commit__ = None
-else:
-    __commit__ = None
+
 
 from loguru import logger
-
-logger.level("Announce", no=100, color="<magenta>")
+import matplotlib.pyplot as plt
 
 from paos.classes.wfo import WFO
 from paos.classes.abcd import ABCD
@@ -47,9 +49,11 @@ from paos.core.plot import plot_pop
 from paos.core.saveOutput import save_output, save_datacube
 from paos.core.run import run
 
-# initialise plotter
-import matplotlib.pyplot as plt
 
+# initialise logger
+logger.level("Announce", no=100, color="<magenta>")
+
+# initialise plotter
 plt.rcParams["figure.facecolor"] = "white"
 plt.rc("lines", linewidth=1.5)
 plt.rc(
@@ -59,4 +63,5 @@ plt.rc(
     labelcolor="dimgray",
     labelweight="bold",
 )
-plt.rc("font", size=14)
+plt.rc("font", size=12)
+plt.rc("text", usetex=True)

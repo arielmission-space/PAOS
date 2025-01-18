@@ -223,7 +223,7 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
      - Bool
      - Bool
      - Bool
-     - list
+     - None
      - None
 
    * - Standard
@@ -276,7 +276,7 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
      - Bool
      - Bool
      - Bool
-     - None
+     - None or list
      - Par1 = wavelength (in micron)
 
        Par2 = ordering, can be standard, ansi, noll, fringe
@@ -287,7 +287,7 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
 
        Par5 = origin, can be x (counterclockwise positive from x axis) or y (clockwise positive from y axis)
 
-       Par6 = Zorthonorm, False (Zernike circular polynomials) or True (polynomials that are ortho-normal on the mask provided)
+       Par6 = Zorthonorm, False (Zernike circular polynomials) or True (polynomials that are ortho-normal on the aperture provided)
 
    * - PSD
      - ...
@@ -297,7 +297,7 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
      - Bool
      - Bool
      - Bool
-     - list
+     - None
      - Par1 = A
 
        Par2 = B
@@ -322,7 +322,7 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
      - Bool
      - Bool
      - Bool
-     - list
+     - None
      - Par1 = wavelength (in micron)
 
        Par2 = Nx (shall be the same as grid_size)

@@ -68,9 +68,10 @@ If there are no errors then the installation was successful!
 ``PAOS`` comes with an extensive documentation, which can be built using Sphinx.
 The documentation includes a tutorial, a user guide and a reference guide.
 
-To build the documentation, install the needed packages first via:
+To build the documentation, install the needed packages first via `poetry`:
 
-    pip install -e ".[docs]"
+    pip install poetry
+    poetry install --with docs
 
 ### Build the html documentation
 

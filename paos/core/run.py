@@ -128,7 +128,18 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         if item["type"] == "Zernike":
             logger.trace("Apply Zernike")
             radius = item["Zradius"] if np.isfinite(item["Zradius"]) else wfo.wz
-            wfo.zernikes(
+
+            Zmask = False
+            if item["Zorthonorm"]:
+                assert "aperture" in item, "Zorthonorm requires aperture"
+                aperture = _retval_["aperture"]
+                Zmask = (
+                    ~aperture.to_mask(method="exact")
+                    .to_image(wfo._wfo.shape)
+                    .astype(bool)
+                )
+
+            _retval_["wfe"] = wfo.zernikes(
                 item["Zindex"],
                 item["Z"],
                 item["Zordering"],
@@ -136,11 +147,12 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
                 radius,
                 origin=item["Zorigin"],
                 orthonorm=item["Zorthonorm"],
+                mask=Zmask,
             )
 
         if item["type"] == "Grid Sag":
             logger.trace("Apply grid sag")
-            wfo.grid_sag(
+            _retval_["wfe"] = wfo.grid_sag(
                 item["grid_sag"],
                 item["nx"],
                 item["ny"],
@@ -152,7 +164,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
 
         if item["type"] == "PSD":
             logger.trace("Apply PSD")
-            wfo.psd(
+            _retval_["wfe"] = wfo.psd(
                 item["A"],
                 item["B"],
                 item["C"],

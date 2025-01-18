@@ -4,7 +4,6 @@ from matplotlib import ticker as ticks
 from matplotlib.patches import Circle
 from matplotlib.patches import Ellipse
 from matplotlib.patches import Rectangle
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 from scipy.special import j1
 
 from paos import logger
@@ -98,7 +97,7 @@ def simple_plot(
 
     """
     ap, wx, wy = None, None, None
-    logger.trace("plotting S{:02d}".format(key))
+    logger.trace(f"plotting S{key:02d}")
 
     if key in options.keys() and "pixel_units" in options[key].keys():
         assert isinstance(
@@ -158,9 +157,10 @@ def simple_plot(
         logger.error("ima_scale shall be either log or linear")
         raise KeyError("ima_scale shall be either log or linear")
 
-    cax = make_axes_locatable(axis).append_axes("right", size="5%", pad=0.05)
-    cbar = fig.colorbar(im, cax=cax, orientation="vertical")
-    cbar.set_label(cbar_label)
+    # cax = make_axes_locatable(axis).append_axes("right", size="5%", pad=0.05)
+    # cbar = fig.colorbar(im, cax=cax, orientation="vertical")
+    # cbar.set_label(cbar_label)
+    fig.colorbar(im, ax=axis, orientation="vertical", label=cbar_label)
 
     if item["aperture"] is not None:
         x, y = item["aperture"].positions
@@ -226,8 +226,11 @@ def simple_plot(
             plot_scale = options[key]["surface_scale"]
 
     axis.set_title(
-        rf"S{key:02d} | F#{item['fratio']:.2f} | w{scale * item['wz']:.2f}{unit:s} | "
-        rf"$\lambda${1.0e6 * item['wl']:3.2f}$\mu$m | P{100 * power:2.0f}%"
+        rf"S{key:02d}"
+        + "\n"
+        + rf"F\#{item['fratio']:.2f} | w{scale * item['wz']:.2f}{unit:s} | "
+        rf"$\lambda${1.0e6 * item['wl']:3.2f}\textmu m | P{100 * power:2.0f}\%",
+        y=1.01,
     )
 
     if pixel_units:
