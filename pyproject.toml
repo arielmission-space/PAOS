@@ -40,10 +40,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
 ]
 
-[tool.poetry.urls]
-"Bug Tracker" = "https://github.com/arielmission-space/PAOS/issues"
-"DOI" = "https://doi.org/10.1117/12.3018333"
-
 [tool.poetry.dependencies]
 python = "^3.9"
 numpy = "^1.22.2"
