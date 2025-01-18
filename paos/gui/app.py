@@ -26,9 +26,7 @@ from paos.core.parseConfig import parse_config
 from paos.gui.core.io import to_ini
 from paos.gui.core.elems import app_elems
 from paos.gui.core.plot import simple_plot
-from paos.gui.core.plot import zernike_plot
-from paos.gui.core.plot import psd_plot
-from paos.gui.core.plot import gridsag_plot
+from paos.gui.core.plot import wfe_plot
 from paos.gui.core.shared import nested_div
 from paos.gui.core.shared import menu_panel
 from paos.gui.core.shared import refresh_ui
@@ -557,11 +555,12 @@ def server(input, output, session):
         item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
-        zernike_plot(
+        wfe_plot(
             fig=fig,
             axis=ax,
             surface=surface,
             item=item,
+            title="Zernike errormap"
         )
 
         figure_zernike.set(fig)
@@ -659,11 +658,12 @@ def server(input, output, session):
         item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
-        psd_plot(
+        wfe_plot(
             fig=fig,
             axis=ax,
             surface=surface,
             item=item,
+            title="PSD errormap"
         )
 
         figure_PSD.set(fig)
@@ -754,11 +754,12 @@ def server(input, output, session):
         item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
-        gridsag_plot(
+        wfe_plot(
             fig=fig,
             axis=ax,
             surface=surface,
             item=item,
+            title="Grid Sag errormap",
         )
 
         figure_gridsag.set(fig)
