@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.10.7"
+__generated_with = "0.10.13"
 app = marimo.App(width="medium")
 
 
@@ -18,7 +18,7 @@ def _(mo):
 
 @app.cell
 def _(mo, os):
-    file_path = "../lens data/"
+    file_path = os.getcwd()
 
     mo.stop(not os.path.isdir(file_path))
 
@@ -26,9 +26,13 @@ def _(mo, os):
         initial_path=file_path,
         multiple=False,
     )
-
-    file_browser
     return file_browser, file_path
+
+
+@app.cell
+def _(file_browser):
+    file_browser
+    return
 
 
 @app.cell
@@ -196,7 +200,7 @@ def _():
     from paos.core.parseConfig import parse_config
     from paos.core.raytrace import raytrace
     from paos.core.run import run
-    from paos.gui.core.plot import simple_plot
+    from paos.core.plot import simple_plot
 
     from paos.log.logger import setLogLevel
 
