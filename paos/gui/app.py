@@ -544,33 +544,24 @@ def server(input, output, session):
         req(input.do_plot_zernike())
         req(input.select_Zernike())
         req(config.get().sections())
+        req(retval.get())
 
         surface = input.select_Zernike()
         surface_key = int(surface[1:])
-        zernike_section = f"lens_{surface_key:02d}"
-        zernike_section = config.get()[zernike_section]
 
-        zindex = zernike_section.get("zindex").split(",")
-        zindex = list(map(int, zindex))
-        zcoeffs = zernike_section.get("z").split(",")
-        zcoeffs = list(map(float, zcoeffs))
-        wavelength = float(zernike_section.get("par1"))
-        ordering = zernike_section.get("par2")
-        normalize = bool(zernike_section.get("par3"))
-        orthonorm = zernike_section.get("par6", "False").lower() == 'true'
+        if surface_key not in retval.get().keys():
+            logger.error(
+                f"Surface {surface} not found.  \n"
+                "Please check that you have run the POP and this surface is not ignored."
+            )
+        item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
         zernike_plot(
             fig=fig,
             axis=ax,
             surface=surface,
-            index=zindex,
-            Z=zcoeffs,
-            wavelength=wavelength,
-            ordering=ordering,
-            normalize=normalize,
-            orthonorm=orthonorm,
-            grid_size=int(input.grid_size()),
+            item=item,
         )
 
         figure_zernike.set(fig)

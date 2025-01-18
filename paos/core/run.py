@@ -139,7 +139,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
                     .astype(bool)
                 )
 
-            wfo.zernikes(
+            _retval_["wfe"] = wfo.zernikes(
                 item["Zindex"],
                 item["Z"],
                 item["Zordering"],
@@ -152,7 +152,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
 
         if item["type"] == "Grid Sag":
             logger.trace("Apply grid sag")
-            wfo.grid_sag(
+            _retval_["wfe"] = wfo.grid_sag(
                 item["grid_sag"],
                 item["nx"],
                 item["ny"],
@@ -164,7 +164,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
 
         if item["type"] == "PSD":
             logger.trace("Apply PSD")
-            wfo.psd(
+            _retval_["wfe"] = wfo.psd(
                 item["A"],
                 item["B"],
                 item["C"],

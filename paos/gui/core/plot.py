@@ -239,38 +239,33 @@ def zernike_plot(
     fig,
     axis,
     surface,
-    index,
-    Z,
-    wavelength,
-    ordering,
-    normalize,
-    orthonorm,
-    grid_size,
+    item,
 ):
-    x = np.linspace(-1.0, 1.0, grid_size)
-    xx, yy = np.meshgrid(x, x)
-    rho = np.sqrt(xx**2 + yy**2)
-    phi = np.arctan2(yy, xx)
-    wavelength *= 1.0e-6  # convert to meters
-    Z = np.array(Z) * wavelength
 
-    func = PolyOrthoNorm if orthonorm else Zernike
-    logger.debug(f"Using {func.__name__} polynomials")
+    if item["wz"] < 0.005:
+        # Use microns
+        scale = 1.0e6
+        unit = r"\textmu m"
+    else:
+        # Use mm
+        scale = 1.0e3
+        unit = "mm"
 
-    zernike = func(len(index), rho, phi, ordering=ordering, normalize=normalize)
-    zer = zernike()
-    wfe = (zer.T * Z).T.sum(axis=0)
-    logger.debug(f"WFE RMS = {np.std(wfe)}")
+    plot_scale = item["wz"] * scale * 1.05
 
-    im = axis.imshow(wfe, origin="lower", cmap=plt.get_cmap("viridis"))
+    im = axis.imshow(item["wfe"], origin="lower", cmap=plt.get_cmap("viridis"))
+    im.set_extent(np.array(item["extent"]) * scale)
+
     fig.colorbar(im, ax=axis, orientation="vertical", label="WFE [m]")
 
     axis.set_title(
         f"{surface}" + "\n" + "Zernike errormap",
         y=1.05,
     )
-    axis.set_xlabel("pixel")
-    axis.set_ylabel("pixel")
+    axis.set_xlabel(unit)
+    axis.set_ylabel(unit)
+    axis.set_xlim(-plot_scale, plot_scale)
+    axis.set_ylim(-plot_scale, plot_scale)
     axis.grid()
 
     return
