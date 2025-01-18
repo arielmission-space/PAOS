@@ -495,36 +495,6 @@ def app_elems(config):
         units = item.get("Par8")
         sfe_rms = PSD.sfe_rms(A, B, C, fknee, fmin, fmax)
 
-        # psd_elems[n][0]["A"] = {
-        #     "f": ui.p,
-        #     "width": 2,
-        #     "value": f"{A:.3f}",
-        # }
-        # psd_elems[n][0]["B"] = {
-        #     "f": ui.p,
-        #     "width": 2,
-        #     "value": f"{B:.3f}",
-        # }
-        # psd_elems[n][0]["C"] = {
-        #     "f": ui.p,
-        #     "width": 2,
-        #     "value": f"{C:.3f}",
-        # }
-        # psd_elems[n][0]["fknee"] = {
-        #     "f": ui.p,
-        #     "width": 2,
-        #     "value": f"{fknee:.3f}",
-        # }
-        # psd_elems[n][0]["fmin"] = {
-        #     "f": ui.p,
-        #     "width": 2,
-        #     "value": f"{fmin:.3f}",
-        # }
-        # psd_elems[n][0]["fmax"] = {
-        #     "f": ui.p,
-        #     "width": 2,
-        #     "value": f"{fmax:.3f}",
-        # }
         psd_elems[n][0]["PSD SFE RMS"] = {
             "f": ui.p,
             "width": 2,
@@ -576,24 +546,7 @@ def app_elems(config):
                     max_height="55vh",
                 ),
                 ui.card(
-                    ui.card_header(
-                        ui.tags.div(
-                            "Plot",
-                            ui.popover(
-                                ICONS["gear"],
-                                *[
-                                    ui.input_text(
-                                        id="psd_plot_phi",
-                                        label="D [mm]",
-                                        value=110.0,
-                                    ),
-                                ],
-                                title="Settings",
-                                placement="top",
-                            ),
-                            class_=CARD_HEADER_CLASS,
-                        ),
-                    ),
+                    ui.card_header("Plot"),
                     ui.card_body(
                         output_text_verbatim("plot_psd_inputs"),
                         ui.output_plot("plot_PSD"),
@@ -606,7 +559,9 @@ def app_elems(config):
                             class_="btn-success",
                         ),
                         ui.input_action_button(
-                            "download_plot_PSD", "Save", icon=ICONS["save"]
+                            "download_plot_PSD",
+                            "Save",
+                            icon=ICONS["save"],
                         ),
                     ),
                     max_height="55vh",

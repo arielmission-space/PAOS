@@ -678,7 +678,7 @@ def server(input, output, session):
         modal_download("plot_PSD", "pdf")
 
     @render.download
-    def download_plot_psd_pdf():
+    def download_plot_PSD_pdf():
         outfile: list[FileInfo] | None = input.save_pdf()
 
         figure_PSD.get().savefig(cache / outfile)
