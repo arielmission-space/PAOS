@@ -2,7 +2,6 @@ import gc
 from copy import deepcopy
 
 import numpy as np
-import photutils
 
 from paos import logger
 from paos.classes.abcd import ABCD
