@@ -646,37 +646,24 @@ def server(input, output, session):
         req(input.do_plot_PSD())
         req(input.select_PSD())
         req(config.get().sections())
+        req(retval.get())
 
         surface = input.select_PSD()
         surface_key = int(surface[1:])
-        psd_section = f"lens_{surface_key:02d}"
-        psd_section = config.get()[psd_section]
 
-        A = float(psd_section.get("par1"))
-        B = float(psd_section.get("par2"))
-        C = float(psd_section.get("par3"))
-        fknee = float(psd_section.get("par4"))
-        fmin = float(psd_section.get("par5"))
-        fmax = float(psd_section.get("par6"))
-        SR = float(psd_section.get("par7"))
-        units = psd_section.get("par8")
-        phi = float(input.psd_plot_phi())
+        if surface_key not in retval.get().keys():
+            logger.error(
+                f"Surface {surface} not found.  \n"
+                "Please check that you have run the POP and this surface is not ignored."
+            )
+        item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
         psd_plot(
             fig=fig,
             axis=ax,
             surface=surface,
-            A=A,
-            B=B,
-            C=C,
-            fknee=fknee,
-            fmin=fmin,
-            fmax=fmax,
-            SR=SR,
-            units=units,
-            grid_size=int(input.grid_size()),
-            phi=phi,
+            item=item,
         )
 
         figure_PSD.set(fig)
@@ -754,30 +741,24 @@ def server(input, output, session):
         req(input.do_plot_gridsag())
         req(input.select_gridsag())
         req(config.get().sections())
+        req(retval.get())
 
         surface = input.select_gridsag()
         surface_key = int(surface[1:])
-        gridsag_section = f"lens_{surface_key:02d}"
-        gridsag_section = config.get()[gridsag_section]
 
-        wave = 1.0e-6 * float(gridsag_section.get("Par1"))
-        grid_sag_path = gridsag_section.get("Par8")
-
-        with open(grid_sag_path, "rb") as f:
-            grid_sag = np.load(f, allow_pickle=True).item()
-
-        grid_sag_mask = grid_sag.get("mask", False)
-        grid_sag = np.ma.MaskedArray(
-            grid_sag["data"], mask=grid_sag_mask | np.isinf(grid_sag["data"])
-        )
-        grid_sag *= wave
+        if surface_key not in retval.get().keys():
+            logger.error(
+                f"Surface {surface} not found.  \n"
+                "Please check that you have run the POP and this surface is not ignored."
+            )
+        item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
         gridsag_plot(
             fig=fig,
             axis=ax,
             surface=surface,
-            data=grid_sag,
+            item=item,
         )
 
         figure_gridsag.set(fig)

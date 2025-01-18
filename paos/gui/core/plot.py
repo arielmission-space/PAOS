@@ -251,7 +251,7 @@ def zernike_plot(
         scale = 1.0e3
         unit = "mm"
 
-    plot_scale = item["wz"] * scale * 1.05
+    plot_scale = item["wz"] * scale
 
     im = axis.imshow(item["wfe"], origin="lower", cmap=plt.get_cmap("viridis"))
     im.set_extent(np.array(item["extent"]) * scale)
@@ -275,46 +275,33 @@ def psd_plot(
     fig,
     axis,
     surface,
-    A,
-    B,
-    C,
-    fknee,
-    fmin,
-    fmax,
-    SR,
-    units,
-    grid_size,
-    phi,
+    item,
 ):
-    phi_x = phi_y = phi  # mm
-    D = np.max([phi_x, phi_y])
-    delta = D / grid_size
 
-    x = y = np.arange(-grid_size // 2, grid_size // 2) * delta
-    xx, yy = np.meshgrid(x, y)
-    pupil = np.zeros((grid_size, grid_size))
+    if item["wz"] < 0.005:
+        # Use microns
+        scale = 1.0e6
+        unit = r"\textmu m"
+    else:
+        # Use mm
+        scale = 1.0e3
+        unit = "mm"
 
-    mask = (2 * xx / phi_x) ** 2 + (2 * yy / phi_y) ** 2 <= 1
+    plot_scale = item["wz"] * scale
 
-    pupil[mask] = 1.0
-    wfo = np.ma.masked_array(pupil, mask=~mask)
+    im = axis.imshow(item["wfe"], origin="lower", cmap=plt.get_cmap("viridis"))
+    im.set_extent(np.array(item["extent"]) * scale)
 
-    fx = np.fft.fftfreq(wfo.shape[0], delta)
-    fxx, fyy = np.meshgrid(fx, fx)
-    f = np.sqrt(fxx**2 + fyy**2)
-    f[f == 0] = 1e-100
-
-    wfe = PSD(wfo, A, B, C, f, fknee, fmin, fmax, SR, units=u.Unit(units))()
-
-    im = axis.imshow(wfe, origin="lower", cmap=plt.get_cmap("viridis"))
     fig.colorbar(im, ax=axis, orientation="vertical", label="WFE [m]")
 
     axis.set_title(
         f"{surface}" + "\n" + "PSD errormap",
         y=1.05,
     )
-    axis.set_xlabel("pixel")
-    axis.set_ylabel("pixel")
+    axis.set_xlabel(unit)
+    axis.set_ylabel(unit)
+    axis.set_xlim(-plot_scale, plot_scale)
+    axis.set_ylim(-plot_scale, plot_scale)
     axis.grid()
 
     return
@@ -324,17 +311,33 @@ def gridsag_plot(
     fig,
     axis,
     surface,
-    data,
+    item,
 ):
-    im = axis.imshow(data, origin="lower", cmap=plt.get_cmap("viridis"))
-    fig.colorbar(im, ax=axis, orientation="vertical", label="Grid Sag [m]")
+
+    if item["wz"] < 0.005:
+        # Use microns
+        scale = 1.0e6
+        unit = r"\textmu m"
+    else:
+        # Use mm
+        scale = 1.0e3
+        unit = "mm"
+
+    plot_scale = item["wz"] * scale
+
+    im = axis.imshow(item["wfe"], origin="lower", cmap=plt.get_cmap("viridis"))
+    im.set_extent(np.array(item["extent"]) * scale)
+
+    fig.colorbar(im, ax=axis, orientation="vertical", label="WFE [m]")
 
     axis.set_title(
-        f"{surface}" + "\n" + "Grid Sag",
+        f"{surface}" + "\n" + "Grid Sag errormap",
         y=1.05,
     )
-    axis.set_xlabel("pixel")
-    axis.set_ylabel("pixel")
+    axis.set_xlabel(unit)
+    axis.set_ylabel(unit)
+    axis.set_xlim(-plot_scale, plot_scale)
+    axis.set_ylim(-plot_scale, plot_scale)
     axis.grid()
 
     return
