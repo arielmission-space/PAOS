@@ -63,4 +63,5 @@ plt.rc(
     labelcolor="dimgray",
     labelweight="bold",
 )
-plt.rc("font", size=14)
+plt.rc("font", size=12)
+plt.rc("text", usetex=True)

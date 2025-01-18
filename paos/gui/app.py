@@ -22,10 +22,10 @@ from paos import __version__
 from paos import __author__
 from paos import __license__
 from paos.core.parseConfig import parse_config
+from paos.core.plot import simple_plot
 
 from paos.gui.core.io import to_ini
 from paos.gui.core.elems import app_elems
-from paos.gui.core.plot import simple_plot
 from paos.gui.core.plot import wfe_plot
 from paos.gui.core.shared import nested_div
 from paos.gui.core.shared import menu_panel
