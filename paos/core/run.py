@@ -75,7 +75,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
 
     for index, item in opt_chain.items():
 
-        logger.trace("Surface: {}".format(item["name"]))
+        logger.trace(f"Surface: {item['name']}")
 
         if item["type"] == "Coordinate Break":
             logger.trace("Apply coordinate break.")
@@ -94,14 +94,10 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         # Check if aperture needs to be applied
         if "aperture" in item:
             xdec = (
-                item["aperture"]["xc"]
-                if np.isfinite(item["aperture"]["xc"])
-                else vs[0]
+                item["aperture"]["xc"] if np.isfinite(item["aperture"]["xc"]) else vs[0]
             )
             ydec = (
-                item["aperture"]["yc"]
-                if np.isfinite(item["aperture"]["yc"])
-                else vt[0]
+                item["aperture"]["yc"] if np.isfinite(item["aperture"]["yc"]) else vt[0]
             )
             xrad = item["aperture"]["xrad"]
             yrad = item["aperture"]["yrad"]
@@ -110,9 +106,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
             xaper = xdec - vs[0]
             yaper = ydec - vt[0]
 
-            obscuration = (
-                False if item["aperture"]["type"] == "aperture" else True
-            )
+            obscuration = False if item["aperture"]["type"] == "aperture" else True
 
             if np.all(np.isfinite([xrad, yrad])):
                 logger.trace("Apply aperture")
@@ -126,40 +120,59 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
                 )
                 _retval_["aperture"] = aper
 
-        # if item['type'] in ['Standard', 'Paraxial Lens', 'Slit', 'Obscuration']:
-        #     xdec = item['xdec'] if np.isfinite(item['xdec']) else vs[0]
-        #     ydec = item['ydec'] if np.isfinite(item['ydec']) else vt[0]
-        #     xrad = item['xrad']
-        #     yrad = item['yrad']
-        #     xrad *= np.sqrt(1 / (vs[1] ** 2 + 1))
-        #     yrad *= np.sqrt(1 / (vt[1] ** 2 + 1))
-        #     xaper = xdec - vs[0]
-        #     yaper = ydec - vt[0]
-        #
-        #     aperture_shape = 'rectangular' if item['type'] == 'Slit' else 'elliptical'
-        #     obscuration = True if item['type'] == 'Obscuration' else False
-        #     if np.all(np.isfinite([xrad, yrad])):
-        #         logger.trace('Apply aperture')
-        #         aper = wfo.aperture(xaper, yaper, hx=xrad, hy=yrad,
-        #                             shape=aperture_shape, obscuration=obscuration)
-        #         _retval_['aperture'] = aper
-
         # Check if this is a stop surface
         if item["is_stop"]:
             logger.trace("Apply stop")
             wfo.make_stop()
 
         if item["type"] == "Zernike":
-            radius = (
-                item["Zradius"] if np.isfinite(item["Zradius"]) else wfo.wz
-            )
-            wfo.zernikes(
+            logger.trace("Apply Zernike")
+            radius = item["Zradius"] if np.isfinite(item["Zradius"]) else wfo.wz
+
+            Zmask = False
+            if item["Zorthonorm"]:
+                assert "aperture" in item, "Zorthonorm requires aperture"
+                aperture = _retval_["aperture"]
+                Zmask = (
+                    ~aperture.to_mask(method="exact")
+                    .to_image(wfo._wfo.shape)
+                    .astype(bool)
+                )
+
+            _retval_["wfe"] = wfo.zernikes(
                 item["Zindex"],
                 item["Z"],
                 item["Zordering"],
                 item["Znormalize"],
                 radius,
                 origin=item["Zorigin"],
+                orthonorm=item["Zorthonorm"],
+                mask=Zmask,
+            )
+
+        if item["type"] == "Grid Sag":
+            logger.trace("Apply grid sag")
+            _retval_["wfe"] = wfo.grid_sag(
+                item["grid_sag"],
+                item["nx"],
+                item["ny"],
+                item["delx"],
+                item["dely"],
+                item["xdec"],
+                item["ydec"],
+            )
+
+        if item["type"] == "PSD":
+            logger.trace("Apply PSD")
+            _retval_["wfe"] = wfo.psd(
+                item["A"],
+                item["B"],
+                item["C"],
+                item["fknee"],
+                item["fmin"],
+                item["fmax"],
+                item["SR"],
+                item["units"],
             )
 
         _retval_.update(push_results(wfo))
@@ -174,7 +187,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         )
         T = item["ABCDt"].cout * item["ABCDt"].thickness
         n1n2 = item["ABCDt"].n1n2
-        logger.trace("n1n2: {:.4f}".format(n1n2))
+        logger.trace(f"n1n2: {n1n2:.4f}")
 
         if Mt != 1.0 or Ms != 1.0:
             logger.trace("Apply magnification")
@@ -189,7 +202,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
             wfo.lens(fl)
 
         if np.isfinite(T) and np.abs(T) > 1e-10:
-            logger.trace("Apply propagation thickness: T: {:.4f}".format(T))
+            logger.trace(f"Apply propagation thickness: T: {T:.4f}")
             wfo.propagate(T)
 
         vt = item["ABCDt"]() @ vt
@@ -198,9 +211,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         ABCDs = item["ABCDs"] * ABCDs
 
         logger.debug(
-            "F num: {:2f}, distance to focus: {:.6f}".format(
-                _retval_["fratio"], wfo.distancetofocus
-            )
+            f"F num: {_retval_['fratio']:2f}, distance to focus: {wfo.distancetofocus:.6f}"
         )
 
         _retval_["ABCDt"] = ABCDt

@@ -1,23 +1,19 @@
-.. _Aberration description:
+.. _Aberration:
 
-Aberration description
+Aberration
 =======================
 
 Brief description of wavefront error (WFE) modelling and how it is implemented in ``PAOS``.
 
-In ``PAOS``, this is handled by the class :class:`~paos.classes.zernike.Zernike`.
-
 Introduction
 --------------
 
-In optics, aberration is a property of optical systems, that causes light to be spread out
-over some region of space rather than focused to a point. An aberration causes an image-forming optical system
-to depart from the prediction of paraxial optics (see :ref:`Paraxial region`), producing an image which is not sharp.
+In optics, aberration is a property of optical systems, that causes light to be spread out over some region of space rather than focused to a point. An aberration causes an image-forming optical system to depart from the prediction of paraxial optics (see :ref:`Paraxial region`), producing an image which is not sharp.
 The WFE and the resulting image distortion depend on the type of aberration.
 
-The WFE can be modelled as a superposition of Zernike polynomials that describe :ref:`Optical aberrations`
-and a random Gaussian field that describes :ref:`Surface roughness`. That is, the WFE can be decomposed into low
-frequency and medium-to-high frequency contributors.
+The WFE can be modelled as a superposition of Zernike polynomials that describe :ref:`Optical aberrations` and a surface error field (SFE) with a given power spectral density (PSD) and surface roughness (SR) (see :ref:`PSD and SR`). That is, the WFE can be decomposed into low frequency and medium-to-high frequency contributors.
+
+Aberration maps from e.g. interferometric measurements are also of great importance as the optical system is manufactured (see :ref:`Grid Sag`).
 
 Useful concepts to estimate image quality such as
 
@@ -87,11 +83,9 @@ and in black for the diffraction limited PSF.
 Optical aberrations
 ---------------------
 
-``PAOS`` models an optical aberration using a series of Zernike polynomials, up to a specified radial order.
+``PAOS`` models an optical aberration using a series of Zernike polynomials, up to a specified radial order. This is handled by the class :class:`~paos.classes.zernike.Zernike` and its child class :class:`~paos.classes.zernike.PolyOrthoNorm`.
 
-Following `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_, the function
-describing an arbitrary wavefront wavefront in polar coordinates W(:math:`r, \theta`) can be expanded in terms
-of a sequence of Zernike polynomials as
+Following `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_, the function describing an arbitrary wavefront wavefront in polar coordinates W(:math:`r, \theta`) can be expanded in terms of a sequence of Zernike polynomials as
 
 .. math::
     W(\rho, \theta) = \sum_{n, m} C_{n}^{m} Z_{n}^{m} (\rho, \theta)
@@ -118,8 +112,7 @@ where the radial polynomial is normalized such that :math:`R_{n}^{m}(\rho = 1) =
     \left< \left[Z_{n}^{m} (\rho, \phi)\right]^{2} \right> = 2\frac{n + 1}{1 + \delta_{m0}}
     :label: Zernike_rms_norm
 
-with :math:`\delta_{mn}` the Kroneker delta function, and the average operator :math:`\left<\right>` is intended
-over the pupil.
+with :math:`\delta_{mn}` the Kroneker delta function, and the average operator :math:`\left<\right>` is intended over the pupil.
 
 Using polar elliptical coordinates allows ``PAOS`` to describe pupils that are elliptical in shape as well as circular:
 
@@ -127,11 +120,9 @@ Using polar elliptical coordinates allows ``PAOS`` to describe pupils that are e
     \rho^{2} = \frac{x_{pup}^{2}}{a^{2}} + \frac{y_{pup}^{2}}{b^{2}}
     :label:
 
-where :math:`x_{pup}` and :math:`y_{pup}` are the pupil physical coordinates and :math:`a` and :math:`b` are the pupil
-semi-major and semi-minor axes, respectively.
+where :math:`x_{pup}` and :math:`y_{pup}` are the pupil physical coordinates and :math:`a` and :math:`b` are the pupil semi-major and semi-minor axes, respectively.
 
-:numref:`zpol` reports surface plots of the Zernike polynomial sequence up to radial order :math:`n=10`. The name of the classical
-aberration associated with some of them is also provided (figure taken from `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_).
+:numref:`zpol` reports surface plots of the Zernike polynomial sequence up to radial order :math:`n=10`. The name of the classical aberration associated with some of them is also provided (figure taken from `Laksminarayan & Fleck, Journal of Modern Optics (2011) <https://doi.org/10.1080/09500340.2011.633763>`_).
 
 .. _zpol:
 
@@ -141,8 +132,7 @@ aberration associated with some of them is also provided (figure taken from `Lak
 
    `Zernike polynomials surface plots`
 
-``PAOS`` can generate both ortho-normal polynomials and orthogonal polynomials and the ordering can be either ANSI
-(default), or Noll, or Fringe, or Standard (see e.g. `Born and Wolf, Principles of Optics, (1999) <https://doi.org/10.1017/CBO9781139644181>`_).
+``PAOS`` can generate both ortho-normal polynomials and orthogonal polynomials and the ordering can be either ANSI (default), or Noll, or Fringe, or Standard (see e.g. `Born and Wolf, Principles of Optics, (1999) <https://doi.org/10.1017/CBO9781139644181>`_).
 
 Example of an aberrated pupil
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -159,17 +149,24 @@ An example of aberrated PSFs at the `Ariel` Telescope exit pupil is shown in :nu
 
 In this figure, the same Surface Form Error (SFE) of :math:`50 \ \textrm{nm}` is allocated to different optical aberrations. Starting from the top left panel (oblique Astigmatism), seven such simulations are shown, in ascending Ansi order.
 
-Each aberration has a different impact on optical quality, requiring a detailed analysis to translate e.g. a
-scientific requirement on optical quality into a WFE allocation.
+Each aberration has a different impact on optical quality, requiring a detailed analysis to translate e.g. a scientific requirement on optical quality into a WFE allocation.
 
-.. _Surface roughness:
+.. _PSD and SR:
 
-Surface roughness
--------------------
+PSD and SR
+-----------
 
-Optical elements exhibit surface roughness, i.e. medium to high frequency defects produced during manufacturing
-(e.g. using diamond turning machines). These types of defects reduce the Strehl ratio without significantly altering the PSF's fundamental shape.
+Optical elements exhibit medium to high frequency defects produced during manufacturing (e.g. using diamond turning machines). These types of defects reduce the Strehl ratio without significantly altering the PSF's fundamental shape.
 
-The resulting aberrations can be statistically described using a zero-mean random Gaussian field with variance :math:`\sigma_{G}` or relative to the spatial scales of interest using e.g. a parameterized Power Spectral Density (PSD) specification (`Church1991 <https://ui.adsabs.harvard.edu/abs/1991SPIE.1530...71C/abstract>`_).
+The resulting aberrations can be statistically described relative to the spatial scales of interest using a parameterized Power Spectral Density (PSD) specification (`Church1991 <https://ui.adsabs.harvard.edu/abs/1991SPIE.1530...71C/abstract>`_) or as surface roughness (SR) using a zero-mean random Gaussian field with variance :math:`\sigma_{G}`.
 
-Users can easily implement this using the ``PAOS`` API if necessary, and there are potential plans for inclusion in future ``PAOS`` releases.
+``PAOS`` implements this functionality in the :class:`~paos.classes.psd.PSD` class.
+
+.. _Grid Sag:
+
+Grid Sag
+-----------
+
+The capability to insert a measured surface map into an optical chain is provided by ``PAOS`` thanks to the method :func:`paos.classes.wfo.WFO.grid_sag`.
+
+The user can point ``PAOS`` to a binary (.npy) file that contains a dictionary with the grid sag in wavelength units, with given sampling along X and Y, and any offset in pixel that one wishes to apply. Then, ``PAOS`` shifts the sag, resamples it to the current sampling and makes sure the resulting array has the correct shape, before applying it to the wavefront.

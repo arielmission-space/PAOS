@@ -1,0 +1,30 @@
+# .github/workflows/version_bump.yml
+
+name: Version Bump
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: write  # Grants necessary write permissions to the token for git push and tag operations
+
+jobs:
+  bump_version:
+    if: ${{ !contains(github.event.head_commit.message, 'Bump version to') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository with GITHUB_TOKEN
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+          token: ${{ secrets.GITHUB_TOKEN }}  # Ensures git push and tag operations are authenticated
+
+      # Step 2: Run the auto-dev-version-bumper action in Docker
+      - name: Run auto-dev-version-bumper
+        uses: LorenzoMugnai/auto-dev-version-bumper@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN explicitly

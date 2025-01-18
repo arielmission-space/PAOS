@@ -4,7 +4,6 @@ from matplotlib import ticker as ticks
 from matplotlib.patches import Circle
 from matplotlib.patches import Ellipse
 from matplotlib.patches import Rectangle
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 from scipy.special import j1
 
 from paos import logger
@@ -27,9 +26,7 @@ def do_legend(axis, ncol=1):
         Produces a nice matplotlib legend
 
     """
-    legend = axis.legend(
-        loc="best", ncol=ncol, frameon=True, prop={"size": 12}
-    )
+    legend = axis.legend(loc="best", ncol=ncol, frameon=True, prop={"size": 12})
     legend.get_frame().set_facecolor("white")
     legend.get_frame().set_edgecolor("white")
     legend.get_frame().set_alpha(0.8)
@@ -100,7 +97,7 @@ def simple_plot(
 
     """
     ap, wx, wy = None, None, None
-    logger.trace("plotting S{:02d}".format(key))
+    logger.trace(f"plotting S{key:02d}")
 
     if key in options.keys() and "pixel_units" in options[key].keys():
         assert isinstance(
@@ -128,9 +125,7 @@ def simple_plot(
         unit = "mm"
 
     if "psf" in item.keys():
-        ima = np.ma.masked_array(
-            data=item["psf"], mask=item["amplitude"] <= 0.0
-        )
+        ima = np.ma.masked_array(data=item["psf"], mask=item["amplitude"] <= 0.0)
     else:
         ima = np.ma.masked_array(
             data=item["amplitude"] ** 2, mask=item["amplitude"] <= 0.0
@@ -138,9 +133,7 @@ def simple_plot(
     power = ima.sum()
 
     if key in options.keys() and "ima_scale" in options[key].keys():
-        assert isinstance(
-            options[key]["ima_scale"], str
-        ), "ima_scale must be a str"
+        assert isinstance(options[key]["ima_scale"], str), "ima_scale must be a str"
         assert options[key]["ima_scale"] in [
             "linear",
             "log",
@@ -164,9 +157,10 @@ def simple_plot(
         logger.error("ima_scale shall be either log or linear")
         raise KeyError("ima_scale shall be either log or linear")
 
-    cax = make_axes_locatable(axis).append_axes("right", size="5%", pad=0.05)
-    cbar = fig.colorbar(im, cax=cax, orientation="vertical")
-    cbar.set_label(cbar_label)
+    # cax = make_axes_locatable(axis).append_axes("right", size="5%", pad=0.05)
+    # cbar = fig.colorbar(im, cax=cax, orientation="vertical")
+    # cbar.set_label(cbar_label)
+    fig.colorbar(im, ax=axis, orientation="vertical", label=cbar_label)
 
     if item["aperture"] is not None:
         x, y = item["aperture"].positions
@@ -201,16 +195,8 @@ def simple_plot(
     if np.isfinite(airy_radius) and dark_rings:
         for airy_scale in [1.22, 2.23, 3.24, 4.24, 5.24]:
             arad = airy_radius * airy_scale / 1.22
-            width = (
-                2.0 * arad / (scale * item["dx"])
-                if pixel_units
-                else 2.0 * arad
-            )
-            height = (
-                2.0 * arad / (scale * item["dy"])
-                if pixel_units
-                else 2.0 * arad
-            )
+            width = 2.0 * arad / (scale * item["dx"]) if pixel_units else 2.0 * arad
+            height = 2.0 * arad / (scale * item["dy"]) if pixel_units else 2.0 * arad
             aper = Ellipse(
                 (0, 0),
                 width=width,
@@ -240,8 +226,11 @@ def simple_plot(
             plot_scale = options[key]["surface_scale"]
 
     axis.set_title(
-        rf"S{key:02d} | F#{item['fratio']:.2f} | w{scale * item['wz']:.2f}{unit:s} | "
-        rf"$\lambda${1.0e6 * item['wl']:3.2f}$\mu$m | P{100 * power:2.0f}%"
+        rf"S{key:02d}"
+        + "\n"
+        + rf"F\#{item['fratio']:.2f} | w{scale * item['wz']:.2f}{unit:s} | "
+        rf"$\lambda${1.0e6 * item['wl']:3.2f}\textmu m | P{100 * power:2.0f}\%",
+        y=1.01,
     )
 
     if pixel_units:
@@ -416,9 +405,7 @@ def plot_psf_xsec(
         unit = "mm"
 
     if "psf" in item.keys():
-        ima = np.ma.masked_array(
-            data=item["psf"], mask=item["amplitude"] <= 0.0
-        )
+        ima = np.ma.masked_array(data=item["psf"], mask=item["amplitude"] <= 0.0)
     else:
         ima = np.ma.masked_array(
             data=item["amplitude"] ** 2, mask=item["amplitude"] <= 0.0
@@ -487,8 +474,12 @@ def plot_psf_xsec(
             x_label = r"1 /F$\lambda$"
 
         # Plot Airy X and Y cross-sections
-        axis.plot(x_i, airy[Npt // 2, ...], color="C4", label="Airy X-cut", linestyle="--")
-        axis.plot(y_i, airy[..., Npt // 2], color="C5", label="Airy Y-cut", linestyle="--")
+        axis.plot(
+            x_i, airy[Npt // 2, ...], color="C4", label="Airy X-cut", linestyle="--"
+        )
+        axis.plot(
+            y_i, airy[..., Npt // 2], color="C5", label="Airy Y-cut", linestyle="--"
+        )
         axis.set_ylim(1.0e-10, airy.max())
 
         # plot vertical lines to mark the positions of the Airy dark rings and set the axis ticks
@@ -532,14 +523,11 @@ def plot_psf_xsec(
     )
 
     axis.set_title(
-        r"S{:02d} | F#{:.2f} | w{:.2f}{:s} | $\lambda${:3.2f}$\mu$m | P{:2.0f}%".format(
-            key,
-            item["fratio"],
-            scale * item["wz"],
-            unit,
-            1.0e6 * item["wl"],
-            100 * power,
-        )
+        rf"S{key:02d}"
+        + "\n"
+        + rf"F\#{item['fratio']:.2f} | w{scale * item['wz']:.2f}{unit:s} | "
+        rf"$\lambda${1.0e6 * item['wl']:3.2f}\textmu m | P{100 * power:2.0f}\%",
+        y=1.01,
     )
 
     axis.set_ylabel("Cross-sections")

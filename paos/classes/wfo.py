@@ -1,8 +1,13 @@
 import numpy as np
 import photutils
+import astropy.units as u
+from scipy.ndimage import fourier_shift
+from skimage.transform import rescale
+from skimage.transform import resize
 
 from paos import logger
-from paos.classes.zernike import Zernike
+from paos.classes.zernike import Zernike, PolyOrthoNorm
+from paos.classes.psd import PSD
 
 
 class WFO:
@@ -262,8 +267,8 @@ class WFO:
                 self._wfo.shape
             )
         else:
-            logger.error("Aperture {:s} not defined yet.".format(shape))
-            raise ValueError("Aperture {:s} not defined yet.".format(shape))
+            logger.error(f"Aperture {shape:s} not defined yet.")
+            raise ValueError(f"Aperture {shape:s} not defined yet.")
 
         if obscuration:
             self._wfo *= 1 - mask
@@ -323,9 +328,7 @@ class WFO:
 
         # update Gaussian beam parameters
         self._w0 = wz / np.sqrt(1.0 + (np.pi * wz**2 * gCima / self.wl) ** 2)
-        self._zw0 = (
-            -gCima / (gCima**2 + (self.wl / (np.pi * wz**2)) ** 2) + self.z
-        )
+        self._zw0 = -gCima / (gCima**2 + (self.wl / (np.pi * wz**2)) ** 2) + self.z
         self._zr = np.pi * self.w0**2 / self.wl
 
         propagator = propagator + self.insideout()
@@ -390,9 +393,7 @@ class WFO:
         self._dy *= My
 
         if np.abs(Mx - 1.0) < 1.0e-8 or Mx is None:
-            logger.trace(
-                "Does not do anything if magnification x is close to unity."
-            )
+            logger.trace("Does not do anything if magnification x is close to unity.")
             return
 
         logger.warning(
@@ -451,9 +452,7 @@ class WFO:
             propagation distance
         """
         if np.abs(dz) < 0.001 * self.wl:
-            logger.debug(
-                "Thickness smaller than 1/1000 wavelength. Returning.."
-            )
+            logger.debug("Thickness smaller than 1/1000 wavelength. Returning..")
             return
 
         if self.C != 0:
@@ -482,9 +481,7 @@ class WFO:
             propagation distance
         """
         if np.abs(dz) < 0.001 * self.wl:
-            logger.debug(
-                "Thickness smaller than 1/1000 wavelength. Returning.."
-            )
+            logger.debug("Thickness smaller than 1/1000 wavelength. Returning..")
             return
 
         if self.C == 0.0:
@@ -521,9 +518,7 @@ class WFO:
             propagation distance
         """
         if np.abs(dz) < 0.001 * self.wl:
-            logger.debug(
-                "Thickness smaller than 1/1000 wavelength. Returning.."
-            )
+            logger.debug("Thickness smaller than 1/1000 wavelength. Returning..")
             return
 
         if self.C != 0.0:
@@ -575,10 +570,20 @@ class WFO:
             self.wts(z2 - self.zw0)
 
     def zernikes(
-        self, index, Z, ordering, normalize, radius, offset=0.0, origin="x"
+        self,
+        index,
+        Z,
+        ordering,
+        normalize,
+        radius,
+        offset=0.0,
+        origin="x",
+        orthonorm=False,
+        mask=False,
     ):
         """
-        Add a WFE represented by a Zernike expansion
+        Add a WFE represented by a Zernike expansion. 
+        Either Zernike or orthonormal polynomials can be used.
 
         Parameters
         ----------
@@ -597,21 +602,28 @@ class WFO:
         origin: string
             Angles measured counter-clockwise positive from x axis by default (origin='x').
             Set origin='y' for angles measured clockwise-positive from the y-axis.
+        orthonorm: bool
+            If True, orthonormal polynomials are used. Default is False.
+        mask: bool array like
+            The mask defining the pupil following masked array convention. 
+            Pixel within the pupil are masked False. Defaults to False.
 
         Returns
         -------
         out: masked array
             the WFE
         """
-        assert not np.any(
-            np.diff(index) - 1
-        ), "Zernike sequence should be continuous"
+        assert not np.any(np.diff(index) - 1), "Zernike sequence should be continuous"
 
         x = (np.arange(self._wfo.shape[1]) - self._wfo.shape[1] // 2) * self.dx
         y = (np.arange(self._wfo.shape[0]) - self._wfo.shape[0] // 2) * self.dy
 
         xx, yy = np.meshgrid(x, y)
-        rho = np.sqrt(xx**2 + yy**2) / radius
+        rho = np.ma.MaskedArray(
+            data=np.sqrt(xx**2 + yy**2) / radius,
+            mask=mask,
+            fill_value=0.0,
+        )
 
         if origin == "x":
             phi = np.arctan2(yy, xx) + np.deg2rad(offset)
@@ -619,23 +631,196 @@ class WFO:
             phi = np.arctan2(xx, yy) + np.deg2rad(offset)
         else:
             logger.error(
-                "Origin {} not recognised. Origin shall be either x or y".format(
-                    origin
-                )
+                f"Origin {origin} not recognised. Origin shall be either x or y"
             )
             raise ValueError(
-                "Origin {} not recognised. Origin shall be either x or y".format(
-                    origin
-                )
+                f"Origin {origin} not recognised. Origin shall be either x or y"
             )
-        zernike = Zernike(
-            len(index), rho, phi, ordering=ordering, normalize=normalize
-        )
+
+        func = PolyOrthoNorm if orthonorm else Zernike
+        logger.debug(f"Using {func.__name__} polynomials")
+
+        zernike = func(len(index), rho, phi, ordering=ordering, normalize=normalize)
         zer = zernike()
         wfe = (zer.T * Z).T.sum(axis=0)
-        self._wfo = self._wfo * np.exp(
-            2.0 * np.pi * 1j * wfe / self._wl
-        ).filled(0)
+        logger.debug(f"WFE RMS = {np.std(wfe)}")
+
+        self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * wfe / self._wl).filled(0)
+
+        return wfe
+
+    def grid_sag(
+        self,
+        sag: np.ndarray,
+        nx: int,
+        ny: int,
+        delx: float,
+        dely: float,
+        xdec: float = 0.0,
+        ydec: float = 0.0,
+    ):
+        """
+        Add a user-specified grid sag to the wavefront
+
+        Parameters
+        ----------
+        sag: array
+            2D array of sag values in meters
+        nx: int
+            number of pixels along x-axis
+        ny: int
+            number of pixels along y-axis
+        delx: float
+            pixel size along x-axis
+        dely: float
+            pixel size along y-axis
+        xdec: float
+            pixel shift along x-axis
+        ydec: float
+            pixel shift along y-axis
+
+        Returns
+        -------
+        out: array
+            the WFE
+        """
+
+        assert sag.ndim == 2, "sag shall be a 2D array"
+
+        if not isinstance(sag, np.ma.MaskedArray):
+            mask = np.isnan(sag)
+            sag[mask] = 0
+            sag = np.ma.MaskedArray(sag, mask=mask)
+
+        mask = sag.mask.astype(float)
+
+        if (xdec != 0.0) or (ydec != 0.0):
+            sag = fourier_shift(np.fft.fft2(sag), shift=(-xdec, -ydec))
+            sag = np.fft.ifft2(sag).real
+            mask = fourier_shift(np.fft.fft2(mask), shift=(-xdec, -ydec))
+            mask = np.fft.ifft2(mask).real
+
+        scale_x = delx / self.dx
+        scale_y = dely / self.dy
+
+        anti_aliasing = (
+            scale_x < 1.0 or scale_y < 1.0
+        )  # anti_aliasing is required for downsampling
+
+        sag = rescale(
+            sag,
+            scale=(scale_y, scale_x),
+            anti_aliasing=anti_aliasing,
+            order=3,
+        )
+
+        mask = rescale(
+            mask,
+            scale=(scale_y, scale_x),
+            anti_aliasing=anti_aliasing,
+            order=3,
+        )
+
+        # if the shape is not the same as the input (could be 1 pixel off), resize
+        if sag.shape != (ny, nx):
+            logger.debug(f"Resampled sag shape is {sag.shape}")
+            logger.debug(f"Output shape should be {(ny, nx)}: resizing...")
+            anti_aliasing = scale_x < 1.0 or scale_y < 1.0
+            sag = resize(
+                sag,
+                output_shape=(ny, nx),
+                anti_aliasing=anti_aliasing,
+                order=3,
+            )
+            mask = resize(
+                mask,
+                output_shape=(ny, nx),
+                anti_aliasing=anti_aliasing,
+                order=3,
+            )
+
+        mask = mask > 0.5
+        sag = np.ma.MaskedArray(sag, mask=mask)
+
+        self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * sag / self._wl).filled(0)
+
+        return sag
+
+    def psd(
+        self,
+        A=10.0,
+        B=0.0,
+        C=0.0,
+        fknee=1.0,
+        fmin=None,
+        fmax=None,
+        SR=0.0,
+        units=u.m,
+    ):
+        """
+        Add a WFE represented by a power spectral density (PSD) and surface roughness (SR) specification.
+
+        Parameters
+        ----------
+        A : float
+            The amplitude of the PSD.
+        B : float
+            PSD parameter. If B = 0, the PSD is a power law.
+        C : float
+            PSD parameter. It sets the slope of the PSD.
+        fknee : float
+            The knee frequency of the PSD.
+        fmin : float
+            The minimum frequency of the PSD.
+        fmax : float
+            The maximum frequency of the PSD.
+        SR : float
+            The rms of the surface roughness.
+        units : astropy.units
+            The units of the SFE. Default is meters.
+
+        Returns
+        -------
+        out: masked array
+            the WFE
+        """
+
+        # compute 2D frequency grid
+        fx = np.fft.fftfreq(self._wfo.shape[1], self.dx)
+        fy = np.fft.fftfreq(self._wfo.shape[0], self.dy)
+
+        fxx, fyy = np.meshgrid(fx, fy)
+        f = np.sqrt(fxx**2 + fyy**2)
+        f[f == 0] = 1e-100
+
+        if fmax is None:
+            logger.warning("fmax not provided, using f_Nyq")
+            fmax = 0.5 * np.sqrt(self.dx**-2 + self.dy**-2)
+        else:
+            f_Nyq = 0.5 * np.sqrt(self.dx**-2 + self.dy**-2)
+            assert fmax <= f_Nyq, f"fmax must be less than or equal to f_Nyq ({f_Nyq})"
+
+        if fmin is None:
+            logger.warning("fmin not provided, using 1 / D")
+            fmin = 1 / (self._wfo.shape[0] * np.max([self.dx, self.dy]))
+
+        # compute 2D PSD
+        psd = PSD(
+            pupil=self._wfo.copy().real,
+            A=A,
+            B=B,
+            C=C,
+            f=f,
+            fknee=fknee,
+            fmin=fmin,
+            fmax=fmax,
+            SR=SR,
+            units=units,
+        )
+        wfe = psd()
+
+        # update wfo
+        self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * wfe / self._wl)
 
         return wfe
 

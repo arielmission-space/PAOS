@@ -59,7 +59,7 @@ Or running ``PAOS`` itself with the `help` flag as
 
 Or the Graphical User Interface with the `help` flag as
 
-    paosgui -h
+    paos_gui -h
 
 If there are no errors then the installation was successful!
 
@@ -68,9 +68,10 @@ If there are no errors then the installation was successful!
 ``PAOS`` comes with an extensive documentation, which can be built using Sphinx.
 The documentation includes a tutorial, a user guide and a reference guide.
 
-To build the documentation, install the needed packages first via:
+To build the documentation, install the needed packages first via `poetry`:
 
-    pip install -e ".[docs]"
+    pip install poetry
+    poetry install --with docs
 
 ### Build the html documentation
 
@@ -99,5 +100,4 @@ If you wish to contribute to the code, please follow the steps described in the 
 
 ## How to cite
 
-A dedicated publication has been submitted and the relative information will be published soon.
-In the meanwhile, please, send an email to the developers.  
+Andrea Bocchieri, Lorenzo V. Mugnai, Enzo Pascale, “PAOS: a fast, modern, and reliable Python package for physical optics studies,” Proc. SPIE 13092, Space Telescopes and Instrumentation 2024: Optical, Infrared, and Millimeter Wave, 130924K (23 August 2024); https://doi.org/10.1117/12.3018333

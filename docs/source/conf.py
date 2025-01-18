@@ -27,8 +27,8 @@ from paos import __version__, __author__, __pkg_name__
 
 release = version = str(__version__)
 
-project = __pkg_name__.upper()
-copyright = "2020-{:d}, {}".format(date.today().year, __author__)
+project = __pkg_name__
+copyright = f"2021-{date.today().year:d}, {__author__}"
 
 # -- General configuration ---------------------------------------------------
 

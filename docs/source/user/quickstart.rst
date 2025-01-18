@@ -1,7 +1,7 @@
-.. _Quick start:
+.. _Quickstart:
 
 =======================
-Quick start
+Quickstart
 =======================
 
 Short explanation on how to quickly run ``PAOS`` and have its output stored in a convenient file.
@@ -62,10 +62,6 @@ Other option flags may be given to run specific simulations, as detailed in :num
 
    * - flag
      - description
-   * - ``-wl``, ``--wavelength``
-     - A list of specific wavelengths at which to run the simulation
-   * - ``-wlg``, ``--wavelength_grid``
-     - A list with min wl, max wl, spectral resolution to build a wavelength grid
    * - ``-wfe``, ``--wfe_simulation``
      - A list with wfe realization file and column to simulate an aberration
 
@@ -114,7 +110,7 @@ To open it, please choose your favourite viewer (e.g. HDFView_, HDFCompass_) or 
 
 .. _Python: https://www.h5py.org/
 
-For more information on how to produce a similar output file, see :ref:`Saving results`.
+For more information on how to produce a similar output file, see :ref:`Save`.
 
 
 The baseline plot
@@ -136,4 +132,4 @@ simulation wavelength and the total optical throughput that reaches the surface.
 The color scale can be either linear or logarithmic. The x and y axes are in physical units, e.g. micron.
 For reference, black rings mark the first five zeros of the circular Airy function.
 
-For more information on how to produce a similar plot, see :ref:`Plotting results`.
+For more information on how to produce a similar plot, see :ref:`Plot`.

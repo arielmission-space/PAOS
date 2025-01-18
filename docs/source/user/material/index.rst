@@ -1,6 +1,6 @@
-.. _Materials description:
+.. _Materials:
 
-Materials description
+Materials
 =======================
 
 Brief description of dispersion of light by optical materials and how it is implemented in ``PAOS``.

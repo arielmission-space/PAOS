@@ -12,7 +12,7 @@ def raytrace(field, opt_chain, x=0.0, y=0.0):
     Parameters
     ----------
     field: dict
-        contains the slopes in the tangential and sagittal planes as field={'vt': slopey, 'vs': slopex}
+        contains the slopes in the tangential and sagittal planes as field={'ut': slopey, 'us': slopex}
     opt_chain: dict
         the dict of the optical elements returned by paos.parse_config
     x: float

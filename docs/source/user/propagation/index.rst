@@ -3,7 +3,7 @@
 POP description
 =======================
 
-Brief description of some concepts of physical optics wavefront propagation (POP) and how they are implemented in ``PAOS``.
+Brief description of some concepts of physical optics wavefront propagation (POP) and how they are implemented in ``PAOS``, in the Fresnel approximation.
 
 In ``PAOS``, this is handled by the class :class:`~paos.classes.wfo.WFO`.
 
@@ -615,7 +615,7 @@ steps:
 #. estimate the Gaussian beam curvature after the element (image space)
 #. check the final position
 
-By combining the result of the second and the fourth step, ``PAOS`` selects the propagator (see :ref:`Wavefront propagation`).
+By combining the result of the second and the fourth step, ``PAOS`` selects the propagator (see :ref:`Wavefront propagation`),
 and the phase shift is imposed accordingly by defining a phase bias
 (see `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_):
 
@@ -725,7 +725,7 @@ Once the initialization is completed, ``PAOS`` repeats these actions in a loop:
 #. Apply coordinate break
 #. Apply aperture
 #. Apply stop
-#. Apply aberration (see :ref:`Aberration description`)
+#. Apply aberration (see :ref:`Aberration`)
 #. Save wavefront properties
 #. Apply magnification
 #. Apply medium change
