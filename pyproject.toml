@@ -57,6 +57,8 @@ loguru = "^0.7.2"
 shiny = "^1.2.1"
 shinywidgets = "*"
 faicons = "*"
+orjson = "^3.7.7"
+marimo = "^0.10.13"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "*"
@@ -65,9 +67,6 @@ sphinxcontrib-jsmath = "*"
 sphinx-markdown-tables = "^0.0.17"
 jupyter-sphinx = "^0.5.3"
 sphinx-rtd-theme = "^3.0.1"
-
-[tool.poetry.group.dev.dependencies]
-marimo = "^0.10.13"
 
 [tool.poetry.scripts]
 paos = "paos.paos:main"
