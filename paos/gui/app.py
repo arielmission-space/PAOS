@@ -560,7 +560,8 @@ def server(input, output, session):
             axis=ax,
             surface=surface,
             item=item,
-            title="Zernike errormap"
+            title="Zernike errormap",
+            zoom=int(input.zoom()),
         )
 
         figure_zernike.set(fig)
@@ -663,7 +664,8 @@ def server(input, output, session):
             axis=ax,
             surface=surface,
             item=item,
-            title="PSD errormap"
+            title="PSD errormap",
+            zoom=int(input.zoom()),
         )
 
         figure_PSD.set(fig)
@@ -760,6 +762,7 @@ def server(input, output, session):
             surface=surface,
             item=item,
             title="Grid Sag errormap",
+            zoom=int(input.zoom()),
         )
 
         figure_gridsag.set(fig)
