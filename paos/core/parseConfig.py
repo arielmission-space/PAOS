@@ -218,10 +218,8 @@ def parse_config(filename):
                 n2 = n1
 
                 wave = 1.0e-6 * getfloat(element.get("Par1", ""))
-                _data_["nx"] = element.getint("Par2", "")
-                _data_["ny"] = element.getint("Par3", "")
-                assert _data_["nx"] == parameters["grid_size"], "Size mismatch"
-                assert _data_["ny"] == parameters["grid_size"], "Size mismatch"
+                _data_["nx"] = getfloat(element.get("Par2", ""))
+                _data_["ny"] = getfloat(element.get("Par3", ""))
                 _data_["delx"] = getfloat(element.get("Par4", ""))
                 _data_["dely"] = getfloat(element.get("Par5", ""))
                 _data_["xdec"] = getfloat(element.get("Par6", ""))
