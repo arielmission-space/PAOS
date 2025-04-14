@@ -12,6 +12,8 @@
 
 It implements Physical Optics Propagation in Fresnel approximation and paraxial ray tracing to analyze complex waveform propagation through both generic and off-axes optical systems.
 
+It handles diffractive materials and can implement wavefront aberrations as Zernike polynomials, orthonormal polynomials, or grid sags.
+
 ## Table of contents
 
 - [``PAOS``](#paos)
@@ -39,7 +41,7 @@ Instructions on how to install ``PAOS``.
 
 ### Install from source code
 
-``PAOS`` is compatible (tested) with Python 3.8, 3.9 and 3.10
+``PAOS`` is compatible (tested) with Python 3.9+
 
 To install from source, clone the [repository](https://github.com/arielmission-space/PAOS/) and move inside the directory.
 
@@ -100,4 +102,20 @@ If you wish to contribute to the code, please follow the steps described in the 
 
 ## How to cite
 
-Andrea Bocchieri, Lorenzo V. Mugnai, Enzo Pascale, “PAOS: a fast, modern, and reliable Python package for physical optics studies,” Proc. SPIE 13092, Space Telescopes and Instrumentation 2024: Optical, Infrared, and Millimeter Wave, 130924K (23 August 2024); https://doi.org/10.1117/12.3018333
+```bibtex
+@INPROCEEDINGS{2024SPIE13092E..4KB,
+       author = {{Bocchieri}, Andrea and {Mugnai}, Lorenzo V. and {Pascale}, Enzo},
+        title = "{PAOS: a fast, modern, and reliable Python package for physical optics studies}",
+    booktitle = {Space Telescopes and Instrumentation 2024: Optical, Infrared, and Millimeter Wave},
+         year = 2024,
+       editor = {{Coyle}, Laura E. and {Matsuura}, Shuji and {Perrin}, Marshall D.},
+       series = {Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Series},
+       volume = {13092},
+        month = aug,
+          eid = {130924K},
+        pages = {130924K},
+          doi = {10.1117/12.3018333},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2024SPIE13092E..4KB},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+```
