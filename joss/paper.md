@@ -23,7 +23,7 @@ affiliations:
    index: 1
  - name: School of Physics and Astronomy, Cardiff University, Queens Buildings, The Parade, Cardiff, CF24 3AA, UK
    index: 2
-date: 27 January 2024
+date: 19 April 2025
 bibliography: paper.bib
 
 ---
@@ -34,7 +34,7 @@ bibliography: paper.bib
 
 `PAOS` is an open-source code implementing physical optics propagation (POP) in Fresnel approximation and paraxial ray-tracing to analyze complex waveform propagation through both generic and off-axes optical systems. It enables the generation of realistic Point Spread Functions across various wavelengths and focal planes, and wavefront analyses at each point in the optical system. It improves upon other POP codes offering extensive customization options and the liberty to access, utilize, and adapt the software library to the user's application. With a generic input system and a built-in Graphical User Interface, `PAOS` ensures seamless user interaction and facilitates simulations. The versatility of `PAOS` enables its application to a wide array of optical systems, extending beyond its initial use case. `PAOS` presents a fast, modern, and reliable POP simulation tool, enhancing the assessment of optical performance for a wide range of scientific and engineering applications and making advanced simulations more accessible and user-friendly.
 
-Developed using a Python&thinsp;3 stack, `PAOS` is released under the BSD 3-Clause license and is available on [GitHub](https://github.com/arielmission-space/PAOS). The plugin can be installed from the source code or from [PyPI](https://pypi.org/project/paos/), so it can be installed as `pip install paos`. The documentation is available on [readthedocs](https://paos.readthedocs.io/en/latest/), including a quick-start guide, documented examples, a comprehensive description of the software functionalities, and guidelines for developers. The documentation is continuously updated and is versioned to match the software releases.
+Developed using a Python&thinsp;3 stack, `PAOS` is released under the BSD 3-Clause license and is available on [GitHub](https://github.com/arielmission-space/PAOS). The package can be installed from the source code or from [PyPI](https://pypi.org/project/paos/), so it can be installed as `pip install paos`. The documentation is available on [readthedocs](https://paos.readthedocs.io/en/latest/), including a quick-start guide, documented examples, a comprehensive description of the software functionalities, and guidelines for developers. The documentation is continuously updated and is versioned to match the software releases.
 
 <!-- Mention PyPi and readthedocs -->
 
