@@ -14,17 +14,15 @@ authors:
     affiliation: "1"
   - name: Lorenzo V. Mugnai
     orcid: 0000-0002-9007-9802
-    affiliation: "1,2,3"
+    affiliation: "2"
   - name: Enzo Pascale
     orcid: 0000-0002-3242-8154
     affiliation: "1"            
 affiliations:
- - name: Department of Physics, La Sapienza Università di Roma, Piazzale Aldo Moro 2, Roma, 00185, Italy
+ - name: Department of Physics, La Sapienza Università di Roma, Piazzale Aldo Moro 5, Roma, 00185, Italy
    index: 1
- - name: Department of Physics and Astronomy, University College London, Gower Street, London, WC1E 6BT, UK
+ - name: School of Physics and Astronomy, Cardiff University, Queens Buildings, The Parade, Cardiff, CF24 3AA, UK
    index: 2
- - name: INAF, Osservatorio Astronomico di Palermo, Piazza del Parlamento 1, Palermo, I-90134, Italy
-   index: 3 
 date: 27 January 2024
 bibliography: paper.bib
 
