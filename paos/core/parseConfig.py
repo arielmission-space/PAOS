@@ -244,11 +244,7 @@ def parse_config(filename):
                 for par in ["nx", "ny", "delx", "dely", "xdec", "ydec"]:
                     input_params(par, grid_sag, _data_)
 
-                grid_sag_mask = grid_sag.get("mask", False)
-                grid_sag = np.ma.MaskedArray(
-                    grid_sag["data"], mask=grid_sag_mask | np.isinf(grid_sag["data"])
-                )
-                _data_["grid_sag"] = grid_sag * wave
+                _data_["grid_sag"] = grid_sag["data"] * wave
 
                 _data_["ABCDt"] = ABCD(
                     thickness=thickness,

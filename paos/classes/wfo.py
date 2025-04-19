@@ -694,22 +694,25 @@ class WFO:
 
         assert sag.ndim == 2, "sag shall be a 2D array"
 
+        logger.debug("Converting sag to masked array")
         if isinstance(sag, np.ma.MaskedArray):
-            mask = sag.mask.astype(float)
-            sag = sag.filled(0.0)
+            logger.debug("Input sag is already a masked array")
         else:
-            # mask is where sag is either NaN or 0
-            mask = np.isnan(sag) | (sag == 0)
-            mask = mask.astype(float)
-            sag[mask] = 0.0
+            logger.debug("Input sag is not a masked array")
+            mask = ~np.isfinite(sag) | (sag == 0)
+            sag = np.ma.MaskedArray(sag, mask=mask)
+
+        mask = sag.mask.astype(float)
+        sag = sag.filled(0.0)
 
         # Step 1: recenter
         if (xdec != 0) or (ydec != 0):
+            logger.debug("Applying sag shift: xdec = %f, ydec = %f" % (xdec, ydec))
             sag = fourier_shift(np.fft.fft2(sag), shift=(-xdec, -ydec))
             sag = np.fft.ifft2(sag).real
             mask = fourier_shift(np.fft.fft2(mask), shift=(-xdec, -ydec))
             mask = np.fft.ifft2(mask).real
-
+            
         # Step 2: pad or crop
         if nx is None or ny is None:
             logger.warning(
@@ -721,10 +724,12 @@ class WFO:
             # if not, we need to pad or crop the sag and mask
             # equally on each side (left/right, top/bottom)
 
-            target_width = int(nx * self._zoom)
-            target_height = int(ny * self._zoom)
-            logger.info(f"target width: {target_width}, target height: {target_height}")
-            logger.info(
+            target_width = int(np.ceil(nx * self._zoom))
+            target_height = int(np.ceil(ny * self._zoom))
+            logger.debug(
+                f"target width: {target_width}, target height: {target_height}"
+            )
+            logger.debug(
                 f"current width: {sag.shape[1]}, current height: {sag.shape[0]}"
             )
 
@@ -733,11 +738,11 @@ class WFO:
             # Handle width dimension (x-axis)
             width_diff = abs(sag.shape[1] - target_width)
             if width_diff <= tol:
-                logger.info(
+                logger.debug(
                     f"Width difference is only {width_diff} pixel, skipping adjustment"
                 )
             elif sag.shape[1] < target_width:
-                logger.info("Applying padding on width...")
+                logger.debug("Applying padding on width...")
                 pad_width = target_width - sag.shape[1]
                 pad_left = pad_width // 2
                 pad_right = pad_width - pad_left
@@ -756,7 +761,7 @@ class WFO:
                     constant_values=1,
                 )
             elif sag.shape[1] > target_width:
-                logger.info("Applying cropping on width...")
+                logger.debug("Applying cropping on width...")
                 crop_width = sag.shape[1] - target_width
                 crop_left = crop_width // 2
                 crop_right = sag.shape[1] - (crop_width - crop_left)
@@ -768,11 +773,11 @@ class WFO:
             # Handle height dimension (y-axis)
             height_diff = abs(sag.shape[0] - target_height)
             if height_diff <= tol:
-                logger.info(
+                logger.debug(
                     f"Height difference is only {height_diff} pixel, skipping adjustment"
                 )
             elif sag.shape[0] < target_height:
-                logger.info("Applying padding on height...")
+                logger.debug("Applying padding on height...")
                 pad_height = target_height - sag.shape[0]
                 pad_top = pad_height // 2
                 pad_bottom = pad_height - pad_top
@@ -791,7 +796,7 @@ class WFO:
                     constant_values=1,
                 )
             elif sag.shape[0] > target_height:
-                logger.info("Applying cropping on height...")
+                logger.debug("Applying cropping on height...")
                 crop_height = sag.shape[0] - target_height
                 crop_top = crop_height // 2
                 crop_bottom = sag.shape[0] - (crop_height - crop_top)
@@ -799,6 +804,9 @@ class WFO:
                 # Apply cropping only on y-axis
                 sag = sag[crop_top:crop_bottom, :]
                 mask = mask[crop_top:crop_bottom, :]
+            logger.debug(
+                f"Adjusted sag shape is {sag.shape}, mask shape is {mask.shape}"
+            )
 
         # Step 3: rescale
         scale_x = delx / self.dx
@@ -822,13 +830,12 @@ class WFO:
                 anti_aliasing=anti_aliasing,
                 order=3,
             )
-
+        
         # Step 4: resize
         # if the shape is not the same as the input (could be 1 pixel off), resize
-        logger.info(f"Resampled sag shape is {sag.shape}")
+        logger.debug(f"Resampled sag shape is {sag.shape}")
 
         if sag.shape != self._wfo.shape:
-            logger.debug(f"Resampled sag shape is {sag.shape}")
             logger.debug(f"Output shape should be {self._wfo.shape}: resizing...")
             scale_x = self._wfo.shape[1] / sag.shape[1]
             scale_y = self._wfo.shape[0] / sag.shape[0]
@@ -845,8 +852,8 @@ class WFO:
                 anti_aliasing=anti_aliasing,
                 order=3,
             )
-
-        mask = mask > 0.5
+        
+        mask = mask > 0.1
         sag = np.ma.MaskedArray(sag, mask=mask)
 
         self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * sag / self._wl).filled(0)
