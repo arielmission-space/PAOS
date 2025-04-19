@@ -96,7 +96,6 @@ class WFO:
     """
 
     def __init__(self, beam_diameter, wl, grid_size, zoom):
-
         assert np.log2(grid_size).is_integer(), "Grid size should be 2**n"
         assert zoom > 0, "zoom factor should be positive"
         assert beam_diameter > 0, "beam diameter should be positive"
@@ -116,6 +115,7 @@ class WFO:
 
         grid_size = np.uint(grid_size)
         self._wfo = np.ones((grid_size, grid_size), dtype=np.complex128)
+        self._zoom = zoom
 
     @property
     def wl(self):
@@ -582,7 +582,7 @@ class WFO:
         mask=False,
     ):
         """
-        Add a WFE represented by a Zernike expansion. 
+        Add a WFE represented by a Zernike expansion.
         Either Zernike or orthonormal polynomials can be used.
 
         Parameters
@@ -605,7 +605,7 @@ class WFO:
         orthonorm: bool
             If True, orthonormal polynomials are used. Default is False.
         mask: bool array like
-            The mask defining the pupil following masked array convention. 
+            The mask defining the pupil following masked array convention.
             Pixel within the pupil are masked False. Defaults to False.
 
         Returns
@@ -667,17 +667,24 @@ class WFO:
         sag: array
             2D array of sag values in meters
         nx: int
-            number of pixels along x-axis
+            Size of sag in pixels along x-axis. If circular or elliptical,
+            specify the diameter or the axes of the ellipse. If rectangular,
+            specify the full dimension of the rectangle.
+            If not specified, the size of the wavefront is used.
         ny: int
-            number of pixels along y-axis
+            Size of sag in pixels along y-axis. See nx.
         delx: float
-            pixel size along x-axis
+            pixel size along x-axis. The user can specify a pixel size
+            in the sag array to account for a possible difference
+            between the sag and the WFO.
         dely: float
-            pixel size along y-axis
+            pixel size along y-axis. See delx.
         xdec: float
-            pixel shift along x-axis
+            pixel shift along x-axis. The user can specify a pixel shift
+            in the sag array to account for a possible misalignment
+            between the sag and the WFO.
         ydec: float
-            pixel shift along y-axis
+            pixel shift along y-axis. See xdec.
 
         Returns
         -------
@@ -687,59 +694,166 @@ class WFO:
 
         assert sag.ndim == 2, "sag shall be a 2D array"
 
-        if not isinstance(sag, np.ma.MaskedArray):
-            mask = np.isnan(sag)
-            sag[mask] = 0
+        logger.debug("Converting sag to masked array")
+        if isinstance(sag, np.ma.MaskedArray):
+            logger.debug("Input sag is already a masked array")
+        else:
+            logger.debug("Input sag is not a masked array")
+            mask = ~np.isfinite(sag) | (sag == 0)
             sag = np.ma.MaskedArray(sag, mask=mask)
 
         mask = sag.mask.astype(float)
+        sag = sag.filled(0.0)
 
-        if (xdec != 0.0) or (ydec != 0.0):
+        # Step 1: recenter
+        if (xdec != 0) or (ydec != 0):
+            logger.debug("Applying sag shift: xdec = %f, ydec = %f" % (xdec, ydec))
             sag = fourier_shift(np.fft.fft2(sag), shift=(-xdec, -ydec))
             sag = np.fft.ifft2(sag).real
             mask = fourier_shift(np.fft.fft2(mask), shift=(-xdec, -ydec))
             mask = np.fft.ifft2(mask).real
+            
+        # Step 2: pad or crop
+        if nx is None or ny is None:
+            logger.warning(
+                "nx and ny not specified. The sag will be used without padding or cropping."
+            )
+        else:
+            # need to ensure that sag.shape[1] / nx and sag.shape[0] / ny
+            # are equal to the zoom factor used for the WFO
+            # if not, we need to pad or crop the sag and mask
+            # equally on each side (left/right, top/bottom)
 
+            target_width = int(np.ceil(nx * self._zoom))
+            target_height = int(np.ceil(ny * self._zoom))
+            logger.debug(
+                f"target width: {target_width}, target height: {target_height}"
+            )
+            logger.debug(
+                f"current width: {sag.shape[1]}, current height: {sag.shape[0]}"
+            )
+
+            tol = 1  # difference of 1 pixel is acceptable
+
+            # Handle width dimension (x-axis)
+            width_diff = abs(sag.shape[1] - target_width)
+            if width_diff <= tol:
+                logger.debug(
+                    f"Width difference is only {width_diff} pixel, skipping adjustment"
+                )
+            elif sag.shape[1] < target_width:
+                logger.debug("Applying padding on width...")
+                pad_width = target_width - sag.shape[1]
+                pad_left = pad_width // 2
+                pad_right = pad_width - pad_left
+
+                # Apply padding only on x-axis
+                sag = np.pad(
+                    sag,
+                    ((0, 0), (pad_left, pad_right)),
+                    mode="constant",
+                    constant_values=0,
+                )
+                mask = np.pad(
+                    mask,
+                    ((0, 0), (pad_left, pad_right)),
+                    mode="constant",
+                    constant_values=1,
+                )
+            elif sag.shape[1] > target_width:
+                logger.debug("Applying cropping on width...")
+                crop_width = sag.shape[1] - target_width
+                crop_left = crop_width // 2
+                crop_right = sag.shape[1] - (crop_width - crop_left)
+
+                # Apply cropping only on x-axis
+                sag = sag[:, crop_left:crop_right]
+                mask = mask[:, crop_left:crop_right]
+
+            # Handle height dimension (y-axis)
+            height_diff = abs(sag.shape[0] - target_height)
+            if height_diff <= tol:
+                logger.debug(
+                    f"Height difference is only {height_diff} pixel, skipping adjustment"
+                )
+            elif sag.shape[0] < target_height:
+                logger.debug("Applying padding on height...")
+                pad_height = target_height - sag.shape[0]
+                pad_top = pad_height // 2
+                pad_bottom = pad_height - pad_top
+
+                # Apply padding only on y-axis
+                sag = np.pad(
+                    sag,
+                    ((pad_top, pad_bottom), (0, 0)),
+                    mode="constant",
+                    constant_values=0,
+                )
+                mask = np.pad(
+                    mask,
+                    ((pad_top, pad_bottom), (0, 0)),
+                    mode="constant",
+                    constant_values=1,
+                )
+            elif sag.shape[0] > target_height:
+                logger.debug("Applying cropping on height...")
+                crop_height = sag.shape[0] - target_height
+                crop_top = crop_height // 2
+                crop_bottom = sag.shape[0] - (crop_height - crop_top)
+
+                # Apply cropping only on y-axis
+                sag = sag[crop_top:crop_bottom, :]
+                mask = mask[crop_top:crop_bottom, :]
+            logger.debug(
+                f"Adjusted sag shape is {sag.shape}, mask shape is {mask.shape}"
+            )
+
+        # Step 3: rescale
         scale_x = delx / self.dx
         scale_y = dely / self.dy
 
-        anti_aliasing = (
-            scale_x < 1.0 or scale_y < 1.0
-        )  # anti_aliasing is required for downsampling
+        if (scale_x != 1) or (scale_y != 1):
+            anti_aliasing = (
+                scale_x < 1.0 or scale_y < 1.0
+            )  # anti_aliasing is required for downsampling
 
-        sag = rescale(
-            sag,
-            scale=(scale_y, scale_x),
-            anti_aliasing=anti_aliasing,
-            order=3,
-        )
+            sag = rescale(
+                sag,
+                scale=(scale_y, scale_x),
+                anti_aliasing=anti_aliasing,
+                order=3,
+            )
 
-        mask = rescale(
-            mask,
-            scale=(scale_y, scale_x),
-            anti_aliasing=anti_aliasing,
-            order=3,
-        )
-
+            mask = rescale(
+                mask,
+                scale=(scale_y, scale_x),
+                anti_aliasing=anti_aliasing,
+                order=3,
+            )
+        
+        # Step 4: resize
         # if the shape is not the same as the input (could be 1 pixel off), resize
-        if sag.shape != (ny, nx):
-            logger.debug(f"Resampled sag shape is {sag.shape}")
-            logger.debug(f"Output shape should be {(ny, nx)}: resizing...")
+        logger.debug(f"Resampled sag shape is {sag.shape}")
+
+        if sag.shape != self._wfo.shape:
+            logger.debug(f"Output shape should be {self._wfo.shape}: resizing...")
+            scale_x = self._wfo.shape[1] / sag.shape[1]
+            scale_y = self._wfo.shape[0] / sag.shape[0]
             anti_aliasing = scale_x < 1.0 or scale_y < 1.0
             sag = resize(
                 sag,
-                output_shape=(ny, nx),
+                output_shape=self._wfo.shape,
                 anti_aliasing=anti_aliasing,
                 order=3,
             )
             mask = resize(
                 mask,
-                output_shape=(ny, nx),
+                output_shape=self._wfo.shape,
                 anti_aliasing=anti_aliasing,
                 order=3,
             )
-
-        mask = mask > 0.5
+        
+        mask = mask > 0.1
         sag = np.ma.MaskedArray(sag, mask=mask)
 
         self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * sag / self._wl).filled(0)

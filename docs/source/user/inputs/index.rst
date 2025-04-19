@@ -325,9 +325,9 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
      - None
      - Par1 = wavelength (in micron)
 
-       Par2 = Nx (shall be the same as grid_size)
+       Par2 = Nx (in pixel)
 
-       Par3 = Ny (shall be the same as grid_size)
+       Par3 = Ny (in pixel)
 
        Par4 = Dx
 

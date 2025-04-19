@@ -218,10 +218,8 @@ def parse_config(filename):
                 n2 = n1
 
                 wave = 1.0e-6 * getfloat(element.get("Par1", ""))
-                _data_["nx"] = element.getint("Par2", "")
-                _data_["ny"] = element.getint("Par3", "")
-                assert _data_["nx"] == parameters["grid_size"], "Size mismatch"
-                assert _data_["ny"] == parameters["grid_size"], "Size mismatch"
+                _data_["nx"] = getfloat(element.get("Par2", ""))
+                _data_["ny"] = getfloat(element.get("Par3", ""))
                 _data_["delx"] = getfloat(element.get("Par4", ""))
                 _data_["dely"] = getfloat(element.get("Par5", ""))
                 _data_["xdec"] = getfloat(element.get("Par6", ""))
@@ -246,11 +244,7 @@ def parse_config(filename):
                 for par in ["nx", "ny", "delx", "dely", "xdec", "ydec"]:
                     input_params(par, grid_sag, _data_)
 
-                grid_sag_mask = grid_sag.get("mask", False)
-                grid_sag = np.ma.MaskedArray(
-                    grid_sag["data"], mask=grid_sag_mask | np.isinf(grid_sag["data"])
-                )
-                _data_["grid_sag"] = grid_sag * wave
+                _data_["grid_sag"] = grid_sag["data"] * wave
 
                 _data_["ABCDt"] = ABCD(
                     thickness=thickness,
