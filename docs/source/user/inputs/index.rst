@@ -341,9 +341,9 @@ Standard, Paraxial Lens, ABCD, Zernike, PSD, and Grid Sag) and their required pa
 
 .. note::
 
-    #. Set the `Ignore` flag to 1 to skip the surface
-    #. Set the `Stop` flag to 1 to make the surface a Stop (see :ref:`Stops`)
-    #. Set the `Save` flat to 1 to later save the output for the surface
+    #. Set the `Ignore` flag to True to skip the surface
+    #. Set the `Stop` flag to True to make the surface a Stop (see :ref:`Stops`)
+    #. Set the `Save` flat to True to later save the output for the surface
 
 .. note::
     The `aperture` keyword is a list with the following format:
