@@ -5,6 +5,7 @@
 [![Downloads](https://static.pepy.tech/badge/paos)](https://pepy.tech/project/paos)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Documentation Status](https://readthedocs.org/projects/paos/badge/?version=latest)](https://paos.readthedocs.io/en/latest/?badge=latest)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
 
 ## Introduction
 
@@ -98,7 +99,7 @@ The developers use `pdflatex`; if you have another compiler for LaTex, please re
 ## How to contribute
 
 You can contribute to ``PAOS`` by reporting bugs, suggesting new features, or contributing to the code itself.
-If you wish to contribute to the code, please follow the steps described in the documentation under `Developer guide`.
+If you wish to contribute to the code, please follow the steps described in the documentation under `Contribution Guidelines`.
 
 ## How to cite
 
