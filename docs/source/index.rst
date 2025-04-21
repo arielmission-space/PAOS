@@ -39,7 +39,7 @@ Want to jump into the ``PAOS`` program? Head here: :ref:`User guide`
 
 Want to know more about the code? Head here: :ref:`API guide`
 
-Want to collaborate? Head here: :ref:`Developer guide`
+Want to collaborate? Head here: :ref:`Contribution Guidelines`
 
 -----------------------------------
 
@@ -59,7 +59,7 @@ Curious about the project history? Head here: :ref:`changelog`
 
     Home <self>
     User Guide <user/index>
-    Developer Guide <developer/index>
+    Contribution Guidelines <contributing/index>
     API Guide <api/modules>
     License <license>
     Changelog <CHANGELOG>
