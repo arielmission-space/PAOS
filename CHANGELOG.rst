@@ -148,6 +148,48 @@ Changed
 ^^^^^^^
 - Refactored docs
 
+1.2.6 [15/12/2024]
+--------------------
+
+Added
+^^^^^^^
+- Marimo notebook/app for PAOS demo
+- Material and PSD apps
+
+Changed
+^^^^^^^
+- Deprecated Python 3.8
+- Updated dependencies management with Poetry
+
+1.2.7 [21/01/2025]
+--------------------
+
+Fixed
+^^^^^^^
+- Fixed f-string in plot function
+- Fixed documentation dependencies
+
+1.2.8 [19/04/2025]
+--------------------
+
+Changed
+^^^^^^^
+- Refactored WFO class sag handling
+- Updated lens configuration parameters and grid size handling
+- Improved logging system
+
+Added
+^^^^^^^
+- Grid sag sizing feature
+
+1.2.9-rc0 [21/04/2025]
+--------------------
+
+Added
+^^^^^^^
+- Contributor Covenant Code of Conduct
+- Contribution Guidelines in documentation
+
 
 .. _Released: https://github.com/arielmission-space/PAOS/
 .. _keepachangelog: https://keepachangelog.com/en/1.0.0/
