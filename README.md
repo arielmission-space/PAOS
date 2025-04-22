@@ -24,6 +24,7 @@ It handles diffractive materials and can implement wavefront aberrations as Zern
     - [Install from PyPI](#install-from-pypi)
     - [Install from source code](#install-from-source-code)
       - [Test your installation](#test-your-installation)
+    - [Interactive Marimo Notebooks](#interactive-marimo-notebooks)
   - [Documentation](#documentation)
     - [Build the html documentation](#build-the-html-documentation)
     - [Build the pdf documentation](#build-the-pdf-documentation)
@@ -65,6 +66,28 @@ Or the Graphical User Interface with the `help` flag as
     paos_gui -h
 
 If there are no errors then the installation was successful!
+
+### Interactive Marimo Notebooks
+
+PAOS provides interactive [marimo](https://github.com/marimo-team/marimo) notebooks to showcase (some of) its capabilities. These notebooks allow you to explore PAOS features in a live, browser-based environment.
+
+**Available marimo notebooks:**
+
+- `notebook/paos_demo.py`
+- `notebook/material.py`
+- `notebook/psd.py`
+
+*Note: These notebooks are available only in PAOS version 1.2.6 and later.*
+
+**How to run a marimo notebook:**
+
+After installing PAOS, marimo is already available.
+
+To launch a notebook (for example):
+
+    marimo run notebook/paos_demo.py
+
+This will open the interactive notebook in your browser.
 
 ## Documentation
 
