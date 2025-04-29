@@ -1,7 +1,7 @@
 # ``PAOS``
 
-[![PyPI version](https://badge.fury.io/py/paos.svg)](https://badge.fury.io/py/paos)
-[![GitHub version](https://badge.fury.io/gh/arielmission-space%2FPAOS.svg)](https://badge.fury.io/gh/arielmission-space%2FPAOS)
+[![PyPI version](https://badge.fury.io/py/paos.svg?icon=si%3Apython)](https://badge.fury.io/py/paos)
+[![GitHub version](https://badge.fury.io/gh/arielmission-space%2FPAOS.svg?icon=si%3Agithub)](https://badge.fury.io/gh/arielmission-space%2FPAOS)
 [![Downloads](https://static.pepy.tech/badge/paos)](https://pepy.tech/project/paos)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Documentation Status](https://readthedocs.org/projects/paos/badge/?version=latest)](https://paos.readthedocs.io/en/latest/?badge=latest)
