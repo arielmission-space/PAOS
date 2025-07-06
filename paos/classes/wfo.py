@@ -784,7 +784,6 @@ class WFO:
 
         width_diff = int(np.floor((current_width - target_width) / delx))
         height_diff = int(np.floor((current_height - target_height) / dely))
-        print(width_diff, height_diff)
 
         scale_x = scale_y = 1
         if width_diff % 2 == 1 or height_diff % 2 == 1:
@@ -803,7 +802,6 @@ class WFO:
         if (scale_x != 1) or (scale_y != 1):
             sag, mask = rescale_map(sag, mask, scale_x, scale_y)
         logger.debug(f"Resampled sag shape is {sag.shape}")
-        print(width_diff, height_diff)
 
         # Handle width dimension (x-axis)
         if width_diff < 0.0:
