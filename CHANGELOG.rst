@@ -188,7 +188,7 @@ Added
 Added
 ^^^^^^^
 - Contributor Covenant Code of Conduct
-- Contribution Guidelines in documentation
+- Developer Guide in documentation
 
 
 .. _Released: https://github.com/arielmission-space/PAOS/

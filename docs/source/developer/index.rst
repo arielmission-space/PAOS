@@ -1,6 +1,6 @@
-.. _Contribution Guidelines:
+.. _Developer Guide:
 
-Contribution Guidelines
+Developer Guide
 ===================================
 
 In this section we report some general guidelines for contributing to ``PAOS`` development.
