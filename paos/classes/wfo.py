@@ -645,7 +645,9 @@ class WFO:
         wfe = (zer.T * Z).T.sum(axis=0)
         logger.debug(f"WFE RMS = {np.std(wfe)}")
 
-        self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * wfe / self._wl).filled(0)
+        self._wfo = self._wfo * np.exp(
+            2.0 * np.pi * 1j * wfe.filled(0) / self._wl
+        )  # Note: applied filled(0) inside the exponent rather than outside to avoid cropping wavefront outside of the wfe mask
 
         return wfe
 
@@ -860,7 +862,9 @@ class WFO:
         mask = mask > 0.1
         sag = np.ma.MaskedArray(sag, mask=mask)
 
-        self._wfo = self._wfo * np.exp(2.0 * np.pi * 1j * sag / self._wl).filled(0)
+        self._wfo = self._wfo * np.exp(
+            2.0 * np.pi * 1j * sag.filled(0) / self._wl
+        )  # Note: applied filled(0) inside the exponent rather than outside to avoid cropping wavefront outside of the sag mask
 
         return sag
 
