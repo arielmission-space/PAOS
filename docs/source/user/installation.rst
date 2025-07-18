@@ -111,4 +111,4 @@ or simply
 
     pip install .
 
-To produce new ``PAOS`` functionalities and contribute to the code, please see :ref:`Contribution Guidelines`.
+To produce new ``PAOS`` functionalities and contribute to the code, please see :ref:`Developer Guide`.
