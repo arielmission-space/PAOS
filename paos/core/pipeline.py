@@ -213,10 +213,7 @@ def pipeline(passvalue):
 
     if passvalue["return"]:
         logger.debug("Returning output dict")
-        if not hasattr(retval, "len"):
-            return retval[0]
-        else:
-            return retval
-    else:
-        logger.debug("Not returning output dict")
-        return
+        return retval
+
+    logger.debug("Not returning output dict")
+    return
