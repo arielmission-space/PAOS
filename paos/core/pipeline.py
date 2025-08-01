@@ -44,6 +44,7 @@ def pipeline(passvalue):
     >>> from paos.core.pipeline import pipeline
     >>> pipeline(passvalue={'conf':'path/to/conf/file',
     >>>                     'output': 'path/to/output/file',
+    >>>                     'save': True,
     >>>                     'plot': True,
     >>>                     'loglevel': 'debug',
     >>>                     'n_jobs': 2,
@@ -54,12 +55,8 @@ def pipeline(passvalue):
     logger.debug("Set up logger")
 
     if "loglevel" in passvalue.keys():
-        if passvalue["loglevel"] == "debug":
-            setLogLevel(logging.DEBUG)
-        elif passvalue["loglevel"] == "trace":
-            setLogLevel(logging.TRACE)
-        elif passvalue["loglevel"] == "info":
-            setLogLevel(logging.INFO)
+        if passvalue["loglevel"] in ["debug", "trace", "info"]:
+            setLogLevel(passvalue["loglevel"].upper())
         else:
             logger.error("loglevel shall be one of debug, trace or info")
 
@@ -68,6 +65,8 @@ def pipeline(passvalue):
     )
     logger.debug("Set pipeline defaults")
 
+    if "save" not in passvalue.keys():
+        passvalue["save"] = True
     if "plot" not in passvalue.keys():
         passvalue["plot"] = False
     if "n_jobs" not in passvalue.keys():
@@ -156,23 +155,26 @@ def pipeline(passvalue):
     logger.info("POP completed in {:6.1f}s".format(end_time - start_time))
     _ = gc.collect()
 
-    logger.debug(
-        "---------------------------------------------------------------------"
-    )
-    logger.info("Save POP simulation output .h5 file to {}".format(passvalue["output"]))
-    group_tags = list(map(str, wavelengths))
-    logger.debug("group tags: {}".format(group_tags))
-    store_keys = None
-    if passvalue["store_keys"] is not None:
-        store_keys = passvalue["store_keys"].split(",")
-    logger.debug("Store keys: {}".format(store_keys))
-    save_datacube(
-        retval,
-        passvalue["output"],
-        group_tags,
-        keys_to_keep=store_keys,
-        overwrite=True,
-    )
+    if passvalue["save"]:
+        logger.debug(
+            "---------------------------------------------------------------------"
+        )
+        logger.info(
+            "Save POP simulation output .h5 file to {}".format(passvalue["output"])
+        )
+        group_tags = list(map(str, wavelengths))
+        logger.debug("group tags: {}".format(group_tags))
+        store_keys = None
+        if passvalue["store_keys"] is not None:
+            store_keys = passvalue["store_keys"].split(",")
+        logger.debug("Store keys: {}".format(store_keys))
+        save_datacube(
+            retval,
+            passvalue["output"],
+            group_tags,
+            keys_to_keep=store_keys,
+            overwrite=True,
+        )
 
     if passvalue["plot"]:
 
