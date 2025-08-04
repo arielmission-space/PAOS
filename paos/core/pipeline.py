@@ -17,6 +17,7 @@ from paos.core.raytrace import raytrace
 from paos.core.run import run
 from paos.core.saveOutput import save_datacube
 from paos.log.logger import setLogLevel
+from paos.log.logger import addLogFile
 
 
 def pipeline(passvalue):
@@ -60,6 +61,10 @@ def pipeline(passvalue):
         else:
             logger.error("loglevel shall be one of debug, trace or info")
 
+    if "logfile" in passvalue.keys():
+        logger.info(f"log file name: {passvalue['logfile']}")
+        addLogFile(fname=passvalue["logfile"])
+
     logger.debug(
         "---------------------------------------------------------------------"
     )
@@ -98,7 +103,7 @@ def pipeline(passvalue):
     )
     logger.info("Set up the POP")
 
-    logger.debug("Wavelengths: {}".format(wavelengths))
+    logger.debug(f"Wavelengths: {wavelengths}")
     logger.debug(f"Using field f1 = {fields[0]} from configuration file")
     field = fields[0]
     logger.debug("Set up the optical chain for the POP run")
@@ -118,16 +123,14 @@ def pipeline(passvalue):
                 and passvalue["wfe"] is not None
             ):
                 wfe_file, column = passvalue["wfe"].split(",")
-                logger.debug(
-                    "Wfe realization file: {}; column: {}".format(wfe_file, column)
-                )
+                logger.debug(f"Wfe realization file: {wfe_file}; column: {column}")
                 wfe = ascii.read(wfe_file)
                 optc[idx][key]["Zordering"] = "standard"
                 optc[idx][key]["Znormalize"] = "True"
                 optc[idx][key]["Zorigin"] = "x"
                 Ck = wfe["col%i" % (float(column) + 4)].data * 1.0e-9
                 optc[idx][key]["Z"] = np.append(np.zeros(3), Ck)
-                logger.debug("Wfe coefficients: {}".format(optc[idx][key]["Z"]))
+                logger.debug(f"Wfe coefficients: {optc[idx][key]['Z']}")
 
     logger.debug(
         "---------------------------------------------------------------------"
@@ -152,22 +155,20 @@ def pipeline(passvalue):
         for key, opt_chain in tqdm(optc.items())
     )
     end_time = time.time()
-    logger.info("POP completed in {:6.1f}s".format(end_time - start_time))
+    logger.info(f"POP completed in {(end_time - start_time):6.1f}s")
     _ = gc.collect()
 
     if passvalue["save"]:
         logger.debug(
             "---------------------------------------------------------------------"
         )
-        logger.info(
-            "Save POP simulation output .h5 file to {}".format(passvalue["output"])
-        )
+        logger.info(f"Save POP simulation output .h5 file to {passvalue['output']}")
         group_tags = list(map(str, wavelengths))
-        logger.debug("group tags: {}".format(group_tags))
+        logger.debug(f"group tags: {group_tags}")
         store_keys = None
         if passvalue["store_keys"] is not None:
             store_keys = passvalue["store_keys"].split(",")
-        logger.debug("Store keys: {}".format(store_keys))
+        logger.debug(f"Store keys: {store_keys}")
         save_datacube(
             retval,
             passvalue["output"],
@@ -183,11 +184,9 @@ def pipeline(passvalue):
         )
         logger.info("Save POP simulation output plot")
 
-        plots_dir = "{}/plots".format(os.path.dirname(passvalue["output"]))
+        plots_dir = f"{os.path.dirname(passvalue['output'])}/plots"
         if not os.path.isdir(plots_dir):
-            logger.info(
-                "folder {} not found in directory tree. Creating..".format(plots_dir)
-            )
+            logger.info(f"folder {plots_dir} not found in directory tree. Creating..")
             Path(plots_dir).mkdir(parents=True, exist_ok=True)
         start_time = time.time()
 
@@ -199,19 +198,19 @@ def pipeline(passvalue):
         )
         fig_name = os.path.join(plots_dir, fig_name)
 
-        logger.debug("fig base name: {}".format(fig_name))
+        logger.debug(f"fig base name: {fig_name}")
 
         _ = Parallel(n_jobs=passvalue["n_jobs"])(
             delayed(plot_pop)(
                 _retval_,
                 ima_scale="log",
                 ncols=2,
-                figname="".join([fig_name, "_{}_um".format(tag), ".png"]),
+                figname="".join([fig_name, f"_{tag}_um", ".png"]),
             )
             for _retval_, tag in zip(tqdm(retval), group_tags)
         )
         end_time = time.time()
-        logger.info("Plotting completed in {:6.1f}s".format(end_time - start_time))
+        logger.info(f"Plotting completed in {(end_time - start_time):6.1f}s")
 
     if passvalue["return"]:
         logger.debug("Returning output dict")
