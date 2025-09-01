@@ -21,6 +21,7 @@ def push_results(wfo):
         "wfo": wfo.wfo,
         "wl": wfo.wl,
         "extent": wfo.extent,
+        "propagator": wfo.propagator,
     }
 
     return retval
