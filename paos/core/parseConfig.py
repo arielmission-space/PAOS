@@ -72,7 +72,7 @@ def parse_config(filename):
     config.read(filename)
 
     # Parse parameters in section 'general'
-    allowed_grid_size = [64, 128, 256, 512, 1024]
+    allowed_grid_size = [64, 128, 256, 512, 1024, 2048, 4096]
     allowed_zoom_val = [1, 2, 4, 8, 16]
     parameters = {
         "project": config["general"]["project"],

@@ -28,6 +28,7 @@ Code example to the method :func:`~paos.core.pipeline.pipeline` to run a simulat
 
         pipeline(passvalue={'conf':'path/to/ini/file',
                             'output': 'path/to/hdf5',
+                            'save': True,
                             'plot': True,
                             'loglevel': 'info',
                             'n_jobs': 2,

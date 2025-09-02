@@ -33,6 +33,8 @@ The main command line flags are listed in :numref:`Main command line flags`.
      - Input configuration file to pass
    * - ``-o``, ``--output``
      - Output file
+   * - ``-s``, ``--save``
+     - Save to output file
    * - ``-p``, ``--plot``
      - Save output plots
    * - ``-n``, ``--nThreads``

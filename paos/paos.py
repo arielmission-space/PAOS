@@ -71,6 +71,15 @@ def main():
         help="number of threads for parallel processing",
     )
     parser.add_argument(
+        "-s",
+        "--save",
+        dest="save",
+        default=True,
+        required=False,
+        help="save output to .h5 file",
+        action="store_true",
+    )
+    parser.add_argument(
         "-p",
         "--plot",
         dest="plot",
@@ -115,6 +124,7 @@ def main():
         "wfe": args.wfe,
         "store_keys": args.store_keys,
         "n_jobs": args.n_jobs,
+        "save": args.save,
         "plot": args.plot,
         "debug": args.debug,
     }

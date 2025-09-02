@@ -69,6 +69,8 @@ class WFO:
     extent: tuple
         the physical coordinates of the wavefront bounding box (xmin, xmax, ymin, ymax).
         Can be used directly in im.set_extent.
+    propagator: string
+        Propagator type last applied
 
     Returns
     -------
@@ -116,6 +118,7 @@ class WFO:
         grid_size = np.uint(grid_size)
         self._wfo = np.ones((grid_size, grid_size), dtype=np.complex128)
         self._zoom = zoom
+        self._propagator = ""
 
     @property
     def wl(self):
@@ -176,6 +179,10 @@ class WFO:
     @property
     def distancetofocus(self):
         return self.zw0 - self.z
+
+    @property
+    def propagator(self):
+        return self._propagator
 
     @property
     def extent(self):
@@ -568,6 +575,8 @@ class WFO:
         elif propagator == "OO":
             self.stw(self.zw0 - z1)
             self.wts(z2 - self.zw0)
+
+        self._propagator = propagator
 
     def zernikes(
         self,
