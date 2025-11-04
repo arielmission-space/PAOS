@@ -8,11 +8,8 @@ from rich.console import Console
 from rich_click import RichCommand
 from shiny import run_app
 
-from paos import __pkg_name__
-from paos import __version__
-from paos import logger
-from paos.log.logger import addLogFile
-from paos.log.logger import setLogLevel
+from paos import __pkg_name__, __version__, logger
+from paos.log.logger import addLogFile, setLogLevel
 
 rich_click.rich_click.USE_RICH_MARKUP = True
 rich_click.rich_click.SHOW_ARGUMENTS = True

@@ -128,7 +128,6 @@ def _(
 
         return config[f"lens_{id_surf:02d}"]["comment"]
 
-
     def update_config():
         temp_dir = tempfile.gettempdir()
         temp_file_path = os.path.join(temp_dir, file_browser.name())
@@ -147,7 +146,6 @@ def _(
 
         return pup_diameter, parameters, wavelengths, fields, opt_chains
 
-
     def compute_raytrace():
         pup_diameter, parameters, wavelengths, fields, opt_chains = update_config()
 
@@ -163,7 +161,6 @@ def _(
 
         return res
 
-
     def compute_pop():
         pup_diameter, parameters, wavelengths, fields, opt_chains = update_config()
 
@@ -176,13 +173,13 @@ def _(
             opt_chains[0],
         )
 
-
     def plot(retval, id_surf):
         fig = plt.figure()
         ax = plt.gca()
         simple_plot(fig, ax, id_surf, retval[id_surf], ima_scale="log")
 
         return ax
+
     return compute_pop, compute_raytrace, get_surf_info, plot, update_config
 
 

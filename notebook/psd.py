@@ -12,7 +12,9 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md(r"""The PSD is given by the following expression: PSD(f) = $\frac{A}{B + (f/f_{knee})^C}$""")
+    mo.md(
+        r"""The PSD is given by the following expression: PSD(f) = $\frac{A}{B + (f/f_{knee})^C}$"""
+    )
     return
 
 
@@ -69,9 +71,7 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    unit = mo.ui.dropdown(
-        ["m", "mm", "um", "nm"], label="PSD rms units", value="nm"
-    )
+    unit = mo.ui.dropdown(["m", "mm", "um", "nm"], label="PSD rms units", value="nm")
 
     unit
     return (unit,)
@@ -120,6 +120,7 @@ def _(grid, plt, zoom):
         )
         plt.colorbar(im, ax=plt.gca(), label="Error [m]")
         return plt.gca()
+
     return (plot_psd,)
 
 
@@ -175,6 +176,7 @@ def _(
             float(SR.value),
             units=u.Unit(unit.value),
         )
+
     return (compute_psd,)
 
 
@@ -186,6 +188,7 @@ def _():
     import numpy as np
     import matplotlib.pyplot as plt
     import astropy.units as u
+
     return PSD, mo, np, plt, u
 
 

@@ -2,7 +2,6 @@ import importlib.metadata as metadata
 import os
 from datetime import date
 
-
 __version__ = metadata.version("paos")
 
 # load package info
@@ -34,21 +33,19 @@ if __base_dir__ is not None and os.path.exists(os.path.join(__base_dir__, ".git"
         __commit__ = None
 
 
-from loguru import logger
 import matplotlib.pyplot as plt
+from loguru import logger
 
-from paos.classes.wfo import WFO
 from paos.classes.abcd import ABCD
-from paos.classes.zernike import Zernike, PolyOrthoNorm
 from paos.classes.psd import PSD
-
-from paos.core.parseConfig import parse_config
+from paos.classes.wfo import WFO
+from paos.classes.zernike import PolyOrthoNorm, Zernike
 from paos.core.coordinateBreak import coordinate_break
-from paos.core.raytrace import raytrace
+from paos.core.parseConfig import parse_config
 from paos.core.plot import plot_pop
-from paos.core.saveOutput import save_output, save_datacube
+from paos.core.raytrace import raytrace
 from paos.core.run import run
-
+from paos.core.saveOutput import save_datacube, save_output
 
 # initialise logger
 logger.level("Announce", no=100, color="<magenta>")

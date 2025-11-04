@@ -1,6 +1,6 @@
+import astropy.units as u
 import numpy as np
 import sympy
-import astropy.units as u
 
 from paos import logger
 

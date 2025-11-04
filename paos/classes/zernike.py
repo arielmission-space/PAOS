@@ -319,7 +319,7 @@ class Zernike:
 
 class PolyOrthoNorm(Zernike):
     """
-    Generates polynomials that are ortho-normal on the mask provided. This is done by applying the Gram-Smidth orthonormalization process, implemented following Section 3.4 of https://doi.org/10.1117/3.927341. 
+    Generates polynomials that are ortho-normal on the mask provided. This is done by applying the Gram-Smidth orthonormalization process, implemented following Section 3.4 of https://doi.org/10.1117/3.927341.
     Therefore, the relevant input are the type of Zernike polinomial to be used (ordering and normalization), and the mask defining the pupil.
 
         U[m] = sum_n M[m, n] Z[n]

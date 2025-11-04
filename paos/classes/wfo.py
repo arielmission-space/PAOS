@@ -1,13 +1,12 @@
+import astropy.units as u
 import numpy as np
 import photutils
-import astropy.units as u
 from scipy.ndimage import fourier_shift
-from skimage.transform import rescale
-from skimage.transform import resize
+from skimage.transform import rescale, resize
 
 from paos import logger
-from paos.classes.zernike import Zernike, PolyOrthoNorm
 from paos.classes.psd import PSD
+from paos.classes.zernike import PolyOrthoNorm, Zernike
 
 
 class WFO:

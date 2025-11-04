@@ -6,8 +6,7 @@ from pathlib import Path
 
 import numpy as np
 from astropy.io import ascii
-from joblib import delayed
-from joblib import Parallel
+from joblib import Parallel, delayed
 from tqdm import tqdm
 
 from paos import logger
@@ -16,8 +15,7 @@ from paos.core.plot import plot_pop
 from paos.core.raytrace import raytrace
 from paos.core.run import run
 from paos.core.saveOutput import save_datacube
-from paos.log.logger import setLogLevel
-from paos.log.logger import addLogFile
+from paos.log.logger import addLogFile, setLogLevel
 
 
 def pipeline(passvalue):

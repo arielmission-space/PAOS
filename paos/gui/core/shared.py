@@ -1,7 +1,8 @@
 import configparser
+
+import faicons as fa
 import numpy as np
 from shiny import ui
-import faicons as fa
 
 ICONS = {
     "ellipsis": fa.icon_svg("ellipsis"),
@@ -72,7 +73,9 @@ def fill_value(items, name, row, col):
             id=theid,
             label=items[name]["label"] if "label" in items[name] else "",
             value=items[name]["value"],
-            placeholder=items[name]["placeholder"] if "placeholder" in items[name] else "",
+            placeholder=(
+                items[name]["placeholder"] if "placeholder" in items[name] else ""
+            ),
         )
     elif func in [ui.input_checkbox]:
         return func(

@@ -5,10 +5,7 @@ from copy import deepcopy as dc
 import h5py
 import numpy as np
 
-from paos import __author__
-from paos import __version__
-from paos import __pkg_name__
-from paos import logger
+from paos import __author__, __pkg_name__, __version__, logger
 
 
 def remove_keys(dictionary, keys):

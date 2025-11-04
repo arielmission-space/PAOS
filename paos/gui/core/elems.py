@@ -1,14 +1,13 @@
 from shiny import ui
 
-from paos import Zernike
-from paos import PSD
-
-from paos.gui.core.shared import output_text_verbatim
-from paos.gui.core.shared import nested_div
-from paos.gui.core.shared import CARD_HEADER_CLASS
-from paos.gui.core.shared import ICONS
-from paos.gui.core.shared import vspace
-
+from paos import PSD, Zernike
+from paos.gui.core.shared import (
+    CARD_HEADER_CLASS,
+    ICONS,
+    nested_div,
+    output_text_verbatim,
+    vspace,
+)
 
 Placeholder = {
     "Par1": {

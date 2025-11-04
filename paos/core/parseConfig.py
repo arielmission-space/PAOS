@@ -3,8 +3,8 @@ import os
 import sys
 from typing import List
 
-import numpy as np
 import astropy.units as u
+import numpy as np
 
 from paos import logger
 from paos.classes.abcd import ABCD

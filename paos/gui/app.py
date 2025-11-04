@@ -1,37 +1,29 @@
+import configparser
 import os
 import time
-import configparser
 from pathlib import Path
-import numpy as np
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
+import numpy as np
 from htmltools import Tag
+from shiny import App, reactive, render, req, ui
+from shiny.types import FileInfo
 from starlette.requests import Request as StarletteRequest
 
-from shiny import App
-from shiny import render
-from shiny import ui
-from shiny import reactive
-from shiny import req
-from shiny.types import FileInfo
-
 import paos
-from paos import logger
-from paos import __pkg_name__
-from paos import __version__
-from paos import __author__
-from paos import __license__
+from paos import __author__, __license__, __pkg_name__, __version__, logger
 from paos.core.parseConfig import parse_config
 from paos.core.plot import simple_plot
-
-from paos.gui.core.io import to_ini
 from paos.gui.core.elems import app_elems
+from paos.gui.core.io import to_ini
 from paos.gui.core.plot import wfe_plot
-from paos.gui.core.shared import nested_div
-from paos.gui.core.shared import menu_panel
-from paos.gui.core.shared import refresh_ui
-from paos.gui.core.shared import modal_download
-from paos.gui.core.shared import ICONS
+from paos.gui.core.shared import (
+    ICONS,
+    menu_panel,
+    modal_download,
+    nested_div,
+    refresh_ui,
+)
 
 
 def app_ui(request: StarletteRequest) -> Tag:
