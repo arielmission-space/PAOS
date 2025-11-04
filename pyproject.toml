@@ -58,7 +58,7 @@ shiny = "^1.2.1"
 shinywidgets = "*"
 faicons = "*"
 orjson = "^3.7.7"
-marimo = "^0.10.13"
+marimo = "*"
 jinja2 = "^3.1.6"
 
 [tool.poetry.group.docs.dependencies]
