@@ -60,6 +60,7 @@ faicons = "*"
 orjson = "^3.7.7"
 marimo = "*"
 jinja2 = "^3.1.6"
+rich-click = "*"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "*"

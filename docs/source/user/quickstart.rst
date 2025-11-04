@@ -33,11 +33,9 @@ The main command line flags are listed in :numref:`Main command line flags`.
      - Input configuration file to pass
    * - ``-o``, ``--output``
      - Output file
-   * - ``-s``, ``--save``
-     - Save to output file
    * - ``-p``, ``--plot``
      - Save output plots
-   * - ``-n``, ``--nThreads``
+   * - ``-n``, ``--n_jobs``
      - Number of threads for parallel processing
    * - ``-d``, ``--debug``
      - Debug mode screen
@@ -77,7 +75,7 @@ To have a lighter output please use the option flags listed in :numref:`Lighter 
 
    * - flag
      - description
-   * - ``-keys``, ``--keys_to_keep``
+   * - ``-keys``, ``--store_keys``
      - A list with the output dictionary keys to save
    * - ``-lo``, ``--light_output``
      - Save only at last optical surface
