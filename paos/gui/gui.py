@@ -34,6 +34,7 @@ console = Console()
 @click.option(
     "-l",
     "--logger",
+    "logfile",
     is_flag=True,
     default=False,
     show_default=True,
