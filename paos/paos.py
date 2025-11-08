@@ -97,7 +97,7 @@ console = Console()
 @click.option(
     "-l",
     "--logger",
-    "log",
+    "logfile",
     is_flag=True,
     default=False,
     show_default=True,
@@ -112,7 +112,7 @@ def cli(
     n_jobs,
     plot,
     debug,
-    log,
+    logfile,
 ):
     """PAOS CLI - Physical Optics Simulator."""
     setLogLevel("INFO")
@@ -140,7 +140,7 @@ def cli(
     if debug:
         setLogLevel("DEBUG")
 
-    if log:
+    if logfile:
         if isinstance(output, str):
             input_fname = Path(conf).stem
             fname = f"{os.path.dirname(output)}/{input_fname}.log"
