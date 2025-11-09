@@ -156,13 +156,13 @@ def pipeline(passvalue):
     logger.info(f"POP completed in {(end_time - start_time):6.1f}s")
     _ = gc.collect()
 
+    group_tags = list(map(str, wavelengths))
+    logger.debug(f"group tags: {group_tags}")
     if passvalue["save"]:
         logger.debug(
             "---------------------------------------------------------------------"
         )
         logger.info(f"Save POP simulation output .h5 file to {passvalue['output']}")
-        group_tags = list(map(str, wavelengths))
-        logger.debug(f"group tags: {group_tags}")
         store_keys = None
         if passvalue["store_keys"] is not None:
             store_keys = passvalue["store_keys"].split(",")

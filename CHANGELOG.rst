@@ -10,6 +10,19 @@ to Semantic Versioning (semver_).
 Unreleased
 ====================
 
+Changed
+^^^^^^^
+- CLI booleans now use paired flags: ``--save/--no-save`` and ``--plot/--no-plot`` for clearer UX; updated help text to explicitly mention the ``--no-*`` opt-outs.
+- Updated Quickstart docs to reflect the new paired flags and clarify how to disable saving/plotting via ``--no-save`` and ``--no-plot``.
+- Migrated CLI to ``rich-click`` for improved UX.
+- Moved deprecated Excel configuration parser and sample files to ``retired/``.
+- Relaxed ``marimo`` dependency to allow any version.
+- Cleaned up imports and formatting across modules.
+
+Fixed
+^^^^^^^
+- Corrected logger option naming in GUI/CLI; standardized variable name to ``logfile``.
+
 0.0.2 [15/09/2021]
 ---------------------
 
@@ -189,6 +202,39 @@ Added
 ^^^^^^^
 - Contributor Covenant Code of Conduct
 - Developer Guide in documentation
+
+1.2.9 [18/07/2025]
+--------------------
+
+Added
+^^^^^^^
+- README section for Interactive ``marimo`` notebooks.
+
+Changed
+^^^^^^^
+- Improved grid-sag handling: redefined ``nx``/``ny`` as sag shape, rescaled by physical sizes, handled half-pixel differences.
+- Updated ``jinja2`` dependency to ``3.1.6``.
+- Updated project badges and lockfile metadata.
+
+Fixed
+^^^^^^^
+- Wavefront calculation in Zernike and ``grid_sag`` by applying mask fill inside the phase exponent to avoid cropping outside masks.
+- Fixed links to the Developer Guide in the documentation.
+- Removed stray debug prints.
+
+1.2.10 [03/09/2025]
+--------------------
+
+Added
+^^^^^^^
+- ``save`` option in the pipeline and main entry-point for output control.
+- Logging to file; refactored debug messages to f-strings.
+- Return value now includes propagator type for traceability.
+
+Changed
+^^^^^^^
+- Allowed grid sizes expanded to include ``2048`` and ``4096``.
+- Quickstart and examples updated to cover the ``save`` option.
 
 
 .. _Released: https://github.com/arielmission-space/PAOS/

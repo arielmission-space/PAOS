@@ -79,12 +79,20 @@ console = Console()
     help="Number of threads for parallel processing.",
 )
 @click.option(
-    "-p",
-    "--plot",
-    is_flag=True,
-    default=False,
+    "-s",
+    "--save/--no-save",
+    "save",
+    default=True,
     show_default=True,
-    help="Save output plots.",
+    help="Write results to an .h5 file. Use --no-save to skip.",
+)
+@click.option(
+    "-p",
+    "--plot/--no-plot",
+    "plot",
+    default=True,
+    show_default=True,
+    help="Generate and save output plots. Use --no-plot to skip.",
 )
 @click.option(
     "-d",
@@ -110,6 +118,7 @@ def cli(
     wfe,
     store_keys,
     n_jobs,
+    save,
     plot,
     debug,
     logfile,
@@ -127,7 +136,7 @@ def cli(
         "wfe": wfe,
         "store_keys": store_keys,
         "n_jobs": n_jobs,
-        "save": True,
+        "save": save,
         "plot": plot,
         "debug": debug,
     }

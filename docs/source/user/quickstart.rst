@@ -33,8 +33,10 @@ The main command line flags are listed in :numref:`Main command line flags`.
      - Input configuration file to pass
    * - ``-o``, ``--output``
      - Output file
-   * - ``-p``, ``--plot``
-     - Save output plots
+   * - ``-s``, ``--save/--no-save``
+     - Write results to an ``.h5`` file; use ``--no-save`` to skip
+   * - ``-p``, ``--plot/--no-plot``
+     - Generate and save output plots; use ``--no-plot`` to skip
    * - ``-n``, ``--n_jobs``
      - Number of threads for parallel processing
    * - ``-d``, ``--debug``
@@ -43,7 +45,7 @@ The main command line flags are listed in :numref:`Main command line flags`.
      - Store the log output on file
 
 Where the configuration file shall be an `.ini` file and the output file an `.h5` file (see later in :ref:`h5`).
-`-n` must be followed by an integer. To activate `-p`, `-d` and `-l` no argument is needed.
+`-n` must be followed by an integer. `-s`, `-p`, `-d`, and `-l` are flags (no argument needed). Use `--no-plot` to disable plotting and `--no-save` to skip writing the output file.
 
 .. note::
 
