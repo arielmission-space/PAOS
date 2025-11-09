@@ -151,7 +151,7 @@ def pipeline(passvalue):
         for key, opt_chain in tqdm(optc.items())
     )
     end_time = time.time()
-    logger.info(f"POP completed in {(end_time - start_time):6.1f}s")
+    logger.info(f"POP completed in {(end_time - start_time):g} s")
     _ = gc.collect()
 
     group_tags = list(map(str, wavelengths))
@@ -201,7 +201,7 @@ def pipeline(passvalue):
             for _retval_, tag in zip(tqdm(retval), group_tags)
         )
         end_time = time.time()
-        logger.info(f"Plotting completed in {(end_time - start_time):6.1f}s")
+        logger.info(f"Plotting completed in {(end_time - start_time):g} s")
 
     if not passvalue["return"]:
         console.rule(**RULE)

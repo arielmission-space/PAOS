@@ -282,8 +282,8 @@ def save_datacube(
     logger.info("Saving {} started...".format(file_name))
 
     if overwrite:
-        logger.info("Remove old file")
         if os.path.exists(file_name) and os.path.isfile(file_name):
+            logger.info("Remove old file")
             os.remove(file_name)
 
     with h5py.File(file_name, "a") as cube:
@@ -297,6 +297,6 @@ def save_datacube(
 
             save_retval(retval, keys_to_keep, out)
 
-    logger.info("Saving ended.")
+    logger.info("Saving completed.")
 
     return
