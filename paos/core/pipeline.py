@@ -1,16 +1,15 @@
 import gc
 import os
 import time
+import warnings
 from pathlib import Path
-
-from rich.console import Console
 
 import numpy as np
 from astropy.io import ascii
 from joblib import Parallel, delayed
-from tqdm.rich import tqdm
-import warnings
+from rich.console import Console
 from tqdm import TqdmExperimentalWarning
+from tqdm.rich import tqdm
 
 warnings.filterwarnings("ignore", category=TqdmExperimentalWarning)
 
@@ -21,7 +20,6 @@ from paos.core.raytrace import raytrace
 from paos.core.run import run
 from paos.core.saveOutput import save_datacube
 from paos.log.logger import addLogFile, setLogLevel
-
 
 console = Console()
 RULE = {"style": "dim white", "characters": "╌"}
