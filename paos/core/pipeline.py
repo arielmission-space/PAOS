@@ -8,7 +8,11 @@ from rich.console import Console
 import numpy as np
 from astropy.io import ascii
 from joblib import Parallel, delayed
-from tqdm.auto import tqdm
+from tqdm.rich import tqdm
+import warnings
+from tqdm import TqdmExperimentalWarning
+
+warnings.filterwarnings("ignore", category=TqdmExperimentalWarning)
 
 from paos import logger
 from paos.core.parseConfig import parse_config

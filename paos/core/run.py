@@ -211,7 +211,7 @@ def run(pupil_diameter, wavelength, gridsize, zoom, field, opt_chain):
         ABCDt = item["ABCDt"] * ABCDt
         ABCDs = item["ABCDs"] * ABCDs
 
-        logger.debug(
+        logger.trace(
             f"F num: {_retval_['fratio']:2f}, distance to focus: {wfo.distancetofocus:.6f}"
         )
 
