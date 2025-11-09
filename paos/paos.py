@@ -126,7 +126,11 @@ def cli(
     """PAOS CLI - Physical Optics Simulator."""
     setLogLevel("INFO")
 
+    console.rule(f":rocket: [bold cyan]Starting {__pkg_name__} v{__version__} :rocket:")
+    logger.log("Announce", f"Starting {__pkg_name__} v{__version__}")
+
     if output is None:
+        logger.info("No output file provided, setting default next to input file")
         output = os.path.join(os.path.dirname(conf), f"{Path(conf).stem}.h5")
 
     passvalue = {
@@ -158,13 +162,12 @@ def cli(
         else:
             addLogFile()
 
-    console.rule(f"[bold cyan]{__pkg_name__} v{__version__}")
-    logger.log("Announce", f"Starting {__pkg_name__} v{__version__}...")
-
     pipeline(passvalue)
 
-    logger.info(f"{__pkg_name__} simulation completed.")
-    console.print(f":sparkles: [bold green]{__pkg_name__} simulation completed.[/]")
+    logger.log("Announce", f"{__pkg_name__} simulation completed")
+    console.rule(
+        f":sparkles: [bold cyan]{__pkg_name__} simulation completed[/] :sparkles:"
+    )
 
 
 def main():
