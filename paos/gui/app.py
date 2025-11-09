@@ -11,7 +11,7 @@ from shiny.types import FileInfo
 from starlette.requests import Request as StarletteRequest
 
 import paos
-from paos import __author__, __license__, __pkg_name__, __version__, logger
+from paos import __author__, __license__, __pkg_name__, __version__
 from paos.core.parseConfig import parse_config
 from paos.core.plot import simple_plot
 from paos.gui.core.elems import app_elems
@@ -240,7 +240,6 @@ def server(input, output, session):
     def download_raytrace_txt():
         raytrace: str = calc_raytrace()
         outfile: list[FileInfo] | None = input.save_txt()
-        logger.info(f"Downloaded {outfile}")
 
         with open(cache / outfile, "w", encoding="utf-8") as f:
             f.write(raytrace)
@@ -538,12 +537,6 @@ def server(input, output, session):
 
         surface = input.select_Zernike()
         surface_key = int(surface[1:])
-
-        if surface_key not in retval.get().keys():
-            logger.error(
-                f"Surface {surface} not found.  \n"
-                "Please check that you have run the POP and this surface is not ignored."
-            )
         item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
@@ -642,12 +635,6 @@ def server(input, output, session):
 
         surface = input.select_PSD()
         surface_key = int(surface[1:])
-
-        if surface_key not in retval.get().keys():
-            logger.error(
-                f"Surface {surface} not found.  \n"
-                "Please check that you have run the POP and this surface is not ignored."
-            )
         item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
@@ -739,12 +726,6 @@ def server(input, output, session):
 
         surface = input.select_gridsag()
         surface_key = int(surface[1:])
-
-        if surface_key not in retval.get().keys():
-            logger.error(
-                f"Surface {surface} not found.  \n"
-                "Please check that you have run the POP and this surface is not ignored."
-            )
         item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
@@ -782,10 +763,6 @@ def server(input, output, session):
         # async def open_ini():
         req(input.open_ini())
         file: list[FileInfo] | None = input.open_ini()
-
-        if not file[0]["name"].endswith(".ini"):
-            logger.error("Invalid file")
-            return
 
         if ini_file.get().endswith(".ini") and ini_file.get() != file[0]["name"]:
             return
