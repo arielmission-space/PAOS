@@ -123,7 +123,7 @@ def cli(
     debug,
     logfile,
 ):
-    """PAOS CLI - Physical Optics Simulator."""
+    """PAOS launcher."""
     setLogLevel("INFO")
 
     console.rule(f":rocket: [bold cyan]Starting {__pkg_name__} v{__version__} :rocket:")
