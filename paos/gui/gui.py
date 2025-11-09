@@ -1,6 +1,4 @@
 import os
-import time
-from pathlib import Path
 
 import click
 import rich_click as rich_click
@@ -8,8 +6,7 @@ from rich.console import Console
 from rich_click import RichCommand
 from shiny import run_app
 
-from paos import __pkg_name__, __version__, logger
-from paos.log.logger import addLogFile, setLogLevel
+from paos import __pkg_name__, __version__
 
 rich_click.rich_click.USE_RICH_MARKUP = True
 rich_click.rich_click.SHOW_ARGUMENTS = True
@@ -31,33 +28,12 @@ console = Console()
     show_default=True,
     help="Run the Shiny app in debug (auto-reload) mode.",
 )
-@click.option(
-    "-l",
-    "--logger",
-    "logfile",
-    is_flag=True,
-    default=False,
-    show_default=True,
-    help="Redirect the log output to a timestamped file in the current directory.",
-)
-def cli(debug, logfile):
+def cli(debug):
     """PAOS GUI launcher."""
-    setLogLevel("INFO")
 
-    if logfile:
-        timestamp = time.strftime("%Y%m%d_%H%M%S")
-        fname = Path.cwd() / f"{__pkg_name__}_{timestamp}.log"
-        logger.debug(f"Logging to file {fname}")
-        addLogFile(fname=str(fname))
-
-    reload = bool(debug)
-    if debug:
-        setLogLevel("DEBUG")
-
-    app = os.path.realpath(os.path.dirname(__file__)) + "/app.py"
     console.rule(f"[bold magenta]{__pkg_name__} GUI v{__version__}")
-    logger.info(f"Running app: {__pkg_name__} GUI v{__version__}")
-    run_app(app, reload=reload, launch_browser=True, dev_mode=False)
+    app = os.path.realpath(os.path.dirname(__file__)) + "/app.py"
+    run_app(app, reload=bool(debug), launch_browser=True, dev_mode=False)
 
 
 def main():

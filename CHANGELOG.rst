@@ -12,6 +12,7 @@ Unreleased
 
 Changed
 ^^^^^^^
+- Simplified ``paos_gui`` options by removing the unused ``--logger`` flag; only the debug toggle remains documented.
 - CLI booleans now use paired flags: ``--save/--no-save`` and ``--plot/--no-plot`` for clearer UX; updated help text to explicitly mention the ``--no-*`` opt-outs.
 - Updated Quickstart docs to reflect the new paired flags and clarify how to disable saving/plotting via ``--no-save`` and ``--no-plot``.
 - Migrated CLI to ``rich-click`` for improved UX.

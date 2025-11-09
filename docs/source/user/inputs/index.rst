@@ -419,9 +419,7 @@ Run it with the `help` flag to read the available options:
    * - ``-h``, ``--help``
      - show this help message and exit
    * - ``-d``, ``--debug``
-     - Debug mode screen
-   * - ``-l``, ``--logger``
-     - Store the log output to file
+     - Run the Shiny app in debug (auto-reload) mode.
 
 Where the configuration file shall be an `.ini` file (see :ref:`Configuration file`). 
 
