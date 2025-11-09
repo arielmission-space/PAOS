@@ -173,7 +173,7 @@ def pipeline(passvalue):
         console.rule(**RULE)
         logger.info("Save POP simulation output plot")
 
-        plots_dir = f"{os.path.dirname(passvalue['output'])}/plots"
+        plots_dir = Path(passvalue["output"]).parent / "plots"
         if not os.path.isdir(plots_dir):
             logger.info(f"folder {plots_dir} not found in directory tree. Creating..")
             Path(plots_dir).mkdir(parents=True, exist_ok=True)

@@ -4,8 +4,7 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-The format is based on Keep a Changelog (keepachangelog_), and this project adheres
-to Semantic Versioning (semver_).
+The format is based on Keep a Changelog (keepachangelog_), and this project adheres to Semantic Versioning (semver_).
 
 Unreleased
 ====================
@@ -23,6 +22,7 @@ Changed
 Fixed
 ^^^^^^^
 - Corrected logger option naming in GUI/CLI; standardized variable name to ``logfile``.
+- CLI now resolves relative/filename-only outputs before logging, avoiding attempts to write ``/configuration_name.log`` on read-only roots.
 
 0.0.2 [15/09/2021]
 ---------------------

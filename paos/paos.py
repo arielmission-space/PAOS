@@ -124,18 +124,37 @@ def cli(
     logfile,
 ):
     """PAOS launcher."""
-    setLogLevel("INFO")
+    setLogLevel("DEBUG" if debug else "INFO")
 
-    console.rule(f":rocket: [bold cyan]Starting {__pkg_name__} v{__version__} :rocket:")
-    logger.log("Announce", f"Starting {__pkg_name__} v{__version__}")
+    if not conf.lower().endswith(".ini"):
+        logger.error("Configuration file must be a .ini file")
+        return
+
+    conf_name = Path(conf).stem
+
+    if output is not None and not output.lower().endswith(".h5"):
+        logger.error("Output file must be an .h5 file")
+        return
 
     if output is None:
-        logger.info("No output file provided, setting default next to input file")
-        output = os.path.join(os.path.dirname(conf), f"{Path(conf).stem}.h5")
+        logger.warning("No output file provided, setting default next to input file")
+        output = Path(conf).parent / f"{conf_name}.h5"
+
+    output_path = Path(output)
+    output_dir = output_path.parent
+
+    if not output_dir.exists():
+        logger.warning(f"folder {output_dir.resolve()} not found in directory tree. Creating..")
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+    if logfile:
+        logfile_name = output_dir / f"{conf_name}.log"
+        logger.info(f"Logging to file: {logfile_name.resolve()}")
+        addLogFile(fname=str(logfile_name))
 
     passvalue = {
         "conf": conf,
-        "output": output,
+        "output": str(output_path),
         "light_output": light_output,
         "wfe": wfe,
         "store_keys": store_keys,
@@ -145,22 +164,8 @@ def cli(
         "debug": debug,
     }
 
-    output_dir = os.path.dirname(output)
-    if output_dir and not os.path.isdir(output_dir):
-        logger.info(f"folder {output_dir} not found in directory tree. Creating..")
-        Path(output_dir).mkdir(parents=True, exist_ok=True)
-
-    if debug:
-        setLogLevel("DEBUG")
-
-    if logfile:
-        if isinstance(output, str):
-            input_fname = Path(conf).stem
-            fname = f"{os.path.dirname(output)}/{input_fname}.log"
-            logger.info(f"log file name: {fname}")
-            addLogFile(fname=fname)
-        else:
-            addLogFile()
+    console.rule(f":rocket: [bold cyan]Starting {__pkg_name__} v{__version__} :rocket:")
+    logger.log("Announce", f"Starting {__pkg_name__} v{__version__}")
 
     pipeline(passvalue)
 
