@@ -8,7 +8,7 @@ from rich.console import Console
 import numpy as np
 from astropy.io import ascii
 from joblib import Parallel, delayed
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from paos import logger
 from paos.core.parseConfig import parse_config

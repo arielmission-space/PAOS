@@ -258,7 +258,7 @@ def save_datacube(
     >>> from paos.core.run import run
     >>> from paos.core.saveOutput import save_datacube
     >>> from joblib import Parallel, delayed
-    >>> from tqdm import tqdm
+    >>> from tqdm.auto import tqdm
     >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/ini/file')
     >>> ret_val_list = Parallel(n_jobs=2)(delayed(run)(pup_diameter, 1.0e-6 * wl, parameters['grid size'],
     >>>               parameters['zoom'], fields[0], opt_chains[0]) for wl in tqdm(wavelengths))
