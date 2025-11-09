@@ -1,6 +1,7 @@
 import datetime
 import os
 from copy import deepcopy as dc
+from pathlib import Path
 
 import h5py
 import numpy as np
@@ -204,7 +205,7 @@ def save_output(retval, file_name, keys_to_keep=None, overwrite=True):
             keys_to_keep, list
         ), "parameter keys_to_keep must be a list of strings"
 
-    logger.info("saving {} started...".format(file_name))
+    logger.info(f"Saving {Path(file_name).resolve()} started")
 
     if overwrite:
         logger.info("removing old file")
@@ -216,7 +217,7 @@ def save_output(retval, file_name, keys_to_keep=None, overwrite=True):
         save_info(file_name, out)
         save_retval(retval, keys_to_keep, out)
 
-    logger.info("saving ended.")
+    logger.info("Saving completed.")
 
     return
 
@@ -279,7 +280,7 @@ def save_datacube(
             keys_to_keep, list
         ), "parameter keys_to_keep must be a list of strings"
 
-    logger.info("Saving {} started...".format(file_name))
+    logger.info(f"Saving {Path(file_name).resolve()} started")
 
     if overwrite:
         if os.path.exists(file_name) and os.path.isfile(file_name):

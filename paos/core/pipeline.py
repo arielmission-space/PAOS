@@ -156,7 +156,9 @@ def pipeline(passvalue):
     logger.debug(f"group tags: {group_tags}")
     if passvalue["save"]:
         console.rule(**RULE)
-        logger.info(f"Save POP simulation output .h5 file to {passvalue['output']}")
+        logger.info(
+            f"Save POP simulation output .h5 file to {Path(passvalue['output']).resolve()}"
+        )
         store_keys = None
         if passvalue["store_keys"] is not None:
             store_keys = passvalue["store_keys"].split(",")
@@ -175,7 +177,9 @@ def pipeline(passvalue):
 
         plots_dir = Path(passvalue["output"]).parent / "plots"
         if not os.path.isdir(plots_dir):
-            logger.info(f"folder {plots_dir} not found in directory tree. Creating..")
+            logger.info(
+                f"folder {Path(plots_dir).resolve()} not found in directory tree. Creating.."
+            )
             Path(plots_dir).mkdir(parents=True, exist_ok=True)
         start_time = time.time()
 

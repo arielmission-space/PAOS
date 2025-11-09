@@ -18,6 +18,7 @@ Changed
 - Moved deprecated Excel configuration parser and sample files to ``retired/``.
 - Relaxed ``marimo`` dependency to allow any version.
 - Cleaned up imports and formatting across modules.
+- Output logging now resolves absolute file and plot directories so CLI messages always show the actual destination on disk.
 
 Fixed
 ^^^^^^^

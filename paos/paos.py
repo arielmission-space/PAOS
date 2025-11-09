@@ -144,7 +144,9 @@ def cli(
     output_dir = output_path.parent
 
     if not output_dir.exists():
-        logger.warning(f"folder {output_dir.resolve()} not found in directory tree. Creating..")
+        logger.warning(
+            f"folder {output_dir.resolve()} not found in directory tree. Creating.."
+        )
         output_dir.mkdir(parents=True, exist_ok=True)
 
     if logfile:
