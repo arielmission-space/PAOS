@@ -177,7 +177,7 @@ def pipeline(passvalue):
 
         plots_dir = Path(passvalue["output"]).parent / "plots"
         if not os.path.isdir(plots_dir):
-            logger.info(
+            logger.warning(
                 f"folder {Path(plots_dir).resolve()} not found in directory tree. Creating.."
             )
             Path(plots_dir).mkdir(parents=True, exist_ok=True)

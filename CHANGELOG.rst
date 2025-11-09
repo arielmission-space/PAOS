@@ -19,6 +19,7 @@ Changed
 - Relaxed ``marimo`` dependency to allow any version.
 - Cleaned up imports and formatting across modules.
 - Output logging now resolves absolute file and plot directories so CLI messages always show the actual destination on disk.
+- POP save helpers now emit clearer log messages (f-strings, capitalization) and missing plot folders are surfaced as warnings before auto-creation.
 
 Fixed
 ^^^^^^^
