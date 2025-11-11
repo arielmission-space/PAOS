@@ -183,22 +183,17 @@ def pipeline(passvalue):
             Path(plots_dir).mkdir(parents=True, exist_ok=True)
         start_time = time.time()
 
-        fig_name = "".join(
-            [
-                os.path.basename(os.path.splitext(passvalue["conf"])[0]),
-                "_pop_plot",
-            ]
-        )
+        fig_name = f"{Path(passvalue['output']).stem}_pop_plot"
         fig_name = os.path.join(plots_dir, fig_name)
 
-        logger.debug(f"fig base name: {fig_name}")
+        logger.debug(f"fig base name: {Path(fig_name).resolve()}")
 
         _ = Parallel(n_jobs=passvalue["n_jobs"])(
             delayed(plot_pop)(
                 _retval_,
                 ima_scale="log",
                 ncols=2,
-                figname="".join([fig_name, f"_{tag}_um", ".png"]),
+                figname=f"{fig_name}_{tag}_um.png",
             )
             for _retval_, tag in zip(tqdm(retval), group_tags)
         )
