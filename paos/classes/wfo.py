@@ -547,7 +547,7 @@ class WFO:
         self._z = self._z + dz
         self._C = 1 / (self.z - self.zw0)
         self._dx = self.wl * np.abs(dz) / (wf.shape[1] * self.dx)
-        self._dy = self.wl * np.abs(dz) / (wf.shape[1] * self.dy)
+        self._dy = self.wl * np.abs(dz) / (wf.shape[0] * self.dy)
         self._wfo = np.fft.fftshift(wf)
 
     def propagate(self, dz):
