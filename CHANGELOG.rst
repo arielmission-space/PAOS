@@ -9,22 +9,7 @@ The format is based on Keep a Changelog (keepachangelog_), and this project adhe
 Unreleased
 ====================
 
-Changed
-^^^^^^^
-- Simplified ``paos_gui`` options by removing the unused ``--logger`` flag; only the debug toggle remains documented.
-- CLI booleans now use paired flags: ``--save/--no-save`` and ``--plot/--no-plot`` for clearer UX; updated help text to explicitly mention the ``--no-*`` opt-outs.
-- Updated Quickstart docs to reflect the new paired flags and clarify how to disable saving/plotting via ``--no-save`` and ``--no-plot``.
-- Migrated CLI to ``rich-click`` for improved UX.
-- Moved deprecated Excel configuration parser and sample files to ``retired/``.
-- Relaxed ``marimo`` dependency to allow any version.
-- Cleaned up imports and formatting across modules.
-- Output logging now resolves absolute file and plot directories so CLI messages always show the actual destination on disk.
-- POP save helpers now emit clearer log messages (f-strings, capitalization) and missing plot folders are surfaced as warnings before auto-creation.
-
-Fixed
-^^^^^^^
-- Corrected logger option naming in GUI/CLI; standardized variable name to ``logfile``.
-- CLI now resolves relative/filename-only outputs before logging, avoiding attempts to write ``/configuration_name.log`` on read-only roots.
+No changes yet.
 
 0.0.2 [15/09/2021]
 ---------------------
@@ -238,6 +223,28 @@ Changed
 ^^^^^^^
 - Allowed grid sizes expanded to include ``2048`` and ``4096``.
 - Quickstart and examples updated to cover the ``save`` option.
+
+
+1.2.11 [11/11/2025]
+--------------------
+
+Changed
+^^^^^^^
+- Simplified ``paos_gui`` options by removing the unused ``--logger`` flag; only the debug toggle remains documented.
+- CLI booleans now use paired flags: ``--save/--no-save`` and ``--plot/--no-plot`` for clearer UX; updated help text to explicitly mention the ``--no-*`` opt-outs.
+- Updated Quickstart docs to reflect the new paired flags and clarify how to disable saving/plotting via ``--no-save`` and ``--no-plot``.
+- Migrated CLI to ``rich-click`` for improved UX.
+- Moved deprecated Excel configuration parser and sample files to ``retired/``.
+- Relaxed all project dependencies to allow any version. Only Python >= 3.9 is stricly required.
+- Cleaned up imports and formatting across modules.
+- Output logging now resolves absolute file and plot directories so CLI messages always show the actual destination on disk.
+- POP save helpers now emit clearer log messages (f-strings, capitalization) and missing plot folders are surfaced as warnings before auto-creation.
+- Added DeepWiki badge in README
+
+Fixed
+^^^^^^^
+- Corrected logger option naming in GUI/CLI; standardized variable name to ``logfile``.
+- CLI now resolves relative/filename-only outputs before logging, avoiding attempts to write ``/configuration_name.log`` on read-only roots.
 
 
 .. _Released: https://github.com/arielmission-space/PAOS/
