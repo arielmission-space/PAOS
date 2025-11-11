@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "paos"
-version = "1.2.11-dev14"
+version = "1.2.11-dev15"
 description = "PAOS, the Physical Optics Simulator, is a fast, modern, and reliable Python package for Physical Optics studies. It implements Physical Optics Propagation in Fresnel approximation and paraxial ray tracing to analyze complex waveform propagation through both generic and off-axes optical systems."
 license = "BSD-3-Clause"
 authors = [
