@@ -198,6 +198,8 @@ Added
 ^^^^^^^
 - README section for Interactive ``marimo`` notebooks.
 
+ 
+
 Changed
 ^^^^^^^
 - Improved grid-sag handling: redefined ``nx``/``ny`` as sag shape, rescaled by physical sizes, handled half-pixel differences.
@@ -235,7 +237,7 @@ Changed
 - Updated Quickstart docs to reflect the new paired flags and clarify how to disable saving/plotting via ``--no-save`` and ``--no-plot``.
 - Migrated CLI to ``rich-click`` for improved UX.
 - Moved deprecated Excel configuration parser and sample files to ``retired/``.
-- Relaxed all project dependencies to allow any version. Only Python >= 3.9 is stricly required.
+- Relaxed all project dependencies to allow any version. Only Python >= 3.9 is strictly required.
 - Cleaned up imports and formatting across modules.
 - Output logging now resolves absolute file and plot directories so CLI messages always show the actual destination on disk.
 - POP save helpers now emit clearer log messages (f-strings, capitalization) and missing plot folders are surfaced as warnings before auto-creation.
@@ -245,6 +247,19 @@ Fixed
 ^^^^^^^
 - Corrected logger option naming in GUI/CLI; standardized variable name to ``logfile``.
 - CLI now resolves relative/filename-only outputs before logging, avoiding attempts to write ``/configuration_name.log`` on read-only roots.
+
+
+1.2.12 [11/11/2025]
+--------------------
+
+Changed
+^^^^^^^
+- Simplified figure naming and improved logging in the pipeline.
+- Enhanced debugging output in pipeline functions.
+
+Fixed
+^^^^^
+- Corrected ``Hubble_simple.ini`` comment for ``lens_10`` from FOCUS to IMAGE_PLANE to fix light_output behavior.
 
 
 .. _Released: https://github.com/arielmission-space/PAOS/
