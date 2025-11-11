@@ -168,7 +168,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                     ),
                 ],
             ),
-            footer=ui.panel_well(
+            footer=ui.card(
                 ui.p(
                     f"{__pkg_name__} v{__version__}; {__author__}",
                 ),
