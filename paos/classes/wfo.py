@@ -1,13 +1,12 @@
-import numpy as np
-import photutils
 import astropy.units as u
+import numpy as np
+from photutils.aperture import EllipticalAperture, RectangularAperture
 from scipy.ndimage import fourier_shift
-from skimage.transform import rescale
-from skimage.transform import resize
+from skimage.transform import rescale, resize
 
 from paos import logger
-from paos.classes.zernike import Zernike, PolyOrthoNorm
 from paos.classes.psd import PSD
+from paos.classes.zernike import PolyOrthoNorm, Zernike
 
 
 class WFO:
@@ -244,9 +243,7 @@ class WFO:
             ihx = hx / self.dx
             ihy = hy / self.dy
             theta = 0.0 if tilt is None else np.deg2rad(tilt)
-            aperture = photutils.aperture.EllipticalAperture(
-                (ixc, iyc), ihx, ihy, theta=theta
-            )
+            aperture = EllipticalAperture((ixc, iyc), ihx, ihy, theta=theta)
             mask = aperture.to_mask(method="exact").to_image(self._wfo.shape)
         elif shape == "circular":
             if r is None:
@@ -255,9 +252,7 @@ class WFO:
             ihx = r / self.dx
             ihy = r / self.dy
             theta = 0.0
-            aperture = photutils.aperture.EllipticalAperture(
-                (ixc, iyc), ihx, ihy, theta=theta
-            )
+            aperture = EllipticalAperture((ixc, iyc), ihx, ihy, theta=theta)
             mask = aperture.to_mask(method="exact").to_image(self._wfo.shape)
         elif shape == "rectangular":
             if hx is None or hy is None:
@@ -266,9 +261,7 @@ class WFO:
             ihx = hx / self.dx
             ihy = hy / self.dy
             theta = 0.0 if tilt is None else np.deg2rad(tilt)
-            aperture = photutils.aperture.RectangularAperture(
-                (ixc, iyc), ihx, ihy, theta=theta
-            )
+            aperture = RectangularAperture((ixc, iyc), ihx, ihy, theta=theta)
             # Exact method not implemented in photutils 1.0.2
             mask = aperture.to_mask(method="subpixel", subpixels=32).to_image(
                 self._wfo.shape
@@ -548,7 +541,7 @@ class WFO:
         self._z = self._z + dz
         self._C = 1 / (self.z - self.zw0)
         self._dx = self.wl * np.abs(dz) / (wf.shape[1] * self.dx)
-        self._dy = self.wl * np.abs(dz) / (wf.shape[1] * self.dy)
+        self._dy = self.wl * np.abs(dz) / (wf.shape[0] * self.dy)
         self._wfo = np.fft.fftshift(wf)
 
     def propagate(self, dz):

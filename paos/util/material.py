@@ -30,7 +30,7 @@ class Material:
         if materials is None:
             from .lib import materials
 
-            logger.debug("Using default library of optical materials")
+            logger.trace("Using default library of optical materials")
         self.materials = materials
 
     def sellmeier(self, par):
@@ -155,7 +155,7 @@ class Material:
             logger.error(f"Glass {name} currently not supported.")
 
         material = self.materials[name]
-        logger.debug(f'Glass name: {name} -- T ref: {material["Tref"]}')
+        logger.trace(f'Glass name: {name} -- T ref: {material["Tref"]}')
 
         nmat0 = self.sellmeier(par=material["sellmeier"]) * self.nair(
             T=material["Tref"], P=self.Pambient

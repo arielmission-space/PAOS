@@ -455,16 +455,16 @@ Explicitly, these possibilities are:
 To move from any point in space to any other, following `Lawrence et al., Applied Optics and Optical Engineering, Volume XI (1992) <https://ui.adsabs.harvard.edu/abs/1992aooe...11..125L>`_,
 ``PAOS`` implements three primitive operators:
 
-#. plane-to-plane (PTP)
-#. waist-to-spherical (WTS)
-#. spherical-to-waist (STW)
+#. plane-to-plane (PTP): far-field
+#. waist-to-spherical (WTS): far-field to near-field
+#. spherical-to-waist (STW): near-field to far-field
 
 Using these primitive operators, ``PAOS`` implements all possible propagations:
 
 #. II(:math:`z_1`, :math:`z_2`) = PTP(:math:`z_2-z_1`)
-#. IO(:math:`z_1`, :math:`z_2`) = WTS(:math:`z_2-z(w)`) PTP(:math:`z_2-z(w)`)
-#. OI(:math:`z_1`, :math:`z_2`) = PTP(:math:`z_2-z(w)`) STW(:math:`z_2-z(w)`)
-#. OO(:math:`z_1`, :math:`z_2`) = WTS(:math:`z_2-z(w)`) STW(:math:`z_2-z(w)`)
+#. IO(:math:`z_1`, :math:`z_2`) = WTS(:math:`z_2-z(w)`) PTP(:math:`z(w)-z_1`)
+#. OI(:math:`z_1`, :math:`z_2`) = PTP(:math:`z_2-z(w)`) STW(:math:`z(w)-z_1`)
+#. OO(:math:`z_1`, :math:`z_2`) = WTS(:math:`z_2-z(w)`) STW(:math:`z(w)-z_1`)
 
 Example
 ~~~~~~~~~~~~~

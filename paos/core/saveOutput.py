@@ -1,14 +1,12 @@
 import datetime
 import os
 from copy import deepcopy as dc
+from pathlib import Path
 
 import h5py
 import numpy as np
 
-from paos import __author__
-from paos import __version__
-from paos import __pkg_name__
-from paos import logger
+from paos import __author__, __pkg_name__, __version__, logger
 
 
 def remove_keys(dictionary, keys):
@@ -74,11 +72,11 @@ def save_recursively_to_hdf5(dictionary, outgroup):
                 key, data=asciiList, shape=(len(asciiList), 1), dtype="S10"
             )
         elif data is None:
-            logger.warning("key {} is None".format(key))
+            logger.warning(f"Key {key} is None")
             continue
         else:
-            logger.error("data type for {} not supported".format(key))
-            raise NameError("data type not supported")
+            logger.error(f"Data type for {key} not supported")
+            raise NameError("Data type not supported")
 
 
 def save_info(file_name, out):
@@ -142,8 +140,8 @@ def save_retval(retval, keys_to_keep, out):
 
     for index in retval.keys():
 
-        group_name = "S{:02d}".format(index)
-        logger.trace("saving {}".format(group_name))
+        group_name = f"S{index:02d}"
+        logger.trace(f"Saving {group_name}")
 
         item = dc(retval[index])
 
@@ -207,10 +205,10 @@ def save_output(retval, file_name, keys_to_keep=None, overwrite=True):
             keys_to_keep, list
         ), "parameter keys_to_keep must be a list of strings"
 
-    logger.info("saving {} started...".format(file_name))
+    logger.info(f"Saving {Path(file_name).resolve()} started")
 
     if overwrite:
-        logger.info("removing old file")
+        logger.info("Removing old file")
         if os.path.isfile(file_name):
             os.remove(file_name)
 
@@ -219,7 +217,7 @@ def save_output(retval, file_name, keys_to_keep=None, overwrite=True):
         save_info(file_name, out)
         save_retval(retval, keys_to_keep, out)
 
-    logger.info("saving ended.")
+    logger.info("Saving completed.")
 
     return
 
@@ -261,7 +259,7 @@ def save_datacube(
     >>> from paos.core.run import run
     >>> from paos.core.saveOutput import save_datacube
     >>> from joblib import Parallel, delayed
-    >>> from tqdm import tqdm
+    >>> from tqdm.auto import tqdm
     >>> pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config('path/to/ini/file')
     >>> ret_val_list = Parallel(n_jobs=2)(delayed(run)(pup_diameter, 1.0e-6 * wl, parameters['grid size'],
     >>>               parameters['zoom'], fields[0], opt_chains[0]) for wl in tqdm(wavelengths))
@@ -282,11 +280,11 @@ def save_datacube(
             keys_to_keep, list
         ), "parameter keys_to_keep must be a list of strings"
 
-    logger.info("Saving {} started...".format(file_name))
+    logger.info(f"Saving {Path(file_name).resolve()} started")
 
     if overwrite:
-        logger.info("Remove old file")
         if os.path.exists(file_name) and os.path.isfile(file_name):
+            logger.info("Remove old file")
             os.remove(file_name)
 
     with h5py.File(file_name, "a") as cube:
@@ -296,10 +294,10 @@ def save_datacube(
         for group_name, retval in zip(group_names, retval_list):
 
             out = cube.create_group(group_name)
-            logger.trace("saving group {}".format(out))
+            logger.trace(f"Saving group {out}")
 
             save_retval(retval, keys_to_keep, out)
 
-    logger.info("Saving ended.")
+    logger.info("Saving completed.")
 
     return

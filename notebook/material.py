@@ -20,12 +20,8 @@ def _(Material, mo):
 
 @app.cell
 def _(mo):
-    tamb = mo.ui.slider(
-        start=-273, stop=25, step=1, value=-218, label="Ambient T [C]"
-    )
-    pamb = mo.ui.slider(
-        start=0, stop=10, step=0.1, value=1, label="Ambient P [atm]"
-    )
+    tamb = mo.ui.slider(start=-273, stop=25, step=1, value=-218, label="Ambient T [C]")
+    pamb = mo.ui.slider(start=0, stop=10, step=0.1, value=1, label="Ambient P [atm]")
     return pamb, tamb
 
 
@@ -84,6 +80,7 @@ def _(Material, Nwl, np, pamb, plt, tamb, wlmax, wlmin):
         plt.grid()
 
         return plt.gca()
+
     return (plot_n,)
 
 
@@ -94,6 +91,7 @@ def _():
     from paos.util.material import Material
     import numpy as np
     import matplotlib.pyplot as plt
+
     return Material, mo, np, plt
 
 

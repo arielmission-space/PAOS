@@ -1,14 +1,17 @@
 import gc
-import logging
 import os
 import time
+import warnings
 from pathlib import Path
 
 import numpy as np
 from astropy.io import ascii
-from joblib import delayed
-from joblib import Parallel
-from tqdm import tqdm
+from joblib import Parallel, delayed
+from rich.console import Console
+from tqdm import TqdmExperimentalWarning
+from tqdm.rich import tqdm
+
+warnings.filterwarnings("ignore", category=TqdmExperimentalWarning)
 
 from paos import logger
 from paos.core.parseConfig import parse_config
@@ -16,8 +19,10 @@ from paos.core.plot import plot_pop
 from paos.core.raytrace import raytrace
 from paos.core.run import run
 from paos.core.saveOutput import save_datacube
-from paos.log.logger import setLogLevel
-from paos.log.logger import addLogFile
+from paos.log.logger import addLogFile, setLogLevel
+
+console = Console()
+RULE = {"style": "dim white", "characters": "╌"}
 
 
 def pipeline(passvalue):
@@ -65,9 +70,6 @@ def pipeline(passvalue):
         logger.info(f"log file name: {passvalue['logfile']}")
         addLogFile(fname=passvalue["logfile"])
 
-    logger.debug(
-        "---------------------------------------------------------------------"
-    )
     logger.debug("Set pipeline defaults")
 
     if "save" not in passvalue.keys():
@@ -83,24 +85,18 @@ def pipeline(passvalue):
 
     logger.debug("passvalue keys are {}".format(list(passvalue.keys())))
 
-    logger.debug(
-        "---------------------------------------------------------------------"
-    )
+    console.rule(**RULE)
     logger.info("Parse lens file")
     pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config(
         passvalue["conf"]
     )
 
     if "debug" in passvalue.keys() and passvalue["debug"]:
-        logger.debug(
-            "-----------------------------------------------------------------"
-        )
+        console.rule(**RULE)
         logger.debug("Perform a diagnostic ray tracing")
         raytrace(fields[0], opt_chains[0])
 
-    logger.debug(
-        "---------------------------------------------------------------------"
-    )
+    console.rule(**RULE)
     logger.info("Set up the POP")
 
     logger.debug(f"Wavelengths: {wavelengths}")
@@ -132,9 +128,7 @@ def pipeline(passvalue):
                 optc[idx][key]["Z"] = np.append(np.zeros(3), Ck)
                 logger.debug(f"Wfe coefficients: {optc[idx][key]['Z']}")
 
-    logger.debug(
-        "---------------------------------------------------------------------"
-    )
+    console.rule(**RULE)
     logger.info("Run the POP")
 
     if passvalue["n_jobs"] > 1:
@@ -155,16 +149,16 @@ def pipeline(passvalue):
         for key, opt_chain in tqdm(optc.items())
     )
     end_time = time.time()
-    logger.info(f"POP completed in {(end_time - start_time):6.1f}s")
+    logger.info(f"POP completed in {(end_time - start_time):g} s")
     _ = gc.collect()
 
+    group_tags = list(map(str, wavelengths))
+    logger.debug(f"group tags: {group_tags}")
     if passvalue["save"]:
-        logger.debug(
-            "---------------------------------------------------------------------"
+        console.rule(**RULE)
+        logger.info(
+            f"Save POP simulation output .h5 file to {Path(passvalue['output']).resolve()}"
         )
-        logger.info(f"Save POP simulation output .h5 file to {passvalue['output']}")
-        group_tags = list(map(str, wavelengths))
-        logger.debug(f"group tags: {group_tags}")
         store_keys = None
         if passvalue["store_keys"] is not None:
             store_keys = passvalue["store_keys"].split(",")
@@ -178,15 +172,14 @@ def pipeline(passvalue):
         )
 
     if passvalue["plot"]:
-
-        logger.debug(
-            "-----------------------------------------------------------------"
-        )
+        console.rule(**RULE)
         logger.info("Save POP simulation output plot")
 
-        plots_dir = f"{os.path.dirname(passvalue['output'])}/plots"
+        plots_dir = Path(passvalue["output"]).parent / "plots"
         if not os.path.isdir(plots_dir):
-            logger.info(f"folder {plots_dir} not found in directory tree. Creating..")
+            logger.warning(
+                f"folder {Path(plots_dir).resolve()} not found in directory tree. Creating.."
+            )
             Path(plots_dir).mkdir(parents=True, exist_ok=True)
         start_time = time.time()
 
@@ -210,11 +203,12 @@ def pipeline(passvalue):
             for _retval_, tag in zip(tqdm(retval), group_tags)
         )
         end_time = time.time()
-        logger.info(f"Plotting completed in {(end_time - start_time):6.1f}s")
+        logger.info(f"Plotting completed in {(end_time - start_time):g} s")
 
-    if passvalue["return"]:
-        logger.debug("Returning output dict")
-        return retval
+    if not passvalue["return"]:
+        console.rule(**RULE)
+        logger.debug("Not returning output dict")
+        return
 
-    logger.debug("Not returning output dict")
-    return
+    logger.debug("Returning output dict")
+    return retval

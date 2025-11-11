@@ -1,9 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import ticker as ticks
-from matplotlib.patches import Circle
-from matplotlib.patches import Ellipse
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Circle, Ellipse, Rectangle
 from scipy.special import j1
 
 from paos import logger

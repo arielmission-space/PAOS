@@ -1,37 +1,29 @@
+import configparser
 import os
 import time
-import configparser
 from pathlib import Path
-import numpy as np
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
+import numpy as np
 from htmltools import Tag
+from shiny import App, reactive, render, req, ui
+from shiny.types import FileInfo
 from starlette.requests import Request as StarletteRequest
 
-from shiny import App
-from shiny import render
-from shiny import ui
-from shiny import reactive
-from shiny import req
-from shiny.types import FileInfo
-
 import paos
-from paos import logger
-from paos import __pkg_name__
-from paos import __version__
-from paos import __author__
-from paos import __license__
+from paos import __author__, __license__, __pkg_name__, __version__
 from paos.core.parseConfig import parse_config
 from paos.core.plot import simple_plot
-
-from paos.gui.core.io import to_ini
 from paos.gui.core.elems import app_elems
+from paos.gui.core.io import to_ini
 from paos.gui.core.plot import wfe_plot
-from paos.gui.core.shared import nested_div
-from paos.gui.core.shared import menu_panel
-from paos.gui.core.shared import refresh_ui
-from paos.gui.core.shared import modal_download
-from paos.gui.core.shared import ICONS
+from paos.gui.core.shared import (
+    ICONS,
+    menu_panel,
+    modal_download,
+    nested_div,
+    refresh_ui,
+)
 
 
 def app_ui(request: StarletteRequest) -> Tag:
@@ -176,7 +168,7 @@ def app_ui(request: StarletteRequest) -> Tag:
                     ),
                 ],
             ),
-            footer=ui.panel_well(
+            footer=ui.card(
                 ui.p(
                     f"{__pkg_name__} v{__version__}; {__author__}",
                 ),
@@ -248,7 +240,6 @@ def server(input, output, session):
     def download_raytrace_txt():
         raytrace: str = calc_raytrace()
         outfile: list[FileInfo] | None = input.save_txt()
-        logger.info(f"Downloaded {outfile}")
 
         with open(cache / outfile, "w", encoding="utf-8") as f:
             f.write(raytrace)
@@ -546,12 +537,6 @@ def server(input, output, session):
 
         surface = input.select_Zernike()
         surface_key = int(surface[1:])
-
-        if surface_key not in retval.get().keys():
-            logger.error(
-                f"Surface {surface} not found.  \n"
-                "Please check that you have run the POP and this surface is not ignored."
-            )
         item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
@@ -650,12 +635,6 @@ def server(input, output, session):
 
         surface = input.select_PSD()
         surface_key = int(surface[1:])
-
-        if surface_key not in retval.get().keys():
-            logger.error(
-                f"Surface {surface} not found.  \n"
-                "Please check that you have run the POP and this surface is not ignored."
-            )
         item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
@@ -747,12 +726,6 @@ def server(input, output, session):
 
         surface = input.select_gridsag()
         surface_key = int(surface[1:])
-
-        if surface_key not in retval.get().keys():
-            logger.error(
-                f"Surface {surface} not found.  \n"
-                "Please check that you have run the POP and this surface is not ignored."
-            )
         item = retval.get()[surface_key]
 
         fig, ax = plt.subplots()
@@ -790,10 +763,6 @@ def server(input, output, session):
         # async def open_ini():
         req(input.open_ini())
         file: list[FileInfo] | None = input.open_ini()
-
-        if not file[0]["name"].endswith(".ini"):
-            logger.error("Invalid file")
-            return
 
         if ini_file.get().endswith(".ini") and ini_file.get() != file[0]["name"]:
             return

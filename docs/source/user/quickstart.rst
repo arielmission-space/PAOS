@@ -33,11 +33,11 @@ The main command line flags are listed in :numref:`Main command line flags`.
      - Input configuration file to pass
    * - ``-o``, ``--output``
      - Output file
-   * - ``-s``, ``--save``
-     - Save to output file
-   * - ``-p``, ``--plot``
-     - Save output plots
-   * - ``-n``, ``--nThreads``
+   * - ``-s``, ``--save/--no-save``
+     - Write results to an ``.h5`` file; use ``--no-save`` to skip
+   * - ``-p``, ``--plot/--no-plot``
+     - Generate and save output plots; use ``--no-plot`` to skip
+   * - ``-n``, ``--n_jobs``
      - Number of threads for parallel processing
    * - ``-d``, ``--debug``
      - Debug mode screen
@@ -45,7 +45,7 @@ The main command line flags are listed in :numref:`Main command line flags`.
      - Store the log output on file
 
 Where the configuration file shall be an `.ini` file and the output file an `.h5` file (see later in :ref:`h5`).
-`-n` must be followed by an integer. To activate `-p`, `-d` and `-l` no argument is needed.
+`-n` must be followed by an integer. `-s`, `-p`, `-d`, and `-l` are flags (no argument needed). Use `--no-plot` to disable plotting and `--no-save` to skip writing the output file.
 
 .. note::
 
@@ -77,7 +77,7 @@ To have a lighter output please use the option flags listed in :numref:`Lighter 
 
    * - flag
      - description
-   * - ``-keys``, ``--keys_to_keep``
+   * - ``-keys``, ``--store_keys``
      - A list with the output dictionary keys to save
    * - ``-lo``, ``--light_output``
      - Save only at last optical surface

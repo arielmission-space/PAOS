@@ -54,7 +54,7 @@ def raytrace(field, opt_chain, x=0.0, y=0.0):
         _ostr_ = "S{:02d} - {:15s} y:{:7.3f}mm ut:{:10.3e} rad x:{:7.3f}mm us:{:10.3e} rad".format(
             key, item["name"], 1000 * vt[0], vt[1], 1000 * vs[0], vs[1]
         )
-        logger.debug(_ostr_)
+        logger.trace(_ostr_)
         ostr.append(_ostr_)
 
     return ostr
