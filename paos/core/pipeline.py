@@ -83,8 +83,6 @@ def pipeline(passvalue):
     if "return" not in passvalue.keys():
         passvalue["return"] = False
 
-    logger.debug("passvalue keys are {}".format(list(passvalue.keys())))
-
     console.rule(**RULE)
     logger.info("Parse lens file")
     pup_diameter, parameters, wavelengths, fields, opt_chains = parse_config(
@@ -93,8 +91,10 @@ def pipeline(passvalue):
 
     if "debug" in passvalue.keys() and passvalue["debug"]:
         console.rule(**RULE)
-        logger.debug("Perform a diagnostic ray tracing")
-        raytrace(fields[0], opt_chains[0])
+        logger.debug("Perform a diagnostic ray tracing using field f1")
+        raytrace_print = raytrace(fields[0], opt_chains[0])
+        for line in raytrace_print:
+            logger.debug(line)
 
     console.rule(**RULE)
     logger.info("Set up the POP")
