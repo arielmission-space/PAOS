@@ -61,4 +61,10 @@ plt.rc(
     labelweight="bold",
 )
 plt.rc("font", size=12)
-plt.rc("text", usetex=True)
+
+import shutil
+
+has_latex = shutil.which("latex") is not None
+has_renderer = shutil.which("dvipng") is not None or shutil.which("dvisvgm") is not None
+
+plt.rc("text", usetex=(has_latex and has_renderer))
