@@ -7,6 +7,7 @@ from skimage.transform import rescale, resize
 from paos import logger
 from paos.classes.psd import PSD
 from paos.classes.zernike import PolyOrthoNorm, Zernike
+from paos.util.sag import resample_grid_sag
 
 
 class WFO:
@@ -693,176 +694,21 @@ class WFO:
             the WFE
         """
 
-        def rescale_map(sag, mask, scale_x, scale_y):
-
-            anti_aliasing = (
-                scale_x < 1.0 or scale_y < 1.0
-            )  # anti_aliasing is required for downsampling
-
-            sag = rescale(
-                sag,
-                scale=(scale_y, scale_x),
-                anti_aliasing=anti_aliasing,
-                order=3,
-            )
-
-            mask = rescale(
-                mask,
-                scale=(scale_y, scale_x),
-                anti_aliasing=anti_aliasing,
-                order=3,
-            )
-
-            return sag, mask
-
-        def pad_map(sag, mask, padding):
-            sag = np.pad(
-                sag,
-                padding,
-                mode="constant",
-                constant_values=0,
-            )
-            mask = np.pad(
-                mask,
-                padding,
-                mode="constant",
-                constant_values=1,
-            )
-            return sag, mask
-
-        def resize_map(sag, mask, scale_x, scale_y):
-
-            anti_aliasing = (
-                scale_x < 1.0 or scale_y < 1.0
-            )  # anti_aliasing is required for downsampling
-
-            sag = resize(
-                sag,
-                output_shape=self._wfo.shape,
-                anti_aliasing=anti_aliasing,
-                order=3,
-            )
-            mask = resize(
-                mask,
-                output_shape=self._wfo.shape,
-                anti_aliasing=anti_aliasing,
-                order=3,
-            )
-            return sag, mask
-
-        assert sag.ndim == 2, "sag shall be a 2D array"
-        assert sag.shape == (ny, nx)
-
-        logger.debug("Converting sag to masked array")
-        if isinstance(sag, np.ma.MaskedArray):
-            logger.debug("Input sag is already a masked array")
-        else:
-            logger.debug("Input sag is not a masked array")
-            mask = ~np.isfinite(sag) | (sag == 0)
-            sag = np.ma.MaskedArray(sag, mask=mask)
-
-        mask = sag.mask.astype(float)
-        sag = sag.filled(0.0)
-
-        # Step 1: recenter
-        if (xdec != 0) or (ydec != 0):
-            logger.debug("Applying sag shift: xdec = %f, ydec = %f" % (xdec, ydec))
-            sag = fourier_shift(np.fft.fft2(sag), shift=(-xdec, -ydec))
-            sag = np.fft.ifft2(sag).real
-            mask = fourier_shift(np.fft.fft2(mask), shift=(-xdec, -ydec))
-            mask = np.fft.ifft2(mask).real
-
-        # Step 2: pad or crop
-        target_width = self._wfo.shape[1] * self._dx
-        target_height = self._wfo.shape[0] * self._dy
-
-        current_width = sag.shape[1] * delx
-        current_height = sag.shape[0] * dely
-
-        logger.debug(
-            f"target width [m]: {target_width}, target height [m]: {target_height}"
+        sag = resample_grid_sag(
+            sag=sag,
+            nx=nx,
+            ny=ny,
+            nx_new=self._wfo.shape[1],
+            ny_new=self._wfo.shape[0],
+            delx=delx,
+            dely=dely,
+            delx_new=self.dx,
+            dely_new=self.dy,
+            xdec=xdec,
+            ydec=ydec,
+            order=3,
+            mask_tol=0.1,
         )
-        logger.debug(
-            f"current width [m]: {current_width}, current height [m]: {current_height}"
-        )
-
-        width_diff = int(np.floor((current_width - target_width) / delx))
-        height_diff = int(np.floor((current_height - target_height) / dely))
-
-        scale_x = scale_y = 1
-        if width_diff % 2 == 1 or height_diff % 2 == 1:
-            logger.debug(f"I need to sample more finely. Sag shape is {sag.shape}")
-
-        if width_diff % 2 == 1:
-            scale_x = 2
-            delx /= 2
-            width_diff *= 2
-
-        if height_diff % 2 == 1:
-            scale_y = 2
-            dely /= 2
-            height_diff *= 2
-
-        if (scale_x != 1) or (scale_y != 1):
-            sag, mask = rescale_map(sag, mask, scale_x, scale_y)
-        logger.debug(f"Resampled sag shape is {sag.shape}")
-
-        # Handle width dimension (x-axis)
-        if width_diff < 0.0:
-            logger.debug("Applying padding on width...")
-            pad_width = abs(width_diff)
-            pad_left = pad_width // 2
-            pad_right = pad_width - pad_left
-            sag, mask = pad_map(sag, mask, ((0, 0), (pad_left, pad_right)))
-
-        elif width_diff > 0.0:
-            logger.debug("Applying cropping on width...")
-            crop_width = width_diff
-            crop_left = crop_width // 2
-            crop_right = sag.shape[1] - (crop_width - crop_left)
-
-            # Apply cropping only on x-axis
-            sag = sag[:, crop_left:crop_right]
-            mask = mask[:, crop_left:crop_right]
-
-        # Handle height dimension (y-axis)
-        if height_diff < 0.0:
-            logger.debug("Applying padding on height...")
-            pad_height = abs(height_diff)
-            pad_top = pad_height // 2
-            pad_bottom = pad_height - pad_top
-            sag, mask = pad_map(sag, mask, ((pad_top, pad_bottom), (0, 0)))
-
-        elif height_diff > 0.0:
-            logger.debug("Applying cropping on height...")
-            crop_height = height_diff
-            crop_top = crop_height // 2
-            crop_bottom = sag.shape[0] - (crop_height - crop_top)
-
-            # Apply cropping only on y-axis
-            sag = sag[crop_top:crop_bottom, :]
-            mask = mask[crop_top:crop_bottom, :]
-        logger.debug(f"Adjusted sag shape is {sag.shape}, mask shape is {mask.shape}")
-
-        # Step 3: rescale
-        scale_x = delx / self.dx
-        scale_y = dely / self.dy
-
-        if (scale_x != 1) or (scale_y != 1):
-            sag, mask = rescale_map(sag, mask, scale_x, scale_y)
-
-        # Step 4: resize
-        # if the shape is not the same as the input (could be 1 pixel off), resize
-        logger.debug(f"Resampled sag shape is {sag.shape}")
-
-        if sag.shape != self._wfo.shape:
-            logger.debug(f"Output shape should be {self._wfo.shape}: resizing...")
-            scale_x = self._wfo.shape[1] / sag.shape[1]
-            scale_y = self._wfo.shape[0] / sag.shape[0]
-            sag, mask = resize_map(sag, mask, scale_x, scale_y)
-
-        mask = mask > 0.1
-        sag = np.ma.MaskedArray(sag, mask=mask)
 
         self._wfo = self._wfo * np.exp(
             2.0 * np.pi * 1j * sag.filled(0) / self._wl
