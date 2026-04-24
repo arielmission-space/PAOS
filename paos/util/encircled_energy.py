@@ -68,6 +68,6 @@ def compute_elliptical_flux(
     aperture = EllipticalAperture((xc, yc), a, b, theta)
 
     # Compute the aperture photometry inside the aperture
-    datasum = aperture_photometry(data, aperture)
+    datasum = aperture_photometry(data, aperture, method='exact')
 
     return datasum["aperture_sum"][0]
