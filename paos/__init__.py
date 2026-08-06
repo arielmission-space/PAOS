@@ -46,6 +46,7 @@ from paos.core.plot import plot_pop
 from paos.core.raytrace import raytrace
 from paos.core.run import run
 from paos.core.saveOutput import save_datacube, save_output
+from paos.util.encircled_energy import compute_elliptical_flux
 
 # initialise logger
 logger.level("Announce", no=100, color="<magenta>")
