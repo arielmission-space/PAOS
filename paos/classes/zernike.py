@@ -371,7 +371,7 @@ class PolyOrthoNorm(Zernike):
     >>> U = poly() # zer contains a list of polynomials, noll-ordered
 
     >>> # Plot the Power polynomial
-    >>> plt.imshow(U[4])
+    >>> plt.imshow(U[3])
     >>> plt.show()
 
 
