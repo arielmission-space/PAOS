@@ -2,7 +2,7 @@ from math import factorial as fac
 
 import numpy as np
 from scipy.special import eval_jacobi as jacobi
-
+from scipy.linalg import solve_triangular
 
 class Zernike:
     """
@@ -389,17 +389,53 @@ class PolyOrthoNorm(Zernike):
 
         super().__init__(N, rho, phi, ordering=ordering, normalize=normalize)
 
+        # Common mask for all basis functions
+        common_mask = np.any(np.ma.getmaskarray(self.Z), axis=0)
+        common_mask |= mask
+
+        self.Z.mask = np.broadcast_to(common_mask, self.Z.shape)
+
+        # Gram matrix of the original basis
         cov = self.cov()
+
+        # cov = L @ L.T
         self.Qt = np.linalg.cholesky(cov)
-        self.M = np.linalg.inv(self.Qt)
-        idx = np.where(np.abs(self.M) < 1.0e-10)
-        self.M[idx] = 0.0
 
-        _mask = self.Z.mask | mask
+        # Transformation matrix M = L^-1
+        self.M = solve_triangular(
+            self.Qt,
+            np.eye(self.Qt.shape[0]),
+            lower=True,
+        )
 
-        z1 = np.tensordot(self.M, self.Z.filled(fill_value=0), axes=1)
+        # Orthonormalized basis
+        z1 = np.tensordot(
+            self.M,
+            self.Z.filled(0),
+            axes=1,
+        )
 
-        self.Z = np.ma.MaskedArray(data=z1, mask=_mask, fill_value=0.0)
+        self.Z = np.ma.MaskedArray(
+            data=z1,
+            mask=np.broadcast_to(common_mask, z1.shape),
+            fill_value=0.0,
+        )
+
+    # def __init__(self, N, rho, phi, ordering="ansi", normalize=False, mask=False):
+
+    #     super().__init__(N, rho, phi, ordering=ordering, normalize=normalize)
+
+    #     cov = self.cov()
+    #     self.Qt = np.linalg.cholesky(cov)
+    #     self.M = np.linalg.inv(self.Qt)
+    #     idx = np.where(np.abs(self.M) < 1.0e-10)
+    #     self.M[idx] = 0.0
+
+    #     _mask = self.Z.mask | mask
+
+    #     z1 = np.tensordot(self.M, self.Z.filled(fill_value=0), axes=1)
+
+    #     self.Z = np.ma.MaskedArray(data=z1, mask=_mask, fill_value=0.0)
 
     def toZernike(self, coeff):
         """
